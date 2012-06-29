@@ -1,10 +1,10 @@
 Lie Lab
 =======
 
-####A really cool project :D
+#####A really cool project :D
 
-`
-cd mensonge
+#### Pour lancer :
+`cd mensonge
 make run
 `
 
