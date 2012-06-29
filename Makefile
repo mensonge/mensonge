@@ -1,3 +1,5 @@
+PROJECT=LieLab
+TARGETDIR=.
 TARGET=userinterface.GraphicalUserInterface
 TARGET_EXTRACTION=core.Extraction
 ARGS=
@@ -32,3 +34,8 @@ $(OBJDIR):
 
 clean:
 	rm -fr $(OBJDIR)
+
+manifest:
+	mkdir $(OBJDIR)/META-INF && echo "Main-Class: $(TARGET)" > $(OBJDIR)/META-INF/MANIFEST.MF
+jar: manifest
+	(cd $(OBJDIR) && jar cvmf META-INF/MANIFEST.MF ../$(PROJECT).jar $(TARGETDIR)/* )
