@@ -21,9 +21,11 @@ COMPILE_OPTIONS=$(WARN) -d $(OBJDIR) -sourcepath $(SRCDIR) -classpath $(CLASSPAT
 all: compile
 
 run: compile
-	java $(RUN_OPTIONS)
+	java $(RUN_OPTIONS) 
+
 run_extraction: compile
 	java $(RUN_EXTRACTION)
+
 compile: $(OBJDIR) $(OBJ)
 
 $(OBJDIR)/%.class: $(SRCDIR)/%.java
@@ -34,8 +36,10 @@ $(OBJDIR):
 
 clean:
 	rm -fr $(OBJDIR)
+	rm  $(PROJECT).jar
 
 manifest:
 	mkdir $(OBJDIR)/META-INF && echo "Main-Class: $(TARGET)" > $(OBJDIR)/META-INF/MANIFEST.MF
+
 jar: manifest
 	(cd $(OBJDIR) && jar cvmf META-INF/MANIFEST.MF ../$(PROJECT).jar $(TARGETDIR)/* )
