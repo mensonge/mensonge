@@ -35,8 +35,8 @@ $(OBJDIR):
 	@test -d $(OBJDIR) || mkdir $(OBJDIR)
 
 clean:
-	rm -fr $(OBJDIR)
-	rm  $(PROJECT).jar
+	-@test -d $(OBJDIR) && rm -fr $(OBJDIR)
+	-@test -e $(PROJECT).jar && rm  $(PROJECT).jar
 
 manifest:
 	mkdir $(OBJDIR)/META-INF && echo "Main-Class: $(TARGET)" > $(OBJDIR)/META-INF/MANIFEST.MF
