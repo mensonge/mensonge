@@ -35,11 +35,11 @@ $(OBJDIR):
 	@test -d $(OBJDIR) || mkdir $(OBJDIR)
 
 clean:
-	-@test -d $(OBJDIR) && rm -fr $(OBJDIR)
-	-@test -e $(PROJECT).jar && rm  $(PROJECT).jar
+	rm -fr $(OBJDIR)
+	rm  -f $(PROJECT).jar
 
 manifest:
-	mkdir $(OBJDIR)/META-INF && echo "Main-Class: $(TARGET)" > $(OBJDIR)/META-INF/MANIFEST.MF
+	mkdir -p $(OBJDIR)/META-INF && echo "Main-Class: $(TARGET)" > $(OBJDIR)/META-INF/MANIFEST.MF
 
 jar: manifest
 	(cd $(OBJDIR) && jar cvmf META-INF/MANIFEST.MF ../$(PROJECT).jar $(TARGETDIR)/* )
