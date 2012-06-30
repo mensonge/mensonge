@@ -2,6 +2,7 @@ PROJECT=LieLab
 TARGETDIR=.
 TARGET=userinterface.GraphicalUserInterface
 TARGET_EXTRACTION=core.Extraction
+TARGET_PLUGINS=core.plugins.PluginManager
 ARGS=
 
 SRCDIR=src
@@ -14,6 +15,7 @@ OBJ=$(patsubst $(SRCDIR)/%.java,$(OBJDIR)/%.class,$(SRC))
 CLASSPATH=$(shell find $(LIBDIR) -name "*.jar" -printf "%p:")$(OBJDIR)
 RUN_OPTIONS=-classpath $(CLASSPATH) $(TARGET) $(ARGS)
 RUN_EXTRACTION=-classpath $(CLASSPATH) $(TARGET_EXTRACTION) $(ARGS)
+RUN_PLUGINS=-classpath $(CLASSPATH) $(TARGET_PLUGINS) $(ARGS)
 
 WARN=-Xlint:all
 COMPILE_OPTIONS=$(WARN) -d $(OBJDIR) -sourcepath $(SRCDIR) -classpath $(CLASSPATH)
@@ -25,6 +27,9 @@ run: compile
 
 run_extraction: compile
 	java $(RUN_EXTRACTION)
+
+run_plugins: compile
+	java $(RUN_PLUGINS)
 
 compile: $(OBJDIR) $(OBJ)
 
