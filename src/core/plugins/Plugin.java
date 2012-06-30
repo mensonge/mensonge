@@ -1,4 +1,4 @@
-package plugins;
+package core.plugins;
 
 public interface Plugin
 {
