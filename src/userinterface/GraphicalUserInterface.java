@@ -216,11 +216,14 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 					try
 					{
 						if (containerInput.open(fileChooser.getSelectedFile().getCanonicalPath(), IContainer.Type.READ, null) < 0)
+						{
 							throw new Exception("Impossible d'ouvrir ce fichier, format non géré.");
+						}
 						else
 						{
 							try
 							{
+								containerInput.close();
 								this.ajouterOnglet(new OngletLecteur(new File(fileChooser.getSelectedFile().getCanonicalPath())));
 							}
 							catch (IOException e)
