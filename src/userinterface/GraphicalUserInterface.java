@@ -28,6 +28,9 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.SwingConstants;
 
+import com.xuggle.xuggler.IContainer;
+import com.xuggle.xuggler.IContainerFormat;
+
 import userinterface.OngletLecteur;
 
 public class GraphicalUserInterface extends JFrame implements ActionListener
@@ -69,7 +72,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		aideAPropos.addActionListener(this);
 
 		JMenu menuOutils = new JMenu("Outils");
-		
+
 		JMenu menuAide = new JMenu("Aide");
 		menuAide.add(aideAPropos);
 
@@ -78,30 +81,30 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		menuBar.add(menuOutils);
 		menuBar.add(menuAide);
 
-		
+
 		modeleTableau = new ModeleTableau();
 		modeleTableau.addColumn("Nom de l'enregistrement");
 		modeleTableau.addColumn("Durée");
 
 		JTable table = new JTable(modeleTableau);
-		
+
 		scrollPane = new JScrollPane(table);
 		scrollPane.setPreferredSize(new Dimension(270, 800));
 		scrollPane.setAutoscrolls(true);
-		
+
 		Box boxLabel = Box.createVerticalBox();
 		boxLabel.add(Box.createVerticalStrut(7));
 		boxLabel.add(new JLabel("Liste des enregistrements"));
 		boxLabel.add(Box.createVerticalStrut(2));
-		boxLabel.add(new JSeparator(SwingConstants.HORIZONTAL));	
+		boxLabel.add(new JSeparator(SwingConstants.HORIZONTAL));
 		boxLabel.add(Box.createVerticalStrut(5));
 
 		JPanel panelEnregistrements = new JPanel(new BorderLayout());
 		panelEnregistrements.add(boxLabel,BorderLayout.NORTH);
 		panelEnregistrements.add(scrollPane,BorderLayout.CENTER);
-		
+
 		/*
-		 * Conteneur 
+		 * Conteneur
 		 */
 		JPanel conteneur = new JPanel(new BorderLayout());
 		conteneur.add(onglets,BorderLayout.CENTER);
@@ -112,7 +115,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		this.setBackground(Color.WHITE);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setResizable(true);
-		this.setTitle("Eil");
+		this.setTitle("LieLab");
 		this.setLocationRelativeTo(null);
 		this.setSize(Toolkit.getDefaultToolkit().getScreenSize());
 		this.setContentPane(conteneur);
@@ -160,16 +163,16 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		System.setProperty("awt.useSystemAAFontSettings", "on");
 		System.setProperty("swing.aatext", "true");
 		javax.swing.SwingUtilities.invokeLater(new Runnable()
+				{
+					public void run()
 		{
-			public void run()
-			{
-				new GraphicalUserInterface();
-			}
+			new GraphicalUserInterface();
+		}
 		});
 	}
 	/**
 	 * Affiche une popup qui signale une erreur
-	 * 
+	 *
 	 * @param message
 	 *            Le message d'erreur à afficher
 	 */
@@ -180,7 +183,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 	/**
 	 * Affiche une popup qui signale une erreur
-	 * 
+	 *
 	 * @param message
 	 *            Le message d'erreur à afficher
 	 * @param title
@@ -191,34 +194,49 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);
 	}
 	@Override
-	public void actionPerformed(ActionEvent event)
-	{
-		if (event.getSource() == fichierFermer)
+		public void actionPerformed(ActionEvent event)
 		{
-			this.quitter();
-		}
-		else if (event.getSource() == aideAPropos)
-		{
-			JOptionPane.showMessageDialog(null, "Projet de détection de mensonge", "À propos",
-					JOptionPane.PLAIN_MESSAGE);
-		}
-		else if (event.getSource() == fichierOuvrir)
-		{
-			JFileChooser fileChooser = new JFileChooser();
-			fileChooser.showOpenDialog(this);
-			if (fileChooser.getSelectedFile() != null)
+			if (event.getSource() == fichierFermer)
 			{
-				try
+				this.quitter();
+			}
+			else if (event.getSource() == aideAPropos)
+			{
+				JOptionPane.showMessageDialog(null, "Projet de détection de mensonge", "À propos",
+						JOptionPane.PLAIN_MESSAGE);
+			}
+			else if (event.getSource() == fichierOuvrir)
+			{
+				JFileChooser fileChooser = new JFileChooser();
+				IContainer containerInput = IContainer.make();
+
+				fileChooser.showOpenDialog(this);
+				if (fileChooser.getSelectedFile() != null)
 				{
-					this.ajouterOnglet(new OngletLecteur(new File(fileChooser.getSelectedFile().getCanonicalPath())));
-				}
-				catch (IOException e)
-				{
-					popupErreur(e.getMessage());
+					try
+					{
+						if (containerInput.open(fileChooser.getSelectedFile().getCanonicalPath(), IContainer.Type.READ, null) < 0)
+							throw new Exception("Impossible d'ouvrir ce fichier, format non géré.");
+						else
+						{
+							try
+							{
+								this.ajouterOnglet(new OngletLecteur(new File(fileChooser.getSelectedFile().getCanonicalPath())));
+							}
+							catch (IOException e)
+							{
+								popupErreur(e.getMessage());
+							}
+
+						}
+					}
+					catch (Exception e1)
+					{
+						popupErreur(e1.getMessage());
+					}
 				}
 			}
 		}
-	}
 }
 
 class FermetureOngletListener implements ActionListener
