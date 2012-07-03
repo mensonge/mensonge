@@ -8,10 +8,10 @@ import java.io.File;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JPanel;
-
 import javax.swing.JSlider;
 import javax.swing.JToolBar;
 
+import com.xuggle.xuggler.*;
 public class OngletLecteur extends JPanel implements ActionListener
 {
 	private static final long serialVersionUID = -2623351725072404024L;
@@ -41,7 +41,7 @@ public class OngletLecteur extends JPanel implements ActionListener
 		slider = new JSlider();
 		slider.setMaximum(100);
 		slider.setMinimum(0);
-		slider.setValue(25);
+		slider.setValue(0);
 		slider.setPaintTicks(false);
 		slider.setPaintLabels(false);
 
