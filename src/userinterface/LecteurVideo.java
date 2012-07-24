@@ -8,11 +8,11 @@ import com.xuggle.xuggler.Global;
 
 public class LecteurVideo
 {
-	private File fichierVideo;
-	private String nom;
+	private File fichierVideo;/*Le fichier video*/
+	private String nom;/*Le nom du fichier video*/
 
 
-	IMediaReader mediaReader;
+	IMediaReader mediaReader;/*Le lecteur de flux*/
 
 	public LecteurVideo(File fichierVideo)
 	{
@@ -23,9 +23,7 @@ public class LecteurVideo
 
 	public void initialiserComposant()
 	{
-		mediaReader	= ToolFactory.makeReader(nom);
-		mediaReader.setBufferedImageTypeToGenerate(BufferedImage.TYPE_3BYTE_BGR);
-		mediaReader.addListener(new ImageSnapListener();
+
 
 	}
 
