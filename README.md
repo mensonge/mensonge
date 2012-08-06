@@ -8,3 +8,4 @@ Lie Lab
 `cd mensonge`
 `make run`
 
+Tests unitaires à prévoir ?
