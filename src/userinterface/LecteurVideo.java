@@ -6,6 +6,7 @@ import com.xuggle.mediatool.ToolFactory;
 import com.xuggle.mediatool.event.IVideoPictureEvent;
 import com.xuggle.xuggler.Global;
 
+import java.io.File;
 public class LecteurVideo
 {
 	private File fichierVideo;/*Le fichier video*/
