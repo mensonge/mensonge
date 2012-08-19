@@ -4,10 +4,13 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ByteArrayInputStream;  
+import java.io.FileInputStream;  
 
 import com.xuggle.xuggler.Global;
 import com.xuggle.xuggler.IAudioSamples;
 import com.xuggle.xuggler.ICodec;
+import com.xuggle.xuggler.ICodec.ID;
 import com.xuggle.xuggler.IContainer;
 import com.xuggle.xuggler.IContainerFormat;
 import com.xuggle.xuggler.IMetaData;
@@ -17,7 +20,7 @@ import com.xuggle.xuggler.IStreamCoder;
 
 public class Extraction
 {
-	static public byte[] extraireEchantillons(File fichier)
+	static public double[][] extraireEchantillons(File fichier)
 	{
 		IContainer containerInput = IContainer.make();
 
@@ -50,6 +53,8 @@ public class Extraction
 			throw new RuntimeException("Impossible de trouver un flux audio dans le fichier");
 		if (audioCoderInput.open(options, unsetOptions) < 0)
 			throw new RuntimeException("Impossible d'ouvrir le flux audio du fichier");
+		int nbChannels = audioCoderInput.getChannels();
+		ID codec = audioCoderInput.getCodec().getID();
 		ByteArrayOutputStream byte_out = new ByteArrayOutputStream();
 
 		IPacket packetInput = IPacket.make();
@@ -57,18 +62,70 @@ public class Extraction
 		{
 			if (packetInput.getStreamIndex() == audioStreamId)
 			{
-				try
-				{
-					byte_out.write(packetInput.getData().getByteArray(0, packetInput.getSize()));
-				} catch (IOException e)
-				{
-					e.printStackTrace();
-				}
+					byte_out.write(packetInput.getData().getByteArray(0,packetInput.getSize()),0,packetInput.getSize());
 			}
 		}
 		audioCoderInput.close();
 		containerInput.close();
-		return byte_out.toByteArray();
+		
+		byte[] audioBytes = byte_out.toByteArray();
+		int bitsBySample = 16;
+                int nbSamples = audioBytes.length / nbChannels;
+           	double doubleArray[] = new double[nbSamples];
+		//TODO ne gere que le PCM signé BE/LE 16 bit, faire le reste (8, 24 et 32)
+		if(codec.toString().endsWith("BE"))//Big endian
+		{
+                	for (int i = 0; i < nbSamples; i++)
+			{
+                        	int msb = audioBytes[2 * i];
+                        	int lsb = audioBytes[2 * i + 1];
+                        	doubleArray[i] = ((msb << 8) | (0xff & lsb))/32768.0d;
+				//Si c'est du 16bit ça ira de -32768 à +32767 donc pour avoir des double on divise par 32768 ça ira donc de -1 à +1
+                	}
+		}
+		else
+		{
+                	for (int i = 0; i < nbSamples; i++)
+			{
+                        	int lsb = audioBytes[2 * i];
+                        	int msb = audioBytes[2 * i + 1];
+                        	doubleArray[i] = ((msb << 8) | (0xff & lsb))/32768.0d;
+				//Si c'est du 16bit ça ira de -32768 à +32767 donc pour avoir des double on divise par 32768 ça ira donc de -1 à +1
+                	}
+		}
+		if((nbSamples % nbChannels) != 0)
+		{
+			System.out.println("[E] problem mod de nbSamples et nbChannels != 0 => les données audio ne correspondent pas aux nb de channels");
+			return null;
+		}
+		int nbSamplesChannel = nbSamples/nbChannels;
+		return Extraction.reshape(doubleArray,nbChannels,nbSamplesChannel);
+	}
+	static private double [][] reshape(double doubleArray[], int m, int n)
+	{
+		double reshapeArray[][] = new double[n][m];
+		int k = 0;
+		for(int i = 0; i < n; i++)
+		{
+			for(int j = 0; j < m; j++)
+			{
+				reshapeArray[i][j] = doubleArray[k++];
+			}
+		}
+		return reshapeArray;
+	}
+	static private int [][] reshape(int intArray[], int m, int n)
+	{
+		int reshapeArray[][] = new int[n][m];
+		int k = 0;
+		for(int i = 0; i < n; i++)
+		{
+			for(int j = 0; j < m; j++)
+			{
+				reshapeArray[i][j] = intArray[k++];
+			}
+		}
+		return reshapeArray;
 	}
 
 	static public byte[] extraireIntervalle(File fichier, long debut, long fin)
@@ -114,10 +171,10 @@ public class Extraction
 			try
 			{
 				throw new Exception("Impossible d'ouvrir le fichier");
-			} catch (Exception e)
+			}
+			catch (Exception e)
 			{
 				e.printStackTrace();
-				System.exit(1);
 			}
 		}
 		IStream stream = containerOutput.addNewStream(ICodec.ID.CODEC_ID_PCM_S16LE);
@@ -189,22 +246,5 @@ public class Extraction
 		containerOutput.close();
 		containerInput.close();
 		return byte_out.toByteArray();
-	}
-
-	public static void main(String args[])
-	{
-		System.out.println("....");
-		long start = System.currentTimeMillis();
-		try
-		{
-			FileOutputStream dataOut = new FileOutputStream("sons/test_sortie.wav");
-			dataOut.write(extraireEchantillons(new File("sons/test.wmv")));
-			dataOut.close();
-
-		} catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-		System.out.println("Done in "+(System.currentTimeMillis()-start)/1000.0+"s !");
 	}
 }

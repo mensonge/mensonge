@@ -1,5 +1,6 @@
 package userinterface;
 
+import java.io.File;
 
 public class LecteurVideo
 {
