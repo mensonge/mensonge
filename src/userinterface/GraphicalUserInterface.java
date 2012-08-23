@@ -225,6 +225,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 							{
 								containerInput.close();
 								this.ajouterOnglet(new OngletLecteur(new File(fileChooser.getSelectedFile().getCanonicalPath())));
+								new LecteurVideo(new File(fileChooser.getSelectedFile().getCanonicalPath()));
 							}
 							catch (IOException e)
 							{
