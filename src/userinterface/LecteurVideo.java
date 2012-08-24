@@ -7,39 +7,54 @@ import com.xuggle.mediatool.event.IVideoPictureEvent;
 import com.xuggle.xuggler.Global;
 
 import java.io.File;
+import java.io.IOException;
 
 import java.awt.Dimension;
-import javax.swing.JFrame;
 
-public class LecteurVideo
+import javax.swing.JPanel;
+
+
+public class LecteurVideo extends JPanel
 {
+	private static final long serialVersionUID = 5373991180139317820L;
 	private File fichierVideo;/*Le fichier video*/
 	private String nom;/*Le nom du fichier video*/
 	ImageComponent mediaPlayerComponent = new ImageComponent();
-
+	DecodeAndPlayVideo decodeAndPlayVideo ;
 	public LecteurVideo(File fichierVideo)
 	{
 		this.fichierVideo = fichierVideo;
-		this.nom = fichierVideo.getName();
+
+		try
+		{
+			this.nom = fichierVideo.getCanonicalPath();
+		}
+		catch (IOException e)
+		{
+			GraphicalUserInterface.popupErreur(e.getMessage());
+		}
+
+
 		this.initialiserComposant();
 
-		JFrame aFrame = new JFrame();
-		aFrame.setPreferredSize(new Dimension(640, 500));
-		aFrame.add(mediaPlayerComponent);
-		aFrame.pack();
-		aFrame.setLocationRelativeTo(null);
-		aFrame.setVisible(true);
+		this.add(mediaPlayerComponent);
 
 	}
 
 	public void initialiserComposant()
 	{
-		DecodeAndPlayVideo decodeAndPlayVideo =new DecodeAndPlayVideo(mediaPlayerComponent);
-		decodeAndPlayVideo.PlayVideo(nom);
+    	 this.decodeAndPlayVideo =new DecodeAndPlayVideo(mediaPlayerComponent);
 	}
 
 	public void play()
 	{
+		Thread t2 = new Thread(new Runnable(){
+			@SuppressWarnings( "static-access" )
+			public void run(){
+				getDecodeAndPlayVideo().PlayVideo(nom);
+			}
+		});
+		t2.run();
 	}
 
 	public void pause()
@@ -54,5 +69,8 @@ public class LecteurVideo
 	public void setVolume(long volume)
 	{
 	}
-
+	public DecodeAndPlayVideo getDecodeAndPlayVideo()
+	{
+		return this.decodeAndPlayVideo;
+	}
 }

@@ -122,6 +122,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		this.setJMenuBar(menuBar);
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		this.setVisible(true);
+		this.setEnabled(true);
 	}
 
 	public void ajouterOnglet(OngletLecteur onglet)
@@ -225,7 +226,6 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 							{
 								containerInput.close();
 								this.ajouterOnglet(new OngletLecteur(new File(fileChooser.getSelectedFile().getCanonicalPath())));
-								new LecteurVideo(new File(fileChooser.getSelectedFile().getCanonicalPath()));
 							}
 							catch (IOException e)
 							{
