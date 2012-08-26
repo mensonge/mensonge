@@ -1,0 +1,34 @@
+Note des divers ajout et creation de mon propre chef ainsi que des discussions que j'ai put avoir avec le groupe.
+Elles seront je le pense tres pratique pour le rapport.
+
+- Choix de la gestion des erreurs. Choix d'envoie d'exception plutôt que de modifier les attributs existants
+
+- Création de la classe DBException
+
+- Choix des niveau de verification (au niveau de la base ou avant)
+
+- Ajout d'une fonction qui verifie l'existance des des categorie
+	private boolean categorieExiste(int idCat) throws DBException
+
+- Ajout d'une methode pour modifier les enregistrement sans en modifier le contenu. il y a donc 2 fonction modifierEnregistrement.
+	public void modifierEnregistrement(int id, String nom, int duree, byte[] enregistrement, int idCat) throws DBException
+	et la nouvelle -> public void modifierEnregistrement(int id, String nom, int duree, int taille, int idCat) throws DBException
+	
+- Ajout de méthodes pour modifier les attribue independament des autres
+	public void modifierEnregistrementNom(int id, String nom) throws DBException
+	public void modifierEnregistrementDuree(int id, int duree) throws DBException
+	public void modifierEnregistrementTaille(int id, int taille) throws DBException
+	public void modifierEnregistrementCategorie(int id, int idCat) throws DBException
+	public void modifierEnregistrementCategorie(int id, String nomCat) throws DBException
+
+- Ajout d'une fonction pour verifier le fonctionnement
+	public static void checkRunning()
+	
+- Ajout de fonction pour faire des tests sur la vitesse d'execution au niveau des lecture et des ecritures
+	public static void checkOptiWrite()
+	public static void checkOptiRead()
+	
+- Ajout de 2 fonction permettant de recupérer des information sur les categories
+	public String getCategorie(int idCat) throws DBException
+	public int getCategorie(String nomCat) throws DBException
+	
