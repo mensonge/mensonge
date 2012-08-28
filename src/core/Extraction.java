@@ -60,9 +60,21 @@ public class Extraction
 		IPacket packetInput = IPacket.make();
 		while (containerInput.readNextPacket(packetInput) >= 0)
 		{
-			if (packetInput.getStreamIndex() == audioStreamId)
+			if(packetInput.getStreamIndex() == audioStreamId)
 			{
-					byte_out.write(packetInput.getData().getByteArray(0,packetInput.getSize()),0,packetInput.getSize());
+				IAudioSamples samples = IAudioSamples.make(1024, nbChannels);
+				int offset = 0;
+				while(offset < packetInput.getSize())
+				{
+					int bytesDecoded = audioCoderInput.decodeAudio(samples, packetInput, offset);
+					if(bytesDecoded < 0)
+						throw new RuntimeException("Erreur de décodage du fichier");
+					offset += bytesDecoded;
+					if(samples.isComplete())
+					{
+						byte_out.write(samples.getData().getByteArray(0, samples.getSize()),0,samples.getSize());
+					}
+				}
 			}
 		}
 		audioCoderInput.close();
