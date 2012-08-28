@@ -9,6 +9,7 @@ Elles seront je le pense tres pratique pour le rapport.
 
 - Ajout d'une fonction qui verifie l'existance des des categorie
 	private boolean categorieExiste(int idCat) throws DBException
+	private boolean categorieExiste(String nomCat) throws DBException
 
 - Ajout d'une methode pour modifier les enregistrement sans en modifier le contenu. il y a donc 2 fonction modifierEnregistrement.
 	public void modifierEnregistrement(int id, String nom, int duree, byte[] enregistrement, int idCat) throws DBException
@@ -31,4 +32,6 @@ Elles seront je le pense tres pratique pour le rapport.
 - Ajout de 2 fonction permettant de recupérer des information sur les categories
 	public String getCategorie(int idCat) throws DBException
 	public int getCategorie(String nomCat) throws DBException
-	
+
+- Ajout d'une fonction qui creer une base fictive. Base qui servira pour tester l'importation dans la fonction checkRunning()
+		public static boolean createFictiveDataBase()
