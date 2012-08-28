@@ -105,11 +105,6 @@ public class BaseDeDonnees
 		{
 			return;
 		}
-		//tester presence du fichier
-		if( ! (new File(cheminFichier)).exists())//on creer un nouvelle objet File avec lequel on appel la methode exist pour verifier l'existance de ce dernier. Ensuite le ramasse miette fait le reste.
-		{
-			throw new DBException("Le fichier a importer \"" + cheminFichier + "\" n'existe pas.", 4);//le fichier n'existe pas, on lance une exception
-		}
 		//etablir une connexion
 		BaseDeDonnees in = new BaseDeDonnees(cheminFichier);
 		in.connexion();
