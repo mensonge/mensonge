@@ -18,9 +18,11 @@ import com.xuggle.xuggler.IPacket;
 import com.xuggle.xuggler.IStream;
 import com.xuggle.xuggler.IStreamCoder;
 
-public class Extraction
+import core.IExtraction;
+
+public class Extraction implements IExtraction
 {
-	static public double[][] extraireEchantillons(File fichier)
+	public double[][] extraireEchantillons(File fichier)
 	{
 		IContainer containerInput = IContainer.make();
 
@@ -111,9 +113,9 @@ public class Extraction
 			return null;
 		}
 		int nbSamplesChannel = nbSamples/nbChannels;
-		return Extraction.reshape(doubleArray,nbChannels,nbSamplesChannel);
+		return reshape(doubleArray,nbChannels,nbSamplesChannel);
 	}
-	static private double [][] reshape(double doubleArray[], int m, int n)
+	private double [][] reshape(double doubleArray[], int m, int n)
 	{
 		double reshapeArray[][] = new double[n][m];
 		int k = 0;
@@ -126,7 +128,7 @@ public class Extraction
 		}
 		return reshapeArray;
 	}
-	static private int [][] reshape(int intArray[], int m, int n)
+	private int [][] reshape(int intArray[], int m, int n)
 	{
 		int reshapeArray[][] = new int[n][m];
 		int k = 0;
@@ -140,7 +142,7 @@ public class Extraction
 		return reshapeArray;
 	}
 
-	static public byte[] extraireIntervalle(File fichier, long debut, long fin)
+	public byte[] extraireIntervalle(File fichier, long debut, long fin)
 	{
 		IContainer containerInput = IContainer.make();
 
