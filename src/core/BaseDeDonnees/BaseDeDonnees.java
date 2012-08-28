@@ -1,10 +1,6 @@
 package BaseDeDonnee;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -33,7 +29,7 @@ public class BaseDeDonnees
 	 * @param baseDeDonnees Chaine de caractére indiquant le nom du fichier de la base de donnee.
 	 * @throws DBException 
 	 */
-	public BaseDeDonnees(String baseDeDonnees) throws DBException
+	public BaseDeDonnees(final String baseDeDonnees) throws DBException
 	{
 		if( ! (new File(baseDeDonnees)).exists())//on creer un nouvelle objet File avec lequel on appel la methode exist pour verifier l'existance du fichier. Ensuite le ramasse miette fait le reste.
 		{
@@ -99,7 +95,7 @@ public class BaseDeDonnees
 	 * @param cheminFichier le fichier contenant la base a importer
 	 * @throws DBException 
 	 */
-	public void importer(String cheminFichier) throws DBException
+	public void importer(final String cheminFichier) throws DBException
 	{
 		if(connexion == null)
 		{
@@ -141,7 +137,7 @@ public class BaseDeDonnees
 	 * 
 	 * @param cheminFichier fichier dans lequel sera exporte la base.
 	 */
-	public void exporter(String cheminFichier) //TODO
+	public void exporter(final String cheminFichier) //TODO
 	{
 		if(connexion == null)
 		{
@@ -175,7 +171,7 @@ public class BaseDeDonnees
 	 * @return Le resultat sous forme d'objet ResultSet qui n'est parcourable qu'une fois.
 	 * @throws DBException
 	 */
-	public ResultSet getListeEnregistrement(int idCat) throws DBException
+	public ResultSet getListeEnregistrement(final int idCat) throws DBException
 	{
 		if(connexion == null)
 		{
@@ -226,7 +222,7 @@ public class BaseDeDonnees
 	 * @param enregistrement l'enregistrement sous la forme d'un tableau de byte
 	 * @throws DBException
 	 */
-	public void ajouterEnregistrement(String nom, int duree, int idCat, byte[] enregistrement) throws DBException
+	public void ajouterEnregistrement(final String nom, final int duree, final int idCat, final byte[] enregistrement) throws DBException
 	{
 		if(connexion == null)
 		{
@@ -261,7 +257,7 @@ public class BaseDeDonnees
 	 * Permet de supprimer un enregistrement
 	 * @param id id de l'enregistrement a supprimer.
 	 */
-	public void supprimerEnregistrement(int id)
+	public void supprimerEnregistrement(final int id)
 	{
 		if(connexion == null)
 		{
@@ -289,7 +285,7 @@ public class BaseDeDonnees
 	 * @param idCat la nouvelle categorie
 	 * @throws DBException
 	 */
-	public void modifierEnregistrement(int id, String nom, int duree, byte[] enregistrement, int idCat) throws DBException
+	public void modifierEnregistrement(final int id, final String nom, final int duree, final byte[] enregistrement, final int idCat) throws DBException
 	{
 		if(connexion == null)
 		{
@@ -330,7 +326,7 @@ public class BaseDeDonnees
 	 * @param idCat la nouvelle categorie
 	 * @throws DBException
 	 */
-	public void modifierEnregistrement(int id, String nom, int duree, int taille, int idCat) throws DBException
+	public void modifierEnregistrement(final int id, final String nom, final int duree, final int taille, final int idCat) throws DBException
 	{
 		if(connexion == null)
 		{
@@ -367,7 +363,7 @@ public class BaseDeDonnees
 	 * @param nom le nouveau nom
 	 * @throws DBException
 	 */
-	public void modifierEnregistrementNom(int id, String nom) throws DBException
+	public void modifierEnregistrementNom(final int id, final String nom) throws DBException
 	{
 		if(connexion == null)
 		{
@@ -397,7 +393,7 @@ public class BaseDeDonnees
 	 * @param duree la nouvelle duree a ajouter dans la base
 	 * @throws DBException
 	 */
-	public void modifierEnregistrementDuree(int id, int duree) throws DBException
+	public void modifierEnregistrementDuree(final int id, final int duree) throws DBException
 	{
 		if(connexion == null)
 		{
@@ -427,7 +423,7 @@ public class BaseDeDonnees
 	 * @param taille la nouvelle taille a ajouter dans la base
 	 * @throws DBException
 	 */
-	public void modifierEnregistrementTaille(int id, int taille) throws DBException
+	public void modifierEnregistrementTaille(final int id, final int taille) throws DBException
 	{
 		if(connexion == null)
 		{
@@ -457,7 +453,7 @@ public class BaseDeDonnees
 	 * @param idCat nouvelle id de la categorie correspondant a la nouvelle categorie
 	 * @throws DBException
 	 */
-	public void modifierEnregistrementCategorie(int id, int idCat) throws DBException
+	public void modifierEnregistrementCategorie(final int id, final int idCat) throws DBException
 	{
 		if(connexion == null)
 		{
@@ -491,7 +487,7 @@ public class BaseDeDonnees
 	 * @param nomCat le nom de la categorie
 	 * @throws DBException
 	 */
-	public void modifierEnregistrementCategorie(int id, String nomCat) throws DBException
+	public void modifierEnregistrementCategorie(final int id, final String nomCat) throws DBException
 	{
 		if(connexion == null)
 		{
@@ -525,7 +521,7 @@ public class BaseDeDonnees
 	 * @return retourne l'enregistrement sous forme de tableau de byte
 	 * @throws DBException
 	 */
-	public byte[] recupererEnregistrement(int id) throws DBException
+	public byte[] recupererEnregistrement(final int id) throws DBException
 	{
 		if(connexion == null)
 		{
@@ -552,7 +548,7 @@ public class BaseDeDonnees
 	 * @param nom le nom de la nouvelle categorie
 	 * @throws DBException
 	 */
-	public void ajouterCategorie(String nom) throws DBException
+	public void ajouterCategorie(final String nom) throws DBException
 	{
 		if(connexion == null)
 		{
@@ -601,7 +597,7 @@ public class BaseDeDonnees
 	 * @param id l'id de la categorie a supprimer
 	 * @throws DBException
 	 */
-	public void supprimerCategorie(int id) throws DBException//comment on fait pour les enregistrements de cette caté ?
+	public void supprimerCategorie(final int id) throws DBException//comment on fait pour les enregistrements de cette caté ?
 	{
 		if(connexion == null)
 		{
@@ -629,7 +625,7 @@ public class BaseDeDonnees
 	 * @param nom le nouveau nom
 	 * @throws DBException
 	 */
-	public void modifierCategorie(int id, String nom) throws DBException
+	public void modifierCategorie(final int id, final String nom) throws DBException
 	{
 		if(connexion == null)
 		{
@@ -657,7 +653,7 @@ public class BaseDeDonnees
 	 * @return le nom de la categorie
 	 * @throws DBException
 	 */
-	public String getCategorie(int idCat) throws DBException
+	public String getCategorie(final int idCat) throws DBException
 	{
 		if(connexion == null)
 		{
@@ -686,7 +682,7 @@ public class BaseDeDonnees
 	 * @return l'id de la categorie
 	 * @throws DBException
 	 */
-	public int getCategorie(String nomCat) throws DBException
+	public int getCategorie(final String nomCat) throws DBException
 	{
 		if(connexion == null)
 		{
@@ -739,7 +735,7 @@ public class BaseDeDonnees
 	 * @return true si la categorie existe et false sinon
 	 * @throws DBException
 	 */
-	private boolean categorieExiste(int idCat) throws DBException
+	private boolean categorieExiste(final int idCat) throws DBException
 	{
 		if(connexion == null)
 		{
@@ -772,7 +768,7 @@ public class BaseDeDonnees
 	 * @return true si la categorie existe et false sinon
 	 * @throws DBException
 	 */
-	private boolean categorieExiste(String nomCat) throws DBException
+	private boolean categorieExiste(final String nomCat) throws DBException
 	{
 		if(connexion == null)
 		{

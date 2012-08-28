@@ -35,3 +35,5 @@ Elles seront je le pense tres pratique pour le rapport.
 
 - Ajout d'une fonction qui creer une base fictive. Base qui servira pour tester l'importation dans la fonction checkRunning()
 		public static boolean createFictiveDataBase()
+		
+- Ajout du mot clee "final" a tous les paramettres. "final" permet de declarer constant un parametre, et il est recommander de declarer constant tout ce qui peut l'etre de facon a optimiser le code et la vitesse d'execution.
