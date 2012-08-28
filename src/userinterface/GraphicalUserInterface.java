@@ -241,8 +241,6 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				}
 			}
 		}
-}
-
 class FermetureOngletListener implements ActionListener
 {
 	private JTabbedPane onglets;
@@ -261,3 +259,5 @@ class FermetureOngletListener implements ActionListener
 
 	}
 }
+}
+

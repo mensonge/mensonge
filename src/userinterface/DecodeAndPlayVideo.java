@@ -13,13 +13,25 @@ import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.IPixelFormat;
 
 
+
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.SourceDataLine;
+
+import com.xuggle.xuggler.IAudioSamples;
+
 import java.awt.image.BufferedImage;
 
 
 public class DecodeAndPlayVideo {
 	private ImageComponent mScreen;
 	private IStreamCoder videoCoder;
+	private IStreamCoder audioCoder;
+	private SourceDataLine mLine;
 	private IContainer container;
+	private IContainer containerAudio;
 
 	@SuppressWarnings("deprecation")
 	public DecodeAndPlayVideo(ImageComponent mScreen) {
@@ -28,6 +40,7 @@ public class DecodeAndPlayVideo {
 
 	@SuppressWarnings("deprecation")
 	public void PlayVideo(String filename) {
+		BufferedImage javaImage ;
 		if (!IVideoResampler.isSupported(
 					IVideoResampler.Feature.FEATURE_COLORSPACECONVERSION)) {
 			throw new RuntimeException("you must install the GPL version"
@@ -43,6 +56,7 @@ public class DecodeAndPlayVideo {
 
 		int numStreams = container.getNumStreams();
 		int videoStreamId = -1;
+		int audioStreamId = -1;
 
 		for (int i = 0; i < numStreams; i++) {
 			IStream stream = container.getStream(i);
@@ -53,10 +67,24 @@ public class DecodeAndPlayVideo {
 				videoCoder = coder;
 				break;
 			}
+
+		}
+		for (int i = 0; i < numStreams; i++) {
+			IStream stream = container.getStream(i);
+			IStreamCoder coder = stream.getStreamCoder();
+			if (coder.getCodecType() == ICodec.Type.CODEC_TYPE_AUDIO) {
+				audioStreamId = i;
+				audioCoder = coder;
+				break;
+			}
 		}
 
 		if (videoStreamId == -1) {
 			throw new RuntimeException("could not find video stream in container: "
+					+ filename);
+		}
+		if (audioStreamId == -1) {
+			throw new RuntimeException("could not find audio stream in container: "
 					+ filename);
 		}
 
@@ -64,6 +92,14 @@ public class DecodeAndPlayVideo {
 			throw new RuntimeException("could not open video decoder for container: "
 					+ filename);
 		}
+
+		if (audioCoder.open() < 0) {
+			throw new RuntimeException("could not open audio decoder for container: "
+					+ filename);
+		}
+		openJavaSound(audioCoder);
+
+
 
 		IVideoResampler resampler = null;
 		if (videoCoder.getPixelType() != IPixelFormat.Type.BGR24) {
@@ -80,6 +116,31 @@ public class DecodeAndPlayVideo {
 		long firstTimestampInStream = Global.NO_PTS;
 		long systemClockStartTime = 0;
 		while (container.readNextPacket(packet) >= 0) {
+		/*******/
+				if (packet.getStreamIndex() == audioStreamId)
+				{
+					IAudioSamples samples = IAudioSamples.make(1024, audioCoder.getChannels());
+
+					int offset2 = 0;
+
+					while(offset2 < packet.getSize())
+					{
+						int bytesDecoded2 = audioCoder.decodeAudio(samples, packet, offset2);
+						if (bytesDecoded2 < 0)
+							throw new RuntimeException("got error decoding audio in: " + filename);
+						offset2 += bytesDecoded2;
+						if (samples.isComplete())
+						{
+							playJavaSound(samples);
+						}
+					}
+				}
+				else
+				{
+					do {} while(false);
+				}
+				/*******/
+
 			if (packet.getStreamIndex() == videoStreamId) {
 				IVideoPicture picture = IVideoPicture.make(videoCoder.getPixelType(),
 						videoCoder.getWidth(), videoCoder.getHeight());
@@ -130,12 +191,12 @@ public class DecodeAndPlayVideo {
 								}
 							}
 						}
-
-						BufferedImage javaImage = Utils.videoPictureToImage(newPic);
+						javaImage = Utils.videoPictureToImage(newPic);
 						updateJavaWindow(javaImage);
 					}
 				}
 			} else {
+
 				do {
 				} while (false);
 			}
@@ -146,6 +207,7 @@ public class DecodeAndPlayVideo {
 
 	private void updateJavaWindow(BufferedImage javaImage) {
 		mScreen.setImage(javaImage);
+		mScreen.repaint();
 	}
 
 	public void close() {
@@ -153,10 +215,51 @@ public class DecodeAndPlayVideo {
 			videoCoder.close();
 			videoCoder = null;
 		}
+		if (audioCoder != null) {
+			audioCoder.close();
+			audioCoder = null;
+		}
 		if (container != null) {
 			container.close();
 			container = null;
 		}
 	}
+	private void openJavaSound(IStreamCoder aAudioCoder)
+	{
+		AudioFormat audioFormat = new AudioFormat(aAudioCoder.getSampleRate(),
+				(int)IAudioSamples.findSampleBitDepth(aAudioCoder.getSampleFormat()),
+				aAudioCoder.getChannels(),
+				true, /* xuggler defaults to signed 16 bit samples */
+				false);
+		DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
+		try
+		{
+			mLine = (SourceDataLine) AudioSystem.getLine(info);
+			/**
+			 *        * if that succeeded, try opening the line.
+			 *               */
+			mLine.open(audioFormat);
+			/**
+			 *        * And if that succeed, start the line.
+			 *               */
+			mLine.start();
+		}
+		catch (LineUnavailableException e)
+		{
+			throw new RuntimeException("could not open audio line");
+		}
+
+
+	}
+
+	private  void playJavaSound(IAudioSamples aSamples)
+	{
+		/**
+		 *      * We're just going to dump all the samples into the line.
+		 *           */
+		byte[] rawBytes = aSamples.getData().getByteArray(0, aSamples.getSize());
+		mLine.write(rawBytes, 0, aSamples.getSize());
+	}
+
 }
 

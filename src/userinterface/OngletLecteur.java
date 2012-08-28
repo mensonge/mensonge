@@ -55,7 +55,7 @@ public class OngletLecteur extends JPanel implements ActionListener
 		leLecteur=new LecteurVideo(this.fichierVideo);
 
 		this.setLayout(new BorderLayout());
-		this.add(leLecteur,BorderLayout.CENTER);
+		this.add(leLecteur);
 		this.add(toolBar, BorderLayout.SOUTH);
 	}
 
@@ -69,7 +69,14 @@ public class OngletLecteur extends JPanel implements ActionListener
 	{
 		if(event.getSource() == boutonLecture)
 		{
-			leLecteur.play();
+			Thread t2 = new Thread(new Runnable(){
+				@SuppressWarnings( "static-addccess" )
+				public void run(){
+	           		leLecteur.play();
+				}
+			});
+			t2.run();
+
 
 		}
 	}

@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 
 import java.awt.Dimension;
+import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
 
@@ -35,26 +36,22 @@ public class LecteurVideo extends JPanel
 		}
 
 
+		this.setLayout(new BorderLayout());
 		this.initialiserComposant();
 
-		this.add(mediaPlayerComponent);
+		this.add(mediaPlayerComponent ,BorderLayout.CENTER);
 
 	}
 
 	public void initialiserComposant()
 	{
+
     	 this.decodeAndPlayVideo =new DecodeAndPlayVideo(mediaPlayerComponent);
 	}
 
 	public void play()
 	{
-		Thread t2 = new Thread(new Runnable(){
-			@SuppressWarnings( "static-access" )
-			public void run(){
 				getDecodeAndPlayVideo().PlayVideo(nom);
-			}
-		});
-		t2.run();
 	}
 
 	public void pause()
