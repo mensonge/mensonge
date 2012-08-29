@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+
 /**
  * Classe permettant les interraction avec la base de donnees
  * @author Azazel
@@ -26,7 +27,7 @@ public class BaseDeDonnees
 	
 	/**
 	 * Constructeur de base.
-	 * @param baseDeDonnees Chaine de caractére indiquant le nom du fichier de la base de donnee.
+	 * @param baseDeDonnees Chaine de caractï¿½re indiquant le nom du fichier de la base de donnee.
 	 * @throws DBException 
 	 */
 	public BaseDeDonnees(final String baseDeDonnees) throws DBException
@@ -82,7 +83,7 @@ public class BaseDeDonnees
 		{
 			connexion.commit();//On commit les dernier changement au cas ou ... (Ce n'est  pas une action repettitive donc on peut commiter en plus)
 			connexion.close();//On close la connexion
-			connexion = null;//On remet à null pour des test future
+			connexion = null;//On remet ï¿½ null pour des test future
 		}
 		catch(Exception e)
 		{
@@ -105,7 +106,7 @@ public class BaseDeDonnees
 		BaseDeDonnees in = new BaseDeDonnees(cheminFichier);
 		in.connexion();
 		
-		//regarder les catégories qui change et ajouter d'eventuelle nouvelle
+		//regarder les catï¿½gories qui change et ajouter d'eventuelle nouvelle
 		ResultSet rsCat = in.getListeCategorie(), rsEnr;
 		try
 		{
@@ -131,7 +132,7 @@ public class BaseDeDonnees
 		{
 			throw new DBException("Erreur lors du parcour des categories en important un fichier: " + e.getMessage(), 3);
 		}
-		//ajouter les enregistrement avec leurs catégorie (modifiée) (ceux qu'il n'existe pas)
+		//ajouter les enregistrement avec leurs catï¿½gorie (modifiï¿½e) (ceux qu'il n'existe pas)
 	}
 	/**
 	 * 
@@ -215,7 +216,7 @@ public class BaseDeDonnees
 		}
 	}
 	/**
-	 * Permet d'ajouter un enregistrement à la base
+	 * Permet d'ajouter un enregistrement ï¿½ la base
 	 * @param nom le nom sous lequel il apparaitra
 	 * @param duree la duree de cette enregistrement
 	 * @param idCat la categorie a laquelle il appartient
@@ -597,7 +598,7 @@ public class BaseDeDonnees
 	 * @param id l'id de la categorie a supprimer
 	 * @throws DBException
 	 */
-	public void supprimerCategorie(final int id) throws DBException//comment on fait pour les enregistrements de cette caté ?
+	public void supprimerCategorie(final int id) throws DBException//comment on fait pour les enregistrements de cette catï¿½ ?
 	{
 		if(connexion == null)
 		{
@@ -717,7 +718,7 @@ public class BaseDeDonnees
 			{
 				throw new Exception("Erreur de creation de la table categorie.");
 			}
-			if(stat.executeUpdate("CREATE TABLE enregistrements (id  INTEGER PRIMARY KEY AUTOINCREMENT, enregistrement BLOB, duree INTEGER, taille INTEGER, nom VARCHAR2(128), idcat INTEGER);") != 0)//FIXME ajouter la référence pour le champ idcat
+			if(stat.executeUpdate("CREATE TABLE enregistrements (id  INTEGER PRIMARY KEY AUTOINCREMENT, enregistrement BLOB, duree INTEGER, taille INTEGER, nom VARCHAR2(128), idcat INTEGER);") != 0)//FIXME ajouter la rï¿½fï¿½rence pour le champ idcat
 			{
 				throw new Exception("Erreur de creation de la table enregistrement.");
 			}
@@ -970,8 +971,8 @@ public class BaseDeDonnees
 			*afficher les enregistrements la categorie 1 et 2
 			*supprimer l'enregistrement 5
 			*afficher le nombre d'enregistrement
-			*recupérer l'enregistrement 2
-			*recupérer l'enregistrement 4
+			*recupï¿½rer l'enregistrement 2
+			*recupï¿½rer l'enregistrement 4
 			
 			
 			****Manipuler import/export****

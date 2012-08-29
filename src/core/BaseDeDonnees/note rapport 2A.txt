@@ -1,9 +1,9 @@
-Note des divers ajout et creation de mon propre chef ainsi que des discussions que j'ai put avoir avec le groupe.
+ï»¿Note des divers ajout et creation de mon propre chef ainsi que des discussions que j'ai put avoir avec le groupe.
 Elles seront je le pense tres pratique pour le rapport.
 
-- Choix de la gestion des erreurs. Choix d'envoie d'exception plutôt que de modifier les attributs existants
+- Choix de la gestion des erreurs. Choix d'envoie d'exception plutÃ´t que de modifier les attributs existants
 
-- Création de la classe DBException
+- CrÃ©ation de la classe DBException
 
 - Choix des niveau de verification (au niveau de la base ou avant)
 
@@ -15,7 +15,7 @@ Elles seront je le pense tres pratique pour le rapport.
 	public void modifierEnregistrement(int id, String nom, int duree, byte[] enregistrement, int idCat) throws DBException
 	et la nouvelle -> public void modifierEnregistrement(int id, String nom, int duree, int taille, int idCat) throws DBException
 	
-- Ajout de méthodes pour modifier les attribue independament des autres
+- Ajout de mÃ©thodes pour modifier les attribue independament des autres
 	public void modifierEnregistrementNom(int id, String nom) throws DBException
 	public void modifierEnregistrementDuree(int id, int duree) throws DBException
 	public void modifierEnregistrementTaille(int id, int taille) throws DBException
@@ -29,7 +29,7 @@ Elles seront je le pense tres pratique pour le rapport.
 	public static void checkOptiWrite()
 	public static void checkOptiRead()
 	
-- Ajout de 2 fonction permettant de recupérer des information sur les categories
+- Ajout de 2 fonction permettant de recupÃ©rer des information sur les categories
 	public String getCategorie(int idCat) throws DBException
 	public int getCategorie(String nomCat) throws DBException
 

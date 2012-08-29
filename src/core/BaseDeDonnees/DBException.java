@@ -1,4 +1,4 @@
-package BaseDeDonnee;
+﻿package BaseDeDonnee;
 
 public class DBException extends Exception
 {
@@ -7,7 +7,7 @@ public class DBException extends Exception
 	 * Code designant le type d'erreur
 	 * 0 = Aucune erreur
 	 * 1 = Erreur lors de la connexion
-	 * 2 = Probl�me de structure de la base
+	 * 2 = Probléme de structure de la base
 	 * 3 = Erreur lors de la verification de la structure de la base
 	 * 4 = Probleme de deconnexion
 	 */
