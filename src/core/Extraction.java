@@ -18,9 +18,11 @@ import com.xuggle.xuggler.IPacket;
 import com.xuggle.xuggler.IStream;
 import com.xuggle.xuggler.IStreamCoder;
 
-public class Extraction
+import core.IExtraction;
+
+public class Extraction implements IExtraction
 {
-	static public double[][] extraireEchantillons(File fichier)
+	public double[][] extraireEchantillons(File fichier)
 	{
 		IContainer containerInput = IContainer.make();
 
@@ -60,9 +62,21 @@ public class Extraction
 		IPacket packetInput = IPacket.make();
 		while (containerInput.readNextPacket(packetInput) >= 0)
 		{
-			if (packetInput.getStreamIndex() == audioStreamId)
+			if(packetInput.getStreamIndex() == audioStreamId)
 			{
-					byte_out.write(packetInput.getData().getByteArray(0,packetInput.getSize()),0,packetInput.getSize());
+				IAudioSamples samples = IAudioSamples.make(1024, nbChannels);
+				int offset = 0;
+				while(offset < packetInput.getSize())
+				{
+					int bytesDecoded = audioCoderInput.decodeAudio(samples, packetInput, offset);
+					if(bytesDecoded < 0)
+						throw new RuntimeException("Erreur de décodage du fichier");
+					offset += bytesDecoded;
+					if(samples.isComplete())
+					{
+						byte_out.write(samples.getData().getByteArray(0, samples.getSize()),0,samples.getSize());
+					}
+				}
 			}
 		}
 		audioCoderInput.close();
@@ -99,9 +113,9 @@ public class Extraction
 			return null;
 		}
 		int nbSamplesChannel = nbSamples/nbChannels;
-		return Extraction.reshape(doubleArray,nbChannels,nbSamplesChannel);
+		return reshape(doubleArray,nbChannels,nbSamplesChannel);
 	}
-	static private double [][] reshape(double doubleArray[], int m, int n)
+	private double [][] reshape(double doubleArray[], int m, int n)
 	{
 		double reshapeArray[][] = new double[n][m];
 		int k = 0;
@@ -114,7 +128,7 @@ public class Extraction
 		}
 		return reshapeArray;
 	}
-	static private int [][] reshape(int intArray[], int m, int n)
+	private int [][] reshape(int intArray[], int m, int n)
 	{
 		int reshapeArray[][] = new int[n][m];
 		int k = 0;
@@ -128,7 +142,7 @@ public class Extraction
 		return reshapeArray;
 	}
 
-	static public byte[] extraireIntervalle(File fichier, long debut, long fin)
+	public byte[] extraireIntervalle(File fichier, long debut, long fin)
 	{
 		IContainer containerInput = IContainer.make();
 

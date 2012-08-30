@@ -1,13 +1,10 @@
 package core.plugins;
 
-import core.Extraction;
-
 import java.io.File;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.jar.JarEntry;
@@ -107,19 +104,8 @@ public class PluginManager
 
 	public static void main(String args[])
 	{
-		ArrayList<File> fichiers = new ArrayList<File>();
-		fichiers.add(new File("sons/test.wav"));
 		PluginManager p = new PluginManager();
 		p.chargerPlugins();
-		HashMap<String, Plugin> h = p.getListePlugins();
-		if(h.containsKey("core.CoefficientsCepstraux"))
-		{
-			System.out.println("[i] Lançement du plugin CoefficientsCepstraux");
-			h.get("core.CoefficientsCepstraux").lancer(new Extraction(), fichiers);
-			System.out.println("[i] Fin du plugin CoefficientsCepstraux");
-		}
-		else
-			System.out.println("[E] Pas de plugin CoefficientsCepstraux");
 	}
 }
 
