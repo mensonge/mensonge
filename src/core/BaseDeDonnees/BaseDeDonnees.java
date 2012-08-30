@@ -8,9 +8,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-
 /**
- * Classe permettant les interractions avec la base de donnees
+ * Classe permettant les interraction avec la base de donnees
  * @author Azazel
  *
  */
@@ -24,10 +23,10 @@ public class BaseDeDonnees
 	 * Nom du fichier fourni pour la base.
 	 */
 	String fileName = null;
-	
+
 	/**
 	 * Constructeur de base.
-	 * @param baseDeDonnees Chaine de caract�re indiquant le nom du fichier de la base de donnee.
+	 * @param baseDeDonnees Chaine de caractére indiquant le nom du fichier de la base de donnee.
 	 * @throws DBException 
 	 */
 	public BaseDeDonnees(final String baseDeDonnees) throws DBException
@@ -83,7 +82,7 @@ public class BaseDeDonnees
 		{
 			connexion.commit();//On commit les dernier changement au cas ou ... (Ce n'est  pas une action repettitive donc on peut commiter en plus)
 			connexion.close();//On close la connexion
-			connexion = null;//On remet � null pour des test future
+			connexion = null;//On remet à null pour des test future
 		}
 		catch(Exception e)
 		{
@@ -105,8 +104,8 @@ public class BaseDeDonnees
 		//etablir une connexion
 		BaseDeDonnees in = new BaseDeDonnees(cheminFichier);
 		in.connexion();
-		
-		//regarder les categories qui change et ajouter d'eventuelle nouvelle
+
+		//regarder les catégories qui change et ajouter d'eventuelle nouvelle
 		ResultSet rsCat = in.getListeCategorie(), rsEnr;
 		try
 		{
@@ -132,7 +131,7 @@ public class BaseDeDonnees
 		{
 			throw new DBException("Erreur lors du parcour des categories en important un fichier: " + e.getMessage(), 3);
 		}
-		//ajouter les enregistrement avec leurs categorie (modifiee) (ceux qu'il n'existe pas)
+		//ajouter les enregistrement avec leurs catégorie (modifiée) (ceux qu'il n'existe pas)
 	}
 	/**
 	 * 
@@ -216,7 +215,7 @@ public class BaseDeDonnees
 		}
 	}
 	/**
-	 * Permet d'ajouter un enregistrement a la base
+	 * Permet d'ajouter un enregistrement à la base
 	 * @param nom le nom sous lequel il apparaitra
 	 * @param duree la duree de cette enregistrement
 	 * @param idCat la categorie a laquelle il appartient
@@ -242,7 +241,7 @@ public class BaseDeDonnees
 			ps.setInt(3, enregistrement.length);
 			ps.setString(4, nom);
 			ps.setInt(5, idCat);
-		
+
 			if(ps.executeUpdate() > 0)
 			{
 				connexion.commit();
@@ -569,7 +568,7 @@ public class BaseDeDonnees
 		{
 			throw new DBException("Erreur lors de l'ajout de la categorie : " + e.getMessage(), 3);
 		}
-		
+
 	}
 	/**
 	 * Permet de recuperer la liste des categories avec les colonnes dans cette ordre: nomCat, idCat
@@ -598,7 +597,7 @@ public class BaseDeDonnees
 	 * @param id l'id de la categorie a supprimer
 	 * @throws DBException
 	 */
-	public void supprimerCategorie(final int id) throws DBException//comment on fait pour les enregistrements de cette cat� ?
+	public void supprimerCategorie(final int id) throws DBException//comment on fait pour les enregistrements de cette caté ?
 	{
 		if(connexion == null)
 		{
@@ -618,7 +617,7 @@ public class BaseDeDonnees
 		{
 			throw new DBException("Erreur lors de la suppression de la categorie: " + e.getMessage(), 3);
 		}
-		
+
 	}
 	/**
 	 * Permet de changer le nom d'une categorie
@@ -718,7 +717,7 @@ public class BaseDeDonnees
 			{
 				throw new Exception("Erreur de creation de la table categorie.");
 			}
-			if(stat.executeUpdate("CREATE TABLE enregistrements (id  INTEGER PRIMARY KEY AUTOINCREMENT, enregistrement BLOB, duree INTEGER, taille INTEGER, nom VARCHAR2(128), idcat INTEGER);") != 0)//FIXME ajouter la r�f�rence pour le champ idcat
+			if(stat.executeUpdate("CREATE TABLE enregistrements (id  INTEGER PRIMARY KEY AUTOINCREMENT, enregistrement BLOB, duree INTEGER, taille INTEGER, nom VARCHAR2(128), idcat INTEGER);") != 0)//FIXME ajouter la référence pour le champ idcat
 			{
 				throw new Exception("Erreur de creation de la table enregistrement.");
 			}
@@ -747,7 +746,7 @@ public class BaseDeDonnees
 			PreparedStatement ps = connexion.prepareStatement("SELECT 1 FROM categorie WHERE idcat=?");
 			ps.setInt(1, idCat);
 			ResultSet rs = ps.executeQuery();
-			
+
 			if(rs.next())
 			{
 				rs.close();//Fermeture des ressources
@@ -780,7 +779,7 @@ public class BaseDeDonnees
 			PreparedStatement ps = connexion.prepareStatement("SELECT 1 FROM categorie WHERE nomcat=?");
 			ps.setString(1, nomCat);
 			ResultSet rs = ps.executeQuery();
-			
+
 			if(rs.next())
 			{
 				rs.close();//Fermeture des ressources
@@ -835,7 +834,7 @@ public class BaseDeDonnees
 				return;
 			}
 		}
-		
+
 		for(long i = 0; i < max; i++)//boucle sur l'ajout d'un enregistrement
 		{
 			try
@@ -847,7 +846,7 @@ public class BaseDeDonnees
 				System.out.println("[-] Erreur lors de l'ajout " + i + ": " + e.getMessage() );
 			}
 		}
-		
+
 		try
 		{
 			db.deconnexion();//deconnexion a la base
@@ -910,7 +909,7 @@ public class BaseDeDonnees
 			System.out.println("[-] Erreur lors de l'ajout : " + e.getMessage() );
 			return;
 		}
-		
+
 		for(long i = 0; i < max; i++)//boucle en lecture
 		{
 			try
@@ -919,7 +918,7 @@ public class BaseDeDonnees
 				byte[] tab = db.recupererEnregistrement(rs.getInt(5));
 				if(tab != null)
 				{
-					
+
 				}
 			}
 			catch (DBException e)
@@ -931,7 +930,7 @@ public class BaseDeDonnees
 				System.out.println("[-] Erreur lors de la lecture numero " + i + ": " + e.getMessage() );
 			}
 		}
-		
+
 		try
 		{
 			db.deconnexion();//deconexion
@@ -951,7 +950,7 @@ public class BaseDeDonnees
 	public static void checkRunning()
 	{
 		//BaseDeDonnees db;
-		
+
 				/*
 			Creer l'objet avec le nom
 			On tente une connexion
@@ -971,8 +970,8 @@ public class BaseDeDonnees
 			*afficher les enregistrements la categorie 1 et 2
 			*supprimer l'enregistrement 5
 			*afficher le nombre d'enregistrement
-			*recup�rer l'enregistrement 2
-			*recup�rer l'enregistrement 4
+			*recupérer l'enregistrement 2
+			*recupérer l'enregistrement 4
 			
 			
 			****Manipuler import/export****
@@ -1012,10 +1011,10 @@ public class BaseDeDonnees
 					return;
 				}
 			}
-			
-			
-			
-			
+
+
+
+
 			//****CATEGORIE****
 			//AJOUT
 			System.out.println("[i] ajout des categorie Poney/Flamment/Pegase");
@@ -1026,10 +1025,10 @@ public class BaseDeDonnees
 				db.ajouterCategorie("Pegase");
 			} catch (DBException e1)
 			{
-				
+
 				System.out.println(e1.getMessage());
 			}
-			
+
 			//MODIFICATION
 			System.out.println("[i] modification de Flamment en Licorne");
 			try
@@ -1039,7 +1038,7 @@ public class BaseDeDonnees
 			{
 				System.out.println(e1.getMessage());
 			}
-			
+
 			//AFFICHAGE
 			ResultSet l = null;
 			try
@@ -1059,7 +1058,7 @@ public class BaseDeDonnees
 			{
 				System.out.println("[-] " + e.getMessage());
 			}
-			
+
 			//SUPRESSION
 			System.out.println("[i] Suppression de l'enregistrement 1.");
 			try
@@ -1070,7 +1069,7 @@ public class BaseDeDonnees
 			{
 				System.out.println("[-] " + e.getMessage());
 			}
-			
+
 			//AFFICHAGE
 			try
 			{
@@ -1089,7 +1088,7 @@ public class BaseDeDonnees
 			{
 				System.out.println("[-] " + e.getMessage());
 			}
-			
+
 			try
 			{
 				System.out.println("[i] Le nom de la categorie 2 est " + db.getCategorie(2));
@@ -1099,13 +1098,13 @@ public class BaseDeDonnees
 			{
 				System.out.println("[-] " + e.getMessage());
 			}
-			
+
 			//****ENREGISTREMENT****
 			//AJOUT
 			System.out.println("[i] ajout de 7 enregistrements.");
 			try
 			{
-				
+
 				db.ajouterEnregistrement("Tornado", 24, 2, "abcdefg".getBytes());
 				db.ajouterEnregistrement("Esperan", 23, 2, "love".getBytes());
 				db.ajouterEnregistrement("Gracia", 22, 3, "mort".getBytes());
@@ -1118,7 +1117,7 @@ public class BaseDeDonnees
 			{
 				System.out.println("[-] " + e.getMessage());
 			}
-			
+
 			//AFFICHAGE
 			ResultSet rs = null;
 			try
@@ -1129,8 +1128,8 @@ public class BaseDeDonnees
 			{
 				System.out.println("[-] " + e.getMessage());
 			}
-			
-			
+
+
 			System.out.println("[i] Affichage.");
 			try
 			{
@@ -1144,7 +1143,7 @@ public class BaseDeDonnees
 			{
 				System.out.println("[-] " + e.getMessage());
 			}
-			
+
 			//MODIFICATION
 			System.out.println("[i] Modification des 5 premiers enregistrements. (tout/tous/Categorie/Nom/Taille)");
 			try
@@ -1159,7 +1158,7 @@ public class BaseDeDonnees
 			{
 				System.out.println("[-] " + e.getMessage());
 			}
-			
+
 			//AFFICHAGE
 			rs = null;
 			try
@@ -1170,8 +1169,8 @@ public class BaseDeDonnees
 			{
 				System.out.println("[-] " + e.getMessage());
 			}
-					
-					
+
+
 			System.out.println("[i] Affichage categorie 2.");
 			try
 			{
@@ -1185,7 +1184,7 @@ public class BaseDeDonnees
 			{
 				System.out.println("[-] " + e.getMessage());
 			}
-			
+
 			//AFFICHAGE
 			rs = null;
 			try
@@ -1196,8 +1195,8 @@ public class BaseDeDonnees
 			{
 				System.out.println("[-] " + e.getMessage());
 			}
-					
-					
+
+
 			System.out.println("[i] Affichage categorie 3.");
 			try
 			{
@@ -1211,11 +1210,11 @@ public class BaseDeDonnees
 			{
 				System.out.println("[-] " + e.getMessage());
 			}
-			
+
 			//SUPPRESSION
 			System.out.println("[i] Suppression de l'enregistrement 5.");
 			db.supprimerEnregistrement(5);
-			
+
 			try
 			{
 				System.out.println("[i] Il y a " + db.getNombreEnregistrement() + " d'enregistrement.");
@@ -1224,7 +1223,7 @@ public class BaseDeDonnees
 			{
 				System.out.println("[-] " + e.getMessage());
 			}
-			
+
 			//RECUPERATION
 			byte[] tab = null;
 			try
@@ -1262,7 +1261,7 @@ public class BaseDeDonnees
 				System.out.print((char)tab[i]);
 			}
 			//****IMPORTE****
-			
+
 			if (BaseDeDonnees.createFictiveDataBase())//On creer une seconde base de donnees fictive, si on reussi a la creer, on l'importe
 			{
 				//Importation
