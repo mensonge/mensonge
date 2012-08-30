@@ -1,4 +1,4 @@
-package BaseDeDonnee;
+﻿package BaseDeDonnee;
 
 import java.io.File;
 import java.sql.Connection;
@@ -10,7 +10,7 @@ import java.sql.Statement;
 
 
 /**
- * Classe permettant les interraction avec la base de donnees
+ * Classe permettant les interractions avec la base de donnees
  * @author Azazel
  *
  */
@@ -106,7 +106,7 @@ public class BaseDeDonnees
 		BaseDeDonnees in = new BaseDeDonnees(cheminFichier);
 		in.connexion();
 		
-		//regarder les cat�gories qui change et ajouter d'eventuelle nouvelle
+		//regarder les categories qui change et ajouter d'eventuelle nouvelle
 		ResultSet rsCat = in.getListeCategorie(), rsEnr;
 		try
 		{
@@ -132,7 +132,7 @@ public class BaseDeDonnees
 		{
 			throw new DBException("Erreur lors du parcour des categories en important un fichier: " + e.getMessage(), 3);
 		}
-		//ajouter les enregistrement avec leurs cat�gorie (modifi�e) (ceux qu'il n'existe pas)
+		//ajouter les enregistrement avec leurs categorie (modifiee) (ceux qu'il n'existe pas)
 	}
 	/**
 	 * 
@@ -216,7 +216,7 @@ public class BaseDeDonnees
 		}
 	}
 	/**
-	 * Permet d'ajouter un enregistrement � la base
+	 * Permet d'ajouter un enregistrement a la base
 	 * @param nom le nom sous lequel il apparaitra
 	 * @param duree la duree de cette enregistrement
 	 * @param idCat la categorie a laquelle il appartient
