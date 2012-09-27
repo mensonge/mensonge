@@ -3,6 +3,7 @@ TARGETDIR=.
 TARGET=userinterface.GraphicalUserInterface
 TARGET_EXTRACTION=core.Extraction
 TARGET_PLUGINS=core.plugins.PluginManager
+TARGET_BDD=core.BaseDeDonnees.TestBase
 ARGS=
 
 SRCDIR=src
@@ -16,6 +17,7 @@ CLASSPATH=$(shell find $(LIBDIR) -name "*.jar" -printf "%p:")$(OBJDIR)
 RUN_OPTIONS=-classpath $(CLASSPATH) $(TARGET) $(ARGS)
 RUN_EXTRACTION=-classpath $(CLASSPATH) $(TARGET_EXTRACTION) $(ARGS)
 RUN_PLUGINS=-classpath $(CLASSPATH) $(TARGET_PLUGINS) $(ARGS)
+RUN_BDD=-classpath $(CLASSPATH) $(TARGET_BDD) $(ARGS)
 
 WARN=-Xlint:all
 COMPILE_OPTIONS=$(WARN) -d $(OBJDIR) -sourcepath $(SRCDIR) -classpath $(CLASSPATH)
@@ -30,6 +32,8 @@ run_extraction: compile
 
 run_plugins: compile
 	java $(RUN_PLUGINS)
+run_bdd: compile
+	java $(RUN_BDD)
 
 compile: $(OBJDIR) $(OBJ)
 
