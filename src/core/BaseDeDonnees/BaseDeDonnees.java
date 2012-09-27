@@ -1422,22 +1422,6 @@ public class BaseDeDonnees
  		}
  		return true;
 	}
-
-	//GETTER et SETTER
-	public Connection getConnexion() {
-		return connexion;
-	}
-	public void setConnexion(Connection connexion) {
-		this.connexion = connexion;
-	}
-	public String getFileName() {
-		return fileName;
-	}
-	public void setFileName(String fileName) {
-		this.fileName = fileName;
-	}
-	
-	
 	/** copie le fichier source dans le fichier resultat
 	 * retourne vrai si cela réussit
 	 */
@@ -1482,4 +1466,21 @@ public class BaseDeDonnees
 
 		return true; // Résultat OK  
 	}	
+
+	//GETTER et SETTER
+	public Connection getConnexion() {
+		return connexion;
+	}
+	public void setConnexion(Connection connexion) {
+		this.connexion = connexion;
+	}
+	public String getFileName() {
+		return fileName;
+	}
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
+	}
+	
+	
+
 }
