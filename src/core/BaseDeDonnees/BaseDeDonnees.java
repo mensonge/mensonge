@@ -1,6 +1,7 @@
 package BaseDeDonnees;
 
 import BaseDeDonnees.DBException;
+import java.io.FileOutputStream;
 import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -27,6 +28,8 @@ public class BaseDeDonnees
 	 */
 	String fileName = null;
 	
+	 
+
 	/**
 	 * Constructeur de base.
 	 * @param baseDeDonnees Chaine de caract�re indiquant le nom du fichier de la base de donnee.
@@ -148,11 +151,19 @@ public class BaseDeDonnees
 	 * 
 	 * @param cheminFichier fichier dans lequel sera exporte la base.
 	 */
-	public void exporter(final String cheminFichier) //TODO
+	public void exporter(final String cheminFichier, final int id, final int type ) throws DBException//TODO
 	{
 		if(connexion == null)
 		{
 			return;
+		}
+		if(type == 1)//Exporter la base vers un nouveau fichier
+		{
+			//copyFile(File source, File dest);
+		}
+		else if(type == 2)//exporter un echantillon
+		{
+
 		}
 	}
 	/**
@@ -1425,4 +1436,50 @@ public class BaseDeDonnees
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
 	}
+	
+	
+	/** copie le fichier source dans le fichier resultat
+	 * retourne vrai si cela réussit
+	 */
+	private static boolean copyFile(File source, File dest)
+	{
+		try
+		{
+			// Declaration et ouverture des flux
+			java.io.FileInputStream sourceFile = new java.io.FileInputStream(source);
+
+			try
+			{
+				java.io.FileOutputStream destinationFile = null;
+
+				try{
+					destinationFile = new FileOutputStream(dest);
+
+					// Lecture par segment de 0.5Mo 
+					byte buffer[] = new byte[512 * 1024];
+					int nbLecture;
+
+					while ((nbLecture = sourceFile.read(buffer)) != -1)
+					{
+						destinationFile.write(buffer, 0, nbLecture);
+					}
+				}
+				finally
+				{
+					destinationFile.close();
+				}
+			}
+			finally
+			{
+				sourceFile.close();
+			}
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+			return false; // Erreur
+		}
+
+		return true; // Résultat OK  
+	}	
 }
