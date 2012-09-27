@@ -37,10 +37,10 @@ public class BaseDeDonnees
 	 */
 	public BaseDeDonnees(final String baseDeDonnees) throws DBException
 	{
-		if( ! (new File(baseDeDonnees)).exists())//on creer un nouvelle objet File avec lequel on appel la methode exist pour verifier l'existance du fichier. Ensuite le ramasse miette fait le reste.
-		{
-			throw new DBException("Le fichier \"" + baseDeDonnees + "\" n'existe pas.", 4);//le fichier n'existe pas, on lance une exception
-		}
+	//	if( ! (new File(baseDeDonnees)).exists())//on creer un nouvelle objet File avec lequel on appel la methode exist pour verifier l'existance du fichier. Ensuite le ramasse miette fait le reste.
+	//	{
+	//		throw new DBException("Le fichier \"" + baseDeDonnees + "\" n'existe pas.", 4);//le fichier n'existe pas, on lance une exception
+	//	}
 		fileName = baseDeDonnees;
 	}
 	/**
