@@ -9,6 +9,8 @@ import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
@@ -47,6 +49,8 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	private JMenuItem aideAPropos;
 	private JMenuItem fichierFermer;
 	private JMenuItem fichierOuvrir;
+	private JMenuItem baseExporter;
+	private JMenuItem baseImporter;
 
 	private ModeleTableau modeleTableau;
 
@@ -74,9 +78,17 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 		fichierOuvrir = new JMenuItem("Ouvrir");
 		fichierOuvrir.addActionListener(this);
-
+		
+		baseExporter = new JMenuItem("Exporter");
+		baseExporter.addMouseListener(new ExporterBaseListner(this));
+		
+		baseImporter = new JMenuItem("Importer");
+		baseImporter.addMouseListener(new ImporterBaseListner(this));
+		
 		JMenu menuFichier = new JMenu("Fichier");
 		menuFichier.add(fichierOuvrir);
+		menuFichier.add(baseExporter);
+		menuFichier.add(baseImporter);
 		menuFichier.addSeparator();
 		menuFichier.add(fichierFermer);
 
@@ -87,7 +99,8 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 		JMenu menuAide = new JMenu("Aide");
 		menuAide.add(aideAPropos);
-
+		
+		
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.add(menuFichier);
 		menuBar.add(menuOutils);
@@ -101,12 +114,12 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		modeleTableau.addColumn("Nom");
 		modeleTableau.addColumn("Categorie");
 		modeleTableau.addColumn("Durée");
-		
+		modeleTableau.addColumn("Taille");
 
 		//ajout des ligne
 		remplirTableauEnregistrement();
 		JTable table = new JTable(modeleTableau);
-		
+
 		//transformation en scrollPane
 		scrollPane = new JScrollPane(table);
 		scrollPane.setPreferredSize(new Dimension(270, 800));
@@ -180,10 +193,14 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			super.processWindowEvent(event);
 	}
 
-	
+	public void createTableauEnregistrement()
+	{
+		
+	}
 	public void remplirTableauEnregistrement()
 	{
-		try {
+		try
+		{
 			Object tab[] = new Object[5];
 			ResultSet rs = bdd.getListeEnregistrement();
 			while(rs.next())
@@ -193,18 +210,13 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				tab[1] = rs.getString("nomcat");
 				tab[2] = rs.getInt("duree");
 				tab[3] = rs.getInt("taille");
+				tab[4] = rs.getInt("id");
 				modeleTableau.addRow(tab);
 			}
-		} catch (DBException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} 
 		catch(Exception e)
 		{
-			
+			popup("Erreur lors du chargement des enregistrement.", "Erreur");
 		}
 	}
 	public void connexionBase(String fichier)
@@ -300,25 +312,78 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	}
 	
 	
-class FermetureOngletListener implements ActionListener
-{
-	private JTabbedPane onglets;
-	private OngletLecteur onglet;
-
-	public FermetureOngletListener(JTabbedPane onglets, OngletLecteur onglet)
+	class FermetureOngletListener implements ActionListener
 	{
-		this.onglet = onglet;
-		this.onglets = onglets;
+		private JTabbedPane onglets;
+		private OngletLecteur onglet;
+		
+		public FermetureOngletListener(JTabbedPane onglets, OngletLecteur onglet)
+		{
+			this.onglet = onglet;
+			this.onglets = onglets;
+		}
+		
+		public void actionPerformed(ActionEvent e)
+		{
+			onglet.fermerOnglet();
+			onglets.remove(onglet);
+			
+		}	
 	}
 
-	public void actionPerformed(ActionEvent e)
+	class ExporterBaseListner extends MouseAdapter
 	{
-		onglet.fermerOnglet();
-		onglets.remove(onglet);
-
+		GraphicalUserInterface fenetre;
+		public ExporterBaseListner(GraphicalUserInterface g)
+		{
+			fenetre = g;
+		}
+		public void mouseReleased(MouseEvent event)
+		{
+			JFileChooser fileChooser = new JFileChooser();
+			fileChooser.showOpenDialog(fenetre);
+			if (fileChooser.getSelectedFile() != null)
+			{
+				try
+				{
+					System.out.println(fileChooser.getSelectedFile().getCanonicalPath());
+				}
+				catch (Exception e1)
+				{
+					popup(e1.getMessage(), "Erreur");
+				}
+			}
+		}
 	}
-}
-
+	class ImporterBaseListner extends MouseAdapter
+	{
+		GraphicalUserInterface fenetre;
+		public ImporterBaseListner(GraphicalUserInterface g)
+		{
+			fenetre = g;
+		}
+		public void mouseReleased(MouseEvent event)
+		{
+			JFileChooser fileChooser = new JFileChooser();
+			fileChooser.showOpenDialog(fenetre);
+			String fichier;
+			if (fileChooser.getSelectedFile() != null)
+			{
+				try
+				{
+					fichier = fileChooser.getSelectedFile().getCanonicalPath();
+					bdd.importer(fichier);
+					modeleTableau.getDataVector().removeAllElements();//Vide le tableau
+					remplirTableauEnregistrement();//On le rerempli
+				}
+				catch (Exception e1)
+				{
+					popup(e1.getMessage(), "Erreur");
+					return;
+				}
+			}
+		}
+	}
 	public static void main(String args[])
 	{
 		System.setProperty("awt.useSystemAAFontSettings", "on");
