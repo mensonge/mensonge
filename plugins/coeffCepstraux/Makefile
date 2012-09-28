@@ -36,5 +36,5 @@ clean:
 manifest:
 	mkdir -p $(OBJDIR)/META-INF && echo "Main-Class: $(TARGET)" > $(OBJDIR)/META-INF/MANIFEST.MF
 
-jar: manifest
+jar: compile manifest
 	(cd $(OBJDIR) && jar cvmf META-INF/MANIFEST.MF ../$(PROJECT).jar $(TARGETDIR)/* )
