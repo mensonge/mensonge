@@ -180,7 +180,7 @@ public class BaseDeDonnees
 		try
 		{
 			Statement stat = connexion.createStatement(); //Creation du Statement
-			ResultSet rs = stat.executeQuery("SELECT duree, taille, nom, nomcat, id FROM enregistrements JOIN categorie USING (idcat);"); //Execution de la requete
+			ResultSet rs = stat.executeQuery("SELECT duree, taille, nom, nomcat, id FROM enregistrements JOIN categorie USING (idcat) ORDER BY nomcat, nom;"); //Execution de la requete
 			return rs;
 		}
 		catch(Exception e)
@@ -201,7 +201,7 @@ public class BaseDeDonnees
 		}
 		try
 		{
-			PreparedStatement ps = connexion.prepareStatement("SELECT duree, taille, nom, nomcat, id FROM enregistrements JOIN categorie USING (idcat) WHERE idcat=?");//Preparation de la requete
+			PreparedStatement ps = connexion.prepareStatement("SELECT duree, taille, nom, nomcat, id FROM enregistrements JOIN categorie USING (idcat) WHERE idcat=? ORDER BY nom");//Preparation de la requete
 			ps.setInt(1, idCat);//on rempli les trous
 			ResultSet rs = ps.executeQuery();//On execute
 			return rs;
