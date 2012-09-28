@@ -68,7 +68,8 @@ public class PluginManager
 								//Si la classe implémente l'interface Plugin on l'instance et on l'ajoute
 								if(inter.getName().toString().equals("core.plugins.Plugin"))
 								{
-									this.listePlugins.put(tmpClass.getName(),(Plugin) tmpClass.newInstance());
+									Plugin plugin = (Plugin) tmpClass.newInstance();
+									this.listePlugins.put(plugin.getNom(),plugin);
 								}
 							}
 
@@ -112,10 +113,10 @@ public class PluginManager
 		PluginManager p = new PluginManager();
 		p.chargerPlugins();
 		HashMap<String, Plugin> h = p.getListePlugins();
-		if(h.containsKey("core.CoefficientsCepstraux"))
+		if(h.containsKey("Coefficients cepstraux"))
 		{
 			System.out.println("[i] Lançement du plugin CoefficientsCepstraux");
-			h.get("core.CoefficientsCepstraux").lancer(new Extraction(), fichiers);
+			h.get("Coefficients cepstraux").lancer(new Extraction(), fichiers);
 			System.out.println("[i] Fin du plugin CoefficientsCepstraux");
 		}
 		else
