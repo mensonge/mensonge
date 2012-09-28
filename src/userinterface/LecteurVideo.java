@@ -1,8 +1,5 @@
 package userinterface;
 
-<<<<<<< HEAD
-import java.io.File;
-=======
 import com.xuggle.mediatool.IMediaReader;
 import com.xuggle.mediatool.MediaListenerAdapter;
 import com.xuggle.mediatool.ToolFactory;
@@ -16,7 +13,6 @@ import java.awt.Dimension;
 import java.awt.BorderLayout;
 
 import javax.swing.JPanel;
->>>>>>> 8fa2e5495b37c91c3e2295d3fe11eb8cf4068ef3
 
 
 public class LecteurVideo extends JPanel
