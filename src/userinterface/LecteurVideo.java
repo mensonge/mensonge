@@ -46,12 +46,12 @@ public class LecteurVideo extends JPanel
 	public void initialiserComposant()
 	{
 
-    	 this.decodeAndPlayVideo =new DecodeAndPlayVideo(mediaPlayerComponent);
+    	 this.decodeAndPlayVideo =new DecodeAndPlayVideo(mediaPlayerComponent,nom);
 	}
 
 	public void play()
 	{
-				getDecodeAndPlayVideo().PlayVideo(nom);
+		this.decodeAndPlayVideo.run();
 	}
 
 	public void pause()
