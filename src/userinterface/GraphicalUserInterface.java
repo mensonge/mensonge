@@ -1,5 +1,8 @@
 package userinterface;
 
+import core.BaseDeDonnees.BaseDeDonnees;
+import core.BaseDeDonnees.DBException;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -9,6 +12,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -47,8 +52,15 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 	private JScrollPane scrollPane;
 
+	private BaseDeDonnees bdd = null;
+
 	public GraphicalUserInterface()
 	{
+		/*
+		 * Connexion à la base
+		 */
+		connexionBase("LieLab.db");
+		
 		/*
 		 * Conteneur
 		 */
@@ -81,19 +93,27 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		menuBar.add(menuOutils);
 		menuBar.add(menuAide);
 
-
+		/*
+		 * Création du tableau des enregistrement
+		 */
+		//Création des colonnes
 		modeleTableau = new ModeleTableau();
-		modeleTableau.addColumn("Nom de l'enregistrement");
+		modeleTableau.addColumn("Nom");
+		modeleTableau.addColumn("Categorie");
 		modeleTableau.addColumn("Durée");
+		
 
+		//ajout des ligne
+		remplirTableauEnregistrement();
 		JTable table = new JTable(modeleTableau);
-
+		
+		//transformation en scrollPane
 		scrollPane = new JScrollPane(table);
 		scrollPane.setPreferredSize(new Dimension(270, 800));
 		scrollPane.setAutoscrolls(true);
-
+		
 		Box boxLabel = Box.createVerticalBox();
-		boxLabel.add(Box.createVerticalStrut(7));
+		boxLabel.add(Box.createVerticalStrut(1));
 		boxLabel.add(new JLabel("Liste des enregistrements"));
 		boxLabel.add(Box.createVerticalStrut(2));
 		boxLabel.add(new JSeparator(SwingConstants.HORIZONTAL));
@@ -123,6 +143,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		this.setVisible(true);
 		this.setEnabled(true);
+		
 	}
 
 	public void ajouterOnglet(OngletLecteur onglet)
@@ -159,28 +180,66 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			super.processWindowEvent(event);
 	}
 
-	public static void main(String args[])
+	
+	public void remplirTableauEnregistrement()
 	{
-		System.setProperty("awt.useSystemAAFontSettings", "on");
-		System.setProperty("swing.aatext", "true");
-		javax.swing.SwingUtilities.invokeLater(new Runnable()
-				{
-					public void run()
-		{
-			new GraphicalUserInterface();
+		try {
+			Object tab[] = new Object[5];
+			ResultSet rs = bdd.getListeEnregistrement();
+			while(rs.next())
+			{
+				
+				tab[0] = rs.getString("nom");
+				tab[1] = rs.getString("nomcat");
+				tab[2] = rs.getInt("duree");
+				tab[3] = rs.getInt("taille");
+				modeleTableau.addRow(tab);
+			}
+		} catch (DBException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		});
+		catch(Exception e)
+		{
+			
+		}
 	}
-	/**
-	 * Affiche une popup qui signale une erreur
-	 *
-	 * @param message
-	 *            Le message d'erreur à afficher
-	 */
-	public static void popupErreur(String message)
+	public void connexionBase(String fichier)
 	{
-		JOptionPane.showMessageDialog(null, message, "Erreur", JOptionPane.ERROR_MESSAGE);
+		try
+		{
+			bdd = new BaseDeDonnees(fichier);
+			bdd.connexion();//connexion et verification de la validite de la table
+		}
+		catch(DBException e)
+		{
+			int a = e.getCode();
+			if(a == 2)
+			{
+				//popupInfo("Base en cour de creation ...");
+				try
+				{
+					bdd.createDatabase();
+				} 
+				catch (DBException e1)
+				{
+					popup("[-] Erreur lors de la creation: " + e1.getMessage(), "Erreur");
+				}
+				//creation de la base
+				//System.out.println("[i]Base cree.");
+			}
+			else
+			{
+				popup("[-]Erreur lors de la connexion. " + e.getMessage(), "Erreur");
+				return;
+			}
+		}
 	}
+	
+	
 
 	/**
 	 * Affiche une popup qui signale une erreur
@@ -190,57 +249,57 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	 * @param title
 	 *            Le titre de la popup
 	 */
-	public static void popupErreur(String message, String title)
+ 	public static void popup(String message, String title)
 	{
 		JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);
 	}
 	@Override
-		public void actionPerformed(ActionEvent event)
+	public void actionPerformed(ActionEvent event)
+	{
+		if (event.getSource() == fichierFermer)
 		{
-			if (event.getSource() == fichierFermer)
+			this.quitter();
+		}
+		else if (event.getSource() == aideAPropos)
+		{
+			JOptionPane.showMessageDialog(null, "Projet de détection de mensonge", "À propos",
+					JOptionPane.PLAIN_MESSAGE);
+		}
+		else if (event.getSource() == fichierOuvrir)
+		{
+			JFileChooser fileChooser = new JFileChooser();
+			IContainer containerInput = IContainer.make();
+			fileChooser.showOpenDialog(this);
+			if (fileChooser.getSelectedFile() != null)
 			{
-				this.quitter();
-			}
-			else if (event.getSource() == aideAPropos)
-			{
-				JOptionPane.showMessageDialog(null, "Projet de détection de mensonge", "À propos",
-						JOptionPane.PLAIN_MESSAGE);
-			}
-			else if (event.getSource() == fichierOuvrir)
-			{
-				JFileChooser fileChooser = new JFileChooser();
-				IContainer containerInput = IContainer.make();
-
-				fileChooser.showOpenDialog(this);
-				if (fileChooser.getSelectedFile() != null)
+				try
 				{
-					try
+					if (containerInput.open(fileChooser.getSelectedFile().getCanonicalPath(), IContainer.Type.READ, null) < 0)
 					{
-						if (containerInput.open(fileChooser.getSelectedFile().getCanonicalPath(), IContainer.Type.READ, null) < 0)
+						throw new Exception("Impossible d'ouvrir ce fichier, format non géré.");
+					}
+					else
+					{
+						try
 						{
-							throw new Exception("Impossible d'ouvrir ce fichier, format non géré.");
+							containerInput.close();
+							this.ajouterOnglet(new OngletLecteur(new File(fileChooser.getSelectedFile().getCanonicalPath())));
 						}
-						else
+						catch (IOException e)
 						{
-							try
-							{
-								containerInput.close();
-								this.ajouterOnglet(new OngletLecteur(new File(fileChooser.getSelectedFile().getCanonicalPath())));
-							}
-							catch (IOException e)
-							{
-								popupErreur(e.getMessage());
-							}
-
+							popup(e.getMessage(), "Erreur");
 						}
 					}
-					catch (Exception e1)
-					{
-						popupErreur(e1.getMessage());
-					}
+				}
+				catch (Exception e1)
+				{
+					popup(e1.getMessage(), "Erreur");
 				}
 			}
 		}
+	}
+	
+	
 class FermetureOngletListener implements ActionListener
 {
 	private JTabbedPane onglets;
@@ -259,5 +318,19 @@ class FermetureOngletListener implements ActionListener
 
 	}
 }
+
+	public static void main(String args[])
+	{
+		System.setProperty("awt.useSystemAAFontSettings", "on");
+		System.setProperty("swing.aatext", "true");
+		javax.swing.SwingUtilities.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				new GraphicalUserInterface();
+			}
+	});
+}
+
 }
 
