@@ -122,6 +122,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		this.setJMenuBar(menuBar);
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		this.setVisible(true);
+		this.setEnabled(true);
 	}
 
 	public void ajouterOnglet(OngletLecteur onglet)
@@ -240,8 +241,6 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				}
 			}
 		}
-}
-
 class FermetureOngletListener implements ActionListener
 {
 	private JTabbedPane onglets;
@@ -260,3 +259,5 @@ class FermetureOngletListener implements ActionListener
 
 	}
 }
+}
+

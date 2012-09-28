@@ -22,11 +22,13 @@ public class OngletLecteur extends JPanel implements ActionListener
 	private JSlider slider;
 
 	private File fichierVideo;
+    private LecteurVideo leLecteur;
 
 	public OngletLecteur(File fichierVideo)
 	{
 		this.fichierVideo = fichierVideo;
 		this.nom = fichierVideo.getName();
+
 		this.initialiserComposants();
 	}
 
@@ -50,7 +52,10 @@ public class OngletLecteur extends JPanel implements ActionListener
 		toolBar.add(boutonLecture);
 		toolBar.add(slider);
 
+		leLecteur=new LecteurVideo(this.fichierVideo);
+
 		this.setLayout(new BorderLayout());
+		this.add(leLecteur);
 		this.add(toolBar, BorderLayout.SOUTH);
 	}
 
@@ -64,6 +69,14 @@ public class OngletLecteur extends JPanel implements ActionListener
 	{
 		if(event.getSource() == boutonLecture)
 		{
+			Thread t2 = new Thread(new Runnable(){
+				@SuppressWarnings( "static-addccess" )
+				public void run(){
+	           		leLecteur.play();
+				}
+			});
+			t2.run();
+
 
 		}
 	}
