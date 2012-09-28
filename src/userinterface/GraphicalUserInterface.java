@@ -33,7 +33,9 @@ import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
+import javax.swing.JTree;
 import javax.swing.SwingConstants;
+import javax.swing.tree.DefaultMutableTreeNode;
 
 import com.xuggle.xuggler.IContainer;
 import com.xuggle.xuggler.IContainerFormat;
@@ -54,6 +56,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 	private ModeleTableau modeleTableau;
 
+	private JTree arbre;
 	private JScrollPane scrollPane;
 
 	private BaseDeDonnees bdd = null;
@@ -117,11 +120,18 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		modeleTableau.addColumn("Taille");
 
 		//ajout des ligne
-		remplirTableauEnregistrement();
+		remplirArbreEnregistrement();
 		JTable table = new JTable(modeleTableau);
 
+		//Création d'une racine
+		  // DefaultMutableTreeNode racine = new DefaultMutableTreeNode("Racine");
+		  // DefaultMutableTreeNode rep = new DefaultMutableTreeNode("Noeud");
+		 //  DefaultMutableTreeNode rep2 = new DefaultMutableTreeNode("Noeud");
+		  // rep.add(modeleTableau);
+		 //  rep.add(rep2);
+		//racine.add(rep);
 		//transformation en scrollPane
-		scrollPane = new JScrollPane(table);
+		scrollPane = new JScrollPane(arbre);
 		scrollPane.setPreferredSize(new Dimension(270, 800));
 		scrollPane.setAutoscrolls(true);
 		
@@ -197,22 +207,24 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	{
 		
 	}
-	public void remplirTableauEnregistrement()
+	public void remplirArbreEnregistrement()
 	{
+		ResultSet rs_cat = null, rs_enr = null;
+		DefaultMutableTreeNode racine = new DefaultMutableTreeNode("Racine");
 		try
 		{
-			Object tab[] = new Object[5];
-			ResultSet rs = bdd.getListeEnregistrement();
-			while(rs.next())
+			rs_cat = bdd.getListeCategorie();
+			while(rs_cat.next())
 			{
-				
-				tab[0] = rs.getString("nom");
-				tab[1] = rs.getString("nomcat");
-				tab[2] = rs.getInt("duree");
-				tab[3] = rs.getInt("taille");
-				tab[4] = rs.getInt("id");
-				modeleTableau.addRow(tab);
+				DefaultMutableTreeNode node = new DefaultMutableTreeNode(rs_cat.getString("nomcat"));
+				rs_enr = bdd.getListeEnregistrement(rs_cat.getInt("idcat"));
+				while(rs_enr.next())
+				{
+					node.add(new DefaultMutableTreeNode(rs_enr.getString("nom")));
+				}
+				racine.add(node);
 			}
+			arbre = new JTree(racine);
 		} 
 		catch(Exception e)
 		{
@@ -374,7 +386,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 					fichier = fileChooser.getSelectedFile().getCanonicalPath();
 					bdd.importer(fichier);
 					modeleTableau.getDataVector().removeAllElements();//Vide le tableau
-					remplirTableauEnregistrement();//On le rerempli
+					remplirArbreEnregistrement();//On le rerempli
 				}
 				catch (Exception e1)
 				{
