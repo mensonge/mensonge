@@ -220,10 +220,12 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				rs_enr = bdd.getListeEnregistrement(rs_cat.getInt("idcat"));
 				while(rs_enr.next())
 				{
-					node.add(new DefaultMutableTreeNode(rs_enr.getString("nom")));
+					node.add(new Feuille(rs_enr.getInt("id"), rs_enr.getString("nom"), rs_enr.getInt("duree"), rs_enr.getInt("taille")));
 				}
+				rs_enr.close();
 				racine.add(node);
 			}
+			rs_cat.close();
 			arbre = new JTree(racine);
 		} 
 		catch(Exception e)
