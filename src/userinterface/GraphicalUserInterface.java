@@ -6,6 +6,9 @@ import core.BaseDeDonnees.DBException;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.awt.ScrollPane;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,6 +19,10 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -35,7 +42,10 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.SwingConstants;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 
 import com.xuggle.xuggler.IContainer;
 import com.xuggle.xuggler.IContainerFormat;
@@ -56,6 +66,8 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 	private ModeleTableau modeleTableau;
 
+	private PanneauInformationFeuille infoArbre = new PanneauInformationFeuille();
+	private DefaultMutableTreeNode racine;
 	private JTree arbre;
 	private JScrollPane scrollPane;
 
@@ -120,17 +132,11 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		modeleTableau.addColumn("Taille");
 
 		//ajout des ligne
+		
 		remplirArbreEnregistrement();
-		JTable table = new JTable(modeleTableau);
+		
+		//JTable table = new JTable(modeleTableau);
 
-		//Création d'une racine
-		  // DefaultMutableTreeNode racine = new DefaultMutableTreeNode("Racine");
-		  // DefaultMutableTreeNode rep = new DefaultMutableTreeNode("Noeud");
-		 //  DefaultMutableTreeNode rep2 = new DefaultMutableTreeNode("Noeud");
-		  // rep.add(modeleTableau);
-		 //  rep.add(rep2);
-		//racine.add(rep);
-		//transformation en scrollPane
 		scrollPane = new JScrollPane(arbre);
 		scrollPane.setPreferredSize(new Dimension(270, 800));
 		scrollPane.setAutoscrolls(true);
@@ -142,10 +148,13 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		boxLabel.add(new JSeparator(SwingConstants.HORIZONTAL));
 		boxLabel.add(Box.createVerticalStrut(5));
 
-		JPanel panelEnregistrements = new JPanel(new BorderLayout());
-		panelEnregistrements.add(boxLabel,BorderLayout.NORTH);
-		panelEnregistrements.add(scrollPane,BorderLayout.CENTER);
-
+		JPanel panelEnregistrements = new JPanel(new GridLayout(2, 1));
+		
+		panelEnregistrements.add(scrollPane);
+		panelEnregistrements.add(infoArbre);
+		
+		
+		
 		/*
 		 * Conteneur
 		 */
@@ -166,9 +175,14 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		this.setVisible(true);
 		this.setEnabled(true);
-		
+
 	}
 
+	//public void paint(Graphics g)
+	//{
+		//racine.removeAllChildren();
+		//racine.removeFromParent();
+	//}
 	public void ajouterOnglet(OngletLecteur onglet)
 	{
 		JButton boutonFermeture = new JButton(new ImageIcon("images/CloseTab.png"));
@@ -203,14 +217,11 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			super.processWindowEvent(event);
 	}
 
-	public void createTableauEnregistrement()
-	{
-		
-	}
+
 	public void remplirArbreEnregistrement()
 	{
 		ResultSet rs_cat = null, rs_enr = null;
-		DefaultMutableTreeNode racine = new DefaultMutableTreeNode("Racine");
+		racine = new DefaultMutableTreeNode("Enregistrements");
 		try
 		{
 			rs_cat = bdd.getListeCategorie();
@@ -220,11 +231,31 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				rs_enr = bdd.getListeEnregistrement(rs_cat.getInt("idcat"));
 				while(rs_enr.next())
 				{
-					node.add(new DefaultMutableTreeNode(rs_enr.getString("nom")));
+					node.add(new Feuille(rs_enr.getInt("id"), rs_enr.getString("nom"), rs_enr.getInt("duree"), rs_enr.getInt("taille"), rs_enr.getString("nomCat")));
 				}
+				rs_enr.close();
 				racine.add(node);
 			}
+			rs_cat.close();
 			arbre = new JTree(racine);
+			//Ajout d'un listner a l'arbre
+			arbre.addTreeSelectionListener(new TreeSelectionListener(){
+
+		         public void valueChanged(TreeSelectionEvent event)
+		         {
+		        	 
+		            if(arbre.getLastSelectedPathComponent() != null && arbre.getLastSelectedPathComponent() instanceof Feuille)
+		            {
+		               infoArbre.setListeInfo(((Feuille) arbre.getLastSelectedPathComponent()).getInfo());//On informe le panneau d'information
+		               infoArbre.repaint();//on le repaint
+		            }
+		            else
+		            {
+		            	infoArbre.setListeInfo(null);
+		            	infoArbre.repaint();//on le repaint
+		            }
+		         }
+		      });
 		} 
 		catch(Exception e)
 		{
@@ -263,7 +294,39 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		}
 	}
 	
-	
+
+	//TODO faire la fonction pour vider un arbre
+	public void removegroupofelements (DefaultMutableTreeNode selectednode)
+	{
+        
+        int nbchildren=selectednode.getChildCount();
+        
+        for (int i=0;i<nbchildren;i++) {
+            
+            if (selectednode.getChildAt(0).isLeaf()) {
+                
+                if (selectednode.isRoot())
+                {
+                
+                    //removesimpleelement((DefaultMutableTreeNode)selectednode.getChildAt(0),true);
+                }
+                else
+                {
+                    //removesimpleelement((DefaultMutableTreeNode)selectednode.getChildAt(0),true);
+                }
+            }
+            else
+            {
+                removegroupofelements ((DefaultMutableTreeNode)selectednode.getChildAt(0));
+            }
+        }
+        
+        if (selectednode.isRoot()==false) 
+        {
+            //removesimpleelement(selectednode,true);
+        }
+  
+    }
 
 	/**
 	 * Affiche une popup qui signale une erreur
@@ -385,7 +448,8 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				{
 					fichier = fileChooser.getSelectedFile().getCanonicalPath();
 					bdd.importer(fichier);
-					modeleTableau.getDataVector().removeAllElements();//Vide le tableau
+					//modeleTableau.getDataVector().removeAllElements();//Vide le tableau
+					arbre.clearSelection();
 					remplirArbreEnregistrement();//On le rerempli
 				}
 				catch (Exception e1)
@@ -410,4 +474,5 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 }
 
 }
+
 
