@@ -7,7 +7,7 @@ import java.sql.SQLException;
 
 
 
-class TestBase
+public class TestBase
 {
 
 	public static void main(String[] args)
@@ -539,6 +539,25 @@ class TestBase
 				{
 					System.out.println("[-] " + e.getMessage());
 				}
+			}
+			//****Exportation****
+			try
+			{
+				System.out.println("[i] Exportation Base vers export.db");
+				db.exporter("export.db", 0, 1);
+			}
+			catch (DBException e)
+			{
+				System.out.println("[-] " + e.getMessage());
+			}
+			try
+			{
+				System.out.println("[i] Exportation de l'enregistrement 1");
+				db.exporter("export.txt", 1, 2);
+			}
+			catch (DBException e)
+			{
+				System.out.println("[-] " + e.getMessage());
 			}
 			//****Deconnexion****
 			try
