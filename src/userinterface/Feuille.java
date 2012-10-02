@@ -35,6 +35,5 @@ public class Feuille extends DefaultMutableTreeNode
 		retour.put("Categorie", categorie);
 		return retour;
 	}
-
 }
 
