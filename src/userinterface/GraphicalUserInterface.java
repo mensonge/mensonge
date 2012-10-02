@@ -423,6 +423,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				try
 				{
 					System.out.println(fileChooser.getSelectedFile().getCanonicalPath());
+					//bdd.exporter(fileChooser.getSelectedFile().getCanonicalPath(), -1, 1);
 				}
 				catch (Exception e1)
 				{
@@ -463,8 +464,6 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	}
 	public static void main(String args[])
 	{
-		DialogueExportation d = new DialogueExportation(null, null, true);
-		d.activer();
 		System.setProperty("awt.useSystemAAFontSettings", "on");
 		System.setProperty("swing.aatext", "true");
 		javax.swing.SwingUtilities.invokeLater(new Runnable()
