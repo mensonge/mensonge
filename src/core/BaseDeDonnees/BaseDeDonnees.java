@@ -3,6 +3,7 @@ package core.BaseDeDonnees;
 import core.BaseDeDonnees.DBException;
 import java.io.FileOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -142,7 +143,6 @@ public class BaseDeDonnees
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
 			throw new DBException("Erreur lors du parcour des categories en important un fichier: " + e.getMessage(), 3);
 		}
 		//ajouter les enregistrement avec leurs categorie (modifiee) (ceux qu'il n'existe pas)
@@ -150,8 +150,10 @@ public class BaseDeDonnees
 	/**
 	 * 
 	 * @param cheminFichier fichier dans lequel sera exporte la base.
+	 * @param id Correspond à l'identifiant de l'enregistrement à exporter dans le cas d'un type WAV
+	 * @param type Correspond au type d'exportation, 1 = SQLite, 2 = WAV
 	 */
-	public void exporter(final String cheminFichier, final int id, final int type ) throws DBException//TODO
+	public void exporter(final String cheminFichier, final int id, final int type ) throws DBException//TODO a tester
 	{
 		if(connexion == null)
 		{
@@ -159,11 +161,58 @@ public class BaseDeDonnees
 		}
 		if(type == 1)//Exporter la base vers un nouveau fichier
 		{
-			//copyFile(File source, File dest);
+			File src = new File(fileName);
+			File dest = new File(cheminFichier);
+			if(!src.exists())//Verifie si le fichier existe bien
+			{
+				throw new DBException("Le fichier " + fileName + " n'existe pas.", 3);
+			}
+			if(dest.exists())//verifie que la destination n'existe pas, auquel cas, on la supprime
+			{
+				dest.delete();
+			}
+			try {
+				dest.createNewFile();//Création du nouveau fichier
+			}
+			catch (Exception e)
+			{
+				throw new DBException("Impossible de créer le fichier de sortie: " + e.getMessage(), 3);
+			}
+			boolean tmp = copyFile(src, dest);//copi des fichiers
+			if(tmp == false)
+			{
+				throw new DBException("Impossible de copier le fichier de la base", 3);
+			}
 		}
 		else if(type == 2)//exporter un echantillon
 		{
-
+			File dest = new File(cheminFichier);
+			if(dest.exists())//verifie que la destination n'existe pas, auquel cas, on la supprime
+			{
+				dest.delete();
+			}
+			try {
+				dest.createNewFile();//Création du nouveau fichier
+			}
+			catch (Exception e)
+			{
+				throw new DBException("Impossible de créer le fichier de sortie: " + e.getMessage(), 3);
+			}
+			//récupérer un enregistrement
+			byte[] echantillon = this.recupererEnregistrement(id);
+			//coller l'enregistrement dans un fichier
+			FileOutputStream destinationFile = null;
+			try
+			{
+				destinationFile = new FileOutputStream(dest);
+				destinationFile.write(echantillon);
+				destinationFile.close();
+			}
+			catch(Exception e)
+			{
+				throw new DBException("Erreur lors de la copie de l'échantillon dans le fichier: " + e.getMessage(), 3);
+			}
+			
 		}
 	}
 	/**
@@ -563,7 +612,7 @@ public class BaseDeDonnees
 				rs.close();
 				return retour;
 			}
-			throw new Exception("Enregistrement inexistant.");
+			throw new DBException("Enregistrement inexistant.", 3);
 		}
 		catch(Exception e)
 		{
@@ -870,7 +919,6 @@ public class BaseDeDonnees
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
 			return false; // Erreur
 		}
 
