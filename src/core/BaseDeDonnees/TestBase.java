@@ -2,8 +2,15 @@ package core.BaseDeDonnees;
 
 import core.BaseDeDonnees.DBException;
 import core.BaseDeDonnees.BaseDeDonnees;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Formatter;
 
 
 
@@ -201,6 +208,7 @@ public class TestBase
 			
 			*Deconnexion
 			*/
+			
 			BaseDeDonnees db = null;
 			try
 			{
@@ -541,21 +549,48 @@ public class TestBase
 				}
 			}
 			//****Exportation****
+			MessageDigest md = null;
+			try
+			{
+				md = MessageDigest.getInstance("SHA");
+				
+			} catch (NoSuchAlgorithmException e2)
+			{
+				// TODO Auto-generated catch block
+				e2.printStackTrace();
+			}
 			try
 			{
 				System.out.println("[i] Exportation Base vers export.db");
 				db.exporter("export.db", 0, 1);
+				
+				if( ! sha1(readFile("export.db")).equals(sha1(readFile(db.getFileName()))))
+				{
+					System.out.println("[-] Les deux fichiers exportés sont differents");
+				}
 			}
 			catch (DBException e)
 			{
 				System.out.println("[-] " + e.getMessage());
 			}
+			catch(Exception e)
+			{
+				System.out.println("[-] " + e.getMessage());
+			}
+			
 			try
 			{
 				System.out.println("[i] Exportation de l'enregistrement 1");
-				db.exporter("export.txt", 1, 2);
+				if( ! sha1(db.recupererEnregistrement(1)).equals(sha1(readFile("export.txt"))))
+				{
+					System.out.println("[-] L'exportation de l'enregistrement à échoué.");
+				}
 			}
 			catch (DBException e)
+			{
+				System.out.println("[-] " + e.getMessage());
+			}
+			catch(Exception e)
 			{
 				System.out.println("[-] " + e.getMessage());
 			}
@@ -625,4 +660,37 @@ public class TestBase
  		return true;
 	}
 
+	public static byte[] readFile(String nom)
+	{
+		File fichier = new File(nom);
+		byte[] contenu = null;
+		try
+		{
+			contenu = new byte[(int)fichier.length()];
+			FileInputStream sourceFile = new FileInputStream(fichier);
+			sourceFile.read(contenu);
+			sourceFile.close();
+		}
+		catch (Exception e)
+		{
+			return null;
+		}
+		return contenu;
+	}
+
+	public static String sha1 ( byte [ ] convertme ) throws NoSuchAlgorithmException
+	{
+		MessageDigest md = MessageDigest.getInstance( "SHA-1" ) ;
+		return byteArray2Hex (md.digest(convertme)) ;
+ }
+
+	public static String byteArray2Hex ( byte [ ] hash )
+	{
+		Formatter formatter = new Formatter ( ) ;
+		for( byte b : hash )
+		{
+			formatter.format ( "%02x" , b) ;
+		}
+		return formatter.toString ( ) ;
+	}
 }
