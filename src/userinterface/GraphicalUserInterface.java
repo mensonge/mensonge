@@ -1,5 +1,6 @@
 package userinterface;
 
+
 import core.BaseDeDonnees.BaseDeDonnees;
 import core.BaseDeDonnees.DBException;
 
@@ -15,6 +16,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
@@ -72,12 +74,45 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	private DefaultMutableTreeNode racine;
 	private JTree arbre;
 	private JScrollPane scrollPane;
+	
+	JPopupMenu menuClicDroit = new JPopupMenu();//sers au clic droit
 
 	private BaseDeDonnees bdd = null;
 
 	public GraphicalUserInterface()
 	{
-		
+		this.addMouseListener(new MouseListener() {
+			
+			@Override
+			public void mouseReleased(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mousePressed(MouseEvent e) {
+				System.out.println(e.getX() + " " + e.getY());
+				
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				
+				
+			}
+		});
 		/*
 		 * Connexion à la base
 		 */
@@ -257,8 +292,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		               System.out.println("*************************ACTION***************");
 		               for(int i = 0; i < arbre.getSelectionPaths().length; i++)
 		               {
-		            	   System.out.println(arbre.getSelectionPaths()[i].getLastPathComponent().getClass());
-		            	   
+		            	   System.out.println(arbre.getSelectionPaths()[i].getLastPathComponent().getClass() + " " + arbre.getSelectionPaths()[i].getLastPathComponent());
 		               }
 		            }
 		            else
@@ -420,88 +454,89 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	}
 	class ClicDroit implements MouseListener
 	{
-		JPopupMenu contextMenu = new JPopupMenu();
+		
 		public void mouseClicked(MouseEvent arg0) {}
-		public void mouseEntered(MouseEvent arg0) {}
-		public void mouseExited(MouseEvent arg0)
-		{
-			//arbre.setSelectionPaths(null);
-			//contextMenu.setEnabled(false) ;
-            //contextMenu.setVisible(false) ;
-			
-		}
+		public void mouseEntered(MouseEvent arg0){	}
+		public void mouseExited(MouseEvent arg0){}
 		public void mousePressed(MouseEvent e)
 		{
 			if((e.getModifiers() & MouseEvent.BUTTON3_MASK) != 0)
 			{
-				contextMenu.setEnabled(false) ;
-	            contextMenu.setVisible(false) ;
-	            contextMenu = new JPopupMenu() ;
+				menuClicDroit.setEnabled(false) ;
+				menuClicDroit.setVisible(false) ;
+				menuClicDroit = new JPopupMenu() ;
 	            JMenuItem exporter = new JMenuItem("Exporter") ;
 	            JMenuItem renommer = new JMenuItem("Renommer");
-	            JMenuItem modifier = new JMenuItem("Modifier ...");
+	            //JMenuItem modifier = new JMenuItem("Modifier ...");
 	            JMenuItem ecouter = new JMenuItem("Ecouter") ;
 	            JMenuItem modifiercate = new JMenuItem("Changer categorie");
-	            JMenuItem supprimer = new JMenuItem("Supprimer");
+	            JMenuItem supprimer = new JMenuItem("Supprimer les enregistrements");
 	            JMenuItem ajouter = new JMenuItem("Ajouter Categorie");
-	            supprimer.addMouseListener(new supprimerEnregistrement());
-	    
-	            if(arbre.getSelectionPaths() == null)
-	            {
-	            	contextMenu.add(ajouter);
-	            }
+	            JMenuItem supprimerCategorie = new JMenuItem("Supprimer Categorie");
+	            
+	            exporter.addMouseListener(new ExporterEnregistrementClicDroit());
+	            renommer.addMouseListener(new RenommerEnregistrementClicDroit());
+	            ajouter.addMouseListener(new AjouterCategorieEnregistrementClicDroit());
+	            modifiercate.addMouseListener(new ModifierCategorieEnregistrementClicDroit());
+	            supprimer.addMouseListener(new SupprimerEnregistrementClicDroit());
+	            supprimerCategorie.addMouseListener(new SupprimerCategorieEnregistrementClicDroit());
+
 	            if(arbre.getSelectionPaths() != null)
 	            {
 	            	if(arbre.getSelectionPaths().length == 1)
 		            {
-		            	contextMenu.add(exporter);
-		            	contextMenu.add(renommer);
-		            	contextMenu.add(modifier);
-		            	contextMenu.add(ecouter);
+	            		if(arbre.getLastSelectedPathComponent() instanceof Feuille)//Si c'est une feuille
+	            		{
+	            			menuClicDroit.add(exporter);
+	            			menuClicDroit.add(ecouter);
+	            			//menuClicDroit.add(modifier);
+	            		}
+	            		menuClicDroit.add(renommer);//commun au categorie et au feuille	            	
 		            }
 		            if(arbre.getSelectionPaths().length >= 1)
 		            {
-		            	contextMenu.add(modifiercate) ;
-		            	contextMenu.add(supprimer) ;
+		            	if(arbre.getLastSelectedPathComponent() instanceof Feuille)
+		            	{
+		            		menuClicDroit.add(modifiercate) ;
+		            	}
+		            	menuClicDroit.add(supprimer) ;
 		            }
 	            }
+	            menuClicDroit.add(ajouter);
+	            menuClicDroit.add(supprimerCategorie);
 	            
-	            contextMenu.setEnabled(true) ;
-	            contextMenu.setVisible(true) ;
+	            menuClicDroit.setEnabled(true) ;
+	            menuClicDroit.setVisible(true) ;
 	           
-	            contextMenu.show( arbre.getComponentAt(e.getXOnScreen(), e.getYOnScreen()), e.getXOnScreen(),e.getYOnScreen()); 
+	            menuClicDroit.show(arbre.getComponentAt(e.getXOnScreen(), e.getYOnScreen()), e.getXOnScreen(),e.getYOnScreen()); 
 			}
 			else
 			{
-				contextMenu.setEnabled(false) ;
-	            contextMenu.setVisible(false) ;
+				menuClicDroit.setEnabled(false) ;
+				menuClicDroit.setVisible(false) ;
 			}
 		}
 
-		@Override
 		public void mouseReleased(MouseEvent arg0) {}
 		
 	}
-	class supprimerEnregistrement implements MouseListener
+	class SupprimerEnregistrementClicDroit implements MouseListener
 	{
-		public void mouseClicked(MouseEvent e)
-		{}
-		public void mouseEntered(MouseEvent e)
-		{}
-		public void mouseExited(MouseEvent e)
-		{}
-		public void mousePressed(MouseEvent e)
-		{}
+		public void mouseClicked(MouseEvent e){}
+		public void mouseEntered(MouseEvent e){}
+		public void mouseExited(MouseEvent e){}
+		public void mousePressed(MouseEvent e){}
 		public void mouseReleased(MouseEvent e)
 		{  	
-	         int option = JOptionPane.showConfirmDialog(null, 
+			menuClicDroit.setEnabled(false) ;
+			menuClicDroit.setVisible(false) ;
+			int option = JOptionPane.showConfirmDialog(null, 
 	                  "Voulez-vous supprimer les enregistrements ?\n(Notez que les categories seront concervées)",
 	                  "Suppression", 
 	                  JOptionPane.YES_NO_CANCEL_OPTION, 
 	                  JOptionPane.QUESTION_MESSAGE);
 			if(option == JOptionPane.OK_OPTION)
 			{
-				System.out.println("sup");
 				for(int i = 0; i < arbre.getSelectionPaths().length; i++)
 				{
 					if(arbre.getSelectionPaths()[i].getLastPathComponent() instanceof Feuille)
@@ -513,6 +548,164 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			
 		}
 		
+	}
+	class ExporterEnregistrementClicDroit implements MouseListener
+	{
+		public void mouseClicked(MouseEvent e){}
+		public void mouseEntered(MouseEvent e){}
+		public void mouseExited(MouseEvent e){}
+		public void mousePressed(MouseEvent e){}
+		public void mouseReleased(MouseEvent e)
+		{  	
+			menuClicDroit.setEnabled(false) ;
+			menuClicDroit.setVisible(false) ;
+			JFileChooser fileChooser = new JFileChooser();
+			fileChooser.showOpenDialog(null);
+			String fichier;
+			if (fileChooser.getSelectedFile() != null)
+			{
+				try
+				{
+					fichier = fileChooser.getSelectedFile().getCanonicalPath();
+					int id = ((Feuille) arbre.getLastSelectedPathComponent()).getId();
+					bdd.exporter(fichier, id, 2);
+				}
+				catch (Exception e1)
+				{
+					popup(e1.getMessage(), "Erreur");
+					return;
+				}
+			}
+		}
+	}
+	class RenommerEnregistrementClicDroit implements MouseListener
+	{
+		public void mouseClicked(MouseEvent e){}
+		public void mouseEntered(MouseEvent e){}
+		public void mouseExited(MouseEvent e){}
+		public void mousePressed(MouseEvent e){}
+		public void mouseReleased(MouseEvent e)
+		{  	
+			menuClicDroit.setEnabled(false) ;
+			menuClicDroit.setVisible(false) ;
+			String nom = JOptionPane.showInputDialog(null, "Entre le nouveau nom", "Renommer", JOptionPane.QUESTION_MESSAGE);
+			if(nom != null && ! nom.equals(""))
+			{
+				try
+				{
+					if(arbre.getLastSelectedPathComponent() instanceof Feuille)//renommer enregistrement
+					{
+						bdd.modifierEnregistrementNom(((Feuille) arbre.getLastSelectedPathComponent()).getId(), nom);
+					}
+					else if(arbre.getLastSelectedPathComponent() instanceof DefaultMutableTreeNode)//renommer une categorie
+					{
+						bdd.modifierCategorie(bdd.getCategorie(arbre.getSelectionPaths()[0].getLastPathComponent().toString()), nom);
+					}
+				}
+				catch (DBException e1)
+				{
+					popup(e1.getMessage(), "Erreur");
+				}
+			}
+		}
+	}
+	class AjouterCategorieEnregistrementClicDroit implements MouseListener
+	{
+		public void mouseClicked(MouseEvent e){}
+		public void mouseEntered(MouseEvent e){}
+		public void mouseExited(MouseEvent e){}
+		public void mousePressed(MouseEvent e){}
+		public void mouseReleased(MouseEvent e)
+		{  	
+			menuClicDroit.setEnabled(false) ;
+			menuClicDroit.setVisible(false) ;
+			String nom = JOptionPane.showInputDialog(null, "Entrez le nom de la nouvelle catégorie", "Renommer", JOptionPane.QUESTION_MESSAGE);
+			if(nom != null && ! nom.equals(""))
+			{
+				try
+				{
+					bdd.ajouterCategorie(nom);
+				}
+				catch (DBException e1)
+				{
+					popup(e1.getMessage(), "Erreur");
+				}
+			}
+		}
+	}
+	class ModifierCategorieEnregistrementClicDroit implements MouseListener
+	{
+		public void mouseClicked(MouseEvent e){}
+		public void mouseEntered(MouseEvent e){}
+		public void mouseExited(MouseEvent e){}
+		public void mousePressed(MouseEvent e){}
+		public void mouseReleased(MouseEvent e)
+		{  	
+			menuClicDroit.setEnabled(false) ;
+			menuClicDroit.setVisible(false) ;
+			DialogueNouvelleCategorie pop = new DialogueNouvelleCategorie(null, null, true, bdd);
+			String nom = ((String)pop.activer()[0]);
+			if( ! nom.equals("Ne rien changer"))
+			{
+				for(int i = 0; i < arbre.getSelectionPaths().length; i++)
+				{
+					if(arbre.getSelectionPaths()[i].getLastPathComponent() instanceof Feuille)
+					{
+						try
+						{
+							bdd.modifierEnregistrementCategorie(((Feuille) arbre.getSelectionPaths()[i].getLastPathComponent()).getId(), nom);
+						}
+						catch (DBException e1)
+						{
+							popup(e1.getMessage(), "Erreur");
+						}
+					}
+				}
+			}
+		}
+	}
+	class SupprimerCategorieEnregistrementClicDroit implements MouseListener
+	{
+		public void mouseClicked(MouseEvent e){}
+		public void mouseEntered(MouseEvent e){}
+		public void mouseExited(MouseEvent e){}
+		public void mousePressed(MouseEvent e){}
+		public void mouseReleased(MouseEvent e)
+		{  	
+			menuClicDroit.setEnabled(false) ;
+			menuClicDroit.setVisible(false) ;
+			int option = JOptionPane.showConfirmDialog(null, 
+	                  "Voulez-vous supprimer les categories ?\n",
+	                  "Suppression", 
+	                  JOptionPane.YES_NO_CANCEL_OPTION, 
+	                  JOptionPane.QUESTION_MESSAGE);
+			if(option == JOptionPane.OK_OPTION)
+			{
+				for(int i = 0; i < arbre.getSelectionPaths().length; i++)
+				{
+					try
+					{
+						if( ! (arbre.getSelectionPaths()[i].getLastPathComponent() instanceof Feuille))
+						{
+							ResultSet rs = bdd.getListeEnregistrement(bdd.getCategorie(arbre.getSelectionPaths()[i].getLastPathComponent().toString()));
+							if(rs.next())
+							{
+								popup("Une categorie peut être supprimée quand elle n'a plus d'enregistrements.", "Erreur");
+							}
+							else
+							{
+								bdd.supprimerCategorie(bdd.getCategorie(arbre.getSelectionPaths()[i].getLastPathComponent().toString()));
+							}
+							rs.close();
+						}
+					}
+					catch (Exception e1)
+					{
+						popup(e1.getMessage(), "Erreur");
+					}
+				}
+			}
+		}
 	}
 	class ExporterBaseListner extends MouseAdapter
 	{
