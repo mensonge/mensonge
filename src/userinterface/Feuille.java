@@ -11,6 +11,10 @@ import javax.swing.tree.DefaultMutableTreeNode;
 
 public class Feuille extends DefaultMutableTreeNode
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	int id;
 	String nom;
 	int duree;
@@ -35,5 +39,35 @@ public class Feuille extends DefaultMutableTreeNode
 		retour.put("Categorie", categorie);
 		return retour;
 	}
-}
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getNom() {
+		return nom;
+	}
+	public void setNom(String nom) {
+		this.nom = nom;
+	}
+	public int getDuree() {
+		return duree;
+	}
+	public void setDuree(int duree) {
+		this.duree = duree;
+	}
+	public int getTaille() {
+		return taille;
+	}
+	public void setTaille(int taille) {
+		this.taille = taille;
+	}
+	public String getCategorie() {
+		return categorie;
+	}
+	public void setCategorie(String categorie) {
+		this.categorie = categorie;
+	}
 
+}
