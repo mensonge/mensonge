@@ -14,6 +14,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
@@ -36,6 +37,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
@@ -162,6 +164,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		JPanel conteneur = new JPanel(new BorderLayout());
 		conteneur.add(onglets,BorderLayout.CENTER);
 		conteneur.add(panelEnregistrements,BorderLayout.EAST);
+		
 		/*
 		 * Fenêtre
 		 */
@@ -232,7 +235,9 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				rs_enr = bdd.getListeEnregistrement(rs_cat.getInt("idcat"));
 				while(rs_enr.next())
 				{
-					node.add(new Feuille(rs_enr.getInt("id"), rs_enr.getString("nom"), rs_enr.getInt("duree"), rs_enr.getInt("taille"), rs_enr.getString("nomCat")));
+					Feuille f = new Feuille(rs_enr.getInt("id"), rs_enr.getString("nom"), rs_enr.getInt("duree"), rs_enr.getInt("taille"), rs_enr.getString("nomCat"));
+					node.add(f);
+					
 				}
 				rs_enr.close();
 				racine.add(node);
@@ -249,6 +254,12 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		            {
 		               infoArbre.setListeInfo(((Feuille) arbre.getLastSelectedPathComponent()).getInfo());//On informe le panneau d'information
 		               infoArbre.repaint();//on le repaint
+		               System.out.println("*************************ACTION***************");
+		               for(int i = 0; i < arbre.getSelectionPaths().length; i++)
+		               {
+		            	   System.out.println(arbre.getSelectionPaths()[i].getLastPathComponent().getClass());
+		            	   
+		               }
 		            }
 		            else
 		            {
@@ -257,6 +268,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		            }
 		         }
 		      });
+			arbre.addMouseListener(new ClicDroit());
 		} 
 		catch(Exception e)
 		{
@@ -406,7 +418,102 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			
 		}	
 	}
+	class ClicDroit implements MouseListener
+	{
+		JPopupMenu contextMenu = new JPopupMenu();
+		public void mouseClicked(MouseEvent arg0) {}
+		public void mouseEntered(MouseEvent arg0) {}
+		public void mouseExited(MouseEvent arg0)
+		{
+			//arbre.setSelectionPaths(null);
+			//contextMenu.setEnabled(false) ;
+            //contextMenu.setVisible(false) ;
+			
+		}
+		public void mousePressed(MouseEvent e)
+		{
+			if((e.getModifiers() & MouseEvent.BUTTON3_MASK) != 0)
+			{
+				contextMenu.setEnabled(false) ;
+	            contextMenu.setVisible(false) ;
+	            contextMenu = new JPopupMenu() ;
+	            JMenuItem exporter = new JMenuItem("Exporter") ;
+	            JMenuItem renommer = new JMenuItem("Renommer");
+	            JMenuItem modifier = new JMenuItem("Modifier ...");
+	            JMenuItem ecouter = new JMenuItem("Ecouter") ;
+	            JMenuItem modifiercate = new JMenuItem("Changer categorie");
+	            JMenuItem supprimer = new JMenuItem("Supprimer");
+	            JMenuItem ajouter = new JMenuItem("Ajouter Categorie");
+	            supprimer.addMouseListener(new supprimerEnregistrement());
+	    
+	            if(arbre.getSelectionPaths() == null)
+	            {
+	            	contextMenu.add(ajouter);
+	            }
+	            if(arbre.getSelectionPaths() != null)
+	            {
+	            	if(arbre.getSelectionPaths().length == 1)
+		            {
+		            	contextMenu.add(exporter);
+		            	contextMenu.add(renommer);
+		            	contextMenu.add(modifier);
+		            	contextMenu.add(ecouter);
+		            }
+		            if(arbre.getSelectionPaths().length >= 1)
+		            {
+		            	contextMenu.add(modifiercate) ;
+		            	contextMenu.add(supprimer) ;
+		            }
+	            }
+	            
+	            contextMenu.setEnabled(true) ;
+	            contextMenu.setVisible(true) ;
+	           
+	            contextMenu.show( arbre.getComponentAt(e.getXOnScreen(), e.getYOnScreen()), e.getXOnScreen(),e.getYOnScreen()); 
+			}
+			else
+			{
+				contextMenu.setEnabled(false) ;
+	            contextMenu.setVisible(false) ;
+			}
+		}
 
+		@Override
+		public void mouseReleased(MouseEvent arg0) {}
+		
+	}
+	class supprimerEnregistrement implements MouseListener
+	{
+		public void mouseClicked(MouseEvent e)
+		{}
+		public void mouseEntered(MouseEvent e)
+		{}
+		public void mouseExited(MouseEvent e)
+		{}
+		public void mousePressed(MouseEvent e)
+		{}
+		public void mouseReleased(MouseEvent e)
+		{  	
+	         int option = JOptionPane.showConfirmDialog(null, 
+	                  "Voulez-vous supprimer les enregistrements ?\n(Notez que les categories seront concervées)",
+	                  "Suppression", 
+	                  JOptionPane.YES_NO_CANCEL_OPTION, 
+	                  JOptionPane.QUESTION_MESSAGE);
+			if(option == JOptionPane.OK_OPTION)
+			{
+				System.out.println("sup");
+				for(int i = 0; i < arbre.getSelectionPaths().length; i++)
+				{
+					if(arbre.getSelectionPaths()[i].getLastPathComponent() instanceof Feuille)
+					{
+						bdd.supprimerEnregistrement(((Feuille) arbre.getSelectionPaths()[i].getLastPathComponent()).getId());
+					}
+				}
+			}
+			
+		}
+		
+	}
 	class ExporterBaseListner extends MouseAdapter
 	{
 		GraphicalUserInterface fenetre;
