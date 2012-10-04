@@ -50,6 +50,7 @@ import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import javax.swing.tree.TreeNode;
 
 import com.xuggle.xuggler.IContainer;
 import com.xuggle.xuggler.IContainerFormat;
@@ -81,38 +82,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 	public GraphicalUserInterface()
 	{
-		this.addMouseListener(new MouseListener() {
-			
-			@Override
-			public void mouseReleased(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void mousePressed(MouseEvent e) {
-				System.out.println(e.getX() + " " + e.getY());
-				
-			}
-			
-			@Override
-			public void mouseExited(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				
-				
-			}
-		});
+
 		/*
 		 * Connexion à la base
 		 */
@@ -169,11 +139,34 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		modeleTableau.addColumn("Durée");
 		modeleTableau.addColumn("Taille");
 
-		//ajout des ligne
-		
+		//Creation de l'arbre
+		racine = new DefaultMutableTreeNode("Enregistrements");
 		remplirArbreEnregistrement();
-		
-		//JTable table = new JTable(modeleTableau);
+		arbre = new JTree(racine);
+		arbre.addMouseListener(new ClicDroit());
+
+		/*arbre.addTreeSelectionListener(new TreeSelectionListener(){
+
+	         public void valueChanged(TreeSelectionEvent event)
+	         {
+	        	 
+	            if(arbre.getLastSelectedPathComponent() != null && arbre.getLastSelectedPathComponent() instanceof Feuille)
+	            {
+	               infoArbre.setListeInfo(((Feuille) arbre.getLastSelectedPathComponent()).getInfo());//On informe le panneau d'information
+	               infoArbre.repaint();//on le repaint
+	               System.out.println("*************************ACTION***************");
+	               for(int i = 0; i < arbre.getSelectionPaths().length; i++)
+	               {
+	            	   System.out.println(arbre.getSelectionPaths()[i].getLastPathComponent().getClass() + " " + arbre.getSelectionPaths()[i].getLastPathComponent());
+	               }
+	            }
+	            else
+	            {
+	            	infoArbre.setListeInfo(null);
+	            	infoArbre.repaint();//on le repaint
+	            }
+	         }
+	      });*/
 
 		scrollPane = new JScrollPane(arbre);
 		scrollPane.setPreferredSize(new Dimension(270, 800));
@@ -197,9 +190,8 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		 * Conteneur
 		 */
 		JPanel conteneur = new JPanel(new BorderLayout());
-		conteneur.add(onglets,BorderLayout.CENTER);
+		//conteneur.add(onglets,BorderLayout.CENTER);
 		conteneur.add(panelEnregistrements,BorderLayout.EAST);
-		
 		/*
 		 * Fenêtre
 		 */
@@ -248,7 +240,12 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 	protected void processWindowEvent(WindowEvent event)
 	{
-		if (event.getID() == WindowEvent.WINDOW_CLOSING)
+		if(event.getID() == WindowEvent.WINDOW_DEACTIVATED)
+		{
+			menuClicDroit.setEnabled(false);
+			menuClicDroit.setVisible(false);
+		}
+		if(event.getID() == WindowEvent.WINDOW_CLOSING)
 		{
 			this.quitter();
 		}
@@ -256,11 +253,15 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			super.processWindowEvent(event);
 	}
 
-
+	public void updateArbre()
+	{
+		viderNoeud(racine);
+		remplirArbreEnregistrement();
+		arbre.updateUI();
+	}
 	public void remplirArbreEnregistrement()
 	{
 		ResultSet rs_cat = null, rs_enr = null;
-		racine = new DefaultMutableTreeNode("Enregistrements");
 		try
 		{
 			rs_cat = bdd.getListeCategorie();
@@ -278,31 +279,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				racine.add(node);
 			}
 			rs_cat.close();
-			arbre = new JTree(racine);
-			//Ajout d'un listner a l'arbre
-			arbre.addTreeSelectionListener(new TreeSelectionListener(){
-
-		         public void valueChanged(TreeSelectionEvent event)
-		         {
-		        	 
-		            if(arbre.getLastSelectedPathComponent() != null && arbre.getLastSelectedPathComponent() instanceof Feuille)
-		            {
-		               infoArbre.setListeInfo(((Feuille) arbre.getLastSelectedPathComponent()).getInfo());//On informe le panneau d'information
-		               infoArbre.repaint();//on le repaint
-		               System.out.println("*************************ACTION***************");
-		               for(int i = 0; i < arbre.getSelectionPaths().length; i++)
-		               {
-		            	   System.out.println(arbre.getSelectionPaths()[i].getLastPathComponent().getClass() + " " + arbre.getSelectionPaths()[i].getLastPathComponent());
-		               }
-		            }
-		            else
-		            {
-		            	infoArbre.setListeInfo(null);
-		            	infoArbre.repaint();//on le repaint
-		            }
-		         }
-		      });
-			arbre.addMouseListener(new ClicDroit());
+			
 		} 
 		catch(Exception e)
 		{
@@ -342,39 +319,26 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	}
 	
 
-	//TODO faire la fonction pour vider un arbre
-	public void removegroupofelements (DefaultMutableTreeNode selectednode)
+	public void viderNoeud (DefaultMutableTreeNode selectednode)
 	{
-        
         int nbchildren=selectednode.getChildCount();
         
-        for (int i=0;i<nbchildren;i++) {
-            
-            if (selectednode.getChildAt(0).isLeaf()) {
-                
-                if (selectednode.isRoot())
-                {
-                
-                    //removesimpleelement((DefaultMutableTreeNode)selectednode.getChildAt(0),true);
-                }
-                else
-                {
-                    //removesimpleelement((DefaultMutableTreeNode)selectednode.getChildAt(0),true);
-                }
+        for (int i=0; i < nbchildren; i++)
+        {
+            if (selectednode.getChildAt(0).isLeaf())
+            {
+            	((DefaultMutableTreeNode)selectednode.getChildAt(0)).removeFromParent();
             }
             else
             {
-                removegroupofelements ((DefaultMutableTreeNode)selectednode.getChildAt(0));
+                viderNoeud((DefaultMutableTreeNode)selectednode.getChildAt(0));
             }
         }
-        
         if (selectednode.isRoot()==false) 
         {
-            //removesimpleelement(selectednode,true);
+        	selectednode.removeFromParent();
         }
-  
     }
-
 	/**
 	 * Affiche une popup qui signale une erreur
 	 *
@@ -452,6 +416,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			
 		}	
 	}
+	
 	class ClicDroit implements MouseListener
 	{
 		
@@ -462,6 +427,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		{
 			if((e.getModifiers() & MouseEvent.BUTTON3_MASK) != 0)
 			{
+				
 				menuClicDroit.setEnabled(false) ;
 				menuClicDroit.setVisible(false) ;
 				menuClicDroit = new JPopupMenu() ;
@@ -503,7 +469,11 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		            }
 	            }
 	            menuClicDroit.add(ajouter);
-	            menuClicDroit.add(supprimerCategorie);
+	            if(arbre.getSelectionPaths() != null)
+	            {
+	            	menuClicDroit.add(supprimerCategorie);
+	            }
+	            
 	            
 	            menuClicDroit.setEnabled(true) ;
 	            menuClicDroit.setVisible(true) ;
@@ -545,7 +515,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 					}
 				}
 			}
-			
+			updateArbre();
 		}
 		
 	}
@@ -607,6 +577,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 					popup(e1.getMessage(), "Erreur");
 				}
 			}
+			updateArbre();
 		}
 	}
 	class AjouterCategorieEnregistrementClicDroit implements MouseListener
@@ -631,6 +602,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 					popup(e1.getMessage(), "Erreur");
 				}
 			}
+			updateArbre();
 		}
 	}
 	class ModifierCategorieEnregistrementClicDroit implements MouseListener
@@ -705,8 +677,10 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 					}
 				}
 			}
+			updateArbre();
 		}
 	}
+	
 	class ExporterBaseListner extends MouseAdapter
 	{
 		GraphicalUserInterface fenetre;
@@ -750,9 +724,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				{
 					fichier = fileChooser.getSelectedFile().getCanonicalPath();
 					bdd.importer(fichier);
-					//modeleTableau.getDataVector().removeAllElements();//Vide le tableau
-					arbre.clearSelection();
-					remplirArbreEnregistrement();//On le rerempli
+					updateArbre();
 				}
 				catch (Exception e1)
 				{
