@@ -145,7 +145,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		arbre = new JTree(racine);
 		arbre.addMouseListener(new ClicDroit());
 
-		/*arbre.addTreeSelectionListener(new TreeSelectionListener(){
+		arbre.addTreeSelectionListener(new TreeSelectionListener(){
 
 	         public void valueChanged(TreeSelectionEvent event)
 	         {
@@ -154,11 +154,11 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	            {
 	               infoArbre.setListeInfo(((Feuille) arbre.getLastSelectedPathComponent()).getInfo());//On informe le panneau d'information
 	               infoArbre.repaint();//on le repaint
-	               System.out.println("*************************ACTION***************");
-	               for(int i = 0; i < arbre.getSelectionPaths().length; i++)
-	               {
-	            	   System.out.println(arbre.getSelectionPaths()[i].getLastPathComponent().getClass() + " " + arbre.getSelectionPaths()[i].getLastPathComponent());
-	               }
+	               //System.out.println("*************************ACTION***************");
+	               //for(int i = 0; i < arbre.getSelectionPaths().length; i++)
+	               //{
+	            	  // System.out.println(arbre.getSelectionPaths()[i].getLastPathComponent().getClass() + " " + arbre.getSelectionPaths()[i].getLastPathComponent());
+	              // }
 	            }
 	            else
 	            {
@@ -166,7 +166,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	            	infoArbre.repaint();//on le repaint
 	            }
 	         }
-	      });*/
+	      });
 
 		scrollPane = new JScrollPane(arbre);
 		scrollPane.setPreferredSize(new Dimension(270, 800));
@@ -209,11 +209,6 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 	}
 
-	//public void paint(Graphics g)
-	//{
-		//racine.removeAllChildren();
-		//racine.removeFromParent();
-	//}
 	public void ajouterOnglet(OngletLecteur onglet)
 	{
 		JButton boutonFermeture = new JButton(new ImageIcon("images/CloseTab.png"));
