@@ -19,6 +19,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -57,6 +58,11 @@ import com.xuggle.xuggler.IContainerFormat;
 
 import userinterface.OngletLecteur;
 
+
+import java.io.*;
+import sun.audio.*;
+
+
 public class GraphicalUserInterface extends JFrame implements ActionListener
 {
 	private static final long serialVersionUID = 5373991180139317820L;
@@ -68,6 +74,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	private JMenuItem fichierOuvrir;
 	private JMenuItem baseExporter;
 	private JMenuItem baseImporter;
+	private JMenuItem baseAjouterCategorie;
 
 	private ModeleTableau modeleTableau;
 
@@ -108,6 +115,9 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		baseImporter = new JMenuItem("Importer");
 		baseImporter.addMouseListener(new ImporterBaseListner(this));
 		
+		baseAjouterCategorie = new JMenuItem("Ajouter");
+		baseAjouterCategorie.addMouseListener(new AjouterCategorieEnregistrementClicDroit());
+		
 		JMenu menuFichier = new JMenu("Fichier");
 		menuFichier.add(fichierOuvrir);
 		menuFichier.add(baseExporter);
@@ -123,24 +133,19 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		JMenu menuAide = new JMenu("Aide");
 		menuAide.add(aideAPropos);
 		
+		JMenu menuBase = new JMenu("Base");
+		menuBase.add(baseAjouterCategorie);
 		
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.add(menuFichier);
 		menuBar.add(menuOutils);
 		menuBar.add(menuAide);
+		menuBar.add(menuBase);
 
 		/*
-		 * Création du tableau des enregistrement
+		 * Création de l'arbre des enregistrement
 		 */
-		//Création des colonnes
-		modeleTableau = new ModeleTableau();
-		modeleTableau.addColumn("Nom");
-		modeleTableau.addColumn("Categorie");
-		modeleTableau.addColumn("Durée");
-		modeleTableau.addColumn("Taille");
-
-		//Creation de l'arbre
-		racine = new DefaultMutableTreeNode("Enregistrements");
+		racine = new DefaultMutableTreeNode("Categorie");
 		remplirArbreEnregistrement();
 		arbre = new JTree(racine);
 		arbre.addMouseListener(new ClicDroit());
@@ -628,6 +633,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 						}
 					}
 				}
+				updateArbre();
 			}
 		}
 	}
@@ -691,8 +697,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			{
 				try
 				{
-					System.out.println(fileChooser.getSelectedFile().getCanonicalPath());
-					//bdd.exporter(fileChooser.getSelectedFile().getCanonicalPath(), -1, 1);
+					bdd.exporter(fileChooser.getSelectedFile().getCanonicalPath(), -1, 1);
 				}
 				catch (Exception e1)
 				{
