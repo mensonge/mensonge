@@ -283,7 +283,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		} 
 		catch(Exception e)
 		{
-			popup("Erreur lors du chargement des enregistrement.", "Erreur");
+			popupErreur("Erreur lors du chargement des enregistrement.", "Erreur");
 		}
 	}
 	public void connexionBase(String fichier)
@@ -305,14 +305,14 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				} 
 				catch (DBException e1)
 				{
-					popup("[-] Erreur lors de la creation: " + e1.getMessage(), "Erreur");
+					popupErreur("[-] Erreur lors de la creation: " + e1.getMessage(), "Erreur");
 				}
 				//creation de la base
 				//System.out.println("[i]Base cree.");
 			}
 			else
 			{
-				popup("[-]Erreur lors de la connexion. " + e.getMessage(), "Erreur");
+				popupErreur("[-]Erreur lors de la connexion. " + e.getMessage(), "Erreur");
 				return;
 			}
 		}
@@ -347,11 +347,14 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	 * @param title
 	 *            Le titre de la popup
 	 */
- 	public static void popup(String message, String title)
+ 	public static void popupErreur(String message, String title)
 	{
 		JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);
 	}
-	@Override
+ 	public static void popupInfo(String message, String title)
+	{
+		JOptionPane.showMessageDialog(null, message, title, JOptionPane.INFORMATION_MESSAGE);
+	}
 	public void actionPerformed(ActionEvent event)
 	{
 		if (event.getSource() == fichierFermer)
@@ -385,13 +388,13 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 						}
 						catch (IOException e)
 						{
-							popup(e.getMessage(), "Erreur");
+							popupErreur(e.getMessage(), "Erreur");
 						}
 					}
 				}
 				catch (Exception e1)
 				{
-					popup(e1.getMessage(), "Erreur");
+					popupErreur(e1.getMessage(), "Erreur");
 				}
 			}
 		}
@@ -542,7 +545,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				}
 				catch (Exception e1)
 				{
-					popup(e1.getMessage(), "Erreur");
+					popupErreur(e1.getMessage(), "Erreur");
 					return;
 				}
 			}
@@ -574,7 +577,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				}
 				catch (DBException e1)
 				{
-					popup(e1.getMessage(), "Erreur");
+					popupErreur(e1.getMessage(), "Erreur");
 				}
 			}
 			updateArbre();
@@ -599,7 +602,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				}
 				catch (DBException e1)
 				{
-					popup(e1.getMessage(), "Erreur");
+					popupErreur(e1.getMessage(), "Erreur");
 				}
 			}
 			updateArbre();
@@ -629,7 +632,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 						}
 						catch (DBException e1)
 						{
-							popup(e1.getMessage(), "Erreur");
+							popupErreur(e1.getMessage(), "Erreur");
 						}
 					}
 				}
@@ -663,7 +666,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 							ResultSet rs = bdd.getListeEnregistrement(bdd.getCategorie(arbre.getSelectionPaths()[i].getLastPathComponent().toString()));
 							if(rs.next())
 							{
-								popup("Une categorie peut être supprimée quand elle n'a plus d'enregistrements.", "Erreur");
+								popupErreur("Une categorie peut être supprimée quand elle n'a plus d'enregistrements.", "Erreur");
 							}
 							else
 							{
@@ -674,7 +677,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 					}
 					catch (Exception e1)
 					{
-						popup(e1.getMessage(), "Erreur");
+						popupErreur(e1.getMessage(), "Erreur");
 					}
 				}
 			}
@@ -701,7 +704,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				}
 				catch (Exception e1)
 				{
-					popup(e1.getMessage(), "Erreur");
+					popupErreur(e1.getMessage(), "Erreur");
 				}
 			}
 		}
@@ -728,7 +731,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				}
 				catch (Exception e1)
 				{
-					popup(e1.getMessage(), "Erreur");
+					popupErreur(e1.getMessage(), "Erreur");
 					return;
 				}
 			}
