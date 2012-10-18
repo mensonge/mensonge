@@ -594,6 +594,26 @@ public class TestBase
 			{
 				System.out.println("[-] " + e.getMessage());
 			}
+			
+			File f = new File("test.wav");
+			if(f.exists())
+			{
+				try
+				{
+					FileInputStream sourceFile = new java.io.FileInputStream(f);
+					byte[] contenu = new byte[(int) f.length()];
+					sourceFile.read(contenu);
+					sourceFile.close();
+					System.out.println((int) f.length());
+					System.out.println(contenu.length);
+					db.ajouterEnregistrement("Fichierwave", 5, 2, contenu);
+					System.out.println("[+] Ajout du fichier test.wav");
+				}
+				catch (Exception e)
+				{
+					System.out.println("[-] TEST.WAV (pas important): " + e.getMessage());
+				}
+			}
 			//****Deconnexion****
 			try
 			{
