@@ -8,6 +8,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.ScrollPane;
 import java.awt.Toolkit;
@@ -20,6 +22,7 @@ import java.awt.event.MouseMotionAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -43,10 +46,13 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JSlider;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTree;
 import javax.swing.SwingConstants;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -75,8 +81,17 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	private JMenuItem baseExporter;
 	private JMenuItem baseImporter;
 	private JMenuItem baseAjouterCategorie;
+	
+	
+	private JButton playEcouteArbre = new JButton("Play");
+	private JSlider slideAvance;
+	private JSlider slideSon;
+	
+	private double volume = 0.4;
+	Sound lecteurSonArbre;
+   
 
-	private ModeleTableau modeleTableau;
+	//private ModeleTableau modeleTableau;
 
 	private PanneauInformationFeuille infoArbre = new PanneauInformationFeuille();
 	private DefaultMutableTreeNode racine;
@@ -86,10 +101,11 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	JPopupMenu menuClicDroit = new JPopupMenu();//sers au clic droit
 
 	private BaseDeDonnees bdd = null;
+	
+
 
 	public GraphicalUserInterface()
 	{
-
 		/*
 		 * Connexion à la base
 		 */
@@ -149,7 +165,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		remplirArbreEnregistrement();
 		arbre = new JTree(racine);
 		arbre.addMouseListener(new ClicDroit());
-
+		
 		arbre.addTreeSelectionListener(new TreeSelectionListener(){
 
 	         public void valueChanged(TreeSelectionEvent event)
@@ -184,18 +200,57 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		boxLabel.add(new JSeparator(SwingConstants.HORIZONTAL));
 		boxLabel.add(Box.createVerticalStrut(5));
 
-		JPanel panelEnregistrements = new JPanel(new GridLayout(2, 1));
+		//JPanel panelEnregistrements = new JPanel(new GridLayout(3, 1));
 		
-		panelEnregistrements.add(scrollPane);
-		panelEnregistrements.add(infoArbre);
+		JPanel panelEnregistrements = new JPanel(new BorderLayout());
+		JPanel panelArbre = new JPanel(new GridLayout(2, 1));
+		JPanel panelLecteur = new JPanel(new GridBagLayout());
+		panelArbre.add(scrollPane);
+		panelArbre.add(infoArbre);
 		
+		panelEnregistrements.add(panelArbre, BorderLayout.CENTER);
 		
-		
+		/*
+		 * Creation du mini lecteur audio
+		 */
+		 slideAvance = new JSlider();
+		 slideSon = new JSlider();
+		 slideSon.setMinimum(0);
+		 slideSon.setMaximum(100);
+		 slideSon.addChangeListener(new ChangeListener(){
+		      public void stateChanged(ChangeEvent event){
+		        volume = ((double)slideSon.getValue()/100);
+		        if(lecteurSonArbre != null)
+		        {
+		        	lecteurSonArbre.setVolume(volume);
+		        }
+		      }
+		    }); 
+		 
+		 playEcouteArbre.addMouseListener(new PlayEcouteArbre());
+		 GridBagConstraints c = new GridBagConstraints();
+		 c.gridx = 0;
+		 c.gridy = 0;
+		 panelLecteur.add(slideSon,c);
+		 c.gridx = 1;
+		 c.gridy = 0;
+		 panelLecteur.add(new JLabel("Volume"), c);
+		 c.gridx = 0;
+		 c.gridy = 1;
+		 panelLecteur.add(slideAvance,c);
+		 c.gridx = 1;
+		 c.gridy = 1;
+		 panelLecteur.add(new JLabel("Curseur"),c);
+		 c.gridx = 0;
+		 c.gridy = 2;
+		 panelLecteur.add(playEcouteArbre,c);
+		 panelEnregistrements.add(panelLecteur, BorderLayout.SOUTH);
 		/*
 		 * Conteneur
 		 */
+
 		JPanel conteneur = new JPanel(new BorderLayout());
-		//conteneur.add(onglets,BorderLayout.CENTER);
+		conteneur.add(onglets,BorderLayout.CENTER);
 		conteneur.add(panelEnregistrements,BorderLayout.EAST);
 		/*
 		 * Fenêtre
@@ -211,6 +266,9 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		this.setVisible(true);
 		this.setEnabled(true);
+		
+		//Sound s = new Sound(new File("test.wav"), slide);
+		//s.play();
 
 	}
 
@@ -235,6 +293,12 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 	public void quitter()
 	{
+		File f = new File("tmp.wav");//on supprime le fichier temporaire
+		if(f.exists())
+		{
+			lecteurSonArbre.stop();//Stoppe le thread du son
+			f.delete();
+		}
 		System.exit(0);
 	}
 
@@ -355,6 +419,14 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	{
 		JOptionPane.showMessageDialog(null, message, title, JOptionPane.INFORMATION_MESSAGE);
 	}
+ 	public static void ecrireFichier(byte[] contenu, File fichier) throws Exception
+ 	{
+ 		FileOutputStream destinationFile = null;
+ 		destinationFile = new FileOutputStream(fichier);
+ 		destinationFile.write(contenu);
+ 		destinationFile.flush();
+ 		destinationFile.close();
+ 	}
 	public void actionPerformed(ActionEvent event)
 	{
 		if (event.getSource() == fichierFermer)
@@ -445,6 +517,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	            
 	            exporter.addMouseListener(new ExporterEnregistrementClicDroit());
 	            renommer.addMouseListener(new RenommerEnregistrementClicDroit());
+	            ecouter.addMouseListener(new PlayEcouteArbre());
 	            ajouter.addMouseListener(new AjouterCategorieEnregistrementClicDroit());
 	            modifiercate.addMouseListener(new ModifierCategorieEnregistrementClicDroit());
 	            supprimer.addMouseListener(new SupprimerEnregistrementClicDroit());
@@ -735,6 +808,80 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 					return;
 				}
 			}
+		}
+	}
+	class PlayEcouteArbre extends MouseAdapter
+	{
+		private boolean play = false;
+		private int id_lu = -1;
+		public void mouseReleased(MouseEvent event)
+		{
+			//Créer le fichier
+			File f = new File("tmp.wav");
+			try
+			{
+				if (id_lu == ((Feuille) arbre.getLastSelectedPathComponent()).getId())
+				{
+					if(play == true && lecteurSonArbre != null)
+					{
+						lecteurSonArbre.stop();
+						if(f.exists())
+						{
+							f.delete();
+						}
+						play = false;
+						playEcouteArbre.setText("Play");
+					}
+					else if(play == false)
+					{
+						if (!f.createNewFile())
+						{
+							popupErreur(
+									"Impossible de créer le fichier temporaire.",
+									"Erreur");
+						}
+						byte[] contenu = bdd.recupererEnregistrement(((Feuille) arbre.getLastSelectedPathComponent()).getId());
+						id_lu = ((Feuille) arbre.getLastSelectedPathComponent()).getId();
+						ecrireFichier(contenu, f);
+						play = true;
+						playEcouteArbre.setText("Stop");
+						lecteurSonArbre = new Sound(f, slideAvance, volume);
+						lecteurSonArbre.play();
+					}
+				}
+				else
+				{
+					if(f.exists())
+					{
+						f.delete();
+					}
+					if(play == true && lecteurSonArbre != null)
+					{
+						lecteurSonArbre.stop();
+						play = false;
+					}
+					if (!f.createNewFile())
+					{
+						popupErreur(
+								"Impossible de créer le fichier temporaire.",
+								"Erreur");
+					}
+					byte[] contenu = bdd.recupererEnregistrement(((Feuille) arbre.getLastSelectedPathComponent()).getId());
+					id_lu = ((Feuille) arbre.getLastSelectedPathComponent()).getId();
+					ecrireFichier(contenu, f);
+					play = true;
+					playEcouteArbre.setText("Stop");
+					lecteurSonArbre = new Sound(f, slideAvance, volume);
+					lecteurSonArbre.play();
+					
+				}
+			}
+			catch (Exception e)
+			{
+				popupErreur("Erreur lors du lancement de l'écoute.", "Erreur");
+				return;
+			}
+			
 		}
 	}
 	public static void main(String args[])
