@@ -18,11 +18,8 @@ public class OngletLecteur extends JPanel implements ActionListener
 
 	private String nom;
 
-	private JButton boutonLecture;
-	private JSlider slider;
-
 	private File fichierVideo;
-    private LecteurVideo leLecteur;
+	private LecteurVideo leLecteur;
 
 	public OngletLecteur(File fichierVideo)
 	{
@@ -34,29 +31,10 @@ public class OngletLecteur extends JPanel implements ActionListener
 
 	public void initialiserComposants()
 	{
-		boutonLecture = new JButton();
-		boutonLecture.setToolTipText("Lancer");
-		boutonLecture.setIcon(new ImageIcon("images/Lecture.png"));
-		boutonLecture.addActionListener(this);
-		boutonLecture.setEnabled(true);
-
-		slider = new JSlider();
-		slider.setMaximum(100);
-		slider.setMinimum(0);
-		slider.setValue(0);
-		slider.setPaintTicks(false);
-		slider.setPaintLabels(false);
-
-		JToolBar toolBar = new JToolBar();
-		toolBar.setFloatable(false);
-		toolBar.add(boutonLecture);
-		toolBar.add(slider);
-
-		leLecteur=new LecteurVideo(this.fichierVideo);
+		leLecteur = new LecteurVideo(this.fichierVideo);
 
 		this.setLayout(new BorderLayout());
-		this.add(leLecteur);
-		this.add(toolBar, BorderLayout.SOUTH);
+		this.add(leLecteur,BorderLayout.CENTER);
 	}
 
 	public String getNom()
@@ -67,22 +45,10 @@ public class OngletLecteur extends JPanel implements ActionListener
 	@Override
 	public void actionPerformed(ActionEvent event)
 	{
-		if(event.getSource() == boutonLecture)
-		{
-			Thread t2 = new Thread(new Runnable(){
-				@SuppressWarnings( "static-addccess" )
-				public void run(){
-	           		leLecteur.play();
-				}
-			});
-			t2.run();
-
-
-		}
 	}
 
 	public void fermerOnglet()
 	{
-
+		this.leLecteur.stop();
 	}
 }
