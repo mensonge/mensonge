@@ -11,6 +11,7 @@ import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.ScrollPane;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -84,6 +85,8 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	
 	
 	private JButton playEcouteArbre = new JButton("Play");
+	private JButton stopEcouteArbre = new JButton("Stop");
+	private JButton pauseEcouteArbre = new JButton("Pause");
 	private JSlider slideAvance;
 	private JSlider slideSon;
 	
@@ -217,6 +220,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		 slideSon = new JSlider();
 		 slideSon.setMinimum(0);
 		 slideSon.setMaximum(100);
+		 slideSon.setValue((int) (volume*100));
 		 slideSon.addChangeListener(new ChangeListener(){
 		      public void stateChanged(ChangeEvent event){
 		        volume = ((double)slideSon.getValue()/100);
@@ -228,6 +232,8 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		    }); 
 		 
 		 playEcouteArbre.addMouseListener(new PlayEcouteArbre());
+		 stopEcouteArbre.addMouseListener(new StopEcouteArbre());
+		 pauseEcouteArbre.addMouseListener(new PauseEcouteArbre());
 		 GridBagConstraints c = new GridBagConstraints();
 		 c.gridx = 0;
 		 c.gridy = 0;
@@ -244,6 +250,12 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		 c.gridx = 0;
 		 c.gridy = 2;
 		 panelLecteur.add(playEcouteArbre,c);
+		 c.gridx = 1;
+		 c.gridy = 2;
+		 panelLecteur.add(pauseEcouteArbre,c);
+		 c.gridx = 2;
+		 c.gridy = 2;
+		 panelLecteur.add(stopEcouteArbre,c);
 		 panelEnregistrements.add(panelLecteur, BorderLayout.SOUTH);
 		/*
 		 * Conteneur
@@ -266,9 +278,6 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		this.setVisible(true);
 		this.setEnabled(true);
-		
-		//Sound s = new Sound(new File("test.wav"), slide);
-		//s.play();
 
 	}
 
@@ -296,7 +305,10 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		File f = new File("tmp.wav");//on supprime le fichier temporaire
 		if(f.exists())
 		{
-			lecteurSonArbre.stop();//Stoppe le thread du son
+			if(lecteurSonArbre != null)
+			{
+				lecteurSonArbre.stop();//Stoppe le thread du son
+			}
 			f.delete();
 		}
 		System.exit(0);
@@ -614,6 +626,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				{
 					fichier = fileChooser.getSelectedFile().getCanonicalPath();
 					int id = ((Feuille) arbre.getLastSelectedPathComponent()).getId();
+					//afficher gif
 					bdd.exporter(fichier, id, 2);
 				}
 				catch (Exception e1)
@@ -812,73 +825,105 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	}
 	class PlayEcouteArbre extends MouseAdapter
 	{
+		private int id_lu;
 		private boolean play = false;
-		private int id_lu = -1;
 		public void mouseReleased(MouseEvent event)
 		{
 			//Créer le fichier
 			File f = new File("tmp.wav");
+			if(menuClicDroit != null)
+			{
+				menuClicDroit.setEnabled(false);
+				menuClicDroit.setVisible(false);
+			}
 			try
 			{
-				if (id_lu == ((Feuille) arbre.getLastSelectedPathComponent()).getId())
+				if(lecteurSonArbre != null && lecteurSonArbre.isPause() == true && ((Feuille) arbre.getLastSelectedPathComponent()).getId() == id_lu)
 				{
-					if(play == true && lecteurSonArbre != null)
+					lecteurSonArbre.setPause(false);
+				}
+				else //if(! (lecteurSonArbre.isPause() == true && ((Feuille) arbre.getLastSelectedPathComponent()).getId() == id_lu))
+				{
+					if(lecteurSonArbre != null)
 					{
 						lecteurSonArbre.stop();
-						if(f.exists())
-						{
-							f.delete();
-						}
-						play = false;
-						playEcouteArbre.setText("Play");
 					}
-					else if(play == false)
-					{
-						if (!f.createNewFile())
-						{
-							popupErreur(
-									"Impossible de créer le fichier temporaire.",
-									"Erreur");
-						}
-						byte[] contenu = bdd.recupererEnregistrement(((Feuille) arbre.getLastSelectedPathComponent()).getId());
-						id_lu = ((Feuille) arbre.getLastSelectedPathComponent()).getId();
-						ecrireFichier(contenu, f);
-						play = true;
-						playEcouteArbre.setText("Stop");
-						lecteurSonArbre = new Sound(f, slideAvance, volume);
-						lecteurSonArbre.play();
-					}
-				}
-				else
-				{
-					if(f.exists())
+					if (f.exists())
 					{
 						f.delete();
 					}
-					if(play == true && lecteurSonArbre != null)
-					{
-						lecteurSonArbre.stop();
-						play = false;
-					}
 					if (!f.createNewFile())
 					{
-						popupErreur(
-								"Impossible de créer le fichier temporaire.",
-								"Erreur");
+						throw new Exception(
+								"Impossible de créer le fichier temporaire.");
 					}
 					byte[] contenu = bdd.recupererEnregistrement(((Feuille) arbre.getLastSelectedPathComponent()).getId());
-					id_lu = ((Feuille) arbre.getLastSelectedPathComponent()).getId();
 					ecrireFichier(contenu, f);
-					play = true;
-					playEcouteArbre.setText("Stop");
 					lecteurSonArbre = new Sound(f, slideAvance, volume);
+					id_lu = ((Feuille) arbre.getLastSelectedPathComponent()).getId();
 					lecteurSonArbre.play();
-					
 				}
 			}
 			catch (Exception e)
 			{
-				popupErreur("Erreur lors du lancement de l'écoute.", "Erreur");
+				popupErreur("Erreur lors du lancement de l'écoute: " + e.getMessage(), "Erreur");
+				return;
+			}
+			
+		}
+	}
+	class StopEcouteArbre extends MouseAdapter
+	{
+		public void mouseReleased(MouseEvent event)
+		{
+			//Créer le fichier
+			File f = new File("tmp.wav");
+			if(menuClicDroit != null)
+			{
+				menuClicDroit.setEnabled(false);
+				menuClicDroit.setVisible(false);
+			}
+			try
+			{
+				if(lecteurSonArbre != null)
+				{
+					lecteurSonArbre.stop();
+				}
+				if(f.exists())
+				{
+					f.delete();
+				}
+			}
+			catch (Exception e)
+			{
+				popupErreur("Erreur lors du lancement de l'écoute: " + e.getMessage(), "Erreur");
+				return;
+			}
+			
+		}
+	}
+	class PauseEcouteArbre extends MouseAdapter
+	{
+		public void mouseReleased(MouseEvent event)
+		{
+			DialogueOperationLongue d = new DialogueOperationLongue(null, "toot", true);
+			d.exporterBase();
+			if(menuClicDroit != null)
+			{
+				menuClicDroit.setEnabled(false);
+				menuClicDroit.setVisible(false);
+			}
+			
+			try
+			{
+				if(lecteurSonArbre != null)
+				{
+					lecteurSonArbre.pause();
+				}
+			}
+			catch (Exception e)
+			{
+				popupErreur("Erreur lors du lancement de l'écoute: " + e.getMessage(), "Erreur");
 				return;
 			}
 			
@@ -899,3 +944,11 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 }
 
+/*
+ * Image image = null;
+		image = getToolkit().getImage("loading.gif");
+		if(image != null) // Si l'image existe, ...
+		{
+		g.drawImage(image, 200, 20, this); // ... on la dessine
+		}
+		*/
