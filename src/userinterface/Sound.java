@@ -97,6 +97,16 @@ public class Sound extends JPanel
 		this.ajoutListener();
 	}
 
+	public boolean isPause()
+	{
+		return pause;
+	}
+
+	public void setPause(boolean pause)
+	{
+		this.pause = pause;
+	}
+
 	private void ajoutListener()
 	{
 		if (this.reader.isOpen())
@@ -164,15 +174,25 @@ public class Sound extends JPanel
 		this.stop = false;
 
 		if (!this.reader.isOpen())
-			{
-				
-				this.ouvrirAudio();
-			}
+		{
+			this.ouvrirAudio();
+		}
 		new Thread(new Runnable()
 		{
 			public void run()
 			{
-				while (reader.readPacket() == null && !pause){}
+				while (reader.readPacket() == null && !stop)
+				{
+					while(pause)
+					{
+						try
+						{
+							Thread.sleep(100);
+						}
+						catch (InterruptedException e)
+						{}
+					}
+				}
 			}
 		}).start();
 	}
@@ -180,8 +200,6 @@ public class Sound extends JPanel
 	public void pause()
 	{
 		this.pause = true;
-		//this.boutonLecture.setIcon(imageIconLecture);
-		//this.boutonLecture.setToolTipText("Lancer");
 	}
 
 	public void stop()
