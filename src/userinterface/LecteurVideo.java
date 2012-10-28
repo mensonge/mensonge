@@ -80,7 +80,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 		}
 		catch (IOException e)
 		{
-			GraphicalUserInterface.popupErreur(e.getMessage());
+			GraphicalUserInterface.popupErreur(e.getMessage(),"Erreur");
 		}
 
 		this.videoStreamIndex = 0;

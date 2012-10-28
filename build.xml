@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<project basedir="." name="LieLab" default="run">
+	<property name="src.dir" value="src"/>
+	<property name="bin.dir" value="bin"/>
+	<property name="lib.dir" value="lib"/>
+	<property name="jar.dir" value="."/>
+	<property name="main-class"  value="userinterface.GraphicalUserInterface"/>
+
+	<target name="clean">
+		<delete dir="${bin.dir}"/>
+		<echo message="Fin du nettoyage"/>
+	</target>
+
+	<path id="dep.runtime">
+    		<fileset dir="./lib">
+        		<include name="**/*.jar" />
+    		</fileset>
+	</path>
+	<property name="dep_cp" value="${toString:dep.runtime}" />
+	<target name="compile" depends="clean">
+		<mkdir dir="${bin.dir}"/>
+		<javac classpathref="dep.runtime" srcdir="${src.dir}" destdir="${bin.dir}"/>
+		<echo message="Fin de la compilation"/>
+	</target>
+
+	<target name="jar" depends="compile">
+		<pathconvert property="libs.project" pathsep=" ">
+    			<mapper>
+      				<chainedmapper>
+        				<flattenmapper />
+        				<globmapper from="*" to="lib/*" />
+      				</chainedmapper>
+    			</mapper>
+    			<path>
+      				<fileset dir="${lib.dir}">
+        				<include name="**/*.jar" />
+      				</fileset>
+    			</path>
+  		</pathconvert>
+		<jar destfile="LieLab.jar" basedir="${bin.dir}" >
+    			<manifest>
+      				<attribute name="Main-Class" value="${main-class}"/>
+      				<attribute name="Class-Path" value="${libs.project}"/>
+    			</manifest>
+  		</jar>
+	</target>
+
+	<target name="run" depends="jar">
+		<java jar="${jar.dir}/LieLab.jar" fork="true"/>
+	</target>
+</project>
