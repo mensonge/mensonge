@@ -82,11 +82,11 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	private JMenuItem baseExporter;
 	private JMenuItem baseImporter;
 	private JMenuItem baseAjouterCategorie;
+	private JMenuItem play;
 	
-	//--------------------------------------------------------------------------------	
-	//private JPopupMenu menuClicDroit = new JPopupMenu();//sers au clic droit
-	//--------------------------------------------------------------------------------
+	private PanneauArbre panneauArbre;
 	
+
 	private BaseDeDonnees bdd = null;
 	
 
@@ -147,9 +147,11 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		/*
 		 * Conteneur
 		 */
+		this.panneauArbre = new PanneauArbre(bdd);
+		
 		JPanel conteneur = new JPanel(new BorderLayout());
 		conteneur.add(onglets,BorderLayout.CENTER);
-		conteneur.add(new PanneauArbre(bdd),BorderLayout.EAST);
+		conteneur.add(panneauArbre,BorderLayout.EAST);
 		/*
 		 * Fenêtre
 		 */
@@ -191,12 +193,6 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		File f = new File("tmp.wav");//on supprime le fichier temporaire
 		if(f.exists())
 		{
-			/*
-			if(lecteurSonArbre != null)
-			{
-				lecteurSonArbre.stop();//Stoppe le thread du son
-			}
-			*/
 			f.delete();
 		}
 		System.exit(0);
@@ -206,8 +202,8 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	{
 		if(event.getID() == WindowEvent.WINDOW_DEACTIVATED)
 		{
-			//menuClicDroit.setEnabled(false);
-			//menuClicDroit.setVisible(false);
+			this.panneauArbre.getMenuClicDroit().setEnabled(false);
+			this.panneauArbre.getMenuClicDroit().setVisible(false);
 		}
 		if(event.getID() == WindowEvent.WINDOW_CLOSING)
 		{
@@ -229,7 +225,6 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			int a = e.getCode();
 			if(a == 2)
 			{
-				//popupInfo("Base en cour de creation ...");
 				try
 				{
 					bdd.createDatabase();
@@ -238,8 +233,6 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				{
 					popupErreur("[-] Erreur lors de la creation: " + e1.getMessage(), "Erreur");
 				}
-				//creation de la base
-				//System.out.println("[i]Base cree.");
 			}
 			else
 			{

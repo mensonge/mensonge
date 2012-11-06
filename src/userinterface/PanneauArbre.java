@@ -198,6 +198,16 @@ public class PanneauArbre extends JPanel
         }
     }
 
+	public JPopupMenu getMenuClicDroit()
+	{
+		return menuClicDroit;
+	}
+
+	public void setMenuClicDroit(JPopupMenu menuClicDroit)
+	{
+		this.menuClicDroit = menuClicDroit;
+	}
+	
 	class ClicDroit implements MouseListener
 	{
 		
@@ -214,7 +224,7 @@ public class PanneauArbre extends JPanel
 				menuClicDroit = new JPopupMenu() ;
 	            JMenuItem exporter = new JMenuItem("Exporter") ;
 	            JMenuItem renommer = new JMenuItem("Renommer");
-	            //JMenuItem modifier = new JMenuItem("Modifier ...");
+	           
 	            JMenuItem ecouter = new JMenuItem("Ecouter") ;
 	            JMenuItem modifiercate = new JMenuItem("Changer categorie");
 	            JMenuItem supprimer = new JMenuItem("Supprimer les enregistrements");

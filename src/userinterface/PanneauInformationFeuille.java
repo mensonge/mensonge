@@ -3,6 +3,7 @@ package userinterface;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -49,4 +50,3 @@ public class PanneauInformationFeuille extends JPanel
 	}
 	
 }
-

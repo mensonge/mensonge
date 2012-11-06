@@ -16,7 +16,6 @@ public class DialogueOperationLongue extends JDialog
 		super(parent, title, modal);
 		image = getToolkit().getImage("loading.gif");
 		PaneauDialogueOperation pan = new PaneauDialogueOperation(image);
-
 		
 		this.setContentPane(pan);
 		this.setLocationRelativeTo(null);
