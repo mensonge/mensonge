@@ -609,6 +609,7 @@ public class BaseDeDonnees
 			if(rs.next())//s'il y a un retour on renvoie le tableau de byte sinon une exception est levee
 			{
 				retour = rs.getBytes("enregistrement");
+				ps.close();
 				rs.close();
 				return retour;
 			}
@@ -642,9 +643,6 @@ public class BaseDeDonnees
 		}
 		catch(Exception e)
 		{
-			e.printStackTrace();
-			System.out.println(e.getLocalizedMessage());
-			System.exit(0);
 			throw new DBException("Erreur lors de l'ajout de la categorie : " + e.getMessage(), 3);
 		}
 		
