@@ -159,12 +159,11 @@ public class PanneauArbre extends JPanel
 			while(rs_cat.next())
 			{
 				DefaultMutableTreeNode node = new DefaultMutableTreeNode(rs_cat.getString("nomcat"));
-				rs_enr = bdd.getListeEnregistrement(rs_cat.getInt("idcat"));
+				rs_enr = bdd.getListeEnregistrementCategorie(rs_cat.getInt("idcat"));
 				while(rs_enr.next())
 				{
-					Feuille f = new Feuille(rs_enr.getInt("id"), rs_enr.getString("nom"), rs_enr.getInt("duree"), rs_enr.getInt("taille"), rs_enr.getString("nomCat"));
+					Feuille f = new Feuille(rs_enr.getInt("id"), rs_enr.getString("nom"), rs_enr.getInt("duree"), rs_enr.getInt("taille"), rs_enr.getString("nomCat"), rs_enr.getString("nomsuj"));
 					node.add(f);
-					
 				}
 				rs_enr.close();
 				racine.add(node);
@@ -174,6 +173,7 @@ public class PanneauArbre extends JPanel
 		} 
 		catch(Exception e)
 		{
+			e.printStackTrace();
 			GraphicalUserInterface.popupErreur("Erreur lors du chargement des enregistrement.", "Erreur");
 		}
 	}
@@ -453,7 +453,7 @@ public class PanneauArbre extends JPanel
 					{
 						if( ! (arbre.getSelectionPaths()[i].getLastPathComponent() instanceof Feuille))
 						{
-							ResultSet rs = bdd.getListeEnregistrement(bdd.getCategorie(arbre.getSelectionPaths()[i].getLastPathComponent().toString()));
+							ResultSet rs = bdd.getListeEnregistrementCategorie(bdd.getCategorie(arbre.getSelectionPaths()[i].getLastPathComponent().toString()));
 							if(rs.next())
 							{
 								GraphicalUserInterface.popupErreur("Une categorie peut être supprimée quand elle n'a plus d'enregistrements.", "Erreur");

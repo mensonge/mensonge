@@ -395,11 +395,3 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 }
 
-/*
- * Image image = null;
-		image = getToolkit().getImage("loading.gif");
-		if(image != null) // Si l'image existe, ...
-		{
-		g.drawImage(image, 200, 20, this); // ... on la dessine
-		}
-		*/

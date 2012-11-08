@@ -20,8 +20,9 @@ public class Feuille extends DefaultMutableTreeNode
 	int duree;
 	int taille;
 	String categorie;
+	String sujet;
 	
-	public Feuille(int id, String nom, int duree, int taille, String categorie)
+	public Feuille(int id, String nom, int duree, int taille, String categorie, String sujet)
 	{
 		super(nom);
 		this.id = id;
@@ -37,6 +38,7 @@ public class Feuille extends DefaultMutableTreeNode
 		retour.put("Duree", Integer.toString(duree) + " Seconde(s)");
 		retour.put("Taille", Integer.toString(taille) + " Octet(s)");
 		retour.put("Categorie", categorie);
+		retour.put("Sujet", sujet);
 		return retour;
 	}
 	public int getId() {
