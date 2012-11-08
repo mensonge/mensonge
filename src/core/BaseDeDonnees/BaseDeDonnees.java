@@ -38,10 +38,6 @@ public class BaseDeDonnees
 	 */
 	public BaseDeDonnees(final String baseDeDonnees) throws DBException
 	{
-	//	if( ! (new File(baseDeDonnees)).exists())//on creer un nouvelle objet File avec lequel on appel la methode exist pour verifier l'existance du fichier. Ensuite le ramasse miette fait le reste.
-	//	{
-	//		throw new DBException("Le fichier \"" + baseDeDonnees + "\" n'existe pas.", 4);//le fichier n'existe pas, on lance une exception
-	//	}
 		fileName = baseDeDonnees;
 	}
 	/**
@@ -784,7 +780,174 @@ public class BaseDeDonnees
 			throw new DBException("Erreur lors de la recuperation de la categories: " + e.getMessage(), 3);
 		}
 		return retour;
-	}	
+	}
+	
+	/**
+	 * Permet d'ajouter une categorie
+	 * @param nom le nom de la nouvelle categorie
+	 * @throws DBException
+	 */
+	public void ajouterSujet(final String nom) throws DBException
+	{
+		if(connexion == null)
+		{
+			return;
+		}
+		try
+		{
+			PreparedStatement ps = connexion.prepareStatement("INSERT INTO sujet (nomsuj) VALUES (?)");//preparation de la requete
+			ps.setString(1, nom);//Remplissage de la requete
+			if(ps.executeUpdate() > 0)//execution et test de la reussite de la requete
+			{
+					connexion.commit();//Validation des modifications
+			}
+			ps.close();
+		}
+		catch(Exception e)
+		{
+			throw new DBException("Erreur lors de l'ajout du sujet : " + e.getMessage(), 3);
+		}
+		
+	}
+	/**
+	 * Supprime une categorie existante (ou non)
+	 * @param id l'id de la categorie a supprimer
+	 * @throws DBException
+	 */
+	public void supprimerSujet(final int id) throws DBException//comment on fait pour les enregistrements de cette cate ?
+	{
+		if(connexion == null)
+		{
+			return;
+		}
+		try
+		{
+			PreparedStatement ps = connexion.prepareStatement("DELETE FROM sujet WHERE idSuj=?");//preparation de la requete
+			ps.setInt(1, id);//Remplissage de la requete
+			if(ps.executeUpdate() > 0)//execution et test de la reussite de la requete
+			{
+				connexion.commit();//Validation des modifications
+			}
+			ps.close();//Fermeture des ressources
+		}
+		catch(Exception e)
+		{
+			throw new DBException("Erreur lors de la suppression du sujet: " + e.getMessage(), 3);
+		}
+		
+	}
+	/**
+	 * Permet de recuperer la liste des categories avec les colonnes dans cette ordre: nomCat, idCat
+	 * @return Le resultat sous la forme d'un tableau parcourable dans un sens
+	 * @throws DBException
+	 */
+	public ResultSet getListeSujet() throws DBException
+	{
+		if(connexion == null)
+		{
+			return null;
+		}
+		try
+		{
+			Statement stat = connexion.createStatement();//creation du Statement
+			ResultSet rs = stat.executeQuery("SELECT nomSuj, idsuj FROM sujet;");//execution de la requete
+			return rs;
+		}
+		catch(Exception e)
+		{
+			throw new DBException("Erreur lors de la recuperation des sujets: " + e.getMessage(), 3);
+		}
+	}
+	/**
+	 * Permet de changer le nom d'une categorie
+	 * @param id l'id de la categorie a modifier
+	 * @param nom le nouveau nom
+	 * @throws DBException
+	 */
+	public void modifierSujet(final int id, final String nom) throws DBException
+	{
+		if(connexion == null)
+		{
+			return;
+		}
+		try
+		{
+			PreparedStatement ps = connexion.prepareStatement("UPDATE sujet SET nomSuj=? WHERE idSuj=?");//preparation de la requete
+			ps.setString(1, nom);//Remplissage de la requete
+			ps.setInt(2, id);
+			if(ps.executeUpdate() > 0)//execution et test de la reussite de la requete
+			{
+				connexion.commit();//Validation des modifications
+			}
+			ps.close();//Fermeture des ressources
+			}
+			catch(Exception e)
+			{
+				throw new DBException("Erreur lors de la modification du sujet: " + e.getMessage(), 3);
+			}
+	}
+	/**
+	 * Recupere le nom de la categorie correspondant a cette id
+	 * @param idSuj id de la categorie
+	 * @return le nom de la categorie
+	 * @throws DBException
+	 */
+	public String getSujet(final int idSuj) throws DBException
+	{
+		String retour;
+		if(connexion == null)
+		{
+			return null;
+		}
+		if( ! this.categorieExiste(idSuj))//test l'existance de la categorie
+		{
+			throw new DBException("Sujet inexistante.", 3);
+		}
+		try
+		{
+
+			PreparedStatement ps = connexion.prepareStatement("SELECT nomSuj FROM sujet WHERE idSuj=?;");//preparation de la requete
+			ps.setInt(1, idSuj);//Remplissage de la requete
+			ResultSet rs = ps.executeQuery();//execution de la requete
+			retour = rs.getString(1);
+			rs.close();
+			ps.close();
+		}
+		catch(Exception e)
+		{
+			throw new DBException("Erreur lors de la recuperation du sujet: " + e.getMessage(), 3);
+		}
+		return retour;
+	}
+	/**
+	 * Recupere l'id d'une categorie a partir du nom. S'il y a plusieur categorie du meme nom, il renvera le premier id
+	 * @param nomSuj le nom de la categorie
+	 * @return l'id de la categorie
+	 * @throws DBException
+	 */
+	public int getSujet(final String nomSuj) throws DBException
+	{
+		int retour;
+		if(connexion == null)
+		{
+			return -1;
+		}
+		try
+		{
+			PreparedStatement ps = connexion.prepareStatement("SELECT idSuj FROM sujet WHERE nomSuj=?;");//preparation de la requete
+			ps.setString(1, nomSuj);//Remplissage de la requete
+			ResultSet rs = ps.executeQuery();
+			retour = rs.getInt(1);
+			rs.close();
+			ps.close();
+		}
+		catch(Exception e)
+		{
+			throw new DBException("Erreur lors de la recuperation du sujet: " + e.getMessage(), 3);
+		}
+		return retour;
+	}
+	
 	/**
 	 * Cette fonction creer la structure de la base de donne.
 	 * @throws DBException
@@ -796,12 +959,17 @@ public class BaseDeDonnees
 			Statement stat = connexion.createStatement();//creation du Statement
 			stat.executeUpdate("DROP TABLE if exists enregistrements;");//suppression des table si elle existe
 			stat.executeUpdate("DROP TABLE if exists categorie;");
+			stat.executeUpdate("DROP TABLE if exists sujet;");
 			//Creation des table et verification de la bonne execution des requetes
 			if(stat.executeUpdate("CREATE TABLE categorie (idcat  INTEGER PRIMARY KEY AUTOINCREMENT, nomcat VARCHAR2(128));") != 0)
 			{
 				throw new Exception("Erreur de creation de la table categorie.");
 			}
-			if(stat.executeUpdate("CREATE TABLE enregistrements (id  INTEGER PRIMARY KEY AUTOINCREMENT, enregistrement BLOB, duree INTEGER, taille INTEGER, nom VARCHAR2(128), idcat INTEGER);") != 0)//FIXME ajouter la reference pour le champ idcat
+			if(stat.executeUpdate("CREATE TABLE enregistrements (id  INTEGER PRIMARY KEY AUTOINCREMENT, enregistrement BLOB, duree INTEGER, taille INTEGER, nom VARCHAR2(128), idcat INTEGER, idsuj INTEGER);") != 0)//FIXME ajouter la reference pour le champ idcat
+			{
+				throw new Exception("Erreur de creation de la table enregistrement.");
+			}
+			if(stat.executeUpdate("CREATE TABLE sujet (idsuj  INTEGER PRIMARY KEY AUTOINCREMENT, nomsuj VARCHAR2(128));") != 0)//FIXME ajouter la reference pour le champ idcat
 			{
 				throw new Exception("Erreur de creation de la table enregistrement.");
 			}
@@ -877,6 +1045,72 @@ public class BaseDeDonnees
 		catch(Exception e)
 		{
 			throw new DBException("Probleme lors de la verification de l'existance de la categorie: " + e.getMessage(), 1);
+		}
+	}
+	/**
+	 * Verifie si une categorie existe
+	 * @param idSuj id de la categorie a verifier
+	 * @return true si la categorie existe et false sinon
+	 * @throws DBException
+	 */
+	private boolean sujetExiste(final int idSuj) throws DBException
+	{
+		if(connexion == null)
+		{
+			return false;
+		}
+		try
+		{
+			PreparedStatement ps = connexion.prepareStatement("SELECT 1 FROM sujet WHERE idSuj=?");
+			ps.setInt(1, idSuj);
+			ResultSet rs = ps.executeQuery();
+			
+			if(rs.next())
+			{
+				rs.close();//Fermeture des ressources
+				ps.close();
+				return true;
+			}
+			rs.close();//Fermeture des ressources
+			ps.close();
+			return false;
+		}
+		catch(Exception e)
+		{
+			throw new DBException("Probleme lors de la verification de l'existance du sujet: " + e.getMessage(), 1);
+		}
+	}
+	/**
+	 * Verifie si une categorie existe
+	 * @param nomSuj nom de la categorie a verifier
+	 * @return true si la categorie existe et false sinon
+	 * @throws DBException
+	 */
+	private boolean sujetExiste(final String nomSuj) throws DBException
+	{
+		if(connexion == null)
+		{
+			return false;
+		}
+		try
+		{
+			PreparedStatement ps = connexion.prepareStatement("SELECT 1 FROM sujet WHERE nomSuj=?");
+			ps.setString(1, nomSuj);
+			ResultSet rs = ps.executeQuery();
+			
+			if(rs.next())
+			{
+				rs.close();//Fermeture des ressources
+				ps.close();
+				return true;
+			}
+			rs.close();//Fermeture des ressources
+			ps.close();
+			return false;
+		}
+		catch(Exception e)
+		{
+			throw new DBException("Probleme lors de la verification de l'existance du sujet: " + e.getMessage(), 1);
 		}
 	}
 	/** copie le fichier source dans le fichier resultat

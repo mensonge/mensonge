@@ -1,4 +1,4 @@
-package core;
+package coeffCepstraux.core;
 
 import java.io.File;
 

@@ -13,6 +13,10 @@ import java.util.HashMap;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
+import core.plugins.FileListFilter;
+import core.plugins.Plugin;
+import core.plugins.PluginManager;
+
 public class PluginManager
 {
 	private HashMap<String, Plugin> listePlugins;

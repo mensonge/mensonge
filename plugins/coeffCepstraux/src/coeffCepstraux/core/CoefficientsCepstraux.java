@@ -1,10 +1,11 @@
-package core;
+package coeffCepstraux.core;
 
-import core.IExtraction;
-import core.plugins.Plugin;
 
 import java.io.File;
 import java.util.ArrayList;
+
+import coeffCepstraux.core.IExtraction;
+import coeffCepstraux.core.plugins.Plugin;
 
 public class CoefficientsCepstraux implements Plugin
 {

@@ -1,4 +1,4 @@
-package core.plugins;
+package coeffCepstraux.core.plugins;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -9,6 +9,10 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
+
+import coeffCepstraux.core.plugins.FileListFilter;
+import core.plugins.Plugin;
+import coeffCepstraux.core.plugins.PluginManager;
 
 public class PluginManager
 {

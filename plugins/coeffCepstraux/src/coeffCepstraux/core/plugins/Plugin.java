@@ -1,8 +1,9 @@
-package core.plugins;
+package coeffCepstraux.core.plugins;
 
-import core.IExtraction;
 import java.io.File;
 import java.util.ArrayList;
+
+import coeffCepstraux.core.IExtraction;
 
 public interface Plugin
 {

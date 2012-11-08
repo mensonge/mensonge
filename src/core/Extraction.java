@@ -7,6 +7,8 @@ import java.io.IOException;
 import java.io.ByteArrayInputStream;  
 import java.io.FileInputStream;  
 
+import core.IExtraction;
+
 import com.xuggle.xuggler.Global;
 import com.xuggle.xuggler.IAudioSamples;
 import com.xuggle.xuggler.ICodec;
@@ -18,7 +20,6 @@ import com.xuggle.xuggler.IPacket;
 import com.xuggle.xuggler.IStream;
 import com.xuggle.xuggler.IStreamCoder;
 
-import core.IExtraction;
 
 public class Extraction implements IExtraction
 {
