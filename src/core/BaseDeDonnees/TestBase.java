@@ -7,8 +7,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Formatter;
 
 import org.junit.*;
@@ -20,158 +23,10 @@ public class TestBase
 
 	public static void main(String[] args)
 	{
-		TestBase.checkRunning();
+		
 	}
 
-	/**
-	 * Fonction testant le temps d'execution en ecriture passant par l'objet BaseDeDonnees de facon à pouvoir optimiser.
-	 */
-	public static void checkOptiWrite()//780Mo en 105 seconde sur mon PC
-	{
-		long max = 100; //le nombre d'operation a repeter
-		long InitTime = System.currentTimeMillis(), endTime;//on declare les variable du temps et on initialise le depart
-		BaseDeDonnees db = null;
-		try
-		{
-			db = new BaseDeDonnees("LieLabTest.db");//on creer l'objet BaseDeDonnee sur un fichier special
-			db.connexion();//connexion
-			db.createDatabase();//creation de la base et effacement d'evantuel table existante
-			db.ajouterCategorie("Poney des bois.");//ajout de categorie
-		}
-		catch(DBException e)
-		{
-			int a = e.getCode();//on recupere le code de l'exception
-			if(a == 2)//Si c'est une erreur de structure de base on creer la base
-			{
-				System.out.println("[i]Base en cour de creation ...");
-				try
-				{
-					db.createDatabase();
-					db.ajouterCategorie("Poney des bois.");//ajout de categorie
-				} 
-				catch (DBException e1)
-				{
-					System.out.println("[-] Erreur lors de la creation: " + e1.getMessage());
-				}
-				//creation de la base
-				System.out.println("[i]Base cree.");
-			}
-			else//Sinon on affiche l'erreur et on arrete
-			{
-				System.out.println("[-]Erreur lors de la connexion. " + e.getMessage());
-				return;
-			}
-		}
-		
-		for(long i = 0; i < max; i++)//boucle sur l'ajout d'un enregistrement
-		{
-			try
-			{
-				db.ajouterEnregistrement("Statl3r est un demi-elf nain quadri classe", 77, 1, "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz".getBytes());
-			}
-			catch (DBException e)
-			{
-				System.out.println("[-] Erreur lors de l'ajout " + i + ": " + e.getMessage() );
-			}
-		}
-		
-		try
-		{
-			db.deconnexion();//deconnexion a la base
-		}
-		catch (DBException e)
-		{
-			System.out.println("[-] Erreur lors de la deconnexion: " + e.getMessage() );
-		}
-		endTime = System.currentTimeMillis();//recuperation du temps puis affichage d'information
-		System.out.println("[Opti Write] Le temps ecoule depuis le debut de la fonction est de " + (endTime - InitTime) + " ms.");
-		System.out.println("[Opti Write] Ajout de " + max + " enregistrement de chacun 78 bytes soit un total de " + 78*max + " bytes ajoute.");
-		System.out.println("[Opti Write] Temps/byte: " + (endTime - InitTime)/(78*max) + " ms\tTemps/enregistrement: " + (endTime - InitTime)/max + " ms");
-	}
-	/**
-	 * Fonction testant le temps d'execution en lecture passant par l'objet BaseDeDonnees de facons a pouvoir optimiser.
-	 */
-	public static void checkOptiRead()//780Mo en 24 seconde sur mon PC
-	{
-		long max = 100;//le nombre d'operation a repeter
-		long InitTime = System.currentTimeMillis(), endTime;//on declare les variable du temps et on initialise le depart
-		BaseDeDonnees db = null;
-		try
-		{
-			db = new BaseDeDonnees("LieLabTest.db");//on creer l'objet BaseDeDonnee sur un fichier special
-			db.connexion();//connexion
-			db.createDatabase();//creation de la base et effacement d'evantuel table existante
-			db.ajouterCategorie("Poney des bois.");//ajout de categorie
-		}
-		catch(DBException e)
-		{
-			int a = e.getCode();//on recupere le code de l'exception
-			if(a == 2)//Si c'est une erreur de structure de base on creer la base
-			{
-				System.out.println("[i]Base en cour de creation ...");
-				try
-				{
-					db.createDatabase();
-					db.ajouterCategorie("Poney des bois.");//ajout de categorie
-				} 
-				catch (DBException e1)
-				{
-					System.out.println("[-] Erreur lors de la creation: " + e1.getMessage());
-				}
-				//creation de la base
-				System.out.println("[i]Base cree.");
-			}
-			else//Sinon on affiche l'erreur et on arrete
-			{
-				System.out.println("[-]Erreur lors de la connexion. " + e.getMessage());
-				return;
-			}
-		}
-		try
-		{
-			//On ajoute un enregistrement
-			db.ajouterEnregistrement("Statl3r est un demi-elf nain quadri classe", 77, 1, "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz".getBytes());
-		}
-		catch (DBException e)
-		{
-			System.out.println("[-] Erreur lors de l'ajout : " + e.getMessage() );
-			return;
-		}
-		
-		for(long i = 0; i < max; i++)//boucle en lecture
-		{
-			try
-			{
-				ResultSet rs = db.getListeEnregistrement();
-				byte[] tab = db.recupererEnregistrement(rs.getInt(5));
-				if(tab != null)
-				{
-					
-				}
-			}
-			catch (DBException e)
-			{
-				System.out.println("[-] Erreur lors de la lecture numero " + i + ": " + e.getMessage() );
-			}
-			catch(Exception e)
-			{
-				System.out.println("[-] Erreur lors de la lecture numero " + i + ": " + e.getMessage() );
-			}
-		}
-		
-		try
-		{
-			db.deconnexion();//deconexion
-		}
-		catch (DBException e)
-		{
-			System.out.println("[-] Erreur lors de la deconnexion: " + e.getMessage() );
-		}
-		endTime = System.currentTimeMillis();//recuperation du temps puis affichage des information
-		System.out.println("[Opti Read]La fonction a inseree un enregistrement de " + 78 + " bytes et l'a lu " + max + " fois.");
-		System.out.println("[Opti Read]Le temps ecoule depuis le debut de la fonction est de " + (endTime - InitTime) + " ms.");
-		System.out.println("[Opti Read]Le temps par enregistrement :" + (endTime - InitTime)/max + " ms.");
-	}
+	
 	/**
 	 * Fonction permettant de verifier le bon fonctionnement de l'objet BaseDeDonnees en fournissant un echantillons de test.
 	 */
@@ -355,7 +210,7 @@ public class TestBase
 					sourceFile.close();
 					System.out.println((int) f.length());
 					System.out.println(contenu.length);
-					db.ajouterEnregistrement("Fichierwave", 5, 2, contenu);
+					//db.ajouterEnregistrement("Fichierwave", 5, 2, contenu);
 					System.out.println("[+] Ajout du fichier test.wav");
 				}
 				catch (Exception e)
@@ -417,8 +272,8 @@ public class TestBase
  			db.ajouterCategorie("Dieux*");
  			db.ajouterCategorie("Licorne");
  			
- 			db.ajouterEnregistrement("Hades* ", 7, 1, "azerty".getBytes());
- 			db.ajouterEnregistrement("Bella*", 7, 2, "qsdfgh".getBytes());
+ 			//db.ajouterEnregistrement("Hades* ", 7, 1, "azerty".getBytes());
+ 			//db.ajouterEnregistrement("Bella*", 7, 2, "qsdfgh".getBytes());
  			
  			db.deconnexion();
  		}
@@ -570,15 +425,89 @@ public class TestBase
 	}
 	
 	@Test
+	public void testAjoutSujet() throws DBException, SQLException
+	{
+		int i = 0;
+		db.ajouterSujet("Artemis");
+		db.ajouterSujet("Ronald");
+		db.ajouterSujet("Gwen");
+		
+		ResultSet rs = db.getListeSujet();
+		while(rs.next())
+		{
+			i++;
+		}
+		rs.close();
+		assertTrue(i == 3);
+	}
+	
+	@Test
+	public void testRenommerSujet() throws DBException, SQLException
+	{
+		int i = 0;
+		String nom = null;
+		db.modifierSujet(2, "Toshiro");
+		
+		
+		ResultSet rs = db.getListeSujet();
+		while(rs.next())
+		{
+			i++;
+			if(i == 2)
+			{
+				nom = rs.getString(1);
+			}
+		}
+		rs.close();
+		assertTrue(i == 3 && nom.equals("Toshiro"));
+	}
+	
+	@Test
+	public void testAfficherSujet() throws DBException, SQLException, NoSuchAlgorithmException
+	{
+		int i = 0;
+		String nom = new String();
+		ResultSet rs = db.getListeSujet();
+		while(rs.next())
+		{
+			i++;
+			nom += rs.getString(1);
+		}
+		rs.close();
+		assertTrue(sha1("ArtemisToshiroGwen".getBytes()).equals(sha1(nom.getBytes())));
+	}
+	
+	@Test
+	public void testConvertionSUjet() throws DBException, SQLException, NoSuchAlgorithmException
+	{
+		assertTrue(db.getSujet(2).equals("Toshiro") && db.getSujet("Gwen") == 3);
+	}
+	
+	@Test
+	public void testSupprimerSujet() throws DBException, SQLException
+	{
+		int i = 0;
+		db.supprimerSujet(1);
+		
+		ResultSet rs = db.getListeSujet();
+		while(rs.next())
+		{
+			i++;
+		}
+		rs.close();
+		assertTrue(i == 2);
+	}
+	
+	@Test
 	public void testAjoutEnregistrement() throws DBException, SQLException
 	{
-		db.ajouterEnregistrement("Tornado", 24, 2, "abcdefg".getBytes());
-		db.ajouterEnregistrement("Esperan", 23, 2, "love".getBytes());
-		db.ajouterEnregistrement("Gracia", 22, 3, "mort".getBytes());
-		db.ajouterEnregistrement("Chuck", 21, 3, "naissance".getBytes());
-		db.ajouterEnregistrement("Tarzan", 20, 2, "vivre".getBytes());
-		db.ajouterEnregistrement("Jane", 19, 2, "???".getBytes());
-		db.ajouterEnregistrement("Jilano", 18, 3, "erreur".getBytes());
+		db.ajouterEnregistrement("Tornado", 24, 2, "abcdefg".getBytes(), 3);
+		db.ajouterEnregistrement("Esperan", 23, 2, "love".getBytes(), 2);
+		db.ajouterEnregistrement("Gracia", 22, 3, "mort".getBytes(), 3);
+		db.ajouterEnregistrement("Chuck", 21, 3, "naissance".getBytes(), 2);
+		db.ajouterEnregistrement("Tarzan", 20, 2, "vivre".getBytes(), 3);
+		db.ajouterEnregistrement("Jane", 19, 2, "???".getBytes(), 2);
+		db.ajouterEnregistrement("Jilano", 18, 3, "erreur".getBytes(), 3);
 		int i = 0;
 		ResultSet rs = db.getListeEnregistrement();
 		while(rs.next())
@@ -593,7 +522,14 @@ public class TestBase
 	@Test( expected = DBException.class )
 	public void testAjoutHorsCatEnregistrement() throws DBException, SQLException
 	{
-		db.ajouterEnregistrement("Exception", 24, 5, "abcdefg".getBytes());
+		db.ajouterEnregistrement("Exception", 24, 5, "abcdefg".getBytes(), 3);
+		assertTrue(false);
+	}
+	
+	@Test( expected = DBException.class )
+	public void testAjoutHorsSujEnregistrement() throws DBException, SQLException
+	{
+		db.ajouterEnregistrement("Exception", 24, 2, "abcdefg".getBytes(), 1);
 		assertTrue(false);
 	}
 	
@@ -601,8 +537,8 @@ public class TestBase
 	@Test
 	public void testModifEnregistrement() throws DBException, SQLException
 	{
-		db.modifierEnregistrement(1, "Zeus", 15, 55, 3);
-		db.modifierEnregistrement(2, "Taylor", 17, 77, 2);
+		db.modifierEnregistrement(1, "Zeus", 15, 55, 3, 2);
+		db.modifierEnregistrement(2, "Taylor", 17, 77, 2, 3);
 		db.modifierEnregistrementCategorie(3, "Licorne");
 		db.modifierEnregistrementNom(4, "Norris");
 		db.modifierEnregistrementTaille(5, 250);

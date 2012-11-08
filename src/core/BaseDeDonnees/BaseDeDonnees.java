@@ -62,8 +62,10 @@ public class BaseDeDonnees
 		try//test la structure de la base
 		{
 			Statement stat = connexion.createStatement();//creation du Statement
-			stat.executeQuery("SELECT id, enregistrement, duree, taille, nom, idcat FROM enregistrements;");//test de la structure
-			stat.executeQuery("SELECT idcat, nomcat FROM categorie;");//fermeture du Statement
+			stat.executeQuery("SELECT id, enregistrement, duree, taille, nom, idcat, idsuj FROM enregistrements;");//test de la structure
+			stat.executeQuery("SELECT idcat, nomcat FROM categorie;");
+			stat.executeQuery("SELECT idsuj, nomsuj FROM sujet;");
+			//fermeture du Statement
 			stat.close();
 		}
 		catch(SQLException e)
@@ -100,7 +102,8 @@ public class BaseDeDonnees
 	 */
 	public void importer(final String cheminFichier) throws DBException
 	{
-		if(connexion == null)
+		throw new DBException("Importation non disponible dans cette version.", 3);
+		/*if(connexion == null)
 		{
 			return;
 		}
@@ -128,11 +131,11 @@ public class BaseDeDonnees
 				{
 					this.ajouterCategorie(nomCat);
 				}
-				rs = in.getListeEnregistrement(listeI.get(i).intValue());//On recupere tous les enregistrement de la categorie dans la base a importer
+				rs = in.getListeEnregistrementCategorie(listeI.get(i).intValue());//On recupere tous les enregistrement de la categorie dans la base a importer
 				int categorie = this.getCategorie(nomCat);//on recupere la categorie dans cette base la.
 				while(rs != null && rs.next())//on ajoute tous les enregistrements dans la base
 				{
-					this.ajouterEnregistrement(rs.getString(3), rs.getInt(1), categorie, in.recupererEnregistrement(rs.getInt(5)));
+					this.ajouterEnregistrement(rs.getString(3), rs.getInt(1), categorie, in.recupererEnregistrement(rs.getInt(5)), 0);//FIXME modifier l'idSuj pour qu'il soit réel
 				}
 				rs.close();//On ferme la ressource
 			}
@@ -140,7 +143,7 @@ public class BaseDeDonnees
 		catch (Exception e)
 		{
 			throw new DBException("Erreur lors du parcour des categories en important un fichier: " + e.getMessage(), 3);
-		}
+		}*/
 		//ajouter les enregistrement avec leurs categorie (modifiee) (ceux qu'il n'existe pas)
 	}
 	/**
@@ -225,11 +228,12 @@ public class BaseDeDonnees
 		try
 		{
 			Statement stat = connexion.createStatement(); //Creation du Statement
-			ResultSet rs = stat.executeQuery("SELECT duree, taille, nom, nomcat, id FROM enregistrements JOIN categorie USING (idcat) ORDER BY nomcat, nom;"); //Execution de la requete
+			ResultSet rs = stat.executeQuery("SELECT duree, taille, nom, nomcat, id, nomsuj FROM enregistrements en, categorie ca, sujet su WHERE en.idcat = ca.idcat AND en.idsuj = su.idsuj ORDER BY nomcat, nom;"); //Execution de la requete
 			return rs;
 		}
 		catch(Exception e)
 		{
+			e.printStackTrace();
 			throw new DBException("Erreur lors de la recuperation de la liste des enregistrement: " + e.getMessage(), 1);
 		}
 	}
@@ -238,7 +242,7 @@ public class BaseDeDonnees
 	 * @return Le resultat sous forme d'objet ResultSet qui n'est parcourable qu'une fois.
 	 * @throws DBException
 	 */
-	public ResultSet getListeEnregistrement(final int idCat) throws DBException
+	public ResultSet getListeEnregistrementCategorie(final int idCat) throws DBException
 	{
 		if(connexion == null)
 		{
@@ -246,8 +250,32 @@ public class BaseDeDonnees
 		}
 		try
 		{
-			PreparedStatement ps = connexion.prepareStatement("SELECT duree, taille, nom, nomcat, id FROM enregistrements JOIN categorie USING (idcat) WHERE idcat=? ORDER BY nom");//Preparation de la requete
+			PreparedStatement ps = connexion.prepareStatement("SELECT duree, taille, nom, nomcat, id, nomsuj FROM enregistrements en, categorie ca, sujet su WHERE en.idcat = ca.idcat AND en.idsuj = su.idsuj AND en.idcat=? ORDER BY nom");//Preparation de la requete
 			ps.setInt(1, idCat);//on rempli les trous
+			ResultSet rs = ps.executeQuery();//On execute
+			return rs;
+		}
+		catch(Exception e)
+		{
+			throw new DBException("Erreur lors de la recuperation de la liste des enregistrements: " + e.getMessage(), 1);
+			
+		}
+	}
+	/**
+	 * Permet de recuperer toutes les informations de tout les enregistrements d'une categorie avec les colonnes suivante: duree, taille, nom, nomcat, id
+	 * @return Le resultat sous forme d'objet ResultSet qui n'est parcourable qu'une fois.
+	 * @throws DBException
+	 */
+	public ResultSet getListeEnregistrementSujet(final int idSuj) throws DBException
+	{
+		if(connexion == null)
+		{
+			return null;
+		}
+		try
+		{
+			PreparedStatement ps = connexion.prepareStatement("SELECT duree, taille, nom, nomcat, id, nomsuj FROM enregistrements en, categorie ca, sujet su WHERE en.idcat = ca.idcat AND en.idsuj = su.idsuj AND idsuj=? ORDER BY nom");//Preparation de la requete
+			ps.setInt(1, idSuj);//on rempli les trous
 			ResultSet rs = ps.executeQuery();//On execute
 			return rs;
 		}
@@ -289,7 +317,7 @@ public class BaseDeDonnees
 	 * @param enregistrement l'enregistrement sous la forme d'un tableau de byte
 	 * @throws DBException
 	 */
-	public void ajouterEnregistrement(final String nom, final int duree, final int idCat, final byte[] enregistrement) throws DBException
+	public void ajouterEnregistrement(final String nom, final int duree, final int idCat, final byte[] enregistrement, final int idSuj) throws DBException
 	{
 		if(connexion == null)
 		{
@@ -299,16 +327,21 @@ public class BaseDeDonnees
 		{
 			throw new DBException("Categorie inexistante.", 3);
 		}
+		if( ! this.sujetExiste(idSuj))//test l'existance de la categorie
+		{
+			throw new DBException("sujet inexistante.", 3);
+		}
 		try
 		{
 			PreparedStatement ps = connexion.prepareStatement(
-					"INSERT INTO enregistrements(enregistrement, duree, taille, nom, idCat) VALUES (?, ?, ?, ?, ?);");//Peparation de la requete
+					"INSERT INTO enregistrements(enregistrement, duree, taille, nom, idCat, idSuj) VALUES (?, ?, ?, ?, ?, ?);");//Peparation de la requete
 			ps.setBytes(1, enregistrement);
 			ps.setInt(2, duree);
 			ps.setInt(3, enregistrement.length);
 			ps.setString(4, nom);
 			ps.setInt(5, idCat);
-		
+			ps.setInt(6, idSuj);
+			
 			if(ps.executeUpdate() > 0)
 			{
 				connexion.commit();
@@ -354,7 +387,7 @@ public class BaseDeDonnees
 	 * @param idCat la nouvelle categorie
 	 * @throws DBException
 	 */
-	public void modifierEnregistrement(final int id, final String nom, final int duree, final byte[] enregistrement, final int idCat) throws DBException
+	public void modifierEnregistrement(final int id, final String nom, final int duree, final byte[] enregistrement, final int idCat, final int idSuj) throws DBException
 	{
 		if(connexion == null)
 		{
@@ -364,16 +397,21 @@ public class BaseDeDonnees
 		{
 			throw new DBException("Categorie inexistante.", 3);
 		}
+		if( ! this.sujetExiste(idSuj))//test l'existance de la categorie
+		{
+			throw new DBException("sujet inexistante.", 3);
+		}
 		try
 		{
 			PreparedStatement ps = connexion.prepareStatement(
-					"UPDATE enregistrements SET enregistrement=?, nom=?, duree=?, taille=?, idCat=? WHERE id=?;");//On prepare
+					"UPDATE enregistrements SET enregistrement=?, nom=?, duree=?, taille=?, idCat=?, idsuj=? WHERE id=?;");//On prepare
 			ps.setBytes(1, enregistrement);//On rempli
 			ps.setString(2, nom);
 			ps.setInt(3, duree);
 			ps.setInt(4, enregistrement.length);
 			ps.setInt(5, idCat);
-			ps.setInt(6, id);
+			ps.setInt(6, idSuj);
+			ps.setInt(7, id);
 
 			if(ps.executeUpdate() > 0)//On execute et on test la reussite
 			{
@@ -395,7 +433,7 @@ public class BaseDeDonnees
 	 * @param idCat la nouvelle categorie
 	 * @throws DBException
 	 */
-	public void modifierEnregistrement(final int id, final String nom, final int duree, final int taille, final int idCat) throws DBException
+	public void modifierEnregistrement(final int id, final String nom, final int duree, final int taille, final int idCat, final int idSuj) throws DBException
 	{
 		if(connexion == null)
 		{
@@ -405,15 +443,20 @@ public class BaseDeDonnees
 		{
 			throw new DBException("Categorie inexistante.", 3);
 		}
+		if( ! this.sujetExiste(idSuj))//test l'existance de la categorie
+		{
+			throw new DBException("sujet inexistante.", 3);
+		}
 		try
 		{
 			PreparedStatement ps = connexion.prepareStatement(
-					"UPDATE enregistrements SET nom=?, duree=?, taille=?, idCat=? WHERE id=?;");//Preparation de la requete
+					"UPDATE enregistrements SET nom=?, duree=?, taille=?, idCat=?, idsuj=? WHERE id=?;");//Preparation de la requete
 			ps.setString(1, nom);//Remplissage de la requete
 			ps.setInt(2, duree);
 			ps.setInt(3, taille);
 			ps.setInt(4, idCat);
-			ps.setInt(5, id);
+			ps.setInt(5, idSuj);
+			ps.setInt(6, id);
 
 			if(ps.executeUpdate() > 0)//Execution et test de reussite dans la foulee
 			{
@@ -582,6 +625,74 @@ public class BaseDeDonnees
 		catch(Exception e)
 		{
 			throw new DBException("Erreur lors de la modification de la categorie: " + e.getMessage(), 3);
+		}
+	}
+	/**
+	 * Permet de modifier la categorie d'un enregistrement
+	 * @param id id de l'enregistrement a modifier
+	 * @param idCat nouvelle id de la categorie correspondant a la nouvelle categorie
+	 * @throws DBException
+	 */
+	public void modifierEnregistrementSujet(final int id, final int idSuj) throws DBException
+	{
+		if(connexion == null)
+		{
+			return;
+		}
+		if( ! this.sujetExiste(idSuj))//test l'existance de la categorie
+		{
+			throw new DBException("Sujet inexistante.", 3);
+		}
+		try
+		{
+			PreparedStatement ps = connexion.prepareStatement(
+					"UPDATE enregistrements SET idSuj=? WHERE id=?;");//preparation de la requete
+			ps.setInt(1, idSuj);//Remplissage de la requete
+			ps.setInt(2, id);
+
+			if(ps.executeUpdate() > 0)//execution et test de la reussite de la requete
+			{
+				connexion.commit();//Validation des modifications
+			}
+			ps.close();//Fermeture des ressources
+		}
+		catch(Exception e)
+		{
+			throw new DBException("Erreur lors de la modification du sujet: " + e.getMessage(), 3);
+		}
+	}
+	/**
+	 * Permet de modifier la categorie d'un enregistrement a partir du nom de la categorie
+	 * @param id id de l'enregistrement a modifier
+	 * @param nomCat le nom de la categorie
+	 * @throws DBException
+	 */
+	public void modifierEnregistrementSujet(final int id, final String nomSuj) throws DBException
+	{
+		if(connexion == null)
+		{
+			return;
+		}
+		if( ! this.sujetExiste(nomSuj))//test l'existance de la categorie
+		{
+			throw new DBException("sujet inexistante.", 3);
+		}
+		try
+		{
+			PreparedStatement ps = connexion.prepareStatement(
+					"UPDATE enregistrements SET idSuj=(SELECT idsuj FROM sujet WHERE nomSuj=?) WHERE id=?;");//preparation de la requete
+			ps.setString(1, nomSuj);//Remplissage de la requete
+			ps.setInt(2, id);
+
+			if(ps.executeUpdate() > 0)//execution et test de la reussite de la requete
+			{
+				connexion.commit();//Validation des modifications
+			}
+			ps.close();//Fermeture des ressources
+		}
+		catch(Exception e)
+		{
+			throw new DBException("Erreur lors de la modification du sujet: " + e.getMessage(), 3);
 		}
 	}
 	/**
