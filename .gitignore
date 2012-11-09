@@ -2,3 +2,7 @@ test.log
 sons/
 bin/
 LieLab.jar
+.classpath
+.gitignore
+.project
+LieLab.db
