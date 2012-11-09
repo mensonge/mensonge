@@ -44,6 +44,8 @@ import javax.swing.ImageIcon;
 import javax.swing.JToolBar;
 import javax.swing.plaf.metal.MetalSliderUI;
 
+import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
+
 public class LecteurVideo extends JPanel implements ActionListener
 {
 	private static final long serialVersionUID = 5373991180139317820L;
@@ -63,12 +65,13 @@ public class LecteurVideo extends JPanel implements ActionListener
 	private IMediaReader reader;
 	private long duration;
 	private double volume; //Entre 0 et 1
-	private int videoStreamIndex;
 	private boolean pause;
 	private boolean stop;
 	private SourceDataLine mLine;
+	private   EmbeddedMediaPlayerComponent vidComp;
 
-	public LecteurVideo(File fichierVideo)
+
+	public LecteurVideo(final File fichierVideo)
 	{
 		this.volume = 1d;
 		this.pause = true;
@@ -83,19 +86,19 @@ public class LecteurVideo extends JPanel implements ActionListener
 			GraphicalUserInterface.popupErreur(e.getMessage(),"Erreur");
 		}
 
-		this.videoStreamIndex = 0;
-		this.reader = ToolFactory.makeReader(this.nom);
- 		this.reader.setBufferedImageTypeToGenerate(BufferedImage.TYPE_3BYTE_BGR);
-
-		this.initialiserComposants();
-		this.ouvrirVideo();
-		this.ouvrirAudio();
-		this.ajoutListener();
+		initialiserComposants();
+		javax.swing.SwingUtilities.invokeLater(new Runnable()
+		{
+			public void run()
+			{	
+				vidComp.getMediaPlayer().playMedia(nom);
+				ouvrirVideo();
+			}
+	});
 	}
 
 	private void initialiserComposants()
 	{
-		this.mediaPlayerComponent = new ImageComponent();
 
 		this.imageIconPause = new ImageIcon("images/Pause.png");
 		this.imageIconStop = new ImageIcon("images/Stop.png");
@@ -170,13 +173,16 @@ public class LecteurVideo extends JPanel implements ActionListener
 		toolBar.add(panelDuree);
 		toolBar.add(sliderVolume);
 
+		vidComp = new EmbeddedMediaPlayerComponent();
+		vidComp.setVisible(true);
 		this.setLayout(new BorderLayout());
-		this.add(mediaPlayerComponent, BorderLayout.CENTER);
+		this.add(vidComp,BorderLayout.CENTER);
 		this.add(toolBar, BorderLayout.SOUTH);
 	}
+	
 	private void ouvrirVideo()
 	{
-		this.reader.open();
+		//this.reader.open();
 		this.duration = reader.getContainer().getDuration()/1000;//C'est en microsecondes, on met en milisecondes
 		this.slider.setMaximum((int)this.duration);
 
@@ -186,59 +192,10 @@ public class LecteurVideo extends JPanel implements ActionListener
 		int secondes = (int) ((duree%3600)%60);
 		labelDureeMax.setText(String.format("%02d:%02d:%02d", heures, minutes, secondes));
 	}
-	private void ajoutListener()
-	{
-		if(this.reader.isOpen())
-		{
-    			MediaListenerAdapter adapter = new MediaListenerAdapter()
-    			{
-				private IVideoResampler videoResampler = null;
-				private int width = mediaPlayerComponent.getWidth();
-				private int height = mediaPlayerComponent.getHeight();
-      				public void onVideoPicture(IVideoPictureEvent event)
-      				{
-					long millisecondes = event.getTimeStamp(TimeUnit.MICROSECONDS)/1000;
-					//videoStreamIndex = event.getStreamIndex();
-					slider.setValue((int) (millisecondes));
-					/*
-					 *IVideoPicture pic = event.getPicture();
-					 *videoResampler = IVideoResampler.make(width, height, pic.getPixelType(), pic.getWidth(),pic.getHeight(), pic.getPixelType());
-					 *if(videoResampler == null)
-					 *{
-					 */
-						mediaPlayerComponent.setImage(event.getImage());
-					/*
-					 *}
-					 *else
-					 *{
-					 *        IVideoPicture out = IVideoPicture.make(pic.getPixelType(), width, height);
-					 *        videoResampler.resample(out, pic);
-					 *        IVideoPictureEvent asc = new VideoPictureEvent(event.getSource(), out, event.getStreamIndex());
-					 *        mediaPlayerComponent.setImage(asc.getImage());
-					 *}
-					 */
-					long duree = millisecondes/1000;
-					int heures = (int) (duree/3600);
-					int minutes = (int) ((duree%3600)/60);
-					int secondes = (int) ((duree%3600)%60);
-					labelDureeActuelle.setText(String.format("%02d:%02d:%02d", heures, minutes, secondes));
-      				}
-				public void onAudioSamples(IAudioSamplesEvent event)
-				{
-					IAudioSamples samples = event.getAudioSamples();
-					ShortBuffer buffer = samples.getByteBuffer().asShortBuffer();
-					for (int i = 0; i < buffer.limit(); ++i)
-						buffer.put(i, (short)(buffer.get(i) * volume));
-					byte[] rawBytes = samples.getData().getByteArray(0, samples.getSize());
-					mLine.write(rawBytes, 0, samples.getSize());
-				}
-    			};
-    			this.reader.addListener(adapter);
-		}
-	}
+	
 	private void ouvrirAudio()
 	{
-		if(this.reader.isOpen())
+		/*if(this.reader.isOpen())
 		{
 			IContainer container = reader.getContainer();
 			IStreamCoder audioCoder = null;
@@ -268,7 +225,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 			AudioFormat audioFormat = new AudioFormat(audioCoder.getSampleRate(),
 					(int)IAudioSamples.findSampleBitDepth(audioCoder.getSampleFormat()),
 					audioCoder.getChannels(),
-					true, /* xuggler defaults to signed 16 bit samples */
+					true, /* xuggler defaults to signed 16 bit samples 
 					false);
 			DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
 			try
@@ -281,31 +238,22 @@ public class LecteurVideo extends JPanel implements ActionListener
 			{
 				throw new RuntimeException("could not open audio line");
 			}
-		}
+		}*/
 	}
 
 	public void play()
 	{
+		this.vidComp.getMediaPlayer().pause();
 		this.pause = false;
 		this.stop = false;
 		this.boutonLecture.setIcon(imageIconPause);
 		this.boutonLecture.setToolTipText("Mettre en pause");
-		if(!this.reader.isOpen())
-		{
-			this.ouvrirVideo();
-			this.ouvrirAudio();
-		}
-		new Thread(new Runnable()
-		{
-			public void run()
-			{
-				while (reader.readPacket() == null && !pause);
-			}
-		}).start();
+		
 	}
 
 	public void pause()
 	{
+		this.vidComp.getMediaPlayer().pause();
 		this.pause = true;
 		this.boutonLecture.setIcon(imageIconLecture);
 		this.boutonLecture.setToolTipText("Lancer");
