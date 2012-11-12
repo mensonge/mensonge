@@ -147,7 +147,7 @@ public class BaseDeDonnees
 		//ajouter les enregistrement avec leurs categorie (modifiee) (ceux qu'il n'existe pas)
 	}
 	/**
-	 * 
+	 * exporte les enregistrement selon deux methodes. soit au format sqlite soit en wav. (ajoute à la fin du fichier mp3 le sujet et la categorie
 	 * @param cheminFichier fichier dans lequel sera exporte la base.
 	 * @param id Correspond à l'identifiant de l'enregistrement à exporter dans le cas d'un type WAV
 	 * @param type Correspond au type d'exportation, 1 = SQLite, 2 = WAV
@@ -190,7 +190,8 @@ public class BaseDeDonnees
 			{
 				dest.delete();
 			}
-			try {
+			try
+			{
 				dest.createNewFile();//Création du nouveau fichier
 			}
 			catch (Exception e)
@@ -199,12 +200,32 @@ public class BaseDeDonnees
 			}
 			//récupérer un enregistrement
 			byte[] echantillon = this.recupererEnregistrement(id);
+			byte sujet = 0, categorie = 0; 
 			//coller l'enregistrement dans un fichier
 			FileOutputStream destinationFile = null;
+			ResultSet rs = this.getListeEnregistrement();
+			try
+			{
+				while(rs.next())
+				{
+					if(rs.getInt("id") == id)
+					{
+						sujet = rs.getByte("idcat");
+						categorie = rs.getByte("idsuj");
+					}
+				}
+			}
+			catch (Exception e1)
+			{
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
 			try
 			{
 				destinationFile = new FileOutputStream(dest);
 				destinationFile.write(echantillon);
+				destinationFile.write(sujet);
+				destinationFile.write(categorie);
 				destinationFile.close();
 			}
 			catch(Exception e)
@@ -228,7 +249,7 @@ public class BaseDeDonnees
 		try
 		{
 			Statement stat = connexion.createStatement(); //Creation du Statement
-			ResultSet rs = stat.executeQuery("SELECT duree, taille, nom, nomcat, id, nomsuj FROM enregistrements en, categorie ca, sujet su WHERE en.idcat = ca.idcat AND en.idsuj = su.idsuj ORDER BY nomcat, nom;"); //Execution de la requete
+			ResultSet rs = stat.executeQuery("SELECT duree, taille, nom, nomcat, id, nomsuj, en.idcat, en.idsuj FROM enregistrements en, categorie ca, sujet su WHERE en.idcat = ca.idcat AND en.idsuj = su.idsuj ORDER BY nomcat, nom;"); //Execution de la requete
 			return rs;
 		}
 		catch(Exception e)
