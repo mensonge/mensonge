@@ -8,6 +8,10 @@ import java.io.IOException;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -17,6 +21,7 @@ import javax.swing.JButton;
 import javax.swing.JSlider;
 import javax.swing.ImageIcon;
 import javax.swing.JToolBar;
+import javax.swing.plaf.basic.BasicSliderUI;
 import javax.swing.plaf.metal.MetalSliderUI;
 
 import uk.co.caprica.vlcj.binding.internal.libvlc_media_t;
@@ -46,9 +51,9 @@ public class LecteurVideo extends JPanel implements ActionListener {
 	private boolean stop;
 	private SourceDataLine mLine;
 	private EmbeddedMediaPlayerComponent vidComp;
-
+	
 	public LecteurVideo(final File fichierVideo) {
-		this.volume = 75;
+		this.volume = 50;
 		this.pause = true;
 		this.stop = true;
 		this.fichierVideo = fichierVideo;
@@ -57,7 +62,6 @@ public class LecteurVideo extends JPanel implements ActionListener {
 		} catch (IOException e) {
 			GraphicalUserInterface.popupErreur(e.getMessage(), "Erreur");
 		}
-
 		initialiserComposants();
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			public void run() {
@@ -97,52 +101,58 @@ public class LecteurVideo extends JPanel implements ActionListener {
 		this.sliderVolume.setPaintLabels(false);
 		this.sliderVolume.setMinimum(0);
 		this.sliderVolume.setMaximum(100);
-		this.sliderVolume.setValue(75);
+		this.sliderVolume.setValue(50);
 		this.sliderVolume.setToolTipText("Volume");
 		this.sliderVolume.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent e) {
 				volume = sliderVolume.getValue();
 				vidComp.getMediaPlayer().setVolume(sliderVolume.getValue());
-				// System.out.println(sliderVolume.getValue());
 			}
 		});
 
 		this.slider = new JSlider(JSlider.HORIZONTAL);
+		this.panelDuree.add(slider, BorderLayout.CENTER);
+
 		this.slider.setPaintTicks(false);
 		this.slider.setPaintLabels(false);
 		this.slider.setMinimum(0);
 		this.slider.setValue(0);
-		/*
-		 * this.slider.setUI(new MetalSliderUI() { protected void
-		 * scrollDueToClickInTrack(int direction) { //On pourra récup les
-		 * millisecondes pour l'extraction de cette façon aussi //FIXME :
-		 * segfault pour le moment
-		 * 
-		 * int value = slider.getValue(); if (slider.getOrientation() ==
-		 * JSlider.HORIZONTAL) { value =
-		 * this.valueForXPosition(slider.getMousePosition().x); } //
-		 * vidComp.getMediaPlayer().setPosition(value/); slider.setValue(value);
-		 * } });
-		 */
-		/*this.slider.addChangeListener(new ChangeListener() {
-			public void stateChanged(ChangeEvent e) {
-				vidComp.getMediaPlayer().setTime(slider.getValue() / 100);
+		this.slider.addMouseListener(new MouseSliderEventListener());
 
+		  this.slider.setUI(new MetalSliderUI() 
+		  { 
+			  protected void  scrollDueToClickInTrack(int direction) { 
+				  int value = slider.getValue(); 
+				  if (slider.getOrientation() == JSlider.HORIZONTAL) 
+				  { 
+					  value =  this.valueForXPosition(slider.getMousePosition().x); 
+				  } 
+				  	vidComp.getMediaPlayer().setPosition((float) (((float)slider.getValue())/100.0));
+				  	slider.setValue(value);
+				  } 
+		  } 
+		);
+		  this.slider.addKeyListener(new SliderKeyListener());
+		 
+		this.slider.addChangeListener(new ChangeListener() 
+		{
+			public void stateChanged(ChangeEvent e) 
+			{
+				float perCent=(float) (((float)slider.getValue())/100.0);
+				vidComp.getMediaPlayer().setPosition(perCent);
 			}
-		});*/
+		});
 
 		JToolBar toolBar = new JToolBar();
 		toolBar.setFloatable(false);
 		toolBar.add(boutonStop);
 		toolBar.add(boutonLecture);
-		toolBar.add(slider);
 		toolBar.add(panelDuree);
 		toolBar.add(sliderVolume);
 
 		vidComp = new EmbeddedMediaPlayerComponent();
 		vidComp.setVisible(true);
-		vidComp.getMediaPlayer().addMediaPlayerEventListener(
-				new PlayerEventListener());
+		vidComp.getMediaPlayer().addMediaPlayerEventListener(new PlayerEventListener());
 
 		this.setLayout(new BorderLayout());
 		this.add(vidComp, BorderLayout.CENTER);
@@ -202,11 +212,12 @@ public class LecteurVideo extends JPanel implements ActionListener {
 		this.boutonLecture.setToolTipText("Mettre en pause");
 	}
 
-	public void pause() {
+	public void pause() 
+	{
 		this.vidComp.getMediaPlayer().pause();
 		this.pause = true;
-		this.boutonLecture.setIcon(imageIconLecture);
-		this.boutonLecture.setToolTipText("Lancer");
+		boutonLecture.setIcon(imageIconLecture);
+		boutonLecture.setToolTipText("Lancer");
 	}
 
 	public void stop() {
@@ -214,8 +225,6 @@ public class LecteurVideo extends JPanel implements ActionListener {
 		this.stop = true;
 		this.pause = true;
 		this.slider.setValue(0);
-		// this.labelDureeActuelle.setText("00:00:00");
-		// this.labelDureeMax.setText("00:00:00");
 	}
 
 	@Override
@@ -244,117 +253,78 @@ public class LecteurVideo extends JPanel implements ActionListener {
 
 		@Override
 		public void backward(MediaPlayer arg0) {
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override
 		public void buffering(MediaPlayer arg0, float arg1) {
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override
 		public void endOfSubItems(MediaPlayer arg0) {
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override
 		public void error(MediaPlayer arg0) {
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override
 		public void finished(MediaPlayer arg0) {
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override
 		public void forward(MediaPlayer arg0) {
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override
 		public void lengthChanged(MediaPlayer arg0, long arg1) {
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override
-		public void mediaChanged(MediaPlayer arg0, libvlc_media_t arg1,
-				String arg2) {
-			// TODO Auto-generated method stub
-
+		public void mediaChanged(MediaPlayer arg0, libvlc_media_t arg1,String arg2) {
 		}
 
 		@Override
 		public void mediaDurationChanged(MediaPlayer arg0, long arg1) {
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override
 		public void mediaFreed(MediaPlayer arg0) {
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override
 		public void mediaMetaChanged(MediaPlayer arg0, int arg1) {
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override
 		public void mediaParsedChanged(MediaPlayer arg0, int arg1) {
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override
 		public void mediaStateChanged(MediaPlayer arg0, int arg1) {
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override
 		public void mediaSubItemAdded(MediaPlayer arg0, libvlc_media_t arg1) {
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override
 		public void newMedia(MediaPlayer arg0) {
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override
 		public void opening(MediaPlayer arg0) {
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override
 		public void pausableChanged(MediaPlayer arg0, int arg1) {
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override
 		public void paused(MediaPlayer arg0) {
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override
 		public void playing(MediaPlayer arg0) {
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override
@@ -366,37 +336,26 @@ public class LecteurVideo extends JPanel implements ActionListener {
 			int minutes = (int) ((duree % 3600) / 60);
 			int secondes = (int) ((duree % 3600) % 60);
 			labelDureeActuelle.setText(String.format("%02d:%02d:%02d", heures,minutes, secondes));
-			
 		}
 
 		@Override
 		public void seekableChanged(MediaPlayer arg0, int arg1) {
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override
 		public void snapshotTaken(MediaPlayer arg0, String arg1) {
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override
 		public void stopped(MediaPlayer arg0) {
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override
 		public void subItemFinished(MediaPlayer arg0, int arg1) {
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override
 		public void subItemPlayed(MediaPlayer arg0, int arg1) {
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override
@@ -407,15 +366,70 @@ public class LecteurVideo extends JPanel implements ActionListener {
 
 		@Override
 		public void titleChanged(MediaPlayer arg0, int arg1) {
-			// TODO Auto-generated method stub
-
 		}
 
 		@Override
 		public void videoOutput(MediaPlayer arg0, int arg1) {
-			// TODO Auto-generated method stub
-
 		}
 	}
+	private class MouseSliderEventListener implements MouseListener
+	{
 
+		@Override
+		public void mouseClicked(MouseEvent mE) {
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {
+			int positionValue=((BasicSliderUI) slider.getUI()).valueForXPosition(e.getX());
+			long duree = (long) ((positionValue/100.0)*vidComp.getMediaPlayer().getLength() /1000);
+			int heures = (int) (duree / 3600);
+			int minutes = (int) ((duree % 3600) / 60);
+			int secondes = (int) ((duree % 3600) % 60);
+			slider.setToolTipText(String.format("%02d:%02d:%02d", heures, minutes,secondes));
+		}
+
+		@Override
+		public void mouseExited(MouseEvent arg0) {
+		}
+
+		@Override
+		public void mousePressed(MouseEvent arg0) {
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent arg0) {
+		}
+	}
+	
+private class SliderKeyListener	implements KeyListener {
+		
+		@Override
+		public void keyTyped(KeyEvent ke) {
+			if(ke.getKeyCode()==KeyEvent.VK_RIGHT)
+			{
+				float perCent=(float) (((float)slider.getValue())/100.0)+5;
+				vidComp.getMediaPlayer().setPosition(perCent);
+			}
+			else if(ke.getKeyCode()==KeyEvent.VK_LEFT)
+			{
+				float perCent=(float) (((float)slider.getValue())/100.0)-5;
+				vidComp.getMediaPlayer().setPosition(perCent);
+			}
+			else if(ke.getKeyCode()==0)//FIXME 0 sur mon pc KeyEvent.VK_SPACE normalement
+			{
+				if (vidComp.getMediaPlayer().isPlaying()) {
+					pause();
+				} else
+					play();	
+			}
+		}
+		
+		@Override
+		public void keyReleased(KeyEvent arg0) {
+		}
+		@Override
+		public void keyPressed(KeyEvent arg0) {
+		}
+	}
 }
