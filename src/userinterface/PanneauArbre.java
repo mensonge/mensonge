@@ -419,7 +419,7 @@ public class PanneauArbre extends JPanel
 		{  	
 			menuClicDroit.setEnabled(false) ;
 			menuClicDroit.setVisible(false) ;
-			String nom = JOptionPane.showInputDialog(null, "Entre le nouveau nom", "Renommer", JOptionPane.QUESTION_MESSAGE);
+			String nom = JOptionPane.showInputDialog(null, "Entrez le nouveau nom", "Renommer", JOptionPane.QUESTION_MESSAGE);
 			if(nom != null && ! nom.equals(""))
 			{
 				try
@@ -428,9 +428,13 @@ public class PanneauArbre extends JPanel
 					{
 						bdd.modifierEnregistrementNom(((Feuille) arbre.getLastSelectedPathComponent()).getId(), nom);
 					}
-					else if(arbre.getLastSelectedPathComponent() instanceof DefaultMutableTreeNode)//renommer une categorie
+					else if(arbre.getLastSelectedPathComponent() instanceof DefaultMutableTreeNode && typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)//renommer une categorie
 					{
 						bdd.modifierCategorie(bdd.getCategorie(arbre.getSelectionPaths()[0].getLastPathComponent().toString()), nom);
+					}
+					else if(arbre.getLastSelectedPathComponent() instanceof DefaultMutableTreeNode && typeTrie == PanneauArbre.TYPE_TRIE_SUJET)//renommer une categorie
+					{
+						bdd.modifierSujet(bdd.getSujet(arbre.getSelectionPaths()[0].getLastPathComponent().toString()), nom);
 					}
 				}
 				catch (DBException e1)
