@@ -36,7 +36,11 @@ public class PanneauArbre extends JPanel
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private static final int TYPE_TRIE_CATEGORIE = 1;
+	private static final int TYPE_TRIE_SUJET = 2;
+	
 	private BaseDeDonnees bdd = null;
+	
 	private JButton playEcouteArbre = new JButton("Play");
 	private JButton stopEcouteArbre = new JButton("Stop");
 	private JButton pauseEcouteArbre = new JButton("Pause");
@@ -53,12 +57,15 @@ public class PanneauArbre extends JPanel
 	
 	private JPopupMenu menuClicDroit = new JPopupMenu();//sers au clic droit
 	
+	private int typeTrie = PanneauArbre.TYPE_TRIE_SUJET;
+	
 	public PanneauArbre(BaseDeDonnees bdd)
 	{
 		this.bdd = bdd;
 		
 		racine = new DefaultMutableTreeNode("Categorie");
-		remplirArbreEnregistrement();
+		//remplirArbreEnregistrementCategorie();
+		remplirArbreEnregistrementSujet();
 		arbre = new JTree(racine);
 		arbre.addMouseListener(new ClicDroit());
 		
@@ -147,10 +154,17 @@ public class PanneauArbre extends JPanel
 	public void updateArbre()
 	{
 		viderNoeud(racine);
-		remplirArbreEnregistrement();
+		if(this.typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)
+		{
+			remplirArbreEnregistrementCategorie();
+		}
+		else if (this.typeTrie == PanneauArbre.TYPE_TRIE_SUJET)
+		{
+			remplirArbreEnregistrementSujet();
+		}
 		arbre.updateUI();
 	}
-	public void remplirArbreEnregistrement()
+	public void remplirArbreEnregistrementCategorie()
 	{
 		ResultSet rs_cat = null, rs_enr = null;
 		try
@@ -167,6 +181,36 @@ public class PanneauArbre extends JPanel
 				}
 				rs_enr.close();
 				racine.add(node);
+				racine.setUserObject("Categorie");
+			}
+			rs_cat.close();
+			
+		} 
+		catch(Exception e)
+		{
+			e.printStackTrace();
+			GraphicalUserInterface.popupErreur("Erreur lors du chargement des enregistrement.", "Erreur");
+		}
+	}
+	public void remplirArbreEnregistrementSujet()
+	{
+		ResultSet rs_cat = null, rs_enr = null;
+		try
+		{
+			int i = 0;
+			rs_cat = bdd.getListeSujet();
+			while(rs_cat.next())
+			{
+				DefaultMutableTreeNode node = new DefaultMutableTreeNode(rs_cat.getString("nomsuj"));
+				rs_enr = bdd.getListeEnregistrementSujet(rs_cat.getInt("idsuj"));
+				while(rs_enr.next())
+				{
+					Feuille f = new Feuille(rs_enr.getInt("id"), rs_enr.getString("nom"), rs_enr.getInt("duree"), rs_enr.getInt("taille"), rs_enr.getString("nomCat"), rs_enr.getString("nomsuj"));
+					node.add(f);
+				}
+				rs_enr.close();
+				racine.add(node);
+				racine.setUserObject("Sujet");
 			}
 			rs_cat.close();
 			
@@ -226,19 +270,27 @@ public class PanneauArbre extends JPanel
 	            JMenuItem renommer = new JMenuItem("Renommer");
 	           
 	            JMenuItem ecouter = new JMenuItem("Ecouter") ;
-	            JMenuItem modifiercate = new JMenuItem("Changer categorie");
+	            JMenuItem modifierCategorie = new JMenuItem("Changer categorie");
 	            JMenuItem supprimer = new JMenuItem("Supprimer les enregistrements");
 	            JMenuItem ajouter = new JMenuItem("Ajouter Categorie");
 	            JMenuItem supprimerCategorie = new JMenuItem("Supprimer Categorie");
+	            JMenuItem ajouterSujet = new JMenuItem("Ajouter Sujet");
+	            JMenuItem supprimerSujet = new JMenuItem("Supprimer Sujet");
+	            JMenuItem modifierSujet = new JMenuItem("Changer Sujet");
+	            JMenuItem changerTri = new JMenuItem("Changer tri");
 	            
 	            exporter.addMouseListener(new ExporterEnregistrementClicDroit());
 	            renommer.addMouseListener(new RenommerEnregistrementClicDroit());
 	            ecouter.addMouseListener(new PlayEcouteArbre());
 	            ajouter.addMouseListener(new AjouterCategorieEnregistrementClicDroit());
-	            modifiercate.addMouseListener(new ModifierCategorieEnregistrementClicDroit());
+	            modifierCategorie.addMouseListener(new ModifierCategorieEnregistrementClicDroit());
 	            supprimer.addMouseListener(new SupprimerEnregistrementClicDroit());
 	            supprimerCategorie.addMouseListener(new SupprimerCategorieEnregistrementClicDroit());
-
+	            ajouterSujet.addMouseListener(new AjouterSujetClicDroit());
+	            supprimerSujet.addMouseListener(new SupprimerSujetClicDroit());
+	            modifierSujet.addMouseListener(new ModifierSujetEnregistrementClicDroit());
+	            changerTri.addMouseListener(new ModifierTri());
+	            
 	            if(arbre.getSelectionPaths() != null)
 	            {
 	            	if(arbre.getSelectionPaths().length == 1)
@@ -255,17 +307,33 @@ public class PanneauArbre extends JPanel
 		            {
 		            	if(arbre.getLastSelectedPathComponent() instanceof Feuille)
 		            	{
-		            		menuClicDroit.add(modifiercate) ;
+		            		
+		            		if(typeTrie == PanneauArbre.TYPE_TRIE_SUJET)
+			            	{
+			            		menuClicDroit.add(modifierSujet);
+			            	}
+			            	else
+			            	{
+			            		menuClicDroit.add(modifierCategorie) ;
+			            	}
 		            	}
 		            	menuClicDroit.add(supprimer) ;
 		            }
 	            }
 	            menuClicDroit.add(ajouter);
+	            menuClicDroit.add(ajouterSujet);
 	            if(arbre.getSelectionPaths() != null)
 	            {
-	            	menuClicDroit.add(supprimerCategorie);
+	            	if(typeTrie == PanneauArbre.TYPE_TRIE_SUJET)
+	            	{
+	            		menuClicDroit.add(supprimerSujet);
+	            	}
+	            	else
+	            	{
+	            		menuClicDroit.add(supprimerCategorie);
+	            	}
 	            }
-	            
+	            menuClicDroit.add(changerTri);
 	            
 	            menuClicDroit.setEnabled(true) ;
 	            menuClicDroit.setVisible(true) ;
@@ -474,6 +542,130 @@ public class PanneauArbre extends JPanel
 			updateArbre();
 		}
 	}
+	class AjouterSujetClicDroit implements MouseListener
+	{
+		public void mouseClicked(MouseEvent e){}
+		public void mouseEntered(MouseEvent e){}
+		public void mouseExited(MouseEvent e){}
+		public void mousePressed(MouseEvent e){}
+		public void mouseReleased(MouseEvent e)
+		{  	
+			menuClicDroit.setEnabled(false) ;
+			menuClicDroit.setVisible(false) ;
+			String option = JOptionPane.showInputDialog("Nouveau sujet");
+			if(option != "" && option != null)
+			{
+				try
+				{
+					bdd.ajouterSujet(option);
+				}
+				catch (Exception e1)
+				{
+					GraphicalUserInterface.popupErreur("Erreur lors de l'ajout du sujet " + option + " " + e1.getMessage(), "Erreur");
+				}
+			}
+			updateArbre();
+		}
+	}
+	class SupprimerSujetClicDroit implements MouseListener
+	{
+		public void mouseClicked(MouseEvent e){}
+		public void mouseEntered(MouseEvent e){}
+		public void mouseExited(MouseEvent e){}
+		public void mousePressed(MouseEvent e){}
+		public void mouseReleased(MouseEvent e)
+		{  	
+			menuClicDroit.setEnabled(false) ;
+			menuClicDroit.setVisible(false) ;
+			int option = JOptionPane.showConfirmDialog(null, 
+	                  "Voulez-vous supprimer les sujets ?\n",
+	                  "Suppression", 
+	                  JOptionPane.YES_NO_CANCEL_OPTION, 
+	                  JOptionPane.QUESTION_MESSAGE);
+			if(option == JOptionPane.OK_OPTION)
+			{
+				for(int i = 0; i < arbre.getSelectionPaths().length; i++)
+				{
+					try
+					{
+						if( ! (arbre.getSelectionPaths()[i].getLastPathComponent() instanceof Feuille))
+						{
+							ResultSet rs = bdd.getListeEnregistrementSujet(bdd.getSujet(arbre.getSelectionPaths()[i].getLastPathComponent().toString()));
+							if(rs.next())
+							{
+								GraphicalUserInterface.popupErreur("Un sujet peut être supprimée quand il n'a plus d'enregistrements.", "Erreur");
+							}
+							else
+							{
+								bdd.supprimerSujet(bdd.getSujet(arbre.getSelectionPaths()[i].getLastPathComponent().toString()));
+							}
+							rs.close();
+						}
+					}
+					catch (Exception e1)
+					{
+						GraphicalUserInterface.popupErreur(e1.getMessage(), "Erreur");
+					}
+				}
+			}
+			updateArbre();
+		}
+	}
+	class ModifierSujetEnregistrementClicDroit implements MouseListener
+	{
+		public void mouseClicked(MouseEvent e){}
+		public void mouseEntered(MouseEvent e){}
+		public void mouseExited(MouseEvent e){}
+		public void mousePressed(MouseEvent e){}
+		public void mouseReleased(MouseEvent e)
+		{  	
+			menuClicDroit.setEnabled(false) ;
+			menuClicDroit.setVisible(false) ;
+			DialogueNouveauSujet pop = new DialogueNouveauSujet(null, null, true, bdd);
+			String nom = ((String)pop.activer()[0]);
+			if( ! nom.equals("Ne rien changer"))
+			{
+				for(int i = 0; i < arbre.getSelectionPaths().length; i++)
+				{
+					if(arbre.getSelectionPaths()[i].getLastPathComponent() instanceof Feuille)
+					{
+						try
+						{
+							bdd.modifierEnregistrementSujet(((Feuille) arbre.getSelectionPaths()[i].getLastPathComponent()).getId(), nom);
+						}
+						catch (DBException e1)
+						{
+							GraphicalUserInterface.popupErreur(e1.getMessage(), "Erreur");
+						}
+					}
+				}
+				updateArbre();
+			}
+		}
+	}
+	
+	class ModifierTri implements MouseListener
+	{
+		public void mouseClicked(MouseEvent e){}
+		public void mouseEntered(MouseEvent e){}
+		public void mouseExited(MouseEvent e){}
+		public void mousePressed(MouseEvent e){}
+		public void mouseReleased(MouseEvent e)
+		{  	
+			menuClicDroit.setEnabled(false) ;
+			menuClicDroit.setVisible(false) ;
+			if(typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)
+			{
+				typeTrie = PanneauArbre.TYPE_TRIE_SUJET;
+			}
+			else
+			{
+				typeTrie = PanneauArbre.TYPE_TRIE_CATEGORIE;
+			}
+			updateArbre();
+		}
+	}
+	
 	class PlayEcouteArbre extends MouseAdapter
 	{
 		private int id_lu;
