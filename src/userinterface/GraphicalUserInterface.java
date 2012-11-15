@@ -25,8 +25,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
-import com.xuggle.xuggler.IContainer;
-
 import core.BaseDeDonnees.BaseDeDonnees;
 import core.BaseDeDonnees.DBException;
 
@@ -76,8 +74,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener {
 		baseImporter.addMouseListener(new ImporterBaseListner(this));
 
 		baseAjouterCategorie = new JMenuItem("Ajouter catégorie");
-		// baseAjouterCategorie.addMouseListener(new
-		// AjouterCategorieEnregistrementClicDroit());
+		
 
 		JMenu menuFichier = new JMenu("Fichier");
 		menuFichier.add(fichierOuvrir);
@@ -106,7 +103,8 @@ public class GraphicalUserInterface extends JFrame implements ActionListener {
 		 * Conteneur
 		 */
 		this.panneauArbre = new PanneauArbre(bdd);
-
+		baseAjouterCategorie.addMouseListener(panneauArbre.new AjouterCategorieEnregistrementClicDroit(null, bdd));
+		
 		JPanel conteneur = new JPanel(new BorderLayout());
 		conteneur.add(onglets, BorderLayout.CENTER);
 		conteneur.add(panneauArbre, BorderLayout.EAST);

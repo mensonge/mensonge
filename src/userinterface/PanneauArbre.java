@@ -47,7 +47,9 @@ public class PanneauArbre extends JPanel
 	private JSlider slideAvance;
 	private JSlider slideSon;
 	
-	private double volume = 0.4;
+	private JPanel panelLecteur;
+	
+	private double volume = 0.5;
 	private Sound lecteurSonArbre;
 	
 	private PanneauInformationFeuille infoArbre = new PanneauInformationFeuille();
@@ -63,13 +65,13 @@ public class PanneauArbre extends JPanel
 	{
 		this.bdd = bdd;
 		
-		racine = new DefaultMutableTreeNode("Categorie");
+		this.racine = new DefaultMutableTreeNode("Categorie");
 		//remplirArbreEnregistrementCategorie();
 		remplirArbreEnregistrementSujet();
-		arbre = new JTree(racine);
-		arbre.addMouseListener(new ClicDroit());
+		this.arbre = new JTree(racine);
+		this.arbre.addMouseListener(new ClicDroit());
 		
-		arbre.addTreeSelectionListener(new TreeSelectionListener(){
+		this.arbre.addTreeSelectionListener(new TreeSelectionListener(){
 
 	         public void valueChanged(TreeSelectionEvent event)
 	         {
@@ -78,38 +80,42 @@ public class PanneauArbre extends JPanel
 	            {
 	               infoArbre.setListeInfo(((Feuille) arbre.getLastSelectedPathComponent()).getInfo());//On informe le panneau d'information
 	               infoArbre.repaint();//on le repaint
+	               panelLecteur.setVisible(true);
 	            }
 	            else
 	            {
 	            	infoArbre.setListeInfo(null);
 	            	infoArbre.repaint();//on le repaint
+	            	panelLecteur.setVisible(false);
 	            }
 	         }
 	      });
 
-		scrollPane = new JScrollPane(arbre);
-		scrollPane.setPreferredSize(new Dimension(270, 300));
-		scrollPane.setAutoscrolls(true);
+		this.scrollPane = new JScrollPane(arbre);
+		this.scrollPane.setPreferredSize(new Dimension(270, 300));
+		this.scrollPane.setAutoscrolls(true);
 		
-		infoArbre.setPreferredSize(new Dimension(270, 100));
+		this.infoArbre.setPreferredSize(new Dimension(270, 100));
 		
 		JPanel panelEnregistrements = new JPanel(new BorderLayout());
 		JPanel panelArbre = new JPanel(new GridLayout(0, 1));
-		JPanel panelLecteur = new JPanel(new GridBagLayout());
-		panelArbre.add(scrollPane);
-		panelArbre.add(infoArbre);
+		this.panelLecteur = new JPanel(new GridBagLayout());
+		this.panelLecteur.setVisible(false);
+		panelArbre.add(this.scrollPane);
+		panelArbre.add(this.infoArbre);
 		
 		//panelEnregistrements.add(panelArbre, BorderLayout.CENTER);
 		
 		/*
 		 * Creation du mini lecteur audio
 		 */
-		 slideAvance = new JSlider();
-		 slideSon = new JSlider();
-		 slideSon.setMinimum(0);
-		 slideSon.setMaximum(100);
-		 slideSon.setValue((int) (volume*100));
-		 slideSon.addChangeListener(new ChangeListener()
+		 this.slideAvance = new JSlider();
+		 this.slideAvance.setValue(0);
+		 this.slideSon = new JSlider();
+		 this.slideSon.setMinimum(0);
+		 this.slideSon.setMaximum(100);
+		 this.slideSon.setValue((int) (volume*100));
+		 this.slideSon.addChangeListener(new ChangeListener()
 		 {
 		      public void stateChanged(ChangeEvent event)
 		      {
@@ -121,39 +127,39 @@ public class PanneauArbre extends JPanel
 		      }
 		    }); 
 		 //Ajout de bouton pour le lecteur
-		 playEcouteArbre.addMouseListener(new PlayEcouteArbre());
-		 stopEcouteArbre.addMouseListener(new StopEcouteArbre());
-		 pauseEcouteArbre.addMouseListener(new PauseEcouteArbre());
+		 this.playEcouteArbre.addMouseListener(new PlayEcouteArbre());
+		 this.stopEcouteArbre.addMouseListener(new StopEcouteArbre());
+		 this.pauseEcouteArbre.addMouseListener(new PauseEcouteArbre());
 		 
 		 GridBagConstraints c = new GridBagConstraints();
 		 c.gridx = 0;
 		 c.gridy = 0;
-		 panelLecteur.add(slideSon,c);
+		 this.panelLecteur.add(slideSon,c);
 		 c.gridx = 1;
 		 c.gridy = 0;
-		 panelLecteur.add(new JLabel("Volume"), c);
+		 this.panelLecteur.add(new JLabel("Volume"), c);
 		 c.gridx = 0;
 		 c.gridy = 1;
-		 panelLecteur.add(slideAvance,c);
+		 this.panelLecteur.add(slideAvance,c);
 		 c.gridx = 1;
 		 c.gridy = 1;
-		 panelLecteur.add(new JLabel("Curseur"),c);
+		 this.panelLecteur.add(new JLabel("Curseur"),c);
 		 c.gridx = 0;
 		 c.gridy = 2;
-		 panelLecteur.add(playEcouteArbre,c);
+		 this.panelLecteur.add(playEcouteArbre,c);
 		 c.gridx = 1;
 		 c.gridy = 2;
-		 panelLecteur.add(pauseEcouteArbre,c);
+		 this.panelLecteur.add(pauseEcouteArbre,c);
 		 c.gridx = 2;
 		 c.gridy = 2;
-		 panelLecteur.add(stopEcouteArbre,c);
-		 panelArbre.add(panelLecteur);
+		 this.panelLecteur.add(stopEcouteArbre,c);
+		 panelArbre.add(this.panelLecteur);
 		 this.add(panelArbre);
 	}
 	
 	public void updateArbre()
 	{
-		viderNoeud(racine);
+		viderNoeud(this.racine);
 		if(this.typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)
 		{
 			remplirArbreEnregistrementCategorie();
@@ -162,33 +168,32 @@ public class PanneauArbre extends JPanel
 		{
 			remplirArbreEnregistrementSujet();
 		}
-		arbre.updateUI();
+		this.arbre.updateUI();
 	}
 	public void remplirArbreEnregistrementCategorie()
 	{
 		ResultSet rs_cat = null, rs_enr = null;
 		try
 		{
-			rs_cat = bdd.getListeCategorie();
+			rs_cat = this.bdd.getListeCategorie();
 			while(rs_cat.next())
 			{
 				DefaultMutableTreeNode node = new DefaultMutableTreeNode(rs_cat.getString("nomcat"));
-				rs_enr = bdd.getListeEnregistrementCategorie(rs_cat.getInt("idcat"));
+				rs_enr = this.bdd.getListeEnregistrementCategorie(rs_cat.getInt("idcat"));
 				while(rs_enr.next())
 				{
 					Feuille f = new Feuille(rs_enr.getInt("id"), rs_enr.getString("nom"), rs_enr.getInt("duree"), rs_enr.getInt("taille"), rs_enr.getString("nomCat"), rs_enr.getString("nomsuj"));
 					node.add(f);
 				}
 				rs_enr.close();
-				racine.add(node);
-				racine.setUserObject("Categorie");
+				this.racine.add(node);
+				this.racine.setUserObject("Categorie");
 			}
 			rs_cat.close();
 			
 		} 
 		catch(Exception e)
 		{
-			e.printStackTrace();
 			GraphicalUserInterface.popupErreur("Erreur lors du chargement des enregistrement.", "Erreur");
 		}
 	}
@@ -198,19 +203,19 @@ public class PanneauArbre extends JPanel
 		try
 		{
 			int i = 0;
-			rs_cat = bdd.getListeSujet();
+			rs_cat = this.bdd.getListeSujet();
 			while(rs_cat.next())
 			{
 				DefaultMutableTreeNode node = new DefaultMutableTreeNode(rs_cat.getString("nomsuj"));
-				rs_enr = bdd.getListeEnregistrementSujet(rs_cat.getInt("idsuj"));
+				rs_enr = this.bdd.getListeEnregistrementSujet(rs_cat.getInt("idsuj"));
 				while(rs_enr.next())
 				{
 					Feuille f = new Feuille(rs_enr.getInt("id"), rs_enr.getString("nom"), rs_enr.getInt("duree"), rs_enr.getInt("taille"), rs_enr.getString("nomCat"), rs_enr.getString("nomsuj"));
 					node.add(f);
 				}
 				rs_enr.close();
-				racine.add(node);
-				racine.setUserObject("Sujet");
+				this.racine.add(node);
+				this.racine.setUserObject("Sujet");
 			}
 			rs_cat.close();
 			
@@ -244,7 +249,7 @@ public class PanneauArbre extends JPanel
 
 	public JPopupMenu getMenuClicDroit()
 	{
-		return menuClicDroit;
+		return this.menuClicDroit;
 	}
 
 	public void setMenuClicDroit(JPopupMenu menuClicDroit)
@@ -282,7 +287,7 @@ public class PanneauArbre extends JPanel
 	            exporter.addMouseListener(new ExporterEnregistrementClicDroit());
 	            renommer.addMouseListener(new RenommerEnregistrementClicDroit());
 	            ecouter.addMouseListener(new PlayEcouteArbre());
-	            ajouter.addMouseListener(new AjouterCategorieEnregistrementClicDroit());
+	            ajouter.addMouseListener(new AjouterCategorieEnregistrementClicDroit(menuClicDroit, bdd));
 	            modifierCategorie.addMouseListener(new ModifierCategorieEnregistrementClicDroit());
 	            supprimer.addMouseListener(new SupprimerEnregistrementClicDroit());
 	            supprimerCategorie.addMouseListener(new SupprimerCategorieEnregistrementClicDroit());
@@ -447,14 +452,25 @@ public class PanneauArbre extends JPanel
 	}
 	class AjouterCategorieEnregistrementClicDroit implements MouseListener
 	{
+		private JPopupMenu menuClicDroit;
+		private BaseDeDonnees bdd;
+		public AjouterCategorieEnregistrementClicDroit(JPopupMenu menuClicDroit, BaseDeDonnees bdd)
+		{
+			this.bdd = bdd;
+			this.menuClicDroit = menuClicDroit;
+		}
 		public void mouseClicked(MouseEvent e){}
 		public void mouseEntered(MouseEvent e){}
 		public void mouseExited(MouseEvent e){}
 		public void mousePressed(MouseEvent e){}
 		public void mouseReleased(MouseEvent e)
 		{  	
-			menuClicDroit.setEnabled(false) ;
-			menuClicDroit.setVisible(false) ;
+			if(menuClicDroit != null)
+			{
+				menuClicDroit.setEnabled(false) ;
+				menuClicDroit.setVisible(false) ;
+			}
+			
 			String nom = JOptionPane.showInputDialog(null, "Entrez le nom de la nouvelle catégorie", "Renommer", JOptionPane.QUESTION_MESSAGE);
 			if(nom != null && ! nom.equals(""))
 			{
