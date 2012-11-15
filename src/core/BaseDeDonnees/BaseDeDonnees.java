@@ -295,7 +295,7 @@ public class BaseDeDonnees
 		}
 		try
 		{
-			PreparedStatement ps = connexion.prepareStatement("SELECT duree, taille, nom, nomcat, id, nomsuj FROM enregistrements en, categorie ca, sujet su WHERE en.idcat = ca.idcat AND en.idsuj = su.idsuj AND idsuj=? ORDER BY nom");//Preparation de la requete
+			PreparedStatement ps = connexion.prepareStatement("SELECT duree, taille, nom, nomcat, id, nomsuj FROM enregistrements en, categorie ca, sujet su WHERE en.idcat = ca.idcat AND en.idsuj = su.idsuj AND en.idsuj=? ORDER BY nom");//Preparation de la requete
 			ps.setInt(1, idSuj);//on rempli les trous
 			ResultSet rs = ps.executeQuery();//On execute
 			return rs;
@@ -982,7 +982,7 @@ public class BaseDeDonnees
 		try
 		{
 			Statement stat = connexion.createStatement();//creation du Statement
-			ResultSet rs = stat.executeQuery("SELECT nomSuj, idsuj FROM sujet;");//execution de la requete
+			ResultSet rs = stat.executeQuery("SELECT nomsuj, idsuj FROM sujet;");//execution de la requete
 			return rs;
 		}
 		catch(Exception e)
