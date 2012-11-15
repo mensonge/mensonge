@@ -4,8 +4,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ByteArrayInputStream;  
-import java.io.FileInputStream;  
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.util.Arrays;
 
 import core.IExtraction;
 
@@ -21,9 +22,108 @@ import com.xuggle.xuggler.IStream;
 import com.xuggle.xuggler.IStreamCoder;
 
 
+//import core.fftw3.FFTW3Library;
+//import com.sun.jna.NativeLong;
+//import com.sun.jna.Pointer;
+import java.nio.DoubleBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+
 public class Extraction implements IExtraction
 {
-	public double[][] extraireEchantillons(File fichier)
+	public static void main(String args[])
+	{
+
+
+		Extraction ext = new Extraction();
+		System.out.println("....");
+		try
+		{
+			FileOutputStream dataOut = new FileOutputStream("sons/test_sortie.wav");
+			byte [] e = ext.extraireIntervalle(new File("sons/test.wmv"),1000,2000);
+			dataOut.write(e,0,e.length);
+			dataOut.close();
+
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		System.out.println("....");
+		System.exit(0);
+/*
+ *
+ *                double sinusoid[] = new double[1024];
+ *                for(int i=0;i<1024;i++)
+ *                {
+ *                        sinusoid[i] = Math.sin(i);
+ *                }
+ *                long start = System.currentTimeMillis();
+ *                double intervalles[] = ext.extraireEchantillons(new File("sons/test.wav"));
+ *                //double intervalles[] = sinusoid;
+ *
+ *
+ *
+ *                FFTW3Library fftw = FFTW3Library.INSTANCE;
+ *                System.out.println("Interval length: "+intervalles.length);
+ *                int n0_in = 2;
+ *                int n1_in = intervalles.length/2;
+ *                int n_in = intervalles.length;
+ *                System.out.println("N_in: "+n_in);
+ *                System.out.println("N0_in: "+n0_in);
+ *                System.out.println("N1_in: "+n1_in);
+ *                int n_out = n0_in*(2*(n1_in/2+1));
+ *                System.out.println("N_out: "+n_out);
+ *
+ *                int inBytes = (Double.SIZE/Byte.SIZE)*n_in;
+ *                int outBytes = (Double.SIZE/Byte.SIZE)*n_out;
+ *                Pointer in = fftw.fftw_malloc(new NativeLong(inBytes));
+ *                Pointer out = fftw.fftw_malloc(new NativeLong(outBytes));
+ *                DoubleBuffer inbuf = in.getByteBuffer(0, inBytes).asDoubleBuffer();
+ *                DoubleBuffer outbuf = out.getByteBuffer(0, outBytes).asDoubleBuffer();
+ *                int flags = FFTW3Library.FFTW_ESTIMATE;
+ *
+ *                FFTW3Library.fftw_plan planForward = fftw.fftw_plan_dft_r2c_2d(2,n1_in, inbuf, outbuf, flags); // Real to complex
+ *
+ *                double dest[] = new double[n_out];
+ *                inbuf.put(intervalles);
+ *                fftw.fftw_execute_dft_r2c(planForward,inbuf,outbuf);
+ *                outbuf.get(dest);
+ *                for(int i =0;i<n_out;i++)
+ *                {
+ *                        System.out.println(Math.round(dest[i]));
+ *                }
+ */
+/*
+
+npts = number of points
+ *int
+ * 795 octave_fftw::fft (const double *in, Complex *out, size_t npts,
+ * 796                   size_t nsamples, octave_idx_type stride, octave_idx_type dist)
+ * 797 {
+ * 798   dist = (dist < 0 ? npts : dist);
+ * 799 
+ * 800   dim_vector dv (npts, 1);
+ * 801   fftw_plan plan = octave_fftw_planner::create_plan (1, dv, nsamples,
+ * 802                                                      stride, dist, in, out);
+ * 803 
+ * 804   fftw_execute_dft_r2c (plan, (const_cast<double *>(in)),
+ * 805                          reinterpret_cast<fftw_complex *> (out));
+ * 806 
+ * 807   // Need to create other half of the transform.
+ * 808 
+ * 809   convert_packcomplex_1d (out, nsamples, npts, stride, dist);
+ * 810 
+ * 811   return 0;
+ * 812 }
+ *
+ */
+			/*
+			 *System.out.println(intervalles[11000][0]);
+			 *System.out.println(intervalles[11000][1]);
+			 */
+//		System.out.println("Done in "+(System.currentTimeMillis()-start)/1000.0+"s !");
+	}
+	public double[] extraireEchantillons(File fichier)
 	{
 		IContainer containerInput = IContainer.make();
 
@@ -82,7 +182,7 @@ public class Extraction implements IExtraction
 		}
 		audioCoderInput.close();
 		containerInput.close();
-		
+
 		byte[] audioBytes = byte_out.toByteArray();
 		int bitsBySample = 16;
                 int nbSamples = audioBytes.length / nbChannels;
@@ -114,9 +214,10 @@ public class Extraction implements IExtraction
 			return null;
 		}
 		int nbSamplesChannel = nbSamples/nbChannels;
-		return reshape(doubleArray,nbChannels,nbSamplesChannel);
+		return doubleArray;
+		//return reshape(doubleArray,nbChannels,nbSamplesChannel);
 	}
-	private double [][] reshape(double doubleArray[], int m, int n)
+	private double [][] reshape(double doubleArray[], int n, int m)
 	{
 		double reshapeArray[][] = new double[n][m];
 		int k = 0;
@@ -202,7 +303,7 @@ public class Extraction implements IExtraction
 		if (audioCoderOutput.open(options, unsetOptions) < 0)
 			throw new RuntimeException("could not open coder");
 
-		if (containerOutput.writeHeader() < 0)
+		if (containerOutput.writeHeader() < 0)//FIXME
 			throw new RuntimeException("Problème header");
 
 		IPacket packetInput = IPacket.make();
