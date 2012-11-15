@@ -406,17 +406,17 @@ private class SliderKeyListener	implements KeyListener {
 		
 		@Override
 		public void keyTyped(KeyEvent ke) {
-			if(ke.getExtendedKeyCode()==KeyEvent.VK_RIGHT)
+			if(ke.getKeyCode()==KeyEvent.VK_RIGHT)
 			{
 				float perCent=(float) (((float)slider.getValue())/100.0)+5;
 				vidComp.getMediaPlayer().setPosition(perCent);
 			}
-			else if(ke.getExtendedKeyCode()==KeyEvent.VK_LEFT)
+			else if(ke.getKeyCode()==KeyEvent.VK_LEFT)
 			{
 				float perCent=(float) (((float)slider.getValue())/100.0)-5;
 				vidComp.getMediaPlayer().setPosition(perCent);
 			}
-			else if(ke.getExtendedKeyCode()==0)//FIXME 0 sur mon pc KeyEvent.VK_SPACE normalement
+			else if(ke.getKeyCode()==0)//FIXME 0 sur mon pc KeyEvent.VK_SPACE normalement
 			{
 				if (vidComp.getMediaPlayer().isPlaying()) {
 					pause();
