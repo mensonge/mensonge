@@ -65,8 +65,7 @@ public class PanneauArbre extends JPanel
 	{
 		this.bdd = bdd;
 		
-		this.racine = new DefaultMutableTreeNode("Categorie");
-		//remplirArbreEnregistrementCategorie();
+		this.racine = new DefaultMutableTreeNode("Sujet");
 		remplirArbreEnregistrementSujet();
 		this.arbre = new JTree(racine);
 		this.arbre.addMouseListener(new ClicDroit());
@@ -291,7 +290,7 @@ public class PanneauArbre extends JPanel
 	            modifierCategorie.addMouseListener(new ModifierCategorieEnregistrementClicDroit());
 	            supprimer.addMouseListener(new SupprimerEnregistrementClicDroit());
 	            supprimerCategorie.addMouseListener(new SupprimerCategorieEnregistrementClicDroit());
-	            ajouterSujet.addMouseListener(new AjouterSujetClicDroit());
+	            ajouterSujet.addMouseListener(new AjouterSujetClicDroit(menuClicDroit, bdd));
 	            supprimerSujet.addMouseListener(new SupprimerSujetClicDroit());
 	            modifierSujet.addMouseListener(new ModifierSujetEnregistrementClicDroit());
 	            changerTri.addMouseListener(new ModifierTri());
@@ -564,20 +563,28 @@ public class PanneauArbre extends JPanel
 	}
 	class AjouterSujetClicDroit implements MouseListener
 	{
+		private JPopupMenu menuClicDroit;
+		private BaseDeDonnees bdd;
+		
+		public AjouterSujetClicDroit(JPopupMenu menuClicDroit, BaseDeDonnees bdd)
+		{
+			this.bdd = bdd;
+			this.menuClicDroit = menuClicDroit;
+		}
 		public void mouseClicked(MouseEvent e){}
 		public void mouseEntered(MouseEvent e){}
 		public void mouseExited(MouseEvent e){}
 		public void mousePressed(MouseEvent e){}
 		public void mouseReleased(MouseEvent e)
 		{  	
-			menuClicDroit.setEnabled(false) ;
-			menuClicDroit.setVisible(false) ;
+			this.menuClicDroit.setEnabled(false) ;
+			this.menuClicDroit.setVisible(false) ;
 			String option = JOptionPane.showInputDialog("Nouveau sujet");
 			if(option != "" && option != null)
 			{
 				try
 				{
-					bdd.ajouterSujet(option);
+					this.bdd.ajouterSujet(option);
 				}
 				catch (Exception e1)
 				{

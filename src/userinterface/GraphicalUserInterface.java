@@ -41,6 +41,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener {
 	private JMenuItem baseExporter;
 	private JMenuItem baseImporter;
 	private JMenuItem baseAjouterCategorie;
+	private JMenuItem baseAjouterSujet;
 	private JMenuItem play;
 
 	private PanneauArbre panneauArbre;
@@ -74,7 +75,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener {
 		baseImporter.addMouseListener(new ImporterBaseListner(this));
 
 		baseAjouterCategorie = new JMenuItem("Ajouter catégorie");
-		
+		baseAjouterSujet = new JMenuItem("Ajouter sujet");
 
 		JMenu menuFichier = new JMenu("Fichier");
 		menuFichier.add(fichierOuvrir);
@@ -93,6 +94,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener {
 
 		JMenu menuBase = new JMenu("Base");
 		menuBase.add(baseAjouterCategorie);
+		menuBase.add(baseAjouterSujet);
 
 		JMenuBar menuBar = new JMenuBar();
 		menuBar.add(menuFichier);
@@ -104,6 +106,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener {
 		 */
 		this.panneauArbre = new PanneauArbre(bdd);
 		baseAjouterCategorie.addMouseListener(panneauArbre.new AjouterCategorieEnregistrementClicDroit(null, bdd));
+		baseAjouterSujet.addMouseListener(panneauArbre.new AjouterSujetClicDroit(null, bdd));
 		
 		JPanel conteneur = new JPanel(new BorderLayout());
 		conteneur.add(onglets, BorderLayout.CENTER);
@@ -125,7 +128,8 @@ public class GraphicalUserInterface extends JFrame implements ActionListener {
 
 	}
 
-	public void ajouterOnglet(OngletLecteur onglet) {
+	public void ajouterOnglet(OngletLecteur onglet)
+	{
 		JButton boutonFermeture = new JButton(new ImageIcon(
 				"images/CloseTab.png"));
 		boutonFermeture.setToolTipText("Fermer cet onglet");
