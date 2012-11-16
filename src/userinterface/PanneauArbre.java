@@ -296,7 +296,7 @@ public class PanneauArbre extends JPanel
 		{
 			if((e.getModifiers() & MouseEvent.BUTTON3_MASK) != 0)
 			{
-				
+				arbre.setSelectionPath(arbre.getPathForLocation(e.getX(), e.getY()));
 				menuClicDroit.setEnabled(false) ;
 				menuClicDroit.setVisible(false) ;
 				menuClicDroit = new JPopupMenu() ;
@@ -333,7 +333,6 @@ public class PanneauArbre extends JPanel
 	            		{
 	            			menuClicDroit.add(exporter);
 	            			menuClicDroit.add(ecouter);
-	            			//menuClicDroit.add(modifier);
 	            		}
 	            		menuClicDroit.add(renommer);//commun au categorie et au feuille	            	
 		            }
