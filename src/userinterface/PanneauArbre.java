@@ -1,6 +1,8 @@
 package userinterface;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -311,7 +313,7 @@ public class PanneauArbre extends JPanel
 	            JMenuItem ajouterSujet = new JMenuItem("Ajouter Sujet");
 	            JMenuItem supprimerSujet = new JMenuItem("Supprimer Sujet");
 	            JMenuItem modifierSujet = new JMenuItem("Changer Sujet");
-	            JMenuItem changerTri = new JMenuItem("Changer tri");
+	            JMenuItem changerTri = new JMenuItem();
 	            
 	            exporter.addMouseListener(new ExporterEnregistrementClicDroit());
 	            renommer.addMouseListener(new RenommerEnregistrementClicDroit());
@@ -325,6 +327,18 @@ public class PanneauArbre extends JPanel
 	            modifierSujet.addMouseListener(new ModifierSujetEnregistrementClicDroit());
 	            changerTri.addMouseListener(new ModifierTri());
 	            
+	            //ajouterSujet.addMouseListener(new HighlightClicDroit());
+	            //ajouter.addMouseListener(new HighlightClicDroit());
+	            //changerTri.addMouseListener(new HighlightClicDroit());
+	            
+	            if(typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)
+	            {
+	            	changerTri.setText("Trier par Sujet");
+	            }
+	            else if(typeTrie == PanneauArbre.TYPE_TRIE_SUJET)
+	            {
+	            	changerTri.setText("Trier par Categorie");
+	            }
 	            if(arbre.getSelectionPaths() != null)
 	            {
 	            	if(arbre.getSelectionPaths().length == 1)
@@ -478,7 +492,7 @@ public class PanneauArbre extends JPanel
 			updateArbre();
 		}
 	}
-	class AjouterCategorieEnregistrementClicDroit implements MouseListener
+		class AjouterCategorieEnregistrementClicDroit implements MouseListener
 	{
 		private JPopupMenu menuClicDroit;
 		private BaseDeDonnees bdd;
@@ -723,6 +737,27 @@ public class PanneauArbre extends JPanel
 			}
 			updateArbre();
 		}
+	}
+	class HighlightClicDroit implements MouseListener
+	{
+		public void mouseClicked(MouseEvent e){}
+		public void mouseEntered(MouseEvent e)
+		{
+			menuClicDroit.setBackground(new Color(238, 238, 238));
+			Component a = menuClicDroit.getComponentAt(e.getX(), e.getY());
+			if(a instanceof JMenuItem)
+			{
+				a.setBackground(Color.CYAN);
+			}
+			System.out.println(a.getClass());
+		}
+		public void mouseExited(MouseEvent e)
+		{
+			Component a = menuClicDroit.getComponentAt(e.getX(), e.getY());
+			a.setBackground(new Color(238, 238, 238));
+		}
+		public void mousePressed(MouseEvent e){}
+		public void mouseReleased(MouseEvent e){}
 	}
 	
 	class PlayEcouteArbre extends MouseAdapter
