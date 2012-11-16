@@ -5,12 +5,16 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
+import java.net.URL;
 import java.sql.ResultSet;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -41,7 +45,7 @@ public class PanneauArbre extends JPanel
 	
 	private BaseDeDonnees bdd = null;
 	
-	private JButton playEcouteArbre = new JButton("Play");
+	private JButton playEcouteArbre = new JButton("play");
 	private JButton stopEcouteArbre = new JButton("Stop");
 	private JButton pauseEcouteArbre = new JButton("Pause");
 	private JSlider slideAvance;
@@ -64,11 +68,37 @@ public class PanneauArbre extends JPanel
 	public PanneauArbre(BaseDeDonnees bdd)
 	{
 		this.bdd = bdd;
+		//DialogueAjouterEnregistrement a = new DialogueAjouterEnregistrement(null, "t", true, bdd, null);
+		//a.activer();
+		Toolkit tk;
+		Image i;
+		URL url = this.getClass().getResource("/images/Lecture.png");
+		if(url != null)
+		{
+			tk = this.getToolkit();
+			i = tk.getImage(url);
+			playEcouteArbre = new JButton(new ImageIcon(i));
+		}
+		url = this.getClass().getResource("/images/Pause.png");
+		if(url != null)
+		{
+			tk = this.getToolkit();
+			i = tk.getImage(url);
+			pauseEcouteArbre = new JButton(new ImageIcon(i));
+		}
+		url = null; //this.getClass().getResource("/images/CloseTab.png");
+		if(url != null)
+		{
+			tk = this.getToolkit();
+			i = tk.getImage(url);
+			stopEcouteArbre = new JButton(new ImageIcon(i));
+		}
 		
 		this.racine = new DefaultMutableTreeNode("Sujet");
-		remplirArbreEnregistrementSujet();
+		this.remplirArbreEnregistrementSujet();
 		this.arbre = new JTree(racine);
 		this.arbre.addMouseListener(new ClicDroit());
+		
 		
 		this.arbre.addTreeSelectionListener(new TreeSelectionListener(){
 
@@ -577,8 +607,11 @@ public class PanneauArbre extends JPanel
 		public void mousePressed(MouseEvent e){}
 		public void mouseReleased(MouseEvent e)
 		{  	
-			this.menuClicDroit.setEnabled(false) ;
-			this.menuClicDroit.setVisible(false) ;
+			if(menuClicDroit != null)
+			{
+				menuClicDroit.setEnabled(false) ;
+				menuClicDroit.setVisible(false) ;
+			}
 			String option = JOptionPane.showInputDialog("Nouveau sujet");
 			if(option != "" && option != null)
 			{
