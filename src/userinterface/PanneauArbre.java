@@ -1,16 +1,22 @@
 package userinterface;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.GridLayout;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
+import java.net.URL;
 import java.sql.ResultSet;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
@@ -41,7 +47,7 @@ public class PanneauArbre extends JPanel
 	
 	private BaseDeDonnees bdd = null;
 	
-	private JButton playEcouteArbre = new JButton("Play");
+	private JButton playEcouteArbre = new JButton("play");
 	private JButton stopEcouteArbre = new JButton("Stop");
 	private JButton pauseEcouteArbre = new JButton("Pause");
 	private JSlider slideAvance;
@@ -64,11 +70,37 @@ public class PanneauArbre extends JPanel
 	public PanneauArbre(BaseDeDonnees bdd)
 	{
 		this.bdd = bdd;
+		//DialogueAjouterEnregistrement a = new DialogueAjouterEnregistrement(null, "t", true, bdd, null);
+		//a.activer();
+		Toolkit tk;
+		Image i;
+		URL url = this.getClass().getResource("/images/Lecture.png");
+		if(url != null)
+		{
+			tk = this.getToolkit();
+			i = tk.getImage(url);
+			playEcouteArbre = new JButton(new ImageIcon(i));
+		}
+		url = this.getClass().getResource("/images/Pause.png");
+		if(url != null)
+		{
+			tk = this.getToolkit();
+			i = tk.getImage(url);
+			pauseEcouteArbre = new JButton(new ImageIcon(i));
+		}
+		url = null; //this.getClass().getResource("/images/CloseTab.png");
+		if(url != null)
+		{
+			tk = this.getToolkit();
+			i = tk.getImage(url);
+			stopEcouteArbre = new JButton(new ImageIcon(i));
+		}
 		
 		this.racine = new DefaultMutableTreeNode("Sujet");
-		remplirArbreEnregistrementSujet();
+		this.remplirArbreEnregistrementSujet();
 		this.arbre = new JTree(racine);
 		this.arbre.addMouseListener(new ClicDroit());
+		
 		
 		this.arbre.addTreeSelectionListener(new TreeSelectionListener(){
 
@@ -266,7 +298,7 @@ public class PanneauArbre extends JPanel
 		{
 			if((e.getModifiers() & MouseEvent.BUTTON3_MASK) != 0)
 			{
-				
+				arbre.setSelectionPath(arbre.getPathForLocation(e.getX(), e.getY()));
 				menuClicDroit.setEnabled(false) ;
 				menuClicDroit.setVisible(false) ;
 				menuClicDroit = new JPopupMenu() ;
@@ -281,7 +313,7 @@ public class PanneauArbre extends JPanel
 	            JMenuItem ajouterSujet = new JMenuItem("Ajouter Sujet");
 	            JMenuItem supprimerSujet = new JMenuItem("Supprimer Sujet");
 	            JMenuItem modifierSujet = new JMenuItem("Changer Sujet");
-	            JMenuItem changerTri = new JMenuItem("Changer tri");
+	            JMenuItem changerTri = new JMenuItem();
 	            
 	            exporter.addMouseListener(new ExporterEnregistrementClicDroit());
 	            renommer.addMouseListener(new RenommerEnregistrementClicDroit());
@@ -295,6 +327,18 @@ public class PanneauArbre extends JPanel
 	            modifierSujet.addMouseListener(new ModifierSujetEnregistrementClicDroit());
 	            changerTri.addMouseListener(new ModifierTri());
 	            
+	            //ajouterSujet.addMouseListener(new HighlightClicDroit());
+	            //ajouter.addMouseListener(new HighlightClicDroit());
+	            //changerTri.addMouseListener(new HighlightClicDroit());
+	            
+	            if(typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)
+	            {
+	            	changerTri.setText("Trier par Sujet");
+	            }
+	            else if(typeTrie == PanneauArbre.TYPE_TRIE_SUJET)
+	            {
+	            	changerTri.setText("Trier par Categorie");
+	            }
 	            if(arbre.getSelectionPaths() != null)
 	            {
 	            	if(arbre.getSelectionPaths().length == 1)
@@ -303,7 +347,6 @@ public class PanneauArbre extends JPanel
 	            		{
 	            			menuClicDroit.add(exporter);
 	            			menuClicDroit.add(ecouter);
-	            			//menuClicDroit.add(modifier);
 	            		}
 	            		menuClicDroit.add(renommer);//commun au categorie et au feuille	            	
 		            }
@@ -449,7 +492,7 @@ public class PanneauArbre extends JPanel
 			updateArbre();
 		}
 	}
-	class AjouterCategorieEnregistrementClicDroit implements MouseListener
+		class AjouterCategorieEnregistrementClicDroit implements MouseListener
 	{
 		private JPopupMenu menuClicDroit;
 		private BaseDeDonnees bdd;
@@ -577,8 +620,11 @@ public class PanneauArbre extends JPanel
 		public void mousePressed(MouseEvent e){}
 		public void mouseReleased(MouseEvent e)
 		{  	
-			this.menuClicDroit.setEnabled(false) ;
-			this.menuClicDroit.setVisible(false) ;
+			if(menuClicDroit != null)
+			{
+				menuClicDroit.setEnabled(false) ;
+				menuClicDroit.setVisible(false) ;
+			}
 			String option = JOptionPane.showInputDialog("Nouveau sujet");
 			if(option != "" && option != null)
 			{
@@ -691,6 +737,27 @@ public class PanneauArbre extends JPanel
 			}
 			updateArbre();
 		}
+	}
+	class HighlightClicDroit implements MouseListener
+	{
+		public void mouseClicked(MouseEvent e){}
+		public void mouseEntered(MouseEvent e)
+		{
+			menuClicDroit.setBackground(new Color(238, 238, 238));
+			Component a = menuClicDroit.getComponentAt(e.getX(), e.getY());
+			if(a instanceof JMenuItem)
+			{
+				a.setBackground(Color.CYAN);
+			}
+			System.out.println(a.getClass());
+		}
+		public void mouseExited(MouseEvent e)
+		{
+			Component a = menuClicDroit.getComponentAt(e.getX(), e.getY());
+			a.setBackground(new Color(238, 238, 238));
+		}
+		public void mousePressed(MouseEvent e){}
+		public void mouseReleased(MouseEvent e){}
 	}
 	
 	class PlayEcouteArbre extends MouseAdapter
