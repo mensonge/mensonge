@@ -29,7 +29,11 @@ import core.BaseDeDonnees.BaseDeDonnees;
 import core.BaseDeDonnees.DBException;
 
 import userinterface.OngletLecteur;
-
+/**
+ * 
+ * Classe Interface graphique contenant tous les composants graphiques
+ * 
+ */
 public class GraphicalUserInterface extends JFrame implements ActionListener {
 	private static final long serialVersionUID = 5373991180139317820L;
 
@@ -128,6 +132,10 @@ public class GraphicalUserInterface extends JFrame implements ActionListener {
 
 	}
 
+	/**
+	 * Ajoute un nouvel onglet à l'interface graphique
+	 * @param onglet Onglet à ajouter
+	 */
 	public void ajouterOnglet(OngletLecteur onglet)
 	{
 		JButton boutonFermeture = new JButton(new ImageIcon(
@@ -150,11 +158,12 @@ public class GraphicalUserInterface extends JFrame implements ActionListener {
 				panelFermeture);
 	}
 
-	public void quitter() {
-		File f = new File("tmp.wav");// on supprime le fichier temporaire
-		if (f.exists()) {
-			f.delete();
-		}
+	/**
+	 * Quitte l'application
+	 */
+	public void quitter()
+	{
+
 		System.exit(0);
 	}
 
@@ -206,6 +215,11 @@ public class GraphicalUserInterface extends JFrame implements ActionListener {
 				JOptionPane.ERROR_MESSAGE);
 	}
 
+	/**
+	 * Affiche une popup d'information
+	 * @param message L'information à afficher
+	 * @param title Le titre de la popup
+	 */
 	public static void popupInfo(String message, String title) {
 		JOptionPane.showMessageDialog(null, message, title,
 				JOptionPane.INFORMATION_MESSAGE);
@@ -248,7 +262,10 @@ public class GraphicalUserInterface extends JFrame implements ActionListener {
 		}
 	}
 
-	class FermetureOngletListener implements ActionListener {
+	/**
+	 * Classe Listener gérant la fermeture des onglets, qui sera ajouté à chaque onglet
+	 */
+	private class FermetureOngletListener implements ActionListener {
 		private JTabbedPane onglets;
 		private OngletLecteur onglet;
 
