@@ -298,8 +298,10 @@ public class PanneauArbre extends JPanel
 		{
 			if((e.getModifiers() & MouseEvent.BUTTON3_MASK) != 0)
 			{
-								
-				arbre.setSelectionPath(arbre.getPathForLocation(e.getX(), e.getY()));
+				if(arbre.getSelectionPaths().length <= 1)
+				{
+					arbre.setSelectionPath(arbre.getPathForLocation(e.getX(), e.getY()));
+				}
 				menuClicDroit.setEnabled(false) ;
 				menuClicDroit.setVisible(false) ;
 				menuClicDroit = new JPopupMenu() ;
