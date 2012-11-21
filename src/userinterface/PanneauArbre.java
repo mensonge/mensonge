@@ -298,13 +298,15 @@ public class PanneauArbre extends JPanel
 		{
 			if((e.getModifiers() & MouseEvent.BUTTON3_MASK) != 0)
 			{
-				arbre.setSelectionPath(arbre.getPathForLocation(e.getX(), e.getY()));
+				//arbre.setSelectionPath(arbre.getPathForLocation(e.getX(), e.getY()));
 				menuClicDroit.setEnabled(false) ;
 				menuClicDroit.setVisible(false) ;
 				menuClicDroit = new JPopupMenu() ;
 	            JMenuItem exporter = new JMenuItem("Exporter") ;
 	            JMenuItem renommer = new JMenuItem("Renommer");
 	           
+	           
+	            
 	            JMenuItem ecouter = new JMenuItem("Ecouter") ;
 	            JMenuItem modifierCategorie = new JMenuItem("Changer categorie");
 	            JMenuItem supprimer = new JMenuItem("Supprimer les enregistrements");
@@ -385,7 +387,7 @@ public class PanneauArbre extends JPanel
 	            menuClicDroit.setEnabled(true) ;
 	            menuClicDroit.setVisible(true) ;
 	           
-	            menuClicDroit.show(arbre.getComponentAt(e.getXOnScreen(), e.getYOnScreen()), e.getXOnScreen(),e.getYOnScreen()); 
+	            menuClicDroit.show(arbre, e.getX(), e.getY());
 			}
 			else
 			{
