@@ -13,22 +13,31 @@ import java.util.HashMap;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import core.plugins.FileListFilter;
 import core.plugins.Plugin;
 import core.plugins.PluginManager;
 
+/**
+ * Gestionnaire des plugins
+ */
 public class PluginManager
 {
+	private static final String PLUGINS_PATH = "plugins";
 	private HashMap<String, Plugin> listePlugins;
 
+	/**
+	 * Initialise une liste de plugins
+	 */
 	public PluginManager()
 	{
 		this.listePlugins = new HashMap<String, Plugin>();
 	}
 
+	/**
+	 * Charge la liste des plugins dans le dossier PLUGINS_PATH
+	 */
 	public void chargerPlugins()
 	{
-		File dossierPlugins = new File("plugins");
+		File dossierPlugins = new File(PLUGINS_PATH);
 		FilenameFilter filter = new FileListFilter(null, ".jar");// On ne veut que les .jar
 
 		File[] listeFichiers = dossierPlugins.listFiles(filter);
@@ -105,6 +114,10 @@ public class PluginManager
 		}
 	}
 
+	/**
+	 * Récupère la liste des plugins sous la forme d'une hashMap
+	 * @return HashMap contenant la liste des plugins
+	 */
 	public HashMap<String, Plugin> getListePlugins()
 	{
 		return listePlugins;
@@ -126,32 +139,35 @@ public class PluginManager
 		else
 			System.out.println("[E] Pas de plugin CoefficientsCepstraux");
 	}
-}
-
-class FileListFilter implements FilenameFilter
-{
-	private String start;
-	private String end;
-
-	public FileListFilter(String start, String end)
+	/**
+	 * Classe interne permettant de filter les noms des fichiers
+	 *
+	 */
+	private class FileListFilter implements FilenameFilter
 	{
-		this.start = start;
-		this.end = end;
-	}
+		private String start;
+		private String end;
 
-	public boolean accept(File dir, String name)
-	{
-		boolean accept = true;
-
-		if(start != null)
+		public FileListFilter(String start, String end)
 		{
-			accept &= name.startsWith(start);
+			this.start = start;
+			this.end = end;
 		}
 
-		if(end != null)
+		public boolean accept(File dir, String name)
 		{
-			accept &= name.endsWith(end);
+			boolean accept = true;
+
+			if(start != null)
+			{
+				accept &= name.startsWith(start);
+			}
+
+			if(end != null)
+			{
+				accept &= name.endsWith(end);
+			}
+			return accept;
 		}
-		return accept;
 	}
 }
