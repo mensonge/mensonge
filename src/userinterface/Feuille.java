@@ -30,6 +30,7 @@ public class Feuille extends DefaultMutableTreeNode
 		this.taille = taille;
 		this.nom = nom;
 		this.categorie = categorie;
+		this.sujet = sujet;
 	}
 	public Map<String, String> getInfo()
 	{
