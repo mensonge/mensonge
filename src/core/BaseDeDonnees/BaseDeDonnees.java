@@ -350,7 +350,11 @@ public class BaseDeDonnees
 		}
 		if( ! this.sujetExiste(idSuj))//test l'existance de la categorie
 		{
-			throw new DBException("sujet inexistante.", 3);
+			throw new DBException("Sujet inexistante.", 3);
+		}
+		if( this.enregistrementExist(nom))
+		{
+			throw new DBException("Nom déjà utilisé.", 3);
 		}
 		try
 		{
@@ -422,6 +426,10 @@ public class BaseDeDonnees
 		{
 			throw new DBException("sujet inexistante.", 3);
 		}
+		if( this.enregistrementExist(nom))
+		{
+			throw new DBException("Nom déjà utilisé.", 3);
+		}
 		try
 		{
 			PreparedStatement ps = connexion.prepareStatement(
@@ -468,6 +476,10 @@ public class BaseDeDonnees
 		{
 			throw new DBException("sujet inexistante.", 3);
 		}
+		if( this.enregistrementExist(nom))
+		{
+			throw new DBException("Nom déjà utilisé.", 3);
+		}
 		try
 		{
 			PreparedStatement ps = connexion.prepareStatement(
@@ -501,6 +513,10 @@ public class BaseDeDonnees
 		if(connexion == null)
 		{
 			return;
+		}
+		if( this.enregistrementExist(nom))
+		{
+			throw new DBException("Nom déjà utilisé.", 3);
 		}
 		try
 		{
@@ -759,6 +775,10 @@ public class BaseDeDonnees
 		{
 			return;
 		}
+		if( this.categorieExiste(nom))
+		{
+			throw new DBException("Nom de catégorie déjà utilisé.", 3);
+		}
 		try
 		{
 			PreparedStatement ps = connexion.prepareStatement("INSERT INTO categorie (nomcat) VALUES (?)");//preparation de la requete
@@ -835,6 +855,10 @@ public class BaseDeDonnees
 		if(connexion == null)
 		{
 			return;
+		}
+		if( this.categorieExiste(nom))
+		{
+			throw new DBException("Nom de catégorie déjà utilisé.", 3);
 		}
 		try
 		{
@@ -925,6 +949,10 @@ public class BaseDeDonnees
 		{
 			return;
 		}
+		if( this.sujetExiste(nom))
+		{
+			throw new DBException("Nom de sujet déjà utilisé.", 3);
+		}
 		try
 		{
 			PreparedStatement ps = connexion.prepareStatement("INSERT INTO sujet (nomsuj) VALUES (?)");//preparation de la requete
@@ -1001,6 +1029,10 @@ public class BaseDeDonnees
 		if(connexion == null)
 		{
 			return;
+		}
+		if( this.sujetExiste(nom))
+		{
+			throw new DBException("Nom de sujet déjà utilisé.", 3);
 		}
 		try
 		{
@@ -1245,6 +1277,40 @@ public class BaseDeDonnees
 			throw new DBException("Probleme lors de la verification de l'existance du sujet: " + e.getMessage(), 1);
 		}
 	}
+	
+	/**
+	 * Verifie l'existance d'un sujet par son nom
+	 * @param nom le nom a verifier
+	 * @return true si le nom existe
+	 * @throws DBException 
+	 */
+	private boolean enregistrementExist(final String nom) throws DBException
+	{
+		if(connexion == null)
+		{
+			return false;
+		}
+		try
+		{
+			PreparedStatement ps = connexion.prepareStatement("SELECT 1 FROM enregistrements WHERE nom=?");
+			ps.setString(1, nom);
+			ResultSet rs = ps.executeQuery();
+			
+			if(rs.next())
+			{
+				rs.close();//Fermeture des ressources
+				ps.close();
+				return true;
+			}
+			rs.close();//Fermeture des ressources
+			ps.close();
+			return false;
+		}
+		catch(Exception e)
+		{
+			throw new DBException("Probleme lors de la verification de l'existance du sujet: " + e.getMessage(), 1);
+		}
+	}
 	/** copie le fichier source dans le fichier resultat
 	 * retourne vrai si cela réussit
 	 */
@@ -1289,6 +1355,7 @@ public class BaseDeDonnees
 		return true; // Résultat OK  
 	}	
 
+	
 	//GETTER et SETTER
 	public Connection getConnexion() {
 		return connexion;
