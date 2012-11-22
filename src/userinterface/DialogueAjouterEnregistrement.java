@@ -37,7 +37,7 @@ public class DialogueAjouterEnregistrement extends JDialog
 	
 	private JButton envoyer = new JButton("Valider");
 	private JButton annuler = new JButton("Annuler");
-	private RetourAjoutEnregistrement retour = null;
+	
 	
 	private byte[] enregistrement;
 	
@@ -107,10 +107,9 @@ public class DialogueAjouterEnregistrement extends JDialog
 		this.setSize(350, 300);
 	}
 
-	public RetourAjoutEnregistrement activer()
+	public void activer()
 	{
 		this.setVisible(true);
-		return retour;
 	}
 	public class BouttonAnnulerListener implements MouseListener
 	{
@@ -120,7 +119,6 @@ public class DialogueAjouterEnregistrement extends JDialog
 		public void mousePressed(MouseEvent e){}
 		public void mouseReleased(MouseEvent e)
 		{
-			retour = null;
 			setVisible(false);
 		}
 	}
@@ -132,8 +130,6 @@ public class DialogueAjouterEnregistrement extends JDialog
 		public void mousePressed(MouseEvent e){}
 		public void mouseReleased(MouseEvent e)
 		{
-			retour = new RetourAjoutEnregistrement(champsNom.getText(), (String)comboCategorie.getSelectedItem(), (String)comboSujet.getSelectedItem(), 10, enregistrement);
-			
 			int duree = 10;
 			
 			
