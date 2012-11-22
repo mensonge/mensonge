@@ -201,6 +201,7 @@ public class PanneauArbre extends JPanel
 			remplirArbreEnregistrementSujet();
 		}
 		this.arbre.updateUI();
+		
 	}
 	public void remplirArbreEnregistrementCategorie()
 	{
@@ -219,10 +220,10 @@ public class PanneauArbre extends JPanel
 				}
 				rs_enr.close();
 				this.racine.add(node);
-				this.racine.setUserObject("Categorie");
+				
 			}
 			rs_cat.close();
-			
+			this.racine.setUserObject("Categorie");
 		} 
 		catch(Exception e)
 		{
@@ -234,7 +235,6 @@ public class PanneauArbre extends JPanel
 		ResultSet rs_cat = null, rs_enr = null;
 		try
 		{
-			int i = 0;
 			rs_cat = this.bdd.getListeSujet();
 			while(rs_cat.next())
 			{
@@ -247,10 +247,10 @@ public class PanneauArbre extends JPanel
 				}
 				rs_enr.close();
 				this.racine.add(node);
-				this.racine.setUserObject("Sujet");
+				
 			}
 			rs_cat.close();
-			
+			this.racine.setUserObject("Sujet");
 		} 
 		catch(Exception e)
 		{
@@ -348,8 +348,6 @@ public class PanneauArbre extends JPanel
 	            JMenuItem exporter = new JMenuItem("Exporter") ;
 	            JMenuItem renommer = new JMenuItem("Renommer");
 	           
-	           
-	            
 	            JMenuItem ecouter = new JMenuItem("Ecouter") ;
 	            JMenuItem modifierCategorie = new JMenuItem("Changer categorie");
 	            JMenuItem supprimer = new JMenuItem("Supprimer les enregistrements");
@@ -373,7 +371,9 @@ public class PanneauArbre extends JPanel
 	            supprimerSujet.addMouseListener(new SupprimerSujetClicDroit());
 	            modifierSujet.addMouseListener(new ModifierSujetEnregistrementClicDroit());
 	            changerTri.addMouseListener(new ModifierTri());
-	         
+	            renomerCategorie.addMouseListener(new RenommerCategorieClicDroit());
+	            renomerSujet.addMouseListener(new RenommerSujetClicDroit());
+	          
 	            if(typeTrie == PanneauArbre.TYPE_TRIE_SUJET)
             	{
             		changerTri.setText("Grouper par categories");
