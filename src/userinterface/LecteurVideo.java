@@ -12,6 +12,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -134,7 +135,7 @@ public class LecteurVideo extends JPanel implements ActionListener {
 		this.slider.setPaintLabels(false);
 		this.slider.setMinimum(0);
 		this.slider.setValue(0);
-		this.slider.addMouseListener(new MouseSliderEventListener());
+		this.slider.addMouseMotionListener(new MouseSliderEventListener());
 
 		  this.slider.setUI(new MetalSliderUI() 
 		  { 
@@ -184,7 +185,6 @@ public class LecteurVideo extends JPanel implements ActionListener {
 		try {
 			Thread.sleep(750);
 		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		this.pause = false;
@@ -401,33 +401,24 @@ public class LecteurVideo extends JPanel implements ActionListener {
 		public void videoOutput(MediaPlayer arg0, int arg1) {
 		}
 	}
-	private class MouseSliderEventListener implements MouseListener
+	private class MouseSliderEventListener implements MouseMotionListener
 	{
 
 		@Override
-		public void mouseClicked(MouseEvent mE) {
+		public void mouseDragged(MouseEvent arg0)
+		{
+			
 		}
 
 		@Override
-		public void mouseEntered(MouseEvent e) {
+		public void mouseMoved(MouseEvent e)
+		{
 			int positionValue=((BasicSliderUI) slider.getUI()).valueForXPosition(e.getX());
 			long duree = (long) ((positionValue/100.0)*vidComp.getMediaPlayer().getLength() /1000);
 			int heures = (int) (duree / 3600);
 			int minutes = (int) ((duree % 3600) / 60);
 			int secondes = (int) ((duree % 3600) % 60);
 			slider.setToolTipText(String.format("%02d:%02d:%02d", heures, minutes,secondes));
-		}
-
-		@Override
-		public void mouseExited(MouseEvent arg0) {
-		}
-
-		@Override
-		public void mousePressed(MouseEvent arg0) {
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent arg0) {
 		}
 	}
 	
