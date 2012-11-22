@@ -32,6 +32,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 
 import core.BaseDeDonnees.BaseDeDonnees;
 import core.BaseDeDonnees.DBException;
@@ -209,7 +210,7 @@ public class PanneauArbre extends JPanel
 			rs_cat = this.bdd.getListeCategorie();
 			while(rs_cat.next())
 			{
-				DefaultMutableTreeNode node = new DefaultMutableTreeNode(rs_cat.getString("nomcat"));
+				Branche node = new Branche(rs_cat.getString("nomcat"));
 				rs_enr = this.bdd.getListeEnregistrementCategorie(rs_cat.getInt("idcat"));
 				while(rs_enr.next())
 				{
@@ -237,7 +238,7 @@ public class PanneauArbre extends JPanel
 			rs_cat = this.bdd.getListeSujet();
 			while(rs_cat.next())
 			{
-				DefaultMutableTreeNode node = new DefaultMutableTreeNode(rs_cat.getString("nomsuj"));
+				Branche node = new Branche(rs_cat.getString("nomsuj"));
 				rs_enr = this.bdd.getListeEnregistrementSujet(rs_cat.getInt("idsuj"));
 				while(rs_enr.next())
 				{
@@ -278,6 +279,45 @@ public class PanneauArbre extends JPanel
         }
     }
 
+	public boolean onlySelectBranche()
+	{
+		TreePath[] paths = arbre.getSelectionPaths();
+		if(paths != null)
+		{
+			for(int i = 0; i < paths.length; i++)
+			{
+				if( ! (paths[i].getLastPathComponent() instanceof Branche))
+				{
+					return false;
+				}
+			}
+		}
+		else
+		{
+			return false;
+		}
+		return true;
+	}
+	public boolean onlySelectFeuille()
+	{
+		TreePath[] paths = arbre.getSelectionPaths();
+		if(paths != null)
+		{
+			for(int i = 0; i < paths.length; i++)
+			{
+				if( ! (paths[i].getLastPathComponent() instanceof Feuille))
+				{
+					return false;
+				}
+			}
+		}
+		else
+		{
+			return false;
+		}
+		return true;
+	}
+	
 	public JPopupMenu getMenuClicDroit()
 	{
 		return this.menuClicDroit;
@@ -298,7 +338,7 @@ public class PanneauArbre extends JPanel
 		{
 			if((e.getModifiers() & MouseEvent.BUTTON3_MASK) != 0)
 			{
-				if(arbre.getSelectionPaths().length <= 1)
+				if(arbre.getSelectionCount() <= 1)
 				{
 					arbre.setSelectionPath(arbre.getPathForLocation(e.getX(), e.getY()));
 				}
@@ -313,17 +353,19 @@ public class PanneauArbre extends JPanel
 	            JMenuItem ecouter = new JMenuItem("Ecouter") ;
 	            JMenuItem modifierCategorie = new JMenuItem("Changer categorie");
 	            JMenuItem supprimer = new JMenuItem("Supprimer les enregistrements");
-	            JMenuItem ajouter = new JMenuItem("Ajouter Categorie");
+	            JMenuItem ajouterCategorie = new JMenuItem("Ajouter Categorie");
 	            JMenuItem supprimerCategorie = new JMenuItem("Supprimer Categorie");
 	            JMenuItem ajouterSujet = new JMenuItem("Ajouter Sujet");
 	            JMenuItem supprimerSujet = new JMenuItem("Supprimer Sujet");
 	            JMenuItem modifierSujet = new JMenuItem("Changer Sujet");
 	            JMenuItem changerTri = new JMenuItem();
+	            JMenuItem renomerCategorie = new JMenuItem("Renommer categorie");
+	            JMenuItem renomerSujet = new JMenuItem("Renommer Sujet");
 	            
 	            exporter.addMouseListener(new ExporterEnregistrementClicDroit());
 	            renommer.addMouseListener(new RenommerEnregistrementClicDroit());
 	            ecouter.addMouseListener(new PlayEcouteArbre());
-	            ajouter.addMouseListener(new AjouterCategorieEnregistrementClicDroit(menuClicDroit, bdd));
+	            ajouterCategorie.addMouseListener(new AjouterCategorieEnregistrementClicDroit(menuClicDroit, bdd));
 	            modifierCategorie.addMouseListener(new ModifierCategorieEnregistrementClicDroit());
 	            supprimer.addMouseListener(new SupprimerEnregistrementClicDroit());
 	            supprimerCategorie.addMouseListener(new SupprimerCategorieEnregistrementClicDroit());
@@ -331,60 +373,58 @@ public class PanneauArbre extends JPanel
 	            supprimerSujet.addMouseListener(new SupprimerSujetClicDroit());
 	            modifierSujet.addMouseListener(new ModifierSujetEnregistrementClicDroit());
 	            changerTri.addMouseListener(new ModifierTri());
+	         
+	            if(typeTrie == PanneauArbre.TYPE_TRIE_SUJET)
+            	{
+            		changerTri.setText("Grouper par categories");
+            	}
+            	else if(typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)
+            	{
+            		changerTri.setText("Grouper par sujets");
+            	}
 	            
-	            //ajouterSujet.addMouseListener(new HighlightClicDroit());
-	            //ajouter.addMouseListener(new HighlightClicDroit());
-	            //changerTri.addMouseListener(new HighlightClicDroit());
-	            
-	            if(typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)
-	            {
-	            	changerTri.setText("Trier par Sujet");
-	            }
-	            else if(typeTrie == PanneauArbre.TYPE_TRIE_SUJET)
-	            {
-	            	changerTri.setText("Trier par Categorie");
-	            }
-	            if(arbre.getSelectionPaths() != null)
-	            {
-	            	if(arbre.getSelectionPaths().length == 1)
-		            {
-	            		if(arbre.getLastSelectedPathComponent() instanceof Feuille)//Si c'est une feuille
-	            		{
-	            			menuClicDroit.add(exporter);
-	            			menuClicDroit.add(ecouter);
-	            		}
-	            		menuClicDroit.add(renommer);//commun au categorie et au feuille	            	
-		            }
-		            if(arbre.getSelectionPaths().length >= 1)
-		            {
-		            	if(arbre.getLastSelectedPathComponent() instanceof Feuille)
-		            	{
-		            		
-		            		if(typeTrie == PanneauArbre.TYPE_TRIE_SUJET)
-			            	{
-			            		menuClicDroit.add(modifierSujet);
-			            	}
-			            	else
-			            	{
-			            		menuClicDroit.add(modifierCategorie) ;
-			            	}
-		            	}
-		            	menuClicDroit.add(supprimer) ;
-		            }
-	            }
-	            menuClicDroit.add(ajouter);
-	            menuClicDroit.add(ajouterSujet);
-	            if(arbre.getSelectionPaths() != null)
+	            if(arbre.getSelectionCount() == 0)
 	            {
 	            	if(typeTrie == PanneauArbre.TYPE_TRIE_SUJET)
 	            	{
-	            		menuClicDroit.add(supprimerSujet);
+	            		menuClicDroit.add(ajouterSujet);
 	            	}
-	            	else
+	            	else if(typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)
 	            	{
-	            		menuClicDroit.add(supprimerCategorie);
+	            		menuClicDroit.add(ajouterCategorie);
 	            	}
+	            	
 	            }
+	            if(arbre.getSelectionCount() >= 1 && onlySelectFeuille())
+	            {
+	            	menuClicDroit.add(supprimer);
+	            	if(typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)
+	            	{
+	            		menuClicDroit.add(modifierCategorie);
+	            	}
+	            	if(typeTrie == PanneauArbre.TYPE_TRIE_SUJET)
+	            	{
+	            		menuClicDroit.add(modifierSujet);
+	            	}
+	            	
+	            }
+	            if(arbre.getSelectionCount() == 1 && onlySelectFeuille())
+	            {
+	            	menuClicDroit.add(renommer);
+	            	menuClicDroit.add(ecouter);
+	            }
+	            
+	            if(arbre.getSelectionCount() >= 1 && onlySelectBranche() && typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)
+	            {
+	            	menuClicDroit.add(renomerCategorie);
+	            	menuClicDroit.add(supprimerCategorie);
+	            }
+	            if(arbre.getSelectionCount() >= 1 && onlySelectBranche() && typeTrie == PanneauArbre.TYPE_TRIE_SUJET)
+	            {
+	            	menuClicDroit.add(renomerSujet);
+	            	menuClicDroit.add(supprimerSujet);
+	            }
+	            
 	            menuClicDroit.add(changerTri);
 	            
 	            menuClicDroit.setEnabled(true) ;
@@ -485,6 +525,62 @@ public class PanneauArbre extends JPanel
 						bdd.modifierCategorie(bdd.getCategorie(arbre.getSelectionPaths()[0].getLastPathComponent().toString()), nom);
 					}
 					else if(arbre.getLastSelectedPathComponent() instanceof DefaultMutableTreeNode && typeTrie == PanneauArbre.TYPE_TRIE_SUJET)//renommer une categorie
+					{
+						bdd.modifierSujet(bdd.getSujet(arbre.getSelectionPaths()[0].getLastPathComponent().toString()), nom);
+					}
+				}
+				catch (DBException e1)
+				{
+					GraphicalUserInterface.popupErreur(e1.getMessage(), "Erreur");
+				}
+			}
+			updateArbre();
+		}
+	}
+	class RenommerCategorieClicDroit implements MouseListener
+	{
+		public void mouseClicked(MouseEvent e){}
+		public void mouseEntered(MouseEvent e){}
+		public void mouseExited(MouseEvent e){}
+		public void mousePressed(MouseEvent e){}
+		public void mouseReleased(MouseEvent e)
+		{  	
+			menuClicDroit.setEnabled(false) ;
+			menuClicDroit.setVisible(false) ;
+			String nom = JOptionPane.showInputDialog(null, "Entrez le nouveau nom", "Renommer", JOptionPane.QUESTION_MESSAGE);
+			if(nom != null && ! nom.equals(""))
+			{
+				try
+				{
+					if(arbre.getLastSelectedPathComponent() instanceof Branche && typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)//renommer une categorie
+					{
+						bdd.modifierCategorie(bdd.getCategorie(arbre.getSelectionPaths()[0].getLastPathComponent().toString()), nom);
+					}
+				}
+				catch (DBException e1)
+				{
+					GraphicalUserInterface.popupErreur(e1.getMessage(), "Erreur");
+				}
+			}
+			updateArbre();
+		}
+	}
+	class RenommerSujetClicDroit implements MouseListener
+	{
+		public void mouseClicked(MouseEvent e){}
+		public void mouseEntered(MouseEvent e){}
+		public void mouseExited(MouseEvent e){}
+		public void mousePressed(MouseEvent e){}
+		public void mouseReleased(MouseEvent e)
+		{  	
+			menuClicDroit.setEnabled(false) ;
+			menuClicDroit.setVisible(false) ;
+			String nom = JOptionPane.showInputDialog(null, "Entrez le nouveau nom", "Renommer", JOptionPane.QUESTION_MESSAGE);
+			if(nom != null && ! nom.equals(""))
+			{
+				try
+				{
+					if(arbre.getLastSelectedPathComponent() instanceof Branche && typeTrie == PanneauArbre.TYPE_TRIE_SUJET)//renommer une categorie
 					{
 						bdd.modifierSujet(bdd.getSujet(arbre.getSelectionPaths()[0].getLastPathComponent().toString()), nom);
 					}
