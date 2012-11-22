@@ -130,6 +130,8 @@ public class GraphicalUserInterface extends JFrame implements ActionListener {
 		this.setVisible(true);
 		this.setEnabled(true);
 
+		//DialogueAjouterEnregistrement a = new DialogueAjouterEnregistrement(null, "Ajouter Enregistrement", true, bdd, "toto".getBytes());
+		//a.activer();
 	}
 
 	/**
