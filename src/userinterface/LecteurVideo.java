@@ -52,6 +52,11 @@ public class LecteurVideo extends JPanel implements ActionListener {
 	private SourceDataLine mLine;
 	private EmbeddedMediaPlayerComponent vidComp;
 	
+	private JButton boutonMarqueur1;
+	private JButton boutonMarqueur2;
+	private long timeMarqueur1=0 ;
+	private long timeMarqueur2=0;
+	
 	public LecteurVideo(final File fichierVideo) {
 		this.volume = 50;
 		this.pause = true;
@@ -90,6 +95,18 @@ public class LecteurVideo extends JPanel implements ActionListener {
 		this.boutonLecture.addActionListener(this);
 		this.boutonLecture.setEnabled(true);
 
+		this.boutonMarqueur1 = new JButton();
+		this.boutonMarqueur1.setToolTipText("Placer Marqueur 1");
+		this.boutonMarqueur1.setText("Marqueur 1");
+		this.boutonMarqueur1.addActionListener(this);
+		this.boutonMarqueur1.setEnabled(true);
+		
+		this.boutonMarqueur2 = new JButton();
+		this.boutonMarqueur2.setToolTipText("Placer Marqueur 2");
+		this.boutonMarqueur2.setText("Marqueur 2");
+		this.boutonMarqueur2.addActionListener(this);
+		this.boutonMarqueur2.setEnabled(true);
+		
 		this.boutonStop = new JButton();
 		this.boutonStop.setToolTipText("Stoper");
 		this.boutonStop.setIcon(imageIconStop);
@@ -149,7 +166,11 @@ public class LecteurVideo extends JPanel implements ActionListener {
 		toolBar.add(boutonLecture);
 		toolBar.add(panelDuree);
 		toolBar.add(sliderVolume);
-
+				
+		toolBar.add(boutonMarqueur1);
+		toolBar.add(boutonMarqueur2);
+		
+		
 		vidComp = new EmbeddedMediaPlayerComponent();
 		vidComp.setVisible(true);
 		vidComp.getMediaPlayer().addMediaPlayerEventListener(new PlayerEventListener());
@@ -246,6 +267,14 @@ public class LecteurVideo extends JPanel implements ActionListener {
 				}
 				this.stop();
 			}
+		}
+		else if(event.getSource()==boutonMarqueur1)
+		{
+			timeMarqueur1= vidComp.getMediaPlayer().getTime();
+		}
+		else if(event.getSource()==boutonMarqueur2)
+		{
+			timeMarqueur2= vidComp.getMediaPlayer().getTime();
 		}
 	}
 
