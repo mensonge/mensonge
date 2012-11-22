@@ -1125,15 +1125,15 @@ public class BaseDeDonnees
 			stat.executeUpdate("DROP TABLE if exists categorie;");
 			stat.executeUpdate("DROP TABLE if exists sujet;");
 			//Creation des table et verification de la bonne execution des requetes
-			if(stat.executeUpdate("CREATE TABLE categorie (idcat  INTEGER PRIMARY KEY AUTOINCREMENT, nomcat VARCHAR2(128));") != 0)
+			if(stat.executeUpdate("CREATE TABLE categorie (idcat  INTEGER PRIMARY KEY AUTOINCREMENT, nomcat VARCHAR2(128) UNIQUE);") != 0)
 			{
 				throw new Exception("Erreur de creation de la table categorie.");
 			}
-			if(stat.executeUpdate("CREATE TABLE enregistrements (id  INTEGER PRIMARY KEY AUTOINCREMENT, enregistrement BLOB, duree INTEGER, taille INTEGER, nom VARCHAR2(128), idcat INTEGER, idsuj INTEGER);") != 0)//FIXME ajouter la reference pour le champ idcat
+			if(stat.executeUpdate("CREATE TABLE enregistrements (id  INTEGER PRIMARY KEY AUTOINCREMENT, enregistrement BLOB, duree INTEGER, taille INTEGER, nom VARCHAR2(128) UNIQUE, idcat INTEGER, idsuj INTEGER);") != 0)//FIXME ajouter la reference pour le champ idcat
 			{
 				throw new Exception("Erreur de creation de la table enregistrement.");
 			}
-			if(stat.executeUpdate("CREATE TABLE sujet (idsuj  INTEGER PRIMARY KEY AUTOINCREMENT, nomsuj VARCHAR2(128));") != 0)//FIXME ajouter la reference pour le champ idcat
+			if(stat.executeUpdate("CREATE TABLE sujet (idsuj  INTEGER PRIMARY KEY AUTOINCREMENT, nomsuj VARCHAR2(128) UNIQUE);") != 0)//FIXME ajouter la reference pour le champ idcat
 			{
 				throw new Exception("Erreur de creation de la table enregistrement.");
 			}
