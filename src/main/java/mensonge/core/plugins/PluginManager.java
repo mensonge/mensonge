@@ -8,6 +8,7 @@ import java.net.URLClassLoader;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
@@ -22,7 +23,7 @@ public class PluginManager
 {
 	private static final String PLUGINS_PATH = "plugins";
 	private static Logger logger = Logger.getLogger("logger");
-	private HashMap<String, Plugin> listePlugins;
+	private Map<String, Plugin> listePlugins;
 
 	/**
 	 * Initialise une liste de plugins
@@ -102,7 +103,7 @@ public class PluginManager
 	 * 
 	 * @return HashMap contenant la liste des plugins
 	 */
-	public HashMap<String, Plugin> getListePlugins()
+	public Map<String, Plugin> getListePlugins()
 	{
 		return listePlugins;
 	}
@@ -118,40 +119,39 @@ public class PluginManager
 		}
 		catch (IOException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log(Level.WARNING,e.getMessage());
 		}
 		catch (ClassNotFoundException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log(Level.WARNING,e.getMessage());
 		}
 		catch (InstantiationException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log(Level.WARNING,e.getMessage());
 		}
 		catch (IllegalAccessException e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			logger.log(Level.WARNING,e.getMessage());
 		}
-		HashMap<String, Plugin> h = p.getListePlugins();
+		Map<String, Plugin> h = p.getListePlugins();
 		if (h.containsKey("Coefficients cepstraux"))
 		{
-			System.out.println("[i] Lançement du plugin CoefficientsCepstraux");
+			logger.log(Level.INFO,"[i] Lançement du plugin CoefficientsCepstraux");
 			h.get("Coefficients cepstraux").lancer(new Extraction(), fichiers);
-			System.out.println("[i] Fin du plugin CoefficientsCepstraux");
+			logger.log(Level.INFO,"[i] Fin du plugin CoefficientsCepstraux");
 		}
 		else
-			System.out.println("[E] Pas de plugin CoefficientsCepstraux");
+		{
+			logger.log(Level.WARNING,"[E] Pas de plugin CoefficientsCepstraux");
+
+		}
 	}
 
 	/**
 	 * Classe interne permettant de filter les noms des fichiers
 	 * 
 	 */
-	private class FileListFilter implements FilenameFilter
+	private static class FileListFilter implements FilenameFilter
 	{
 		private String start;
 		private String end;

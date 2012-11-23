@@ -29,8 +29,6 @@ import mensonge.core.BaseDeDonnees.BaseDeDonnees;
 import mensonge.core.BaseDeDonnees.DBException;
 import mensonge.userinterface.OngletLecteur;
 
-
-
 /**
  * 
  * Classe Interface graphique contenant tous les composants graphiques
@@ -169,17 +167,19 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 	protected void processWindowEvent(WindowEvent event)
 	{
-		if (event.getID() == WindowEvent.WINDOW_DEACTIVATED)
-		{
-			this.panneauArbre.getMenuClicDroit().setEnabled(false);
-			this.panneauArbre.getMenuClicDroit().setVisible(false);
-		}
 		if (event.getID() == WindowEvent.WINDOW_CLOSING)
 		{
 			this.dispose();
 		}
+		else if (event.getID() == WindowEvent.WINDOW_DEACTIVATED)
+		{
+			this.panneauArbre.getMenuClicDroit().setEnabled(false);
+			this.panneauArbre.getMenuClicDroit().setVisible(false);
+		}
 		else
+		{
 			super.processWindowEvent(event);
+		}
 	}
 
 	public void connexionBase(String fichier)
@@ -201,12 +201,12 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				}
 				catch (DBException e1)
 				{
-					popupErreur("Erreur lors de la creation de la base de données : " + e1.getMessage(), "Erreur");
+					popupErreur("Erreur lors de la creation de la base de données : " + e1.getMessage());
 				}
 			}
 			else
 			{
-				popupErreur("Erreur lors de la connexion de la base de données : " + e.getMessage(), "Erreur");
+				popupErreur("Erreur lors de la connexion de la base de données : " + e.getMessage());
 				return;
 			}
 		}
@@ -223,6 +223,17 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	public static void popupErreur(String message, String title)
 	{
 		JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);
+	}
+
+	/**
+	 * Affiche une popup qui signale une erreur avec en titre Erreur
+	 * 
+	 * @param message
+	 *            Le message d'erreur à afficher
+	 */
+	public static void popupErreur(String message)
+	{
+		popupErreur(message, "Erreur");
 	}
 
 	/**
@@ -266,20 +277,14 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			{
 				try
 				{
-					try
-					{
 
-						this.ajouterOnglet(new OngletLecteur(new File(fileChooser.getSelectedFile().getCanonicalPath())));
-					}
-					catch (IOException e)
-					{
-						popupErreur(e.getMessage(), "Erreur");
-					}
+					this.ajouterOnglet(new OngletLecteur(new File(fileChooser.getSelectedFile().getCanonicalPath())));
 				}
-				catch (Exception e1)
+				catch (IOException e)
 				{
-					popupErreur(e1.getMessage(), "Erreur");
+					popupErreur(e.getMessage(), "Erreur");
 				}
+
 			}
 		}
 	}
@@ -287,7 +292,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	/**
 	 * Classe Listener gérant la fermeture des onglets, qui sera ajouté à chaque onglet
 	 */
-	private class FermetureOngletListener implements ActionListener
+	private static class FermetureOngletListener implements ActionListener
 	{
 		private JTabbedPane onglets;
 		private OngletLecteur onglet;
@@ -306,9 +311,9 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		}
 	}
 
-	class ExporterBaseListener extends MouseAdapter
+	private class ExporterBaseListener extends MouseAdapter
 	{
-		GraphicalUserInterface fenetre;
+		private GraphicalUserInterface fenetre;
 
 		public ExporterBaseListener(GraphicalUserInterface g)
 		{
@@ -327,15 +332,15 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				}
 				catch (Exception e1)
 				{
-					popupErreur(e1.getMessage(), "Erreur");
+					popupErreur(e1.getMessage());
 				}
 			}
 		}
 	}
 
-	class ImporterBaseListener extends MouseAdapter
+	private class ImporterBaseListener extends MouseAdapter
 	{
-		GraphicalUserInterface fenetre;
+		private GraphicalUserInterface fenetre;
 
 		public ImporterBaseListener(GraphicalUserInterface g)
 		{
@@ -357,7 +362,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				}
 				catch (Exception e1)
 				{
-					popupErreur(e1.getMessage(), "Erreur");
+					popupErreur(e1.getMessage());
 				}
 			}
 		}

@@ -1,7 +1,7 @@
 package mensonge.core.plugins;
 
 import java.io.File;
-import java.util.ArrayList;
+import java.util.List;
 
 import mensonge.core.IExtraction;
 
@@ -10,8 +10,8 @@ import mensonge.core.IExtraction;
  */
 public interface Plugin
 {
-	public void lancer(IExtraction extraction, ArrayList<File> listeFichiersSelectionnes);
-	public void stopper();
-	public String getNom();
-	public boolean isActive();
+	void lancer(IExtraction extraction, List<File> listeFichiersSelectionnes);
+	void stopper();
+	String getNom();
+	boolean isActive();
 }
