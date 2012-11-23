@@ -1,6 +1,5 @@
 package userinterface;
 
-import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
@@ -132,7 +131,6 @@ public class PanneauArbre extends JPanel
 
 		this.infoArbre.setPreferredSize(new Dimension(270, 100));
 
-		JPanel panelEnregistrements = new JPanel(new BorderLayout());
 		JPanel panelArbre = new JPanel(new GridLayout(0, 1));
 		this.panelLecteur = new JPanel(new GridBagLayout());
 		this.panelLecteur.setVisible(false);
