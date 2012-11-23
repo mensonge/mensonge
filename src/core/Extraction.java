@@ -33,8 +33,6 @@ public class Extraction implements IExtraction
 {
 	public static void main(String args[])
 	{
-
-
 		Extraction ext = new Extraction();
 		System.out.println("....");
 		try
@@ -123,7 +121,13 @@ npts = number of points
 			 */
 //		System.out.println("Done in "+(System.currentTimeMillis()-start)/1000.0+"s !");
 	}
-	public double[] extraireEchantillons(File fichier)
+
+	/**
+	 * Extrait les échantillons audio d'un fichier multimédia
+	 * @param fichier Fichier multimédia où extraire les échantillons du premier flux audio trouvé
+	 * @return Un tableau de double contenant les échantillons
+	 */
+	public double[][] extraireEchantillons(File fichier)
 	{
 		IContainer containerInput = IContainer.make();
 
@@ -131,7 +135,8 @@ npts = number of points
 		{
 			if (containerInput.open(fichier.getCanonicalPath(), IContainer.Type.READ, null) < 0)
 				throw new RuntimeException("Impossible d'ouvrir le fichier");
-		} catch (IOException e1)
+		}
+		catch (IOException e1)
 		{
 			e1.printStackTrace();
 		}
@@ -163,19 +168,19 @@ npts = number of points
 		IPacket packetInput = IPacket.make();
 		while (containerInput.readNextPacket(packetInput) >= 0)
 		{
-			if(packetInput.getStreamIndex() == audioStreamId)
+			if (packetInput.getStreamIndex() == audioStreamId)
 			{
 				IAudioSamples samples = IAudioSamples.make(1024, nbChannels);
 				int offset = 0;
-				while(offset < packetInput.getSize())
+				while (offset < packetInput.getSize())
 				{
 					int bytesDecoded = audioCoderInput.decodeAudio(samples, packetInput, offset);
-					if(bytesDecoded < 0)
+					if (bytesDecoded < 0)
 						throw new RuntimeException("Erreur de décodage du fichier");
 					offset += bytesDecoded;
-					if(samples.isComplete())
+					if (samples.isComplete())
 					{
-						byte_out.write(samples.getData().getByteArray(0, samples.getSize()),0,samples.getSize());
+						byte_out.write(samples.getData().getByteArray(0, samples.getSize()), 0, samples.getSize());
 					}
 				}
 			}
@@ -185,58 +190,76 @@ npts = number of points
 
 		byte[] audioBytes = byte_out.toByteArray();
 		int bitsBySample = 16;
-                int nbSamples = audioBytes.length / nbChannels;
-           	double doubleArray[] = new double[nbSamples];
-		//TODO ne gere que le PCM signé BE/LE 16 bit, faire le reste (8, 24 et 32)
-		if(codec.toString().endsWith("BE"))//Big endian
+		int nbSamples = audioBytes.length / nbChannels;
+		double doubleArray[] = new double[nbSamples];
+		// TODO ne gere que le PCM signé BE/LE 16 bit, faire le reste (8, 24 et 32)
+		if (codec.toString().endsWith("BE"))// Big endian
 		{
-                	for (int i = 0; i < nbSamples; i++)
+			for (int i = 0; i < nbSamples; i++)
 			{
-                        	int msb = audioBytes[2 * i];
-                        	int lsb = audioBytes[2 * i + 1];
-                        	doubleArray[i] = ((msb << 8) | (0xff & lsb))/32768.0d;
-				//Si c'est du 16bit ça ira de -32768 à +32767 donc pour avoir des double on divise par 32768 ça ira donc de -1 à +1
-                	}
+				int msb = audioBytes[2 * i];
+				int lsb = audioBytes[2 * i + 1];
+				doubleArray[i] = ((msb << 8) | (0xff & lsb)) / 32768.0d;
+				// Si c'est du 16bit ça ira de -32768 à +32767 donc pour avoir des double on divise par 32768 ça ira
+				// donc de -1 à +1
+			}
 		}
 		else
 		{
-                	for (int i = 0; i < nbSamples; i++)
+			for (int i = 0; i < nbSamples; i++)
 			{
-                        	int lsb = audioBytes[2 * i];
-                        	int msb = audioBytes[2 * i + 1];
-                        	doubleArray[i] = ((msb << 8) | (0xff & lsb))/32768.0d;
-				//Si c'est du 16bit ça ira de -32768 à +32767 donc pour avoir des double on divise par 32768 ça ira donc de -1 à +1
-                	}
+				int lsb = audioBytes[2 * i];
+				int msb = audioBytes[2 * i + 1];
+				doubleArray[i] = ((msb << 8) | (0xff & lsb)) / 32768.0d;
+				// Si c'est du 16bit ça ira de -32768 à +32767 donc pour avoir des double on divise par 32768 ça ira
+				// donc de -1 à +1
+			}
 		}
-		if((nbSamples % nbChannels) != 0)
+		if ((nbSamples % nbChannels) != 0)
 		{
-			System.out.println("[E] problem mod de nbSamples et nbChannels != 0 => les données audio ne correspondent pas aux nb de channels");
+			System.out
+					.println("[E] problem mod de nbSamples et nbChannels != 0 => les données audio ne correspondent pas aux nb de channels");
 			return null;
 		}
-		int nbSamplesChannel = nbSamples/nbChannels;
-		return doubleArray;
-		//return reshape(doubleArray,nbChannels,nbSamplesChannel);
+		int nbSamplesChannel = nbSamples / nbChannels;
+		return reshape(doubleArray,nbChannels,nbSamplesChannel);
 	}
-	private double [][] reshape(double doubleArray[], int n, int m)
+
+	/**
+	 * Transforme un vecteur (tableau à une dimension) en tableau à 2 dimension
+	 * @param doubleArray Vecteur qui sera restructuré
+	 * @param n Nombre de lignes
+	 * @param m Nombre de colonnes
+	 * @return Un tableau à 2 dimensions fait à partir du vecteur en entrée 
+	 */
+	private double[][] reshape(double doubleArray[], int n, int m)
 	{
 		double reshapeArray[][] = new double[n][m];
 		int k = 0;
-		for(int i = 0; i < n; i++)
+		for (int i = 0; i < n; i++)
 		{
-			for(int j = 0; j < m; j++)
+			for (int j = 0; j < m; j++)
 			{
 				reshapeArray[i][j] = doubleArray[k++];
 			}
 		}
 		return reshapeArray;
 	}
-	private int [][] reshape(int intArray[], int m, int n)
+
+	/**
+	 * Transforme un vecteur (tableau à une dimension) en tableau à 2 dimension
+	 * @param intArray Vecteur qui sera restructuré
+	 * @param n Nombre de lignes
+	 * @param m Nombre de colonnes
+	 * @return Un tableau à 2 dimensions fait à partir du vecteur en entrée 
+	 */
+	private int[][] reshape(int intArray[], int n, int m)
 	{
 		int reshapeArray[][] = new int[n][m];
 		int k = 0;
-		for(int i = 0; i < n; i++)
+		for (int i = 0; i < n; i++)
 		{
-			for(int j = 0; j < m; j++)
+			for (int j = 0; j < m; j++)
 			{
 				reshapeArray[i][j] = intArray[k++];
 			}
@@ -244,6 +267,13 @@ npts = number of points
 		return reshapeArray;
 	}
 
+	/**
+	 * Extrait le flux audio d'un fichier multimédia et le converti en WAV, format PCM Signé 16 bit little endian
+	 * @param fichier Fichier multimédia où extraire l'intervalle défini du premier flux audio trouvé
+	 * @param debut La borne de début de l'intervalle en millisecondes où commencer l'extraction 
+	 * @param fin La borne de fin de l'intervalle en millisecondes où terminer l'extraction
+	 * @return Un tableau d'octet contenant le fichier WAV
+	 */
 	public byte[] extraireIntervalle(File fichier, long debut, long fin)
 	{
 		IContainer containerInput = IContainer.make();
@@ -252,7 +282,8 @@ npts = number of points
 		{
 			if (containerInput.open(fichier.getCanonicalPath(), IContainer.Type.READ, null) < 0)
 				throw new RuntimeException("Impossible d'ouvrir le fichier");
-		} catch (IOException e1)
+		}
+		catch (IOException e1)
 		{
 			e1.printStackTrace();
 		}
@@ -303,7 +334,7 @@ npts = number of points
 		if (audioCoderOutput.open(options, unsetOptions) < 0)
 			throw new RuntimeException("could not open coder");
 
-		if (containerOutput.writeHeader() < 0)//FIXME
+		if (containerOutput.writeHeader() < 0)// FIXME
 			throw new RuntimeException("Problème header");
 
 		IPacket packetInput = IPacket.make();
