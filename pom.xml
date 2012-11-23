@@ -25,6 +25,7 @@
 		<sonar.surefire.reportsPath>target/surefire-reports</sonar.surefire.reportsPath>
 		<sonar.profile>Pytheas</sonar.profile>
 		<sonar.language>java</sonar.language>
+		<sonar.exclusions>*FFTW3*</sonar.exclusions>
   	</properties>
 	<repositories>
 		<repository>
@@ -110,7 +111,8 @@
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>1.2.1</version>
 				<configuration>
-					<mainClass>mensonge.userinterface.GraphicalUserInterface</mainClass>
+					<!--<mainClass>mensonge.userinterface.GraphicalUserInterface</mainClass>-->
+					<mainClass>mensonge.core.Extraction</mainClass>
 				</configuration>
 			</plugin>
 			<plugin>
