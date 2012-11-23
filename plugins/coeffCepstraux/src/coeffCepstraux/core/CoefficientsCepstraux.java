@@ -4,8 +4,9 @@ package coeffCepstraux.core;
 import java.io.File;
 import java.util.ArrayList;
 
-import coeffCepstraux.core.IExtraction;
-import coeffCepstraux.core.plugins.Plugin;
+import mensonge.core.plugins.Plugin;
+
+import mensonge.core.IExtraction;
 
 public class CoefficientsCepstraux implements Plugin
 {

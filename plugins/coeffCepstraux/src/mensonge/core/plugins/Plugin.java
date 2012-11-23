@@ -1,10 +1,13 @@
-package coeffCepstraux.core.plugins;
+package mensonge.core.plugins;
 
 import java.io.File;
 import java.util.ArrayList;
 
-import coeffCepstraux.core.IExtraction;
+import mensonge.core.IExtraction;
 
+/**
+ * Interface représentant un plugin
+ */
 public interface Plugin
 {
 	public void lancer(IExtraction extraction, ArrayList<File> listeFichiersSelectionnes);

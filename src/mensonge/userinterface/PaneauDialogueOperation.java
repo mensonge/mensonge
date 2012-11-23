@@ -1,4 +1,4 @@
-package userinterface;
+package mensonge.userinterface;
 
 import java.awt.Graphics;
 import java.awt.Image;

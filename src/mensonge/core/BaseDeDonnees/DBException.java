@@ -1,4 +1,4 @@
-package core.BaseDeDonnees;
+package mensonge.core.BaseDeDonnees;
 
 /**
  * Classe correspondant au exception renvoyées par l'objet BaseDeDonnees

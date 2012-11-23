@@ -1,9 +1,9 @@
 PROJECT=LieLab
 TARGETDIR=.
-TARGET=userinterface.GraphicalUserInterface
-TARGET_EXTRACTION=core.Extraction
-TARGET_PLUGINS=core.plugins.PluginManager
-TARGET_BDD=core.BaseDeDonnees.TestBase
+TARGET=mensonge.userinterface.GraphicalUserInterface
+TARGET_EXTRACTION=mensonge.core.Extraction
+TARGET_PLUGINS=mensonge.core.plugins.PluginManager
+TARGET_BDD=mensonge.core.BaseDeDonnees.TestBase
 ARGS=
 
 SRCDIR=src

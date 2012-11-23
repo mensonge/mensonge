@@ -1,4 +1,4 @@
-package core;
+package mensonge.core;
 
 import java.io.File;
 

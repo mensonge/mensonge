@@ -1,4 +1,4 @@
-package userinterface;
+package mensonge.userinterface;
 
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -13,13 +13,11 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import core.BaseDeDonnees.BaseDeDonnees;
+import mensonge.core.BaseDeDonnees.BaseDeDonnees;
 
-public class DialogueNouvelleCategorie extends JDialog
+
+public class DialogueNouveauSujet extends JDialog
 {
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	private JComboBox combo = new JComboBox();
@@ -29,7 +27,7 @@ public class DialogueNouvelleCategorie extends JDialog
 
 	private Object[] retour = new Object[1];
 
-	public DialogueNouvelleCategorie(JFrame parent, String title, boolean modal, BaseDeDonnees bdd)
+	public DialogueNouveauSujet(JFrame parent, String title, boolean modal, BaseDeDonnees bdd)
 	{
 		super(parent, title, modal);
 		JPanel pan = new JPanel(), j1 = new JPanel(), bouton = new JPanel();
@@ -37,10 +35,10 @@ public class DialogueNouvelleCategorie extends JDialog
 		{
 			combo.addItem("Ne rien changer");
 			retour[0] = new String("Ne rien changer");
-			ResultSet rs = bdd.getListeCategorie();
+			ResultSet rs = bdd.getListeSujet();
 			while (rs.next())
 			{
-				combo.addItem(rs.getString("nomCat"));
+				combo.addItem(rs.getString("nomsuj"));
 			}
 			rs.close();
 		}
@@ -61,7 +59,7 @@ public class DialogueNouvelleCategorie extends JDialog
 
 		this.setContentPane(pan);
 		this.setLocationRelativeTo(null);
-		this.setTitle("Changer de categorie");
+		this.setTitle("Changer de sujet");
 		this.setSize(350, 120);
 	}
 

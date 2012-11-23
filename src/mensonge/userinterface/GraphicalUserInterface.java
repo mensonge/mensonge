@@ -1,4 +1,4 @@
-package userinterface;
+package mensonge.userinterface;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -25,10 +25,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 
-import core.BaseDeDonnees.BaseDeDonnees;
-import core.BaseDeDonnees.DBException;
+import mensonge.core.BaseDeDonnees.BaseDeDonnees;
+import mensonge.core.BaseDeDonnees.DBException;
+import mensonge.userinterface.OngletLecteur;
 
-import userinterface.OngletLecteur;
+
 
 /**
  * 

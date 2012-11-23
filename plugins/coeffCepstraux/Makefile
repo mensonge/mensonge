@@ -1,6 +1,6 @@
 PROJECT=CoefficientsCepstraux
 TARGETDIR=.
-TARGET=core.CoefficientsCepstraux
+TARGET=coeffCepstraux.core.CoefficientsCepstraux
 ARGS=
 
 SRCDIR=src

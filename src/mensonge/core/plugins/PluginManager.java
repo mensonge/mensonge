@@ -1,6 +1,4 @@
-package core.plugins;
-
-import core.Extraction;
+package mensonge.core.plugins;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -15,8 +13,7 @@ import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import core.plugins.Plugin;
-import core.plugins.PluginManager;
+import mensonge.core.Extraction;
 
 /**
  * Gestionnaire des plugins
@@ -82,7 +79,7 @@ public class PluginManager
 						for (Class inter : tmpClass.getInterfaces())
 						{
 							// Si la classe implémente l'interface Plugin on l'instance et on l'ajoute
-							if (inter.getName().toString().equals("core.plugins.Plugin"))
+							if (inter.getName().toString().equals("mensonge.core.plugins.Plugin"))
 							{
 								Plugin plugin = (Plugin) tmpClass.newInstance();
 								this.listePlugins.put(plugin.getNom(), plugin);

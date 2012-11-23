@@ -1,6 +1,5 @@
-package core.BaseDeDonnees;
+package mensonge.core.BaseDeDonnees;
 
-import core.BaseDeDonnees.DBException;
 import java.io.FileOutputStream;
 import java.io.File;
 import java.sql.Connection;
@@ -9,6 +8,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import mensonge.core.BaseDeDonnees.DBException;
 
 
 /**

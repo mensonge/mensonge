@@ -1,4 +1,4 @@
-package core;
+package mensonge.core;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -7,8 +7,6 @@ import java.io.IOException;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.util.Arrays;
-
-import core.IExtraction;
 
 import com.xuggle.xuggler.Global;
 import com.xuggle.xuggler.IAudioSamples;
@@ -28,6 +26,8 @@ import com.xuggle.xuggler.IStreamCoder;
 import java.nio.DoubleBuffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+
+import mensonge.core.IExtraction;
 
 public class Extraction implements IExtraction
 {

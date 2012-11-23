@@ -1,7 +1,5 @@
-package core.BaseDeDonnees;
+package mensonge.core.BaseDeDonnees;
 
-import core.BaseDeDonnees.DBException;
-import core.BaseDeDonnees.BaseDeDonnees;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,6 +8,9 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Formatter;
+
+import mensonge.core.BaseDeDonnees.BaseDeDonnees;
+import mensonge.core.BaseDeDonnees.DBException;
 
 import org.junit.*;
 import static org.junit.Assert.*;

@@ -1,4 +1,4 @@
-package userinterface;
+package mensonge.userinterface;
 
 import java.awt.Color;
 import java.awt.Component;
@@ -33,8 +33,9 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
-import core.BaseDeDonnees.BaseDeDonnees;
-import core.BaseDeDonnees.DBException;
+import mensonge.core.BaseDeDonnees.BaseDeDonnees;
+import mensonge.core.BaseDeDonnees.DBException;
+
 
 public class PanneauArbre extends JPanel
 {

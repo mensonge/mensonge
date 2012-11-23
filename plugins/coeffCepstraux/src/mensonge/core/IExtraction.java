@@ -1,4 +1,4 @@
-package coeffCepstraux.core;
+package mensonge.core;
 
 import java.io.File;
 
