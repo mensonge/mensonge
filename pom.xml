@@ -26,14 +26,42 @@
 		<sonar.profile>Pytheas</sonar.profile>
 		<sonar.language>java</sonar.language>
   	</properties>
-
+	<repositories>
+		<repository>
+			<id>xuggleRepository</id>
+			<name>Xuggle Repository</name>
+			<url>
+				http://xuggle.googlecode.com/svn/trunk/repo/share/java
+			</url>
+		</repository>
+		<repository>
+			<id>caprica</id>
+			<name>Caprica Software</name>
+			<url>http://www.capricasoftware.co.uk/repo</url>
+		</repository>
+	</repositories>
   	<dependencies>
+		<dependency>
+			<groupId>uk.co.caprica</groupId>
+			<artifactId>vlcj</artifactId>
+			<version>2.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>xuggle</groupId>
+			<artifactId>xuggle-xuggler</artifactId>
+			<version>5.2</version>
+		</dependency>
     		<dependency>
       			<groupId>junit</groupId>
       			<artifactId>junit</artifactId>
       			<version>4.10</version>
       			<scope>test</scope>
     		</dependency>
+		<dependency>
+			<groupId>com.sun.jna</groupId>
+			<artifactId>jna</artifactId>
+			<version>3.0.9</version>
+		</dependency>
   	</dependencies>
 	<build>
 		<plugins>
@@ -77,7 +105,7 @@
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>1.2.1</version>
 				<configuration>
-					<mainClass>pytheas.userinterface.GraphicalUserInterface</mainClass>
+					<mainClass>mensonge.userinterface.GraphicalUserInterface</mainClass>
 				</configuration>
 			</plugin>
 			<plugin>

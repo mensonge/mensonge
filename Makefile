@@ -6,8 +6,8 @@ TARGET_PLUGINS=mensonge.core.plugins.PluginManager
 TARGET_BDD=mensonge.core.BaseDeDonnees.TestBase
 ARGS=
 
-SRCDIR=src
-OBJDIR=bin
+SRCDIR=src/main/java
+OBJDIR=target/classes/
 LIBDIR=lib
 
 SRC=$(shell find $(SRCDIR) -name "*.java")
@@ -41,7 +41,7 @@ $(OBJDIR)/%.class: $(SRCDIR)/%.java
 	javac $< $(COMPILE_OPTIONS)
 
 $(OBJDIR):
-	@test -d $(OBJDIR) || mkdir $(OBJDIR)
+	@test -d $(OBJDIR) || mkdir -p $(OBJDIR)
 
 clean:
 	rm -fr $(OBJDIR)
