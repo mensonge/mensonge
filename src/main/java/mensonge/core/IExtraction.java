@@ -1,9 +1,7 @@
 package mensonge.core;
 
-import java.io.File;
-
 public interface IExtraction
 {
-	public double[][] extraireEchantillons(File fichier);
-	public byte[] extraireIntervalle(File fichier, long debut, long fin);
+	public double[][] extraireEchantillons(String filePath);
+	public byte[] extraireIntervalle(String filePath, long debut, long fin);
 }

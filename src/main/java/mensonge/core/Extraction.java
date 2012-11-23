@@ -1,12 +1,10 @@
 package mensonge.core;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ByteArrayInputStream;
-import java.io.FileInputStream;
-import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import com.xuggle.xuggler.Global;
 import com.xuggle.xuggler.IAudioSamples;
@@ -19,35 +17,30 @@ import com.xuggle.xuggler.IPacket;
 import com.xuggle.xuggler.IStream;
 import com.xuggle.xuggler.IStreamCoder;
 
-
-//import core.fftw3.FFTW3Library;
-//import com.sun.jna.NativeLong;
-//import com.sun.jna.Pointer;
-import java.nio.DoubleBuffer;
-import java.nio.FloatBuffer;
-import java.nio.IntBuffer;
-
 import mensonge.core.IExtraction;
 
 public class Extraction implements IExtraction
 {
+	private static Logger logger = Logger.getLogger("logger");
+
 	public static void main(String args[])
 	{
 		Extraction ext = new Extraction();
-		System.out.println("....");
+		logger.setLevel(Level.INFO);
+		logger.log(Level.INFO, "[+] Début de l'extraction de l'intervalle");
 		try
 		{
 			FileOutputStream dataOut = new FileOutputStream("sons/test_sortie.wav");
-			byte [] e = ext.extraireIntervalle(new File("sons/test.wmv"),1000,2000);
-			dataOut.write(e,0,e.length);
+			byte[] e = ext.extraireIntervalle("sons/test.wmv", 0, 20000);
+			dataOut.write(e, 0, e.length);
 			dataOut.close();
 
-		} catch (IOException e)
-		{
-			e.printStackTrace();
 		}
-		System.out.println("....");
-		System.exit(0);
+		catch (IOException e)
+		{
+			logger.log(Level.WARNING, e.getMessage());
+		}
+		logger.log(Level.INFO, "[+] Fin de l'extraction de l'intervalle");
 /*
  *
  *                double sinusoid[] = new double[1024];
@@ -124,21 +117,19 @@ npts = number of points
 
 	/**
 	 * Extrait les échantillons audio d'un fichier multimédia
-	 * @param fichier Fichier multimédia où extraire les échantillons du premier flux audio trouvé
+	 * 
+	 * @param fichier
+	 *            Fichier multimédia où extraire les échantillons du premier flux audio trouvé
 	 * @return Un tableau de double contenant les échantillons
 	 */
-	public double[][] extraireEchantillons(File fichier)
+	public double[][] extraireEchantillons(String filePath)
 	{
 		IContainer containerInput = IContainer.make();
 
-		try
+		if (containerInput.open(filePath, IContainer.Type.READ, null) < 0)
 		{
-			if (containerInput.open(fichier.getCanonicalPath(), IContainer.Type.READ, null) < 0)
-				throw new RuntimeException("Impossible d'ouvrir le fichier");
-		}
-		catch (IOException e1)
-		{
-			e1.printStackTrace();
+			logger.log(Level.WARNING, "Impossible d'ouvrir le fichier " + filePath);
+			return null;
 		}
 
 		int numStreams = containerInput.getNumStreams();
@@ -158,12 +149,18 @@ npts = number of points
 		IMetaData options = IMetaData.make();
 		IMetaData unsetOptions = IMetaData.make();
 		if (audioStreamId == -1)
-			throw new RuntimeException("Impossible de trouver un flux audio dans le fichier");
+		{
+			logger.log(Level.WARNING, "Impossible de trouver un flux audio dans le fichier " + filePath);
+			return null;
+		}
 		if (audioCoderInput.open(options, unsetOptions) < 0)
-			throw new RuntimeException("Impossible d'ouvrir le flux audio du fichier");
+		{
+			logger.log(Level.WARNING, "Impossible d'ouvrir le flux audio du fichier " + filePath);
+			return null;
+		}
 		int nbChannels = audioCoderInput.getChannels();
 		ID codec = audioCoderInput.getCodec().getID();
-		ByteArrayOutputStream byte_out = new ByteArrayOutputStream();
+		ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
 
 		IPacket packetInput = IPacket.make();
 		while (containerInput.readNextPacket(packetInput) >= 0)
@@ -176,11 +173,13 @@ npts = number of points
 				{
 					int bytesDecoded = audioCoderInput.decodeAudio(samples, packetInput, offset);
 					if (bytesDecoded < 0)
-						throw new RuntimeException("Erreur de décodage du fichier");
+					{
+						logger.log(Level.WARNING, "Erreur de décodage du fichier " + filePath);
+					}
 					offset += bytesDecoded;
 					if (samples.isComplete())
 					{
-						byte_out.write(samples.getData().getByteArray(0, samples.getSize()), 0, samples.getSize());
+						byteOutput.write(samples.getData().getByteArray(0, samples.getSize()), 0, samples.getSize());
 					}
 				}
 			}
@@ -188,7 +187,7 @@ npts = number of points
 		audioCoderInput.close();
 		containerInput.close();
 
-		byte[] audioBytes = byte_out.toByteArray();
+		byte[] audioBytes = byteOutput.toByteArray();
 		int bitsBySample = 16;
 		int nbSamples = audioBytes.length / nbChannels;
 		double doubleArray[] = new double[nbSamples];
@@ -217,8 +216,7 @@ npts = number of points
 		}
 		if ((nbSamples % nbChannels) != 0)
 		{
-			System.out
-					.println("[E] problem mod de nbSamples et nbChannels != 0 => les données audio ne correspondent pas aux nb de channels");
+			logger.log(Level.WARNING,"Les données audio ne correspondent pas au nombre de canaux");
 			return null;
 		}
 		int nbSamplesChannel = nbSamples / nbChannels;
@@ -247,45 +245,20 @@ npts = number of points
 	}
 
 	/**
-	 * Transforme un vecteur (tableau à une dimension) en tableau à 2 dimension
-	 * @param intArray Vecteur qui sera restructuré
-	 * @param n Nombre de lignes
-	 * @param m Nombre de colonnes
-	 * @return Un tableau à 2 dimensions fait à partir du vecteur en entrée 
-	 */
-	private int[][] reshape(int intArray[], int n, int m)
-	{
-		int reshapeArray[][] = new int[n][m];
-		int k = 0;
-		for (int i = 0; i < n; i++)
-		{
-			for (int j = 0; j < m; j++)
-			{
-				reshapeArray[i][j] = intArray[k++];
-			}
-		}
-		return reshapeArray;
-	}
-
-	/**
 	 * Extrait le flux audio d'un fichier multimédia et le converti en WAV, format PCM Signé 16 bit little endian
 	 * @param fichier Fichier multimédia où extraire l'intervalle défini du premier flux audio trouvé
 	 * @param debut La borne de début de l'intervalle en millisecondes où commencer l'extraction 
 	 * @param fin La borne de fin de l'intervalle en millisecondes où terminer l'extraction
 	 * @return Un tableau d'octet contenant le fichier WAV
 	 */
-	public byte[] extraireIntervalle(File fichier, long debut, long fin)
+	public byte[] extraireIntervalle(String filePath, long debut, long fin)
 	{
 		IContainer containerInput = IContainer.make();
 
-		try
+		if (containerInput.open(filePath, IContainer.Type.READ, null) < 0)
 		{
-			if (containerInput.open(fichier.getCanonicalPath(), IContainer.Type.READ, null) < 0)
-				throw new RuntimeException("Impossible d'ouvrir le fichier");
-		}
-		catch (IOException e1)
-		{
-			e1.printStackTrace();
+			logger.log(Level.WARNING, "Impossible d'ouvrir le fichier " + filePath);
+			return null;
 		}
 
 		int numStreams = containerInput.getNumStreams();
@@ -305,24 +278,24 @@ npts = number of points
 		IMetaData options = IMetaData.make();
 		IMetaData unsetOptions = IMetaData.make();
 		if (audioStreamId == -1)
-			throw new RuntimeException("Impossible de trouver un flux audio dans le fichier");
+		{
+			logger.log(Level.WARNING, "Impossible de trouver un flux audio dans le fichier " + filePath);
+			return null;
+		}
 		if (audioCoderInput.open(options, unsetOptions) < 0)
-			throw new RuntimeException("Impossible d'ouvrir le flux audio du fichier");
+		{
+			logger.log(Level.WARNING, "Impossible d'ouvrir le flux audio du fichier " + filePath);
+			return null;
+		}
 
 		IContainer containerOutput = IContainer.make();
-		ByteArrayOutputStream byte_out = new ByteArrayOutputStream();
+		ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
 		IContainerFormat formatOutput = IContainerFormat.make();
 		formatOutput.setOutputFormat("wav", null, null);
-		if (containerOutput.open(byte_out, formatOutput) < 0)
+		if (containerOutput.open(byteOutput, formatOutput) < 0)
 		{
-			try
-			{
-				throw new Exception("Impossible d'ouvrir le fichier");
-			}
-			catch (Exception e)
-			{
-				e.printStackTrace();
-			}
+			logger.log(Level.WARNING, "Impossible d'ouvrir le conteneur de sortie");
+			return null;
 		}
 		IStream stream = containerOutput.addNewStream(ICodec.ID.CODEC_ID_PCM_S16LE);
 
@@ -332,15 +305,21 @@ npts = number of points
 		audioCoderOutput.setChannels(audioCoderInput.getChannels());
 		audioCoderOutput.setBitRate(audioCoderInput.getBitRate());
 		if (audioCoderOutput.open(options, unsetOptions) < 0)
-			throw new RuntimeException("could not open coder");
+		{
+			logger.log(Level.WARNING, "Impossible d'ouvrir le flux audio du conteneur de sortie");
+			return null;
+		}
 
-		if (containerOutput.writeHeader() < 0)// FIXME
-			throw new RuntimeException("Problème header");
+		if (containerOutput.writeHeader() < 0)
+		{
+			logger.log(Level.WARNING, "Impossible d'écrire l'en-tête");
+			return null;
+		}
 
 		IPacket packetInput = IPacket.make();
 		IPacket packetOutput = IPacket.make();
 		long milliSecondes = 0;
-		int lastPos_out = 0;
+		int lastPosOut = 0;
 		containerInput.seekKeyFrame(0, debut, 0);
 		while (containerInput.readNextPacket(packetInput) >= 0 && milliSecondes < fin)
 		{
@@ -363,7 +342,9 @@ npts = number of points
 						break;
 					}
 					if (bytesDecoded < 0)
-						throw new RuntimeException("Impossible de décoder");
+					{
+						logger.log(Level.WARNING, "Erreur de décodage du fichier "+filePath);
+					}
 					offset += bytesDecoded;
 					if (samples.isComplete())
 					{
@@ -372,13 +353,16 @@ npts = number of points
 						{
 							int retVal = audioCoderOutput.encodeAudio(packetOutput, samples, samplesConsumed);
 							if (retVal <= 0)
-								throw new RuntimeException("Could not encode audio");
+							{
+								logger.log(Level.WARNING, "Impossible d'encoder le flux audio");
+								return null;
+							}
 							samplesConsumed += retVal;
 							if (packetOutput.isComplete())
 							{
-								packetOutput.setPosition(lastPos_out);
+								packetOutput.setPosition(lastPosOut);
 								packetOutput.setStreamIndex(stream.getIndex());
-								lastPos_out += packetOutput.getSize();
+								lastPosOut += packetOutput.getSize();
 								containerOutput.writePacket(packetOutput);
 							}
 						}
@@ -387,11 +371,14 @@ npts = number of points
 			}
 		}
 		if (containerOutput.writeTrailer() < 0)
-			throw new RuntimeException();
+		{
+			logger.log(Level.WARNING, "Impossible d'écrire la finalisation du fichier");
+			return null;
+		}
 		audioCoderOutput.close();
 		audioCoderInput.close();
 		containerOutput.close();
 		containerInput.close();
-		return byte_out.toByteArray();
+		return byteOutput.toByteArray();
 	}
 }
