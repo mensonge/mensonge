@@ -1,5 +1,6 @@
 package mensonge.core.BaseDeDonnees;
 
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -9,19 +10,12 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Formatter;
 
-import mensonge.core.BaseDeDonnees.BaseDeDonnees;
-import mensonge.core.BaseDeDonnees.DBException;
-
-import org.junit.*;
-import static org.junit.Assert.*;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 public class TestBase
 {
-
-	public static void main(String[] args)
-	{
-
-	}
 
 	/**
 	 * Fonction permettant de verifier le bon fonctionnement de l'objet BaseDeDonnees en fournissant un echantillons de
@@ -142,17 +136,7 @@ public class TestBase
 			}
 		}
 		// ****Exportation****
-		MessageDigest md = null;
-		try
-		{
-			md = MessageDigest.getInstance("SHA");
 
-		}
-		catch (NoSuchAlgorithmException e2)
-		{
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
 		try
 		{
 			System.out.println("[i] Exportation Base vers export.db");
@@ -307,7 +291,9 @@ public class TestBase
 		{
 			formatter.format("%02x", b);
 		}
-		return formatter.toString();
+		String ret = formatter.toString();
+		formatter.close();
+		return ret;
 	}
 
 	private static BaseDeDonnees db = null;
@@ -383,12 +369,10 @@ public class TestBase
 	@Test
 	public void testAfficherCategorie() throws DBException, SQLException, NoSuchAlgorithmException
 	{
-		int i = 0;
 		String nom = new String();
 		ResultSet rs = db.getListeCategorie();
 		while (rs.next())
 		{
-			i++;
 			nom += rs.getString(1);
 		}
 		rs.close();
@@ -456,12 +440,10 @@ public class TestBase
 	@Test
 	public void testAfficherSujet() throws DBException, SQLException, NoSuchAlgorithmException
 	{
-		int i = 0;
 		String nom = new String();
 		ResultSet rs = db.getListeSujet();
 		while (rs.next())
 		{
-			i++;
 			nom += rs.getString(1);
 		}
 		rs.close();

@@ -201,12 +201,12 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				}
 				catch (DBException e1)
 				{
-					popupErreur("[-] Erreur lors de la creation: " + e1.getMessage(), "Erreur");
+					popupErreur("Erreur lors de la creation de la base de données : " + e1.getMessage(), "Erreur");
 				}
 			}
 			else
 			{
-				popupErreur("[-]Erreur lors de la connexion. " + e.getMessage(), "Erreur");
+				popupErreur("Erreur lors de la connexion de la base de données : " + e.getMessage(), "Erreur");
 				return;
 			}
 		}
@@ -358,7 +358,6 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				catch (Exception e1)
 				{
 					popupErreur(e1.getMessage(), "Erreur");
-					return;
 				}
 			}
 		}
