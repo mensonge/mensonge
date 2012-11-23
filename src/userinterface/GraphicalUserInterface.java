@@ -29,12 +29,14 @@ import core.BaseDeDonnees.BaseDeDonnees;
 import core.BaseDeDonnees.DBException;
 
 import userinterface.OngletLecteur;
+
 /**
  * 
  * Classe Interface graphique contenant tous les composants graphiques
  * 
  */
-public class GraphicalUserInterface extends JFrame implements ActionListener {
+public class GraphicalUserInterface extends JFrame implements ActionListener
+{
 	private static final long serialVersionUID = 5373991180139317820L;
 
 	private JTabbedPane onglets;
@@ -46,13 +48,13 @@ public class GraphicalUserInterface extends JFrame implements ActionListener {
 	private JMenuItem baseImporter;
 	private JMenuItem baseAjouterCategorie;
 	private JMenuItem baseAjouterSujet;
-	private JMenuItem play;
 
 	private PanneauArbre panneauArbre;
 
 	private BaseDeDonnees bdd = null;
 
-	public GraphicalUserInterface() {
+	public GraphicalUserInterface()
+	{
 		/*
 		 * Connexion à la base
 		 */
@@ -73,10 +75,10 @@ public class GraphicalUserInterface extends JFrame implements ActionListener {
 		fichierOuvrir.addActionListener(this);
 
 		baseExporter = new JMenuItem("Exporter");
-		baseExporter.addMouseListener(new ExporterBaseListner(this));
+		baseExporter.addMouseListener(new ExporterBaseListener(this));
 
 		baseImporter = new JMenuItem("Importer");
-		baseImporter.addMouseListener(new ImporterBaseListner(this));
+		baseImporter.addMouseListener(new ImporterBaseListener(this));
 
 		baseAjouterCategorie = new JMenuItem("Ajouter catégorie");
 		baseAjouterSujet = new JMenuItem("Ajouter sujet");
@@ -111,7 +113,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener {
 		this.panneauArbre = new PanneauArbre(bdd);
 		baseAjouterCategorie.addMouseListener(panneauArbre.new AjouterCategorieEnregistrementClicDroit(null, bdd));
 		baseAjouterSujet.addMouseListener(panneauArbre.new AjouterSujetClicDroit(null, bdd));
-		
+
 		JPanel conteneur = new JPanel(new BorderLayout());
 		conteneur.add(onglets, BorderLayout.CENTER);
 		conteneur.add(panneauArbre, BorderLayout.EAST);
@@ -129,26 +131,23 @@ public class GraphicalUserInterface extends JFrame implements ActionListener {
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		this.setVisible(true);
 		this.setEnabled(true);
-
-		//DialogueAjouterEnregistrement a = new DialogueAjouterEnregistrement(null, "Ajouter Enregistrement", true, bdd, "toto".getBytes());
-		//a.activer();
 	}
 
 	/**
 	 * Ajoute un nouvel onglet à l'interface graphique
-	 * @param onglet Onglet à ajouter
+	 * 
+	 * @param onglet
+	 *            Onglet à ajouter
 	 */
 	public void ajouterOnglet(OngletLecteur onglet)
 	{
-		JButton boutonFermeture = new JButton(new ImageIcon(
-				"images/CloseTab.png"));
+		JButton boutonFermeture = new JButton(new ImageIcon("images/CloseTab.png"));
 		boutonFermeture.setToolTipText("Fermer cet onglet");
 		boutonFermeture.setContentAreaFilled(false);
 		boutonFermeture.setFocusable(false);
 		boutonFermeture.setBorder(BorderFactory.createEmptyBorder());
 		boutonFermeture.setBorderPainted(false);
-		boutonFermeture.addActionListener(new FermetureOngletListener(
-				this.onglets, onglet));
+		boutonFermeture.addActionListener(new FermetureOngletListener(this.onglets, onglet));
 
 		JPanel panelFermeture = new JPanel();
 		panelFermeture.setBackground(new Color(0, 0, 0, 0));
@@ -156,49 +155,57 @@ public class GraphicalUserInterface extends JFrame implements ActionListener {
 		panelFermeture.add(boutonFermeture);
 
 		this.onglets.add(onglet);
-		this.onglets.setTabComponentAt(this.onglets.getTabCount() - 1,
-				panelFermeture);
+		this.onglets.setTabComponentAt(this.onglets.getTabCount() - 1, panelFermeture);
 	}
 
 	/**
-	 * Quitte l'application
+	 * Quitte le programme
 	 */
 	public void quitter()
 	{
-
-		System.exit(0);
+		this.processEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 	}
 
-	protected void processWindowEvent(WindowEvent event) {
-		if (event.getID() == WindowEvent.WINDOW_DEACTIVATED) {
+	protected void processWindowEvent(WindowEvent event)
+	{
+		if (event.getID() == WindowEvent.WINDOW_DEACTIVATED)
+		{
 			this.panneauArbre.getMenuClicDroit().setEnabled(false);
 			this.panneauArbre.getMenuClicDroit().setVisible(false);
 		}
-		if (event.getID() == WindowEvent.WINDOW_CLOSING) {
-			this.quitter();
-		} else
+		if (event.getID() == WindowEvent.WINDOW_CLOSING)
+		{
+			this.dispose();
+		}
+		else
 			super.processWindowEvent(event);
 	}
 
-	public void connexionBase(String fichier) {
-		try {
+	public void connexionBase(String fichier)
+	{
+		try
+		{
 			bdd = new BaseDeDonnees(fichier);
 			bdd.connexion();// connexion et verification de la validite de la
 							// table
-		} catch (DBException e) {
+		}
+		catch (DBException e)
+		{
 			int a = e.getCode();
-			if (a == 2) {
-				try {
+			if (a == 2)
+			{
+				try
+				{
 					bdd.createDatabase();
-				} catch (DBException e1) {
-					popupErreur(
-							"[-] Erreur lors de la creation: "
-									+ e1.getMessage(), "Erreur");
 				}
-			} else {
-				popupErreur(
-						"[-]Erreur lors de la connexion. " + e.getMessage(),
-						"Erreur");
+				catch (DBException e1)
+				{
+					popupErreur("[-] Erreur lors de la creation: " + e1.getMessage(), "Erreur");
+				}
+			}
+			else
+			{
+				popupErreur("[-]Erreur lors de la connexion. " + e.getMessage(), "Erreur");
 				return;
 			}
 		}
@@ -212,23 +219,26 @@ public class GraphicalUserInterface extends JFrame implements ActionListener {
 	 * @param title
 	 *            Le titre de la popup
 	 */
-	public static void popupErreur(String message, String title) {
-		JOptionPane.showMessageDialog(null, message, title,
-				JOptionPane.ERROR_MESSAGE);
+	public static void popupErreur(String message, String title)
+	{
+		JOptionPane.showMessageDialog(null, message, title, JOptionPane.ERROR_MESSAGE);
 	}
 
 	/**
 	 * Affiche une popup d'information
-	 * @param message L'information à afficher
-	 * @param title Le titre de la popup
+	 * 
+	 * @param message
+	 *            L'information à afficher
+	 * @param title
+	 *            Le titre de la popup
 	 */
-	public static void popupInfo(String message, String title) {
-		JOptionPane.showMessageDialog(null, message, title,
-				JOptionPane.INFORMATION_MESSAGE);
+	public static void popupInfo(String message, String title)
+	{
+		JOptionPane.showMessageDialog(null, message, title, JOptionPane.INFORMATION_MESSAGE);
 	}
 
-	public static void ecrireFichier(byte[] contenu, File fichier)
-			throws Exception {
+	public static void ecrireFichier(byte[] contenu, File fichier) throws Exception
+	{
 		FileOutputStream destinationFile = null;
 		destinationFile = new FileOutputStream(fichier);
 		destinationFile.write(contenu);
@@ -236,28 +246,37 @@ public class GraphicalUserInterface extends JFrame implements ActionListener {
 		destinationFile.close();
 	}
 
-	public void actionPerformed(ActionEvent event) {
-		if (event.getSource() == fichierFermer) {
+	public void actionPerformed(ActionEvent event)
+	{
+		if (event.getSource() == fichierFermer)
+		{
 			this.quitter();
-		} else if (event.getSource() == aideAPropos) {
-			JOptionPane.showMessageDialog(null,
-					"Projet de détection de mensonge", "À propos",
+		}
+		else if (event.getSource() == aideAPropos)
+		{
+			JOptionPane.showMessageDialog(null, "Projet de détection de mensonge", "À propos",
 					JOptionPane.PLAIN_MESSAGE);
-		} else if (event.getSource() == fichierOuvrir) {
+		}
+		else if (event.getSource() == fichierOuvrir)
+		{
 			JFileChooser fileChooser = new JFileChooser();
-			// IContainer containerInput = IContainer.make();
 			fileChooser.showOpenDialog(this);
-			if (fileChooser.getSelectedFile() != null) {
-				try {
-					try {
+			if (fileChooser.getSelectedFile() != null)
+			{
+				try
+				{
+					try
+					{
 
-						this.ajouterOnglet(new OngletLecteur(new File(
-								fileChooser.getSelectedFile()
-										.getCanonicalPath())));
-					} catch (IOException e) {
+						this.ajouterOnglet(new OngletLecteur(new File(fileChooser.getSelectedFile().getCanonicalPath())));
+					}
+					catch (IOException e)
+					{
 						popupErreur(e.getMessage(), "Erreur");
 					}
-				} catch (Exception e1) {
+				}
+				catch (Exception e1)
+				{
 					popupErreur(e1.getMessage(), "Erreur");
 				}
 			}
@@ -267,73 +286,76 @@ public class GraphicalUserInterface extends JFrame implements ActionListener {
 	/**
 	 * Classe Listener gérant la fermeture des onglets, qui sera ajouté à chaque onglet
 	 */
-	private class FermetureOngletListener implements ActionListener {
+	private class FermetureOngletListener implements ActionListener
+	{
 		private JTabbedPane onglets;
 		private OngletLecteur onglet;
 
-		public FermetureOngletListener(JTabbedPane onglets, OngletLecteur onglet) {
+		public FermetureOngletListener(JTabbedPane onglets, OngletLecteur onglet)
+		{
 			this.onglet = onglet;
 			this.onglets = onglets;
 		}
 
-		public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent e)
+		{
 			onglet.fermerOnglet();
 			onglets.remove(onglet);
 
 		}
 	}
 
-	/*
-	 * class AjouterCategorieEnregistrementClicDroit implements MouseListener {
-	 * public void mouseClicked(MouseEvent e){} public void
-	 * mouseEntered(MouseEvent e){} public void mouseExited(MouseEvent e){}
-	 * public void mousePressed(MouseEvent e){} public void
-	 * mouseReleased(MouseEvent e) { menuClicDroit.setEnabled(false) ;
-	 * menuClicDroit.setVisible(false) ; String nom =
-	 * JOptionPane.showInputDialog(null,
-	 * "Entrez le nom de la nouvelle catégorie", "Renommer",
-	 * JOptionPane.QUESTION_MESSAGE); if(nom != null && ! nom.equals("")) { try
-	 * { bdd.ajouterCategorie(nom); } catch (DBException e1) {
-	 * popupErreur(e1.getMessage(), "Erreur"); } } updateArbre(); } }
-	 */
-	class ExporterBaseListner extends MouseAdapter {
+	class ExporterBaseListener extends MouseAdapter
+	{
 		GraphicalUserInterface fenetre;
 
-		public ExporterBaseListner(GraphicalUserInterface g) {
+		public ExporterBaseListener(GraphicalUserInterface g)
+		{
 			fenetre = g;
 		}
 
-		public void mouseReleased(MouseEvent event) {
+		public void mouseReleased(MouseEvent event)
+		{
 			JFileChooser fileChooser = new JFileChooser();
 			fileChooser.showOpenDialog(fenetre);
-			if (fileChooser.getSelectedFile() != null) {
-				try {
-					bdd.exporter(fileChooser.getSelectedFile()
-							.getCanonicalPath(), -1, 1);
-				} catch (Exception e1) {
+			if (fileChooser.getSelectedFile() != null)
+			{
+				try
+				{
+					bdd.exporter(fileChooser.getSelectedFile().getCanonicalPath(), -1, 1);
+				}
+				catch (Exception e1)
+				{
 					popupErreur(e1.getMessage(), "Erreur");
 				}
 			}
 		}
 	}
 
-	class ImporterBaseListner extends MouseAdapter {
+	class ImporterBaseListener extends MouseAdapter
+	{
 		GraphicalUserInterface fenetre;
 
-		public ImporterBaseListner(GraphicalUserInterface g) {
+		public ImporterBaseListener(GraphicalUserInterface g)
+		{
 			fenetre = g;
 		}
 
-		public void mouseReleased(MouseEvent event) {
+		public void mouseReleased(MouseEvent event)
+		{
 			JFileChooser fileChooser = new JFileChooser();
 			fileChooser.showOpenDialog(fenetre);
 			String fichier;
-			if (fileChooser.getSelectedFile() != null) {
-				try {
+			if (fileChooser.getSelectedFile() != null)
+			{
+				try
+				{
 					fichier = fileChooser.getSelectedFile().getCanonicalPath();
 					bdd.importer(fichier);
 					// updateArbre();
-				} catch (Exception e1) {
+				}
+				catch (Exception e1)
+				{
 					popupErreur(e1.getMessage(), "Erreur");
 					return;
 				}
@@ -341,15 +363,17 @@ public class GraphicalUserInterface extends JFrame implements ActionListener {
 		}
 	}
 
-	public static void main(String args[]) {
+	public static void main(String args[])
+	{
 		System.setProperty("awt.useSystemAAFontSettings", "on");
 		System.setProperty("swing.aatext", "true");
-		
-		javax.swing.SwingUtilities.invokeLater(new Runnable() {
-			public void run() {
+
+		javax.swing.SwingUtilities.invokeLater(new Runnable()
+		{
+			public void run()
+			{
 				new GraphicalUserInterface();
 			}
 		});
 	}
-
 }

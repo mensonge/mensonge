@@ -1,12 +1,8 @@
 package userinterface;
 
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.event.TreeSelectionEvent;
-import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 public class Feuille extends DefaultMutableTreeNode
@@ -21,7 +17,7 @@ public class Feuille extends DefaultMutableTreeNode
 	int taille;
 	String categorie;
 	String sujet;
-	
+
 	public Feuille(int id, String nom, int duree, int taille, String categorie, String sujet)
 	{
 		super(nom);
@@ -32,6 +28,7 @@ public class Feuille extends DefaultMutableTreeNode
 		this.categorie = categorie;
 		this.sujet = sujet;
 	}
+
 	public Map<String, String> getInfo()
 	{
 		Map<String, String> retour = new HashMap<String, String>();
@@ -42,34 +39,54 @@ public class Feuille extends DefaultMutableTreeNode
 		retour.put("Sujet", sujet);
 		return retour;
 	}
-	public int getId() {
+
+	public int getId()
+	{
 		return id;
 	}
-	public void setId(int id) {
+
+	public void setId(int id)
+	{
 		this.id = id;
 	}
-	public String getNom() {
+
+	public String getNom()
+	{
 		return nom;
 	}
-	public void setNom(String nom) {
+
+	public void setNom(String nom)
+	{
 		this.nom = nom;
 	}
-	public int getDuree() {
+
+	public int getDuree()
+	{
 		return duree;
 	}
-	public void setDuree(int duree) {
+
+	public void setDuree(int duree)
+	{
 		this.duree = duree;
 	}
-	public int getTaille() {
+
+	public int getTaille()
+	{
 		return taille;
 	}
-	public void setTaille(int taille) {
+
+	public void setTaille(int taille)
+	{
 		this.taille = taille;
 	}
-	public String getCategorie() {
+
+	public String getCategorie()
+	{
 		return categorie;
 	}
-	public void setCategorie(String categorie) {
+
+	public void setCategorie(String categorie)
+	{
 		this.categorie = categorie;
 	}
 

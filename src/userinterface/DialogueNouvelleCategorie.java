@@ -21,13 +21,14 @@ public class DialogueNouvelleCategorie extends JDialog
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
+
 	private JComboBox combo = new JComboBox();
 	private JLabel label = new JLabel("Liste des categories");
-	
+
 	private JButton envoyer = new JButton("Valider");
-	
+
 	private Object[] retour = new Object[1];
+
 	public DialogueNouvelleCategorie(JFrame parent, String title, boolean modal, BaseDeDonnees bdd)
 	{
 		super(parent, title, modal);
@@ -37,7 +38,7 @@ public class DialogueNouvelleCategorie extends JDialog
 			combo.addItem("Ne rien changer");
 			retour[0] = new String("Ne rien changer");
 			ResultSet rs = bdd.getListeCategorie();
-			while(rs.next())
+			while (rs.next())
 			{
 				combo.addItem(rs.getString("nomCat"));
 			}
@@ -45,46 +46,67 @@ public class DialogueNouvelleCategorie extends JDialog
 		}
 		catch (Exception e)
 		{
-			
+
 		}
 		envoyer.addMouseListener(new Envoyer());
 		combo.addItemListener(new comboListner());
-		
+
 		j1.add(label);
 		j1.add(combo);
-		
+
 		bouton.add(envoyer);
-		
+
 		pan.add(j1);
 		pan.add(envoyer);
-		
+
 		this.setContentPane(pan);
 		this.setLocationRelativeTo(null);
 		this.setTitle("Changer de categorie");
 		this.setSize(350, 120);
 	}
+
 	public Object[] activer()
 	{
 		this.setVisible(true);
 		return retour;
 	}
+
 	class comboListner implements ItemListener
 	{
-	      public void itemStateChanged(ItemEvent e)
-	      {
-	         retour[0] = e.getItem().toString();
-	      }             
+		@Override
+		public void itemStateChanged(ItemEvent e)
+		{
+			retour[0] = e.getItem().toString();
+		}
 	}
+
 	class Envoyer implements MouseListener
 	{
-		public void mouseClicked(MouseEvent e) {}
-		public void mouseEntered(MouseEvent e) {}
-		public void mouseExited(MouseEvent e) {}
-		public void mousePressed(MouseEvent e) {}
+		@Override
+		public void mouseClicked(MouseEvent e)
+		{
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e)
+		{
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e)
+		{
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e)
+		{
+		}
+
+		@Override
 		public void mouseReleased(MouseEvent e)
 		{
 			setVisible(false);
 		}
-		
+
 	}
 }

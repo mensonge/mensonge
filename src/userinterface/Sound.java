@@ -1,64 +1,39 @@
 package userinterface;
 
-import com.xuggle.mediatool.IMediaReader;
-import com.xuggle.mediatool.MediaListenerAdapter;
-import com.xuggle.mediatool.ToolFactory;
-import com.xuggle.mediatool.event.IVideoPictureEvent;
-import com.xuggle.mediatool.event.VideoPictureEvent;
-import com.xuggle.mediatool.event.IAudioSamplesEvent;
-import com.xuggle.xuggler.Global;
-import com.xuggle.xuggler.IContainer;
-import com.xuggle.xuggler.IStream;
-import com.xuggle.xuggler.IAudioSamples;
-import com.xuggle.xuggler.IContainer;
-import com.xuggle.xuggler.IStreamCoder;
-import com.xuggle.xuggler.ICodec;
-import com.xuggle.xuggler.IMetaData;
-import com.xuggle.xuggler.IVideoPicture;
-import com.xuggle.xuggler.IVideoResampler;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.nio.ShortBuffer;
+import java.util.concurrent.TimeUnit;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.ShortBuffer;
-
-import java.awt.Color;
-import java.awt.BorderLayout;
-import java.awt.image.BufferedImage;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import java.util.concurrent.TimeUnit;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import javax.swing.JPanel;
-import javax.swing.JLabel;
 import javax.swing.JButton;
+import javax.swing.JPanel;
 import javax.swing.JSlider;
-import javax.swing.ImageIcon;
-import javax.swing.JToolBar;
-import javax.swing.plaf.metal.MetalSliderUI;
+
+import com.xuggle.mediatool.IMediaReader;
+import com.xuggle.mediatool.MediaListenerAdapter;
+import com.xuggle.mediatool.ToolFactory;
+import com.xuggle.mediatool.event.IAudioSamplesEvent;
+import com.xuggle.xuggler.IAudioSamples;
+import com.xuggle.xuggler.ICodec;
+import com.xuggle.xuggler.IContainer;
+import com.xuggle.xuggler.IMetaData;
+import com.xuggle.xuggler.IStream;
+import com.xuggle.xuggler.IStreamCoder;
+import com.xuggle.xuggler.IVideoResampler;
 
 public class Sound extends JPanel
 {
 	private static final long serialVersionUID = 5373991180139317820L;
 	private File fichierVideo;
 	private JButton boutonLecture;
-	//private JButton boutonStop;
-	//private JPanel panelDuree;
-	//private JLabel labelDureeActuelle;
-	//private JLabel labelDureeMax;
+
 	private JSlider slider;
-	//private JSlider sliderVolume;
-	//private ImageIcon imageIconPause;
-	//private ImageIcon imageIconStop;
-	//private ImageIcon imageIconLecture;
-	//private ImageComponent mediaPlayerComponent;
 	private IMediaReader reader;
 	private long duration;
 	private double volume; // Entre 0 et 1
@@ -74,7 +49,7 @@ public class Sound extends JPanel
 		this.stop = true;
 		this.fichierVideo = fichierVideo;
 		this.sliderAvance = slider;
-		
+
 		try
 		{
 			this.reader = ToolFactory.makeReader(this.fichierVideo.getCanonicalPath());
@@ -83,16 +58,14 @@ public class Sound extends JPanel
 		{
 			e.printStackTrace();
 		}
-		this.reader	.setBufferedImageTypeToGenerate(BufferedImage.TYPE_3BYTE_BGR);
+		this.reader.setBufferedImageTypeToGenerate(BufferedImage.TYPE_3BYTE_BGR);
 		this.reader.open();
-		
-		
-		
-		this.duration = this.reader.getContainer().getDuration()/1000;
+
+		this.duration = this.reader.getContainer().getDuration() / 1000;
 		this.sliderAvance.setMaximum((int) duration);
 		this.sliderAvance.setMinimum(0);
 		this.sliderAvance.setValue(0);
-		
+
 		this.ouvrirAudio();
 		this.ajoutListener();
 	}
@@ -110,62 +83,57 @@ public class Sound extends JPanel
 	private void ajoutListener()
 	{
 		if (this.reader.isOpen())
-			{
-				MediaListenerAdapter adapter = new LecteurEvent();
-				this.reader.addListener(adapter);
-			}
+		{
+			MediaListenerAdapter adapter = new LecteurEvent();
+			this.reader.addListener(adapter);
+		}
 	}
 
 	private void ouvrirAudio()
 	{
 		if (this.reader.isOpen())
+		{
+			IContainer container = reader.getContainer();
+			IStreamCoder audioCoder = null;
+			int numStreams = container.getNumStreams();
+			int audioStreamId = -1;
+			for (int i = 0; i < numStreams; i++)
 			{
-				IContainer container = reader.getContainer();
-				IStreamCoder audioCoder = null;
-				int numStreams = container.getNumStreams();
-				int audioStreamId = -1;
-				for (int i = 0; i < numStreams; i++)
-					{
-						IStream stream = container.getStream(i);
-						IStreamCoder coder = stream.getStreamCoder();
-						if (coder.getCodecType() == ICodec.Type.CODEC_TYPE_AUDIO)
-							{
-								audioStreamId = i;
-								audioCoder = coder;
-								break;
-							}
-					}
-				if (audioStreamId == -1)
-					{
-						throw new RuntimeException(
-								"could not find audio stream");
-					}
-				IMetaData options = IMetaData.make();
-				IMetaData unsetOptions = IMetaData.make();
-				if (audioCoder.open(options, unsetOptions) < 0)
-					{
-						throw new RuntimeException(
-								"could not open audio decoder");
-					}
-				AudioFormat audioFormat = new AudioFormat(
-						audioCoder.getSampleRate(),
-						(int) IAudioSamples.findSampleBitDepth(audioCoder
-								.getSampleFormat()), audioCoder.getChannels(),
-						true, /* xuggler defaults to signed 16 bit samples */
-						false);
-				DataLine.Info info = new DataLine.Info(SourceDataLine.class,
-						audioFormat);
-				try
-					{
-						this.mLine = (SourceDataLine) AudioSystem.getLine(info);
-						this.mLine.open(audioFormat);
-						this.mLine.start();
-					}
-				catch (LineUnavailableException e)
-					{
-						throw new RuntimeException("could not open audio line");
-					}
+				IStream stream = container.getStream(i);
+				IStreamCoder coder = stream.getStreamCoder();
+				if (coder.getCodecType() == ICodec.Type.CODEC_TYPE_AUDIO)
+				{
+					audioStreamId = i;
+					audioCoder = coder;
+					break;
+				}
 			}
+			if (audioStreamId == -1)
+			{
+				throw new RuntimeException("could not find audio stream");
+			}
+			IMetaData options = IMetaData.make();
+			IMetaData unsetOptions = IMetaData.make();
+			if (audioCoder.open(options, unsetOptions) < 0)
+			{
+				throw new RuntimeException("could not open audio decoder");
+			}
+			AudioFormat audioFormat = new AudioFormat(audioCoder.getSampleRate(),
+					(int) IAudioSamples.findSampleBitDepth(audioCoder.getSampleFormat()), audioCoder.getChannels(),
+					true, /* xuggler defaults to signed 16 bit samples */
+					false);
+			DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
+			try
+			{
+				this.mLine = (SourceDataLine) AudioSystem.getLine(info);
+				this.mLine.open(audioFormat);
+				this.mLine.start();
+			}
+			catch (LineUnavailableException e)
+			{
+				throw new RuntimeException("could not open audio line");
+			}
+		}
 	}
 
 	public void play()
@@ -179,18 +147,20 @@ public class Sound extends JPanel
 		}
 		new Thread(new Runnable()
 		{
+			@Override
 			public void run()
 			{
 				while (reader.readPacket() == null && !stop)
 				{
-					while(pause)
+					while (pause)
 					{
 						try
 						{
 							Thread.sleep(100);
 						}
 						catch (InterruptedException e)
-						{}
+						{
+						}
 					}
 				}
 			}
@@ -207,14 +177,13 @@ public class Sound extends JPanel
 		this.stop = true;
 		this.pause = true;
 		if (this.reader.isOpen())
-			{
-				this.reader.close();
-				this.mLine.close();
-			}
+		{
+			this.reader.close();
+			this.mLine.close();
+		}
 		this.sliderAvance.setValue(0);
 	}
 
-	
 	public double getVolume()
 	{
 		return volume;
@@ -225,18 +194,18 @@ public class Sound extends JPanel
 		this.volume = volume;
 	}
 
-
 	class LecteurEvent extends MediaListenerAdapter
 	{
 		private IVideoResampler videoResampler = null;
-		private int width = 0;//mediaPlayerComponent.getWidth();
-		private int height = 0;//mediaPlayerComponent.getHeight();
+		private int width = 0;// mediaPlayerComponent.getWidth();
+		private int height = 0;// mediaPlayerComponent.getHeight();
 
+		@Override
 		public void onAudioSamples(IAudioSamplesEvent event)
 		{
-			long millisecondes = event.getTimeStamp(TimeUnit.MICROSECONDS)/1000;
+			long millisecondes = event.getTimeStamp(TimeUnit.MICROSECONDS) / 1000;
 			sliderAvance.setValue((int) (millisecondes));
-			
+
 			IAudioSamples samples = event.getAudioSamples();
 			ShortBuffer buffer = samples.getByteBuffer().asShortBuffer();
 			for (int i = 0; i < buffer.limit(); ++i)
