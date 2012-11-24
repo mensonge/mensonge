@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <project basedir="." name="LieLab" default="run">
 	<property name="src.dir" value="src"/>
-	<property name="bin.dir" value="bin"/>
+	<property name="bin.dir" value="target/classes/"/>
 	<property name="lib.dir" value="lib"/>
 	<property name="jar.dir" value="."/>
-	<property name="main-class"  value="userinterface.GraphicalUserInterface"/>
+	<property name="main-class"  value="mensonge.core.Extraction"/>
 
 	<target name="clean">
 		<delete dir="${bin.dir}"/>
