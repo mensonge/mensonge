@@ -5,6 +5,8 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -22,6 +24,8 @@ import mensonge.core.Extraction;
 public class PluginManager
 {
 	private static final String PLUGINS_PATH = "plugins";
+	private static final String CLASS_EXTENSION = ".class";
+
 	private static Logger logger = Logger.getLogger("logger");
 	private Map<String, Plugin> listePlugins;
 
@@ -60,19 +64,29 @@ public class PluginManager
 			{
 				// Le jar n'est pas dans le classpath on doit donc créer un loader pour pouvoir lui dire où aller
 				// chercher les classes
-				loader = new URLClassLoader(new URL[] { fichier.toURI().toURL() });
+				final URL urlFichier = fichier.toURI().toURL();
+				loader = AccessController.doPrivileged(new PrivilegedAction<URLClassLoader>()
+				{
+					public URLClassLoader run()
+					{
+						return new URLClassLoader(new URL[] { urlFichier });
+					}
+				});
 				jar = new JarFile(fichier.getAbsolutePath());
 				enumeration = jar.entries();
+				// Vu que ça sera utilisé dans une regex on doit géré le cas de Windows qui posera problème avec les \\
+				String fileSeparator = File.separatorChar == '\\' ? "\\\\" : File.separator;
 				while (enumeration.hasMoreElements())
 				{
 					tmp = enumeration.nextElement().toString();// Le chemin du fichier
-					if (tmp.length() > 6 && tmp.substring(tmp.length() - 6).compareTo(".class") == 0)
+					if (tmp.length() > CLASS_EXTENSION.length()
+							&& tmp.substring(tmp.length() - CLASS_EXTENSION.length()).compareTo(CLASS_EXTENSION) == 0)
 					{
-						tmp = tmp.substring(0, tmp.length() - 6);// on supprime le .class
-						tmp = tmp.replaceAll(File.separator, ".");// On remplace les / par des .
+						tmp = tmp.substring(0, tmp.length() - CLASS_EXTENSION.length());// on supprime le .class
+						tmp = tmp.replaceAll(fileSeparator, ".");// On remplace les / par des .
 						/*
-						 * Exemple :core/plugins/PluginManager.class deviendra core.plugins.PluginManager
-						 * Comme le spécifie la convention de Java
+						 * Exemple :core/plugins/PluginManager.class deviendra core.plugins.PluginManager Comme le
+						 * spécifie la convention de Java
 						 */
 
 						tmpClass = Class.forName(tmp, true, loader);
@@ -89,6 +103,7 @@ public class PluginManager
 
 					}
 				}
+				jar.close();
 				// Cela signifie qu'un Jar peut comporter plusieurs plugins !
 			}
 		}
