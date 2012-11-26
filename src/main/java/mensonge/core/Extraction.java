@@ -300,7 +300,8 @@ npts = number of points
 		IContainer containerOutput = IContainer.make();
 		ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
 		IContainerFormat formatOutput = IContainerFormat.make();
-		formatOutput.setOutputFormat("wav", null, null);
+		formatOutput.setOutputFormat("s16le", null, null);
+		formatOutput.setInputFormat("s16le");
 		if (containerOutput.open(byteOutput, formatOutput) < 0)
 		{
 			logger.log(Level.WARNING, "Impossible d'ouvrir le conteneur de sortie");

@@ -41,11 +41,12 @@ public class PluginManager
 	 * Charge la liste des plugins dans le dossier PLUGINS_PATH
 	 * 
 	 * @throws IOException
-	 * @throws ClassNotFoundException 
-	 * @throws IllegalAccessException 
-	 * @throws InstantiationException 
+	 * @throws ClassNotFoundException
+	 * @throws IllegalAccessException
+	 * @throws InstantiationException
 	 */
-	public void chargerPlugins() throws IOException, ClassNotFoundException, InstantiationException, IllegalAccessException
+	public void chargerPlugins() throws IOException, ClassNotFoundException, InstantiationException,
+			IllegalAccessException
 	{
 		File dossierPlugins = new File(PLUGINS_PATH);
 		FilenameFilter filter = new FileListFilter(null, ".jar");// On ne veut que les .jar
@@ -67,6 +68,7 @@ public class PluginManager
 				final URL urlFichier = fichier.toURI().toURL();
 				loader = AccessController.doPrivileged(new PrivilegedAction<URLClassLoader>()
 				{
+					@Override
 					public URLClassLoader run()
 					{
 						return new URLClassLoader(new URL[] { urlFichier });
@@ -109,7 +111,7 @@ public class PluginManager
 		}
 		else
 		{
-			logger.log(Level.WARNING,dossierPlugins.getName() + " n'est pas un dossier.");
+			logger.log(Level.WARNING, dossierPlugins.getName() + " n'est pas un dossier.");
 		}
 	}
 
@@ -134,30 +136,30 @@ public class PluginManager
 		}
 		catch (IOException e)
 		{
-			logger.log(Level.WARNING,e.getMessage());
+			logger.log(Level.WARNING, e.getMessage());
 		}
 		catch (ClassNotFoundException e)
 		{
-			logger.log(Level.WARNING,e.getMessage());
+			logger.log(Level.WARNING, e.getMessage());
 		}
 		catch (InstantiationException e)
 		{
-			logger.log(Level.WARNING,e.getMessage());
+			logger.log(Level.WARNING, e.getMessage());
 		}
 		catch (IllegalAccessException e)
 		{
-			logger.log(Level.WARNING,e.getMessage());
+			logger.log(Level.WARNING, e.getMessage());
 		}
 		Map<String, Plugin> h = p.getListePlugins();
 		if (h.containsKey("Coefficients cepstraux"))
 		{
-			logger.log(Level.INFO,"[i] Lançement du plugin CoefficientsCepstraux");
+			logger.log(Level.INFO, "[i] Lançement du plugin CoefficientsCepstraux");
 			h.get("Coefficients cepstraux").lancer(new Extraction(), fichiers);
-			logger.log(Level.INFO,"[i] Fin du plugin CoefficientsCepstraux");
+			logger.log(Level.INFO, "[i] Fin du plugin CoefficientsCepstraux");
 		}
 		else
 		{
-			logger.log(Level.WARNING,"[E] Pas de plugin CoefficientsCepstraux");
+			logger.log(Level.WARNING, "[E] Pas de plugin CoefficientsCepstraux");
 
 		}
 	}
@@ -171,12 +173,19 @@ public class PluginManager
 		private String start;
 		private String end;
 
+		/**
+		 * Initialise le filtre
+		 * 
+		 * @param start Ce par quoi doit commencer le nom du fichier
+		 * @param end Ce par quoi doit terminer le nom du fichier
+		 */
 		public FileListFilter(String start, String end)
 		{
 			this.start = start;
 			this.end = end;
 		}
 
+		@Override
 		public boolean accept(File dir, String name)
 		{
 			boolean accept = true;
