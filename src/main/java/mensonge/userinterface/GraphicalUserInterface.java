@@ -11,6 +11,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -27,6 +28,8 @@ import javax.swing.JTabbedPane;
 
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
 import mensonge.core.BaseDeDonnees.DBException;
+import mensonge.core.plugins.Plugin;
+import mensonge.core.plugins.PluginManager;
 import mensonge.userinterface.OngletLecteur;
 
 /**
@@ -51,6 +54,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	private PanneauArbre panneauArbre;
 
 	private BaseDeDonnees bdd = null;
+	private PluginManager pluginManager = new PluginManager();
 
 	public GraphicalUserInterface()
 	{
@@ -58,7 +62,6 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		 * Connexion à la base
 		 */
 		connexionBase("LieLab.db");
-
 		/*
 		 * Conteneur
 		 */
@@ -106,6 +109,30 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		menuBar.add(menuOutils);
 		menuBar.add(menuAide);
 		menuBar.add(menuBase);
+		/*
+		 * Pluggin
+		 */
+		try
+		{
+			pluginManager.chargerPlugins();
+			Map<String, Plugin> h = pluginManager.getListePlugins();
+			JMenuItem item = null;
+			for(int i = 0; i < h.size(); i++)
+			{
+				item = new JMenuItem(h.keySet().toString());
+				item.addMouseListener(new ItemPluginListener());
+			}
+			if(pluginManager.getListePlugins().size() == 0)
+			{
+				menuOutils.add(new JMenuItem("Aucun Plugin."));
+			}
+			
+		}
+		catch(Exception e)
+		{
+			GraphicalUserInterface.popupErreur("Impossible de charger les plugins : " + e.getMessage());
+			menuOutils.add(new JMenuItem("Aucun Plugin."));
+		}
 		/*
 		 * Conteneur
 		 */
@@ -365,6 +392,14 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 					popupErreur(e1.getMessage());
 				}
 			}
+		}
+	}
+	
+	private class ItemPluginListener extends MouseAdapter
+	{
+		public void mouseReleased(MouseEvent event)
+		{
+			System.out.println("Licorne");
 		}
 	}
 
