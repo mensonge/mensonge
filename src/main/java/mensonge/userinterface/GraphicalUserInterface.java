@@ -5,8 +5,6 @@ import java.awt.Color;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -24,13 +22,14 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 
+import mensonge.core.Extraction;
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
 import mensonge.core.BaseDeDonnees.DBException;
 import mensonge.core.plugins.Plugin;
 import mensonge.core.plugins.PluginManager;
-import mensonge.userinterface.OngletLecteur;
 
 /**
  * 
@@ -46,15 +45,15 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	private JMenuItem aideAPropos;
 	private JMenuItem fichierFermer;
 	private JMenuItem fichierOuvrir;
-	private JMenuItem baseExporter;
-	private JMenuItem baseImporter;
-	private JMenuItem baseAjouterCategorie;
-	private JMenuItem baseAjouterSujet;
 
 	private PanneauArbre panneauArbre;
+	private BaseDeDonnees bdd;
 
-	private BaseDeDonnees bdd = null;
-	private PluginManager pluginManager = new PluginManager();
+	private JMenuBar menuBar;
+
+	private PluginManager pluginManager;
+
+	private JMenu menuOutils;
 
 	public GraphicalUserInterface()
 	{
@@ -62,87 +61,19 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		 * Connexion à la base
 		 */
 		connexionBase("LieLab.db");
-		/*
-		 * Conteneur
-		 */
-		onglets = new JTabbedPane();
 
-		/*
-		 * Menu
-		 */
-		fichierFermer = new JMenuItem("Fermer");
-		fichierFermer.addActionListener(this);
-
-		fichierOuvrir = new JMenuItem("Ouvrir");
-		fichierOuvrir.addActionListener(this);
-
-		baseExporter = new JMenuItem("Exporter");
-		baseExporter.addMouseListener(new ExporterBaseListener(this));
-
-		baseImporter = new JMenuItem("Importer");
-		baseImporter.addMouseListener(new ImporterBaseListener(this));
-
-		baseAjouterCategorie = new JMenuItem("Ajouter catégorie");
-		baseAjouterSujet = new JMenuItem("Ajouter sujet");
-
-		JMenu menuFichier = new JMenu("Fichier");
-		menuFichier.add(fichierOuvrir);
-		menuFichier.add(baseExporter);
-		menuFichier.add(baseImporter);
-		menuFichier.addSeparator();
-		menuFichier.add(fichierFermer);
-
-		aideAPropos = new JMenuItem("À propos");
-		aideAPropos.addActionListener(this);
-
-		JMenu menuOutils = new JMenu("Outils");
-
-		JMenu menuAide = new JMenu("Aide");
-		menuAide.add(aideAPropos);
-
-		JMenu menuBase = new JMenu("Base");
-		menuBase.add(baseAjouterCategorie);
-		menuBase.add(baseAjouterSujet);
-
-		JMenuBar menuBar = new JMenuBar();
-		menuBar.add(menuFichier);
-		menuBar.add(menuOutils);
-		menuBar.add(menuAide);
-		menuBar.add(menuBase);
-		/*
-		 * Pluggin
-		 */
-		try
-		{
-			pluginManager.chargerPlugins();
-			Map<String, Plugin> h = pluginManager.getListePlugins();
-			JMenuItem item = null;
-			for(int i = 0; i < h.size(); i++)
-			{
-				item = new JMenuItem(h.keySet().toString());
-				item.addMouseListener(new ItemPluginListener());
-			}
-			if(pluginManager.getListePlugins().size() == 0)
-			{
-				menuOutils.add(new JMenuItem("Aucun Plugin."));
-			}
-			
-		}
-		catch(Exception e)
-		{
-			GraphicalUserInterface.popupErreur("Impossible de charger les plugins : " + e.getMessage());
-			menuOutils.add(new JMenuItem("Aucun Plugin."));
-		}
-		/*
-		 * Conteneur
-		 */
 		this.panneauArbre = new PanneauArbre(bdd);
-		baseAjouterCategorie.addMouseListener(panneauArbre.new AjouterCategorieEnregistrementClicDroit(null, bdd));
-		baseAjouterSujet.addMouseListener(panneauArbre.new AjouterSujetClicDroit(null, bdd));
+		this.ajoutBarMenu();
+
+		/*
+		 * Conteneur
+		 */
+		this.onglets = new JTabbedPane();
 
 		JPanel conteneur = new JPanel(new BorderLayout());
 		conteneur.add(onglets, BorderLayout.CENTER);
 		conteneur.add(panneauArbre, BorderLayout.EAST);
+
 		/*
 		 * Fenêtre
 		 */
@@ -153,19 +84,130 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		this.setLocationRelativeTo(null);
 		this.setSize(Toolkit.getDefaultToolkit().getScreenSize());
 		this.setContentPane(conteneur);
-		this.setJMenuBar(menuBar);
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		this.setVisible(true);
 		this.setEnabled(true);
 	}
 
 	/**
+	 * Ajoute une bar de menu
+	 */
+	private void ajoutBarMenu()
+	{
+		this.fichierFermer = new JMenuItem("Fermer");
+		this.fichierFermer.addActionListener(this);
+
+		this.fichierOuvrir = new JMenuItem("Ouvrir");
+		this.fichierOuvrir.addActionListener(this);
+
+		JMenuItem baseExporter = new JMenuItem("Exporter");
+		baseExporter.addActionListener(new ExporterBaseListener(this));
+
+		JMenuItem baseImporter = new JMenuItem("Importer");
+		baseImporter.addActionListener(new ImporterBaseListener(this));
+
+		JMenuItem baseAjouterCategorie = new JMenuItem("Ajouter catégorie");
+		JMenuItem baseAjouterSujet = new JMenuItem("Ajouter sujet");
+		baseAjouterCategorie.addMouseListener(panneauArbre.new AjouterCategorieEnregistrementClicDroit(null, bdd));
+		baseAjouterSujet.addMouseListener(panneauArbre.new AjouterSujetClicDroit(null, bdd));
+
+		JMenu menuFichier = new JMenu("Fichier");
+		menuFichier.add(fichierOuvrir);
+		menuFichier.add(baseExporter);
+		menuFichier.add(baseImporter);
+		menuFichier.addSeparator();
+		menuFichier.add(fichierFermer);
+
+		this.aideAPropos = new JMenuItem("À propos");
+		this.aideAPropos.addActionListener(this);
+
+		JMenu menuAide = new JMenu("Aide");
+		menuAide.add(aideAPropos);
+
+		JMenu menuBase = new JMenu("Base");
+		menuBase.add(baseAjouterCategorie);
+		menuBase.add(baseAjouterSujet);
+
+		this.menuBar = new JMenuBar();
+		this.menuBar.add(menuFichier);
+		this.menuBar.add(menuAide);
+		this.ajoutMenuPlugins();
+		this.menuBar.add(menuBase);
+		this.setJMenuBar(this.menuBar);
+	}
+
+	/**
+	 * Ajoute un menu des plugins existants
+	 */
+	private void ajoutMenuPlugins()
+	{
+		menuOutils = new JMenu("Outils");
+		this.menuBar.add(menuOutils);
+
+		pluginManager = new PluginManager();
+		this.chargerListePlugins();
+	}
+	
+	/**
+	 * Charge la liste des plugins et l'affiche dans le menu
+	 */
+	private void chargerListePlugins()
+	{
+		menuOutils.removeAll();
+		try
+		{
+			pluginManager.chargerPlugins();
+			Map<String, Plugin> mapPlugins = pluginManager.getPlugins();
+
+			if (pluginManager.getPlugins().isEmpty())
+			{
+				menuOutils.add(new JMenuItem("Aucun outil"));
+			}
+			else
+			{
+				for (String nom : mapPlugins.keySet())
+				{
+					JMenuItem item = new JMenuItem(nom);
+					item.addActionListener(new ItemPluginListener(mapPlugins.get(nom)));
+					menuOutils.add(item);
+				}
+			}
+		}
+		catch (ClassNotFoundException e)
+		{
+			GraphicalUserInterface.popupErreur("Impossible de charger les outils : " + e.getMessage());
+			menuOutils.add(new JMenuItem("Aucun outil"));
+		}
+		catch (InstantiationException e)
+		{
+			GraphicalUserInterface.popupErreur("Impossible de charger les outils : " + e.getMessage());
+			menuOutils.add(new JMenuItem("Aucun outil"));
+		}
+		catch (IllegalAccessException e)
+		{
+			GraphicalUserInterface.popupErreur("Impossible de charger les outils : " + e.getMessage());
+			menuOutils.add(new JMenuItem("Aucun outil"));
+		}
+		catch (IOException e)
+		{
+			GraphicalUserInterface.popupErreur("Impossible de charger les outils : " + e.getMessage());
+			menuOutils.add(new JMenuItem("Aucun outil"));
+		}
+		
+		this.menuOutils.add(new JSeparator(JSeparator.HORIZONTAL));
+		
+		JMenuItem itemRechargerPlugins = new JMenuItem("Rafraîchir la liste des outils");
+		itemRechargerPlugins.addActionListener(new ReloadPluginsListener());
+		menuOutils.add(itemRechargerPlugins);
+	}
+	
+	/**
 	 * Ajoute un nouvel onglet à l'interface graphique
 	 * 
 	 * @param onglet
 	 *            Onglet à ajouter
 	 */
-	public void ajouterOnglet(OngletLecteur onglet)
+	private void ajouterOnglet(OngletLecteur onglet)
 	{
 		JButton boutonFermeture = new JButton(new ImageIcon("images/CloseTab.png"));
 		boutonFermeture.setToolTipText("Fermer cet onglet");
@@ -187,11 +229,12 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	/**
 	 * Quitte le programme
 	 */
-	public void quitter()
+	private void quitter()
 	{
 		this.processEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 	}
 
+	@Override
 	protected void processWindowEvent(WindowEvent event)
 	{
 		if (event.getID() == WindowEvent.WINDOW_CLOSING)
@@ -209,7 +252,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		}
 	}
 
-	public void connexionBase(String fichier)
+	private void connexionBase(String fichier)
 	{
 		try
 		{
@@ -228,7 +271,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				}
 				catch (DBException e1)
 				{
-					popupErreur("Erreur lors de la creation de la base de données : " + e1.getMessage());
+					popupErreur("Erreur lors de la création de la base de données : " + e1.getMessage());
 				}
 			}
 			else
@@ -285,6 +328,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		destinationFile.close();
 	}
 
+	@Override
 	public void actionPerformed(ActionEvent event)
 	{
 		if (event.getSource() == fichierFermer)
@@ -293,7 +337,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		}
 		else if (event.getSource() == aideAPropos)
 		{
-			JOptionPane.showMessageDialog(null, "Projet de détection de mensonge", "À propos",
+			JOptionPane.showMessageDialog(null, "Projet d'aide à l'étude de la détection de mensonge", "À propos",
 					JOptionPane.PLAIN_MESSAGE);
 		}
 		else if (event.getSource() == fichierOuvrir)
@@ -304,12 +348,11 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			{
 				try
 				{
-
 					this.ajouterOnglet(new OngletLecteur(new File(fileChooser.getSelectedFile().getCanonicalPath())));
 				}
 				catch (IOException e)
 				{
-					popupErreur(e.getMessage(), "Erreur");
+					popupErreur(e.getMessage());
 				}
 
 			}
@@ -330,6 +373,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			this.onglets = onglets;
 		}
 
+		@Override
 		public void actionPerformed(ActionEvent e)
 		{
 			onglet.fermerOnglet();
@@ -338,7 +382,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		}
 	}
 
-	private class ExporterBaseListener extends MouseAdapter
+	private class ExporterBaseListener implements ActionListener
 	{
 		private GraphicalUserInterface fenetre;
 
@@ -347,7 +391,8 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			fenetre = g;
 		}
 
-		public void mouseReleased(MouseEvent event)
+		@Override
+		public void actionPerformed(ActionEvent e)
 		{
 			JFileChooser fileChooser = new JFileChooser();
 			fileChooser.showOpenDialog(fenetre);
@@ -357,15 +402,21 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				{
 					bdd.exporter(fileChooser.getSelectedFile().getCanonicalPath(), -1, 1);
 				}
-				catch (Exception e1)
+				catch (DBException e1)
+				{
+					popupErreur(e1.getMessage());
+
+				}
+				catch (IOException e1)
 				{
 					popupErreur(e1.getMessage());
 				}
+
 			}
 		}
 	}
 
-	private class ImporterBaseListener extends MouseAdapter
+	private class ImporterBaseListener implements ActionListener
 	{
 		private GraphicalUserInterface fenetre;
 
@@ -374,7 +425,8 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			fenetre = g;
 		}
 
-		public void mouseReleased(MouseEvent event)
+		@Override
+		public void actionPerformed(ActionEvent e)
 		{
 			JFileChooser fileChooser = new JFileChooser();
 			fileChooser.showOpenDialog(fenetre);
@@ -385,21 +437,48 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				{
 					fichier = fileChooser.getSelectedFile().getCanonicalPath();
 					bdd.importer(fichier);
-					// updateArbre();
+
 				}
-				catch (Exception e1)
+				catch (IOException e1)
 				{
 					popupErreur(e1.getMessage());
+
 				}
+				catch (DBException e2)
+				{
+					popupErreur(e2.getMessage());
+
+				}
+				// updateArbre();
 			}
 		}
 	}
-	
-	private class ItemPluginListener extends MouseAdapter
+
+	private static class ItemPluginListener implements ActionListener
 	{
-		public void mouseReleased(MouseEvent event)
+		private static final Extraction EXTRACTION = new Extraction();
+		private Plugin plugin;
+
+		public ItemPluginListener(Plugin plugin)
 		{
-			System.out.println("Licorne");
+			this.plugin = plugin;
+		}
+
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{
+			// TODO Ajouter la liste des fichiers selectionnés
+			// Peut être voir pour aussi donner en plus l'instance de la BDD ça pourrait être utile au final ? :D
+			this.plugin.lancer(EXTRACTION, null);
+		}
+	}
+	
+	private class ReloadPluginsListener implements ActionListener
+	{
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{
+			chargerListePlugins();
 		}
 	}
 
@@ -410,6 +489,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 		javax.swing.SwingUtilities.invokeLater(new Runnable()
 		{
+			@Override
 			public void run()
 			{
 				new GraphicalUserInterface();
