@@ -77,8 +77,6 @@ public class PluginManager
 				});
 				jar = new JarFile(fichier.getAbsolutePath());
 				enumeration = jar.entries();
-				// Vu que ça sera utilisé dans une regex on doit géré le cas de Windows qui posera problème avec les \\
-				String fileSeparator = File.separatorChar == '\\' ? "\\\\" : File.separator;
 				while (enumeration.hasMoreElements())
 				{
 					tmp = enumeration.nextElement().toString();// Le chemin du fichier
@@ -86,7 +84,7 @@ public class PluginManager
 							&& tmp.substring(tmp.length() - CLASS_EXTENSION.length()).compareTo(CLASS_EXTENSION) == 0)
 					{
 						tmp = tmp.substring(0, tmp.length() - CLASS_EXTENSION.length());// on supprime le .class
-						tmp = tmp.replaceAll(fileSeparator, ".");// On remplace les / par des .
+						tmp = tmp.replace("/", ".");// On remplace les / par des .
 						/*
 						 * Exemple :core/plugins/PluginManager.class deviendra core.plugins.PluginManager Comme le
 						 * spécifie la convention de Java
