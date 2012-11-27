@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.xuggle.mediatool.IMediaWriter;
+import com.xuggle.mediatool.ToolFactory;
 import com.xuggle.xuggler.Global;
 import com.xuggle.xuggler.IAudioSamples;
 import com.xuggle.xuggler.ICodec;
@@ -37,7 +39,7 @@ public class Extraction implements IExtraction
 		try
 		{
 			FileOutputStream dataOut = new FileOutputStream("sons/test_sortie.wav");
-			byte[] e = ext.extraireIntervalle("sons/test.wmv", 0, 20000);
+			byte[] e = ext.extraireIntervalleTest("sons/test.wmv", 0, 20000);
 			dataOut.write(e, 0, e.length);
 			dataOut.close();
 
@@ -303,12 +305,12 @@ npts = number of points
 		ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
 		IContainerFormat formatOutput = IContainerFormat.make();
 
-		if (formatOutput.setOutputFormat("wav", null, null) < 0)
+		if (formatOutput.setOutputFormat("s16le", null, null) < 0)
 		{
 			logger.log(Level.WARNING, "Unknown format");
 			return null;
 		}
-		if (formatOutput.setInputFormat("wav") < 0)
+		if (formatOutput.setInputFormat("s16le") < 0)
 		{
 			logger.log(Level.WARNING, "Unknown format");
 			return null;
@@ -325,7 +327,6 @@ npts = number of points
 		audioCoderOutput.setSampleRate(audioCoderInput.getSampleRate());
 		audioCoderOutput.setChannels(audioCoderInput.getChannels());
 		audioCoderOutput.setBitRate(audioCoderInput.getBitRate());
-		System.out.println(audioCoderOutput.getCodec().getName());
 		if (audioCoderOutput.open(options, unsetOptions) < 0)
 		{
 			logger.log(Level.WARNING, "Impossible d'ouvrir le flux audio du conteneur de sortie");
@@ -396,6 +397,140 @@ npts = number of points
 									System.out.println(rv);
 									System.exit(0);
 
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		if (containerOutput.writeTrailer() < 0)
+		{
+			logger.log(Level.WARNING, "Impossible d'écrire la finalisation du fichier");
+			return null;
+		}
+		audioCoderOutput.close();
+		audioCoderInput.close();
+		containerOutput.close();
+		containerInput.close();
+		return byteOutput.toByteArray();
+	}
+	
+	public byte[] extraireIntervalleTest(String filePath, long debut, long fin)
+	{
+		Global.setFFmpegLoggingLevel(50);
+		IContainer containerInput = IContainer.make();
+
+		if (containerInput.open(filePath, IContainer.Type.READ, null) < 0)
+		{
+			logger.log(Level.WARNING, "Impossible d'ouvrir le fichier " + filePath);
+			return null;
+		}
+
+		long audioStreamId = this.getFirstAudioStreamId(containerInput);
+		if (audioStreamId == -1)
+		{
+			logger.log(Level.WARNING, "Impossible de trouver un flux audio dans le fichier " + filePath);
+			return null;
+		}
+		IStreamCoder audioCoderInput = containerInput.getStream(audioStreamId).getStreamCoder();
+		IMetaData options = IMetaData.make();
+		IMetaData unsetOptions = IMetaData.make();
+		if (audioCoderInput.open(options, unsetOptions) < 0)
+		{
+			logger.log(Level.WARNING, "Impossible d'ouvrir le flux audio du fichier " + filePath);
+			return null;
+		}
+
+		IContainer containerOutput = IContainer.make();
+		ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
+		IContainerFormat formatOutput = IContainerFormat.make();
+
+		if (formatOutput.setOutputFormat("s16le", null, null) < 0)
+		{
+			logger.log(Level.WARNING, "Unknown format");
+			return null;
+		}
+		
+		if (containerOutput.open(byteOutput, formatOutput,false,false) < 0)
+		{
+			logger.log(Level.WARNING, "Impossible d'ouvrir le conteneur de sortie");
+			return null;
+		}
+		IStream stream = containerOutput.addNewStream(ICodec.ID.CODEC_ID_PCM_S16LE);
+
+		IStreamCoder audioCoderOutput = stream.getStreamCoder();
+		audioCoderOutput.setBitRateTolerance(audioCoderInput.getBitRateTolerance());
+		audioCoderOutput.setSampleRate(audioCoderInput.getSampleRate());
+		audioCoderOutput.setChannels(audioCoderInput.getChannels());
+		audioCoderOutput.setBitRate(audioCoderInput.getBitRate());
+		if (audioCoderOutput.open(options, unsetOptions) < 0)
+		{
+			logger.log(Level.WARNING, "Impossible d'ouvrir le flux audio du conteneur de sortie");
+			return null;
+		}
+
+		if (containerOutput.writeHeader() < 0)
+		{
+			logger.log(Level.WARNING, "Impossible d'écrire l'en-tête");
+			return null;
+		}
+
+		IPacket packetInput = IPacket.make();
+		IPacket packetOutput = IPacket.make();
+		long actuelMicroSecondes = 0;
+		long debutMicroSecondes = debut * 1000;
+		long finMicroSecondes = fin * 1000;
+		int lastPosOut = 0;
+		containerInput.seekKeyFrame(0, debutMicroSecondes, 0);
+		while (containerInput.readNextPacket(packetInput) >= 0 && actuelMicroSecondes <= finMicroSecondes)
+		{
+			if (packetInput.getStreamIndex() == audioStreamId)
+			{
+				int offset = 0;
+				IAudioSamples samples = IAudioSamples.make(NB_SAMPLES, audioCoderInput.getChannels(),
+						IAudioSamples.Format.FMT_S16);
+
+				while (offset < packetInput.getSize() && actuelMicroSecondes <= finMicroSecondes)
+				{
+					int bytesDecoded = audioCoderInput.decodeAudio(samples, packetInput, offset);
+					// On ne peut obtenir le timestamp actuel que si on a décodé les samples
+					// Global.DEFAULT_PTS_PER_SECOND est en microsecondes pas en milli !
+
+					actuelMicroSecondes = samples.getPts() / Global.DEFAULT_PTS_PER_SECOND;
+					if (actuelMicroSecondes <= finMicroSecondes)
+					{
+						if (bytesDecoded < 0)
+						{
+							logger.log(Level.WARNING, "Erreur de décodage du fichier " + filePath);
+							return null;
+						}
+						offset += bytesDecoded;
+						if (samples.isComplete())
+						{
+							int samplesConsumed = 0;
+							while (samplesConsumed < samples.getNumSamples())
+							{
+								int retVal = audioCoderOutput.encodeAudio(packetOutput, samples, samplesConsumed);
+								if (retVal <= 0)
+								{
+									logger.log(Level.WARNING, "Impossible d'encoder le flux audio");
+									return null;
+								}								
+								samplesConsumed += retVal;
+								if (packetOutput.isComplete())
+								{
+									packetOutput.setPosition(lastPosOut);
+									packetOutput.setStreamIndex(stream.getIndex());
+									lastPosOut += packetOutput.getSize();
+									
+									int rv;
+									if((rv = containerOutput.writePacket(packetOutput,true)) < 0)
+									{
+										IError error = IError.make(rv);
+										System.out.println("arf "+error);
+										System.exit(0);
+									}
 								}
 							}
 						}
