@@ -20,7 +20,7 @@ RUN_PLUGINS=-classpath $(CLASSPATH) $(TARGET_PLUGINS) $(ARGS)
 RUN_BDD=-classpath $(CLASSPATH) $(TARGET_BDD) $(ARGS)
 
 WARN=-Xlint:all
-COMPILE_OPTIONS=$(WARN) -d $(OBJDIR) -sourcepath $(SRCDIR) -classpath $(CLASSPATH)
+COMPILE_OPTIONS=$(WARN) -d $(OBJDIR) -sourcepath $(SRCDIR) -encoding utf8 -classpath $(CLASSPATH)
 
 all: compile
 

@@ -19,7 +19,7 @@
 	<property name="dep_cp" value="${toString:dep.runtime}" />
 	<target name="compile" depends="clean">
 		<mkdir dir="${bin.dir}"/>
-		<javac classpathref="dep.runtime" srcdir="${src.dir}" destdir="${bin.dir}"/>
+		<javac classpathref="dep.runtime" srcdir="${src.dir}" destdir="${bin.dir}" encoding="utf8"/>
 		<echo message="Fin de la compilation"/>
 	</target>
 
