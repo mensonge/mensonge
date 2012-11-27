@@ -48,6 +48,7 @@ public class PluginManager
 	public void chargerPlugins() throws IOException, ClassNotFoundException, InstantiationException,
 			IllegalAccessException
 	{
+		this.listePlugins.clear();
 		File dossierPlugins = new File(PLUGINS_PATH);
 		FilenameFilter filter = new FileListFilter(null, ".jar");// On ne veut que les .jar
 
@@ -116,11 +117,11 @@ public class PluginManager
 	}
 
 	/**
-	 * Récupère la liste des plugins sous la forme d'une hashMap
+	 * Récupère les plugins sous la forme d'une Map
 	 * 
-	 * @return HashMap contenant la liste des plugins
+	 * @return Map contenant la liste des plugins
 	 */
-	public Map<String, Plugin> getListePlugins()
+	public Map<String, Plugin> getPlugins()
 	{
 		return listePlugins;
 	}
@@ -150,7 +151,7 @@ public class PluginManager
 		{
 			logger.log(Level.WARNING, e.getMessage());
 		}
-		Map<String, Plugin> h = p.getListePlugins();
+		Map<String, Plugin> h = p.getPlugins();
 		if (h.containsKey("Coefficients cepstraux"))
 		{
 			logger.log(Level.INFO, "[i] Lançement du plugin CoefficientsCepstraux");
