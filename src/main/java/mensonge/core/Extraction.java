@@ -12,6 +12,7 @@ import com.xuggle.xuggler.ICodec;
 import com.xuggle.xuggler.ICodec.ID;
 import com.xuggle.xuggler.IContainer;
 import com.xuggle.xuggler.IContainerFormat;
+import com.xuggle.xuggler.IError;
 import com.xuggle.xuggler.IMetaData;
 import com.xuggle.xuggler.IPacket;
 import com.xuggle.xuggler.IStream;
@@ -274,6 +275,7 @@ npts = number of points
 	 */
 	public byte[] extraireIntervalle(String filePath, long debut, long fin)
 	{
+		Global.setFFmpegLoggingLevel(50);
 		IContainer containerInput = IContainer.make();
 
 		if (containerInput.open(filePath, IContainer.Type.READ, null) < 0)
@@ -300,9 +302,18 @@ npts = number of points
 		IContainer containerOutput = IContainer.make();
 		ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
 		IContainerFormat formatOutput = IContainerFormat.make();
-		formatOutput.setOutputFormat("s16le", null, null);
-		formatOutput.setInputFormat("s16le");
-		if (containerOutput.open(byteOutput, formatOutput) < 0)
+
+		if (formatOutput.setOutputFormat("wav", null, null) < 0)
+		{
+			logger.log(Level.WARNING, "Unknown format");
+			return null;
+		}
+		if (formatOutput.setInputFormat("wav") < 0)
+		{
+			logger.log(Level.WARNING, "Unknown format");
+			return null;
+		}
+		if (containerOutput.open(byteOutput, formatOutput,false,false) < 0)
 		{
 			logger.log(Level.WARNING, "Impossible d'ouvrir le conteneur de sortie");
 			return null;
@@ -314,6 +325,7 @@ npts = number of points
 		audioCoderOutput.setSampleRate(audioCoderInput.getSampleRate());
 		audioCoderOutput.setChannels(audioCoderInput.getChannels());
 		audioCoderOutput.setBitRate(audioCoderInput.getBitRate());
+		System.out.println(audioCoderOutput.getCodec().getName());
 		if (audioCoderOutput.open(options, unsetOptions) < 0)
 		{
 			logger.log(Level.WARNING, "Impossible d'ouvrir le flux audio du conteneur de sortie");
@@ -353,6 +365,7 @@ npts = number of points
 						if (bytesDecoded < 0)
 						{
 							logger.log(Level.WARNING, "Erreur de décodage du fichier " + filePath);
+							return null;
 						}
 						offset += bytesDecoded;
 						if (samples.isComplete())
@@ -365,14 +378,24 @@ npts = number of points
 								{
 									logger.log(Level.WARNING, "Impossible d'encoder le flux audio");
 									return null;
-								}
+								}								
 								samplesConsumed += retVal;
 								if (packetOutput.isComplete())
 								{
 									packetOutput.setPosition(lastPosOut);
 									packetOutput.setStreamIndex(stream.getIndex());
 									lastPosOut += packetOutput.getSize();
-									containerOutput.writePacket(packetOutput);
+									
+									int rv;
+									if((rv = containerOutput.writePacket(packetOutput,true)) < 0)
+									{
+										IError error = IError.make(rv);
+										System.out.println("arf "+error);
+										System.exit(0);
+									}
+									System.out.println(rv);
+									System.exit(0);
+
 								}
 							}
 						}
