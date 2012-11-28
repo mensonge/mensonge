@@ -50,6 +50,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 	private JButton boutonMarqueur2;
 	private long timeMarqueur1 = 0;
 	private long timeMarqueur2 = 0;
+	private Marqueur t1;
 
 	public LecteurVideo(final File fichierVideo)
 	{
@@ -163,7 +164,9 @@ public class LecteurVideo extends JPanel implements ActionListener
 			}
 		});
 
+	
 		JToolBar toolBar = new JToolBar();
+		
 		toolBar.setFloatable(false);
 		toolBar.add(boutonStop);
 		toolBar.add(boutonLecture);
@@ -269,6 +272,10 @@ public class LecteurVideo extends JPanel implements ActionListener
 		else if (event.getSource() == boutonMarqueur1)
 		{
 			timeMarqueur1 = vidComp.getMediaPlayer().getTime();
+			t1=new Marqueur(-volume);
+			t1.setVisible(true);
+			slider.add(t1);
+			t1.repaint();
 		}
 		else if (event.getSource() == boutonMarqueur2)
 		{
