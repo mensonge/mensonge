@@ -14,6 +14,7 @@ SRC=$(shell find $(SRCDIR) -name "*.java")
 OBJ=$(patsubst $(SRCDIR)/%.java,$(OBJDIR)/%.class,$(SRC))
 
 CLASSPATH=$(shell find $(LIBDIR) -name "*.jar" -printf "%p:")$(OBJDIR)
+CLASSPATH_JAR=$(shell find $(LIBDIR) -name "*.jar" -printf "%p ")
 RUN_OPTIONS=-classpath $(CLASSPATH) $(TARGET) $(ARGS)
 RUN_EXTRACTION=-classpath $(CLASSPATH) $(TARGET_EXTRACTION) $(ARGS)
 RUN_PLUGINS=-classpath $(CLASSPATH) $(TARGET_PLUGINS) $(ARGS)
@@ -25,7 +26,7 @@ COMPILE_OPTIONS=$(WARN) -d $(OBJDIR) -sourcepath $(SRCDIR) -encoding utf8 -class
 all: compile
 
 run: compile
-	java $(RUN_OPTIONS) 
+	java $(RUN_OPTIONS)
 
 run_extraction: compile
 	java $(RUN_EXTRACTION)
@@ -47,8 +48,8 @@ clean:
 	rm -fr $(OBJDIR)
 	rm  -f $(PROJECT).jar
 
-manifest:
-	mkdir -p $(OBJDIR)/META-INF && echo "Main-Class: $(TARGET)" > $(OBJDIR)/META-INF/MANIFEST.MF
+manifest: compile
+	mkdir -p $(OBJDIR)/META-INF && echo "Main-Class: $(TARGET)" > $(OBJDIR)/META-INF/MANIFEST.MF && echo "Class-Path: $(CLASSPATH_JAR)" >>  $(OBJDIR)/META-INF/MANIFEST.MF
 
 jar: manifest
-	(cd $(OBJDIR) && jar cvmf META-INF/MANIFEST.MF ../$(PROJECT).jar $(TARGETDIR)/* )
+	(cd $(OBJDIR) && jar cvmf META-INF/MANIFEST.MF ../../$(PROJECT).jar $(TARGETDIR)/* )
