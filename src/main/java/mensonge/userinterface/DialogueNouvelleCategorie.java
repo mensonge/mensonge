@@ -24,7 +24,7 @@ public class DialogueNouvelleCategorie extends JDialog
 	private static final long serialVersionUID = 1L;
 
 	private JComboBox combo = new JComboBox();
-	private JLabel label = new JLabel("Liste des categories");
+	private JLabel label = new JLabel("Liste des catégories");
 
 	private JButton envoyer = new JButton("Valider");
 
@@ -62,7 +62,7 @@ public class DialogueNouvelleCategorie extends JDialog
 
 		this.setContentPane(pan);
 		this.setLocationRelativeTo(null);
-		this.setTitle("Changer de categorie");
+		this.setTitle("Changer de catégorie");
 		this.setSize(350, 120);
 	}
 

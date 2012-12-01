@@ -232,7 +232,7 @@ public class PanneauArbre extends JPanel
 		}
 		catch (Exception e)
 		{
-			GraphicalUserInterface.popupErreur("Erreur lors du chargement des enregistrement.", "Erreur");
+			GraphicalUserInterface.popupErreur("Erreur lors du chargement des enregistrements", "Erreur");
 		}
 	}
 
@@ -262,7 +262,7 @@ public class PanneauArbre extends JPanel
 		catch (Exception e)
 		{
 			e.printStackTrace();
-			GraphicalUserInterface.popupErreur("Erreur lors du chargement des enregistrement.", "Erreur");
+			GraphicalUserInterface.popupErreur("Erreur lors du chargement des enregistrements", "Erreur");
 		}
 	}
 
@@ -370,17 +370,17 @@ public class PanneauArbre extends JPanel
 				JMenuItem exporter = new JMenuItem("Exporter");
 				JMenuItem renommer = new JMenuItem("Renommer");
 
-				JMenuItem ecouter = new JMenuItem("Ecouter");
-				JMenuItem modifierCategorie = new JMenuItem("Changer categorie");
+				JMenuItem ecouter = new JMenuItem("Écouter");
+				JMenuItem modifierCategorie = new JMenuItem("Changer catégorie");
 				JMenuItem supprimer = new JMenuItem("Supprimer les enregistrements");
-				JMenuItem ajouterCategorie = new JMenuItem("Ajouter Categorie");
-				JMenuItem supprimerCategorie = new JMenuItem("Supprimer Categorie");
-				JMenuItem ajouterSujet = new JMenuItem("Ajouter Sujet");
-				JMenuItem supprimerSujet = new JMenuItem("Supprimer Sujet");
-				JMenuItem modifierSujet = new JMenuItem("Changer Sujet");
+				JMenuItem ajouterCategorie = new JMenuItem("Ajouter catégorie");
+				JMenuItem supprimerCategorie = new JMenuItem("Supprimer catégorie");
+				JMenuItem ajouterSujet = new JMenuItem("Ajouter sujet");
+				JMenuItem supprimerSujet = new JMenuItem("Supprimer sujet");
+				JMenuItem modifierSujet = new JMenuItem("Changer sujet");
 				JMenuItem changerTri = new JMenuItem();
-				JMenuItem renomerCategorie = new JMenuItem("Renommer categorie");
-				JMenuItem renomerSujet = new JMenuItem("Renommer Sujet");
+				JMenuItem renomerCategorie = new JMenuItem("Renommer catégorie");
+				JMenuItem renomerSujet = new JMenuItem("Renommer sujet");
 
 				exporter.addMouseListener(new ExporterEnregistrementClicDroit());
 				renommer.addMouseListener(new RenommerEnregistrementClicDroit());
@@ -398,11 +398,11 @@ public class PanneauArbre extends JPanel
 
 				if (typeTrie == PanneauArbre.TYPE_TRIE_SUJET)
 				{
-					changerTri.setText("Grouper par categories");
+					changerTri.setText("Grouper par catégorie");
 				}
 				else if (typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)
 				{
-					changerTri.setText("Grouper par sujets");
+					changerTri.setText("Grouper par sujet");
 				}
 
 				if (arbre.getSelectionCount() == 0)
@@ -497,7 +497,7 @@ public class PanneauArbre extends JPanel
 			menuClicDroit.setEnabled(false);
 			menuClicDroit.setVisible(false);
 			int option = JOptionPane.showConfirmDialog(null,
-					"Voulez-vous supprimer les enregistrements ?\n(Notez que les categories seront concervées)",
+					"Voulez-vous supprimer les enregistrements ?\n(Notez que les catégories seront conservées)",
 					"Suppression", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if (option == JOptionPane.OK_OPTION)
 			{
@@ -855,7 +855,7 @@ public class PanneauArbre extends JPanel
 		{
 			menuClicDroit.setEnabled(false);
 			menuClicDroit.setVisible(false);
-			int option = JOptionPane.showConfirmDialog(null, "Voulez-vous supprimer les categories ?\n", "Suppression",
+			int option = JOptionPane.showConfirmDialog(null, "Voulez-vous supprimer les catégories ?\n", "Suppression",
 					JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if (option == JOptionPane.OK_OPTION)
 			{
@@ -870,7 +870,7 @@ public class PanneauArbre extends JPanel
 							if (rs.next())
 							{
 								GraphicalUserInterface.popupErreur(
-										"Une categorie peut être supprimée quand elle n'a plus d'enregistrements.",
+										"Une catégorie peut être supprimée quand elle n'a plus d'enregistrements.",
 										"Erreur");
 							}
 							else
@@ -989,7 +989,7 @@ public class PanneauArbre extends JPanel
 							if (rs.next())
 							{
 								GraphicalUserInterface.popupErreur(
-										"Un sujet peut être supprimée quand il n'a plus d'enregistrements.", "Erreur");
+										"Un sujet peut être supprimé quand il n'a plus d'enregistrements.", "Erreur");
 							}
 							else
 							{
