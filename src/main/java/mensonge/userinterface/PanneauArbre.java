@@ -57,7 +57,7 @@ public class PanneauArbre extends JPanel
 	private JPanel panelLecteur;
 
 	private double volume = 0.5;
-	private Sound lecteurSonArbre;
+	//private Sound lecteurSonArbre;
 
 	private PanneauInformationFeuille infoArbre = new PanneauInformationFeuille();
 	private DefaultMutableTreeNode racine;
@@ -155,10 +155,10 @@ public class PanneauArbre extends JPanel
 			public void stateChanged(ChangeEvent event)
 			{
 				volume = ((double) slideSon.getValue() / 100);
-				if (lecteurSonArbre != null)
+				/*if (lecteurSonArbre != null)
 				{
 					lecteurSonArbre.setVolume(volume);
-				}
+				}*/
 			}
 		});
 		// Ajout de bouton pour le lecteur
@@ -1143,7 +1143,7 @@ public class PanneauArbre extends JPanel
 		@Override
 		public void mouseReleased(MouseEvent event)
 		{
-			// Créer le fichier
+			/*// Créer le fichier
 			File f = new File("tmp.wav");
 			if (menuClicDroit != null)
 			{
@@ -1185,7 +1185,7 @@ public class PanneauArbre extends JPanel
 			{
 				GraphicalUserInterface.popupErreur("Erreur lors du lancement de l'écoute: " + e.getMessage(), "Erreur");
 				return;
-			}
+			}*/
 
 		}
 	}
@@ -1195,7 +1195,7 @@ public class PanneauArbre extends JPanel
 		@Override
 		public void mouseReleased(MouseEvent event)
 		{
-			// Créer le fichier
+			/*// Créer le fichier
 			File f = new File("tmp.wav");
 			if (menuClicDroit != null)
 			{
@@ -1218,7 +1218,7 @@ public class PanneauArbre extends JPanel
 				GraphicalUserInterface.popupErreur("Erreur lors du lancement de l'écoute: " + e.getMessage(), "Erreur");
 				return;
 			}
-
+*/
 		}
 	}
 
@@ -1234,7 +1234,7 @@ public class PanneauArbre extends JPanel
 				menuClicDroit.setEnabled(false);
 				menuClicDroit.setVisible(false);
 			}
-
+/*
 			try
 			{
 				if (lecteurSonArbre != null)
@@ -1247,7 +1247,7 @@ public class PanneauArbre extends JPanel
 				GraphicalUserInterface.popupErreur("Erreur lors du lancement de l'écoute: " + e.getMessage(), "Erreur");
 				return;
 			}
-
+*/
 		}
 	}
 

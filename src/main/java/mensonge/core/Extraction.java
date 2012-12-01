@@ -1,26 +1,25 @@
 package mensonge.core;
 
+import it.sauronsoftware.jave.AudioAttributes;
+import it.sauronsoftware.jave.Encoder;
+import it.sauronsoftware.jave.EncoderException;
+import it.sauronsoftware.jave.EncodingAttributes;
+import it.sauronsoftware.jave.InputFormatException;
+
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.xuggle.mediatool.IMediaWriter;
-import com.xuggle.mediatool.ToolFactory;
-import com.xuggle.xuggler.Global;
-import com.xuggle.xuggler.IAudioSamples;
-import com.xuggle.xuggler.ICodec;
-import com.xuggle.xuggler.ICodec.ID;
-import com.xuggle.xuggler.IContainer;
-import com.xuggle.xuggler.IContainerFormat;
-import com.xuggle.xuggler.IError;
-import com.xuggle.xuggler.IMetaData;
-import com.xuggle.xuggler.IPacket;
-import com.xuggle.xuggler.IStream;
-import com.xuggle.xuggler.IStreamCoder;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
-import mensonge.core.IExtraction;
 
 /**
  * Classe gérant l'extraction d'échantillons ou intervalle d'un flux audio d'un fichier multimédia
@@ -28,7 +27,7 @@ import mensonge.core.IExtraction;
  */
 public class Extraction implements IExtraction
 {
-	private static final int NB_SAMPLES = 1024;
+	private static final int BUFFER_LENGTH = 1024;
 	private static Logger logger = Logger.getLogger("logger");
 
 	public static void main(String args[])
@@ -36,18 +35,36 @@ public class Extraction implements IExtraction
 		Extraction ext = new Extraction();
 		logger.setLevel(Level.INFO);
 		logger.log(Level.INFO, "[+] Début de l'extraction de l'intervalle");
+
 		try
 		{
 			FileOutputStream dataOut = new FileOutputStream("sons/test_sortie.wav");
-			byte[] e = ext.extraireIntervalleTest("sons/test.wmv", 0, 20000);
+			byte[] e = ext.extraireIntervalle("sons/test.wmv", 0, 20000);
 			dataOut.write(e, 0, e.length);
 			dataOut.close();
 
 		}
+		catch (IllegalArgumentException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (InputFormatException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		catch (IOException e)
 		{
-			logger.log(Level.WARNING, e.getMessage());
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+		catch (EncoderException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 		logger.log(Level.INFO, "[+] Fin de l'extraction de l'intervalle");
 /*
  *
@@ -124,127 +141,54 @@ npts = number of points
 	}
 
 	/**
-	 * Récupère l'id du premier flux audio du conteneur donné
-	 * 
-	 * @param container
-	 *            Conteneur où récupérer l'id du premier flux audio
-	 * @return L'id du premier flux audio
-	 */
-	private long getFirstAudioStreamId(IContainer container)
-	{
-		int numStreams = container.getNumStreams();
-		long audioStreamId = -1;
-		boolean idFound = false;
-		int i = 0;
-		while (i < numStreams && !idFound)
-		{
-			IStream stream = container.getStream(i);
-			IStreamCoder coder = stream.getStreamCoder();
-			if (coder.getCodecType() == ICodec.Type.CODEC_TYPE_AUDIO)
-			{
-				audioStreamId = i;
-				idFound = true;
-			}
-			i++;
-		}
-		return audioStreamId;
-	}
-
-	/**
 	 * Extrait les échantillons audio d'un fichier multimédia
 	 * 
 	 * @param fichier
 	 *            Fichier multimédia où extraire les échantillons du premier flux audio trouvé
 	 * @return Un tableau de double contenant les échantillons
+	 * @throws IOException 
+	 * @throws UnsupportedAudioFileException 
 	 */
-	public double[][] extraireEchantillons(String filePath)
+	public double[][] extraireEchantillons(String filePath) throws IOException, UnsupportedAudioFileException
 	{
-		IContainer containerInput = IContainer.make();
+		AudioFormat audioFormat;
 
-		if (containerInput.open(filePath, IContainer.Type.READ, null) < 0)
-		{
-			logger.log(Level.WARNING, "Impossible d'ouvrir le fichier " + filePath);
-			return null;
-		}
-
-		long audioStreamId = this.getFirstAudioStreamId(containerInput);
-
-		if (audioStreamId == -1)
-		{
-			logger.log(Level.WARNING, "Impossible de trouver un flux audio dans le fichier " + filePath);
-			return null;
-		}
-		IStreamCoder audioCoderInput = containerInput.getStream(audioStreamId).getStreamCoder();
-		IMetaData options = IMetaData.make();
-		IMetaData unsetOptions = IMetaData.make();
-		if (audioCoderInput.open(options, unsetOptions) < 0)
-		{
-			logger.log(Level.WARNING, "Impossible d'ouvrir le flux audio du fichier " + filePath);
-			return null;
-		}
-		int nbChannels = audioCoderInput.getChannels();
-		ID codec = audioCoderInput.getCodec().getID();
+		AudioInputStream inputAIS = AudioSystem.getAudioInputStream(new File(filePath));
+		audioFormat = inputAIS.getFormat();
 		ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
 
-		IPacket packetInput = IPacket.make();
-		while (containerInput.readNextPacket(packetInput) >= 0)
+		// Read the audio data into a memory buffer.
+		int nBufferSize = BUFFER_LENGTH * audioFormat.getFrameSize();
+
+		byte[] abBuffer = new byte[nBufferSize];
+		int nBytesRead = -1;
+		while ((nBytesRead = inputAIS.read(abBuffer)) != -1)
 		{
-			if (packetInput.getStreamIndex() == audioStreamId)
-			{
-				IAudioSamples samples = IAudioSamples.make(NB_SAMPLES, nbChannels);
-				int offset = 0;
-				while (offset < packetInput.getSize())
-				{
-					int bytesDecoded = audioCoderInput.decodeAudio(samples, packetInput, offset);
-					if (bytesDecoded < 0)
-					{
-						logger.log(Level.WARNING, "Erreur de décodage du fichier " + filePath);
-					}
-					offset += bytesDecoded;
-					if (samples.isComplete())
-					{
-						byteOutput.write(samples.getData().getByteArray(0, samples.getSize()), 0, samples.getSize());
-					}
-				}
-			}
+
+			byteOutput.write(abBuffer, 0, nBytesRead);
 		}
-		audioCoderInput.close();
-		containerInput.close();
 
 		byte[] audioBytes = byteOutput.toByteArray();
-		int bitsBySample = 16;
+		int nbChannels = audioFormat.getChannels();
 		int nbSamples = audioBytes.length / nbChannels;
 		double doubleArray[] = new double[nbSamples];
-		// TODO ne gere que le PCM signé BE/LE 16 bit, faire le reste (8, 24 et 32)
-		if (codec.toString().endsWith("BE"))// Big endian
+
+		for (int i = 0; i < nbSamples; i++)
 		{
-			for (int i = 0; i < nbSamples; i++)
-			{
-				int msb = audioBytes[2 * i];
-				int lsb = audioBytes[2 * i + 1];
-				doubleArray[i] = ((msb << 8) | (0xff & lsb)) / 32768.0d;
-				// Si c'est du 16bit ça ira de -32768 à +32767 donc pour avoir des double on divise par 32768 ça ira
-				// donc de -1 à +1
-			}
+			int lsb = audioBytes[2 * i];
+			int msb = audioBytes[2 * i + 1];
+			doubleArray[i] = ((msb << 8) | (0xff & lsb)) / 32768.0d;
+			// Si c'est du 16bit ça ira de -32768 à +32767 donc pour avoir des double on divise par 32768 ça ira
+			// donc de -1 à +1
 		}
-		else
-		{
-			for (int i = 0; i < nbSamples; i++)
-			{
-				int lsb = audioBytes[2 * i];
-				int msb = audioBytes[2 * i + 1];
-				doubleArray[i] = ((msb << 8) | (0xff & lsb)) / 32768.0d;
-				// Si c'est du 16bit ça ira de -32768 à +32767 donc pour avoir des double on divise par 32768 ça ira
-				// donc de -1 à +1
-			}
-		}
+
 		if ((nbSamples % nbChannels) != 0)
 		{
-			logger.log(Level.WARNING,"Les données audio ne correspondent pas au nombre de canaux");
+			logger.log(Level.WARNING, "Les données audio ne correspondent pas au nombre de canaux");
 			return null;
 		}
 		int nbSamplesChannel = nbSamples / nbChannels;
-		return reshape(doubleArray,nbChannels,nbSamplesChannel);
+		return reshape(doubleArray, nbChannels, nbSamplesChannel);
 	}
 
 	/**
@@ -275,278 +219,23 @@ npts = number of points
 	 * @param fin La borne de fin de l'intervalle en millisecondes où terminer l'extraction
 	 * @return Un tableau d'octet contenant le fichier WAV
 	 */
-	public byte[] extraireIntervalle(String filePath, long debut, long fin)
+	public byte[] extraireIntervalle(String filePath, float debut, float fin) throws IOException, IllegalArgumentException, InputFormatException, EncoderException
 	{
-		Global.setFFmpegLoggingLevel(50);
-		IContainer containerInput = IContainer.make();
+		File source = new File(filePath);
+		File target = File.createTempFile("tempFile", ".wav");
+		target.deleteOnExit();
+		AudioAttributes audio = new AudioAttributes();
+		audio.setCodec("pcm_s16le");
 
-		if (containerInput.open(filePath, IContainer.Type.READ, null) < 0)
-		{
-			logger.log(Level.WARNING, "Impossible d'ouvrir le fichier " + filePath);
-			return null;
-		}
-
-		long audioStreamId = this.getFirstAudioStreamId(containerInput);
-		if (audioStreamId == -1)
-		{
-			logger.log(Level.WARNING, "Impossible de trouver un flux audio dans le fichier " + filePath);
-			return null;
-		}
-		IStreamCoder audioCoderInput = containerInput.getStream(audioStreamId).getStreamCoder();
-		IMetaData options = IMetaData.make();
-		IMetaData unsetOptions = IMetaData.make();
-		if (audioCoderInput.open(options, unsetOptions) < 0)
-		{
-			logger.log(Level.WARNING, "Impossible d'ouvrir le flux audio du fichier " + filePath);
-			return null;
-		}
-
-		IContainer containerOutput = IContainer.make();
-		ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
-		IContainerFormat formatOutput = IContainerFormat.make();
-
-		if (formatOutput.setOutputFormat("s16le", null, null) < 0)
-		{
-			logger.log(Level.WARNING, "Unknown format");
-			return null;
-		}
-		if (formatOutput.setInputFormat("s16le") < 0)
-		{
-			logger.log(Level.WARNING, "Unknown format");
-			return null;
-		}
-		if (containerOutput.open(byteOutput, formatOutput,false,false) < 0)
-		{
-			logger.log(Level.WARNING, "Impossible d'ouvrir le conteneur de sortie");
-			return null;
-		}
-		IStream stream = containerOutput.addNewStream(ICodec.ID.CODEC_ID_PCM_S16LE);
-
-		IStreamCoder audioCoderOutput = stream.getStreamCoder();
-		audioCoderOutput.setBitRateTolerance(audioCoderInput.getBitRateTolerance());
-		audioCoderOutput.setSampleRate(audioCoderInput.getSampleRate());
-		audioCoderOutput.setChannels(audioCoderInput.getChannels());
-		audioCoderOutput.setBitRate(audioCoderInput.getBitRate());
-		if (audioCoderOutput.open(options, unsetOptions) < 0)
-		{
-			logger.log(Level.WARNING, "Impossible d'ouvrir le flux audio du conteneur de sortie");
-			return null;
-		}
-
-		if (containerOutput.writeHeader() < 0)
-		{
-			logger.log(Level.WARNING, "Impossible d'écrire l'en-tête");
-			return null;
-		}
-
-		IPacket packetInput = IPacket.make();
-		IPacket packetOutput = IPacket.make();
-		long actuelMicroSecondes = 0;
-		long debutMicroSecondes = debut * 1000;
-		long finMicroSecondes = fin * 1000;
-		int lastPosOut = 0;
-		containerInput.seekKeyFrame(0, debutMicroSecondes, 0);
-		while (containerInput.readNextPacket(packetInput) >= 0 && actuelMicroSecondes <= finMicroSecondes)
-		{
-			if (packetInput.getStreamIndex() == audioStreamId)
-			{
-				int offset = 0;
-				IAudioSamples samples = IAudioSamples.make(NB_SAMPLES, audioCoderInput.getChannels(),
-						IAudioSamples.Format.FMT_S16);
-
-				while (offset < packetInput.getSize() && actuelMicroSecondes <= finMicroSecondes)
-				{
-					int bytesDecoded = audioCoderInput.decodeAudio(samples, packetInput, offset);
-					// On ne peut obtenir le timestamp actuel que si on a décodé les samples
-					// Global.DEFAULT_PTS_PER_SECOND est en microsecondes pas en milli !
-
-					actuelMicroSecondes = samples.getPts() / Global.DEFAULT_PTS_PER_SECOND;
-					if (actuelMicroSecondes <= finMicroSecondes)
-					{
-						if (bytesDecoded < 0)
-						{
-							logger.log(Level.WARNING, "Erreur de décodage du fichier " + filePath);
-							return null;
-						}
-						offset += bytesDecoded;
-						if (samples.isComplete())
-						{
-							int samplesConsumed = 0;
-							while (samplesConsumed < samples.getNumSamples())
-							{
-								int retVal = audioCoderOutput.encodeAudio(packetOutput, samples, samplesConsumed);
-								if (retVal <= 0)
-								{
-									logger.log(Level.WARNING, "Impossible d'encoder le flux audio");
-									return null;
-								}								
-								samplesConsumed += retVal;
-								if (packetOutput.isComplete())
-								{
-									packetOutput.setPosition(lastPosOut);
-									packetOutput.setStreamIndex(stream.getIndex());
-									lastPosOut += packetOutput.getSize();
-									
-									int rv;
-									if((rv = containerOutput.writePacket(packetOutput,true)) < 0)
-									{
-										IError error = IError.make(rv);
-										System.out.println("arf "+error);
-										System.exit(0);
-									}
-									System.out.println(rv);
-									System.exit(0);
-
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		if (containerOutput.writeTrailer() < 0)
-		{
-			logger.log(Level.WARNING, "Impossible d'écrire la finalisation du fichier");
-			return null;
-		}
-		audioCoderOutput.close();
-		audioCoderInput.close();
-		containerOutput.close();
-		containerInput.close();
-		return byteOutput.toByteArray();
-	}
-	
-	public byte[] extraireIntervalleTest(String filePath, long debut, long fin)
-	{
-		Global.setFFmpegLoggingLevel(50);
-		IContainer containerInput = IContainer.make();
-
-		if (containerInput.open(filePath, IContainer.Type.READ, null) < 0)
-		{
-			logger.log(Level.WARNING, "Impossible d'ouvrir le fichier " + filePath);
-			return null;
-		}
-
-		long audioStreamId = this.getFirstAudioStreamId(containerInput);
-		if (audioStreamId == -1)
-		{
-			logger.log(Level.WARNING, "Impossible de trouver un flux audio dans le fichier " + filePath);
-			return null;
-		}
-		IStreamCoder audioCoderInput = containerInput.getStream(audioStreamId).getStreamCoder();
-		IMetaData options = IMetaData.make();
-		IMetaData unsetOptions = IMetaData.make();
-		if (audioCoderInput.open(options, unsetOptions) < 0)
-		{
-			logger.log(Level.WARNING, "Impossible d'ouvrir le flux audio du fichier " + filePath);
-			return null;
-		}
-
-		IContainer containerOutput = IContainer.make();
-		ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
-		IContainerFormat formatOutput = IContainerFormat.make();
-
-		if (formatOutput.setOutputFormat("s16le", null, null) < 0)
-		{
-			logger.log(Level.WARNING, "Unknown format");
-			return null;
-		}
+		EncodingAttributes attrs = new EncodingAttributes();
+		attrs.setFormat("wav");
+		attrs.setAudioAttributes(audio);
+		attrs.setOffset(debut/1000);
+		attrs.setDuration(fin/1000);
 		
-		if (containerOutput.open(byteOutput, formatOutput,false,false) < 0)
-		{
-			logger.log(Level.WARNING, "Impossible d'ouvrir le conteneur de sortie");
-			return null;
-		}
-		IStream stream = containerOutput.addNewStream(ICodec.ID.CODEC_ID_PCM_S16LE);
-
-		IStreamCoder audioCoderOutput = stream.getStreamCoder();
-		audioCoderOutput.setBitRateTolerance(audioCoderInput.getBitRateTolerance());
-		audioCoderOutput.setSampleRate(audioCoderInput.getSampleRate());
-		audioCoderOutput.setChannels(audioCoderInput.getChannels());
-		audioCoderOutput.setBitRate(audioCoderInput.getBitRate());
-		if (audioCoderOutput.open(options, unsetOptions) < 0)
-		{
-			logger.log(Level.WARNING, "Impossible d'ouvrir le flux audio du conteneur de sortie");
-			return null;
-		}
-
-		if (containerOutput.writeHeader() < 0)
-		{
-			logger.log(Level.WARNING, "Impossible d'écrire l'en-tête");
-			return null;
-		}
-
-		IPacket packetInput = IPacket.make();
-		IPacket packetOutput = IPacket.make();
-		long actuelMicroSecondes = 0;
-		long debutMicroSecondes = debut * 1000;
-		long finMicroSecondes = fin * 1000;
-		int lastPosOut = 0;
-		containerInput.seekKeyFrame(0, debutMicroSecondes, 0);
-		while (containerInput.readNextPacket(packetInput) >= 0 && actuelMicroSecondes <= finMicroSecondes)
-		{
-			if (packetInput.getStreamIndex() == audioStreamId)
-			{
-				int offset = 0;
-				IAudioSamples samples = IAudioSamples.make(NB_SAMPLES, audioCoderInput.getChannels(),
-						IAudioSamples.Format.FMT_S16);
-
-				while (offset < packetInput.getSize() && actuelMicroSecondes <= finMicroSecondes)
-				{
-					int bytesDecoded = audioCoderInput.decodeAudio(samples, packetInput, offset);
-					// On ne peut obtenir le timestamp actuel que si on a décodé les samples
-					// Global.DEFAULT_PTS_PER_SECOND est en microsecondes pas en milli !
-
-					actuelMicroSecondes = samples.getPts() / Global.DEFAULT_PTS_PER_SECOND;
-					if (actuelMicroSecondes <= finMicroSecondes)
-					{
-						if (bytesDecoded < 0)
-						{
-							logger.log(Level.WARNING, "Erreur de décodage du fichier " + filePath);
-							return null;
-						}
-						offset += bytesDecoded;
-						if (samples.isComplete())
-						{
-							int samplesConsumed = 0;
-							while (samplesConsumed < samples.getNumSamples())
-							{
-								int retVal = audioCoderOutput.encodeAudio(packetOutput, samples, samplesConsumed);
-								if (retVal <= 0)
-								{
-									logger.log(Level.WARNING, "Impossible d'encoder le flux audio");
-									return null;
-								}								
-								samplesConsumed += retVal;
-								if (packetOutput.isComplete())
-								{
-									packetOutput.setPosition(lastPosOut);
-									packetOutput.setStreamIndex(stream.getIndex());
-									lastPosOut += packetOutput.getSize();
-									
-									int rv;
-									if((rv = containerOutput.writePacket(packetOutput,true)) < 0)
-									{
-										IError error = IError.make(rv);
-										System.out.println("arf "+error);
-										System.exit(0);
-									}
-								}
-							}
-						}
-					}
-				}
-			}
-		}
-		if (containerOutput.writeTrailer() < 0)
-		{
-			logger.log(Level.WARNING, "Impossible d'écrire la finalisation du fichier");
-			return null;
-		}
-		audioCoderOutput.close();
-		audioCoderInput.close();
-		containerOutput.close();
-		containerInput.close();
-		return byteOutput.toByteArray();
+		Encoder encoder = new Encoder();
+		encoder.encode(source, target, attrs);
+		
+		return Files.readAllBytes(Paths.get(target.getCanonicalPath()));
 	}
 }

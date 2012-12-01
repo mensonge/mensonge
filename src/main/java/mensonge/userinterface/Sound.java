@@ -15,18 +15,7 @@ import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
 
-import com.xuggle.mediatool.IMediaReader;
-import com.xuggle.mediatool.MediaListenerAdapter;
-import com.xuggle.mediatool.ToolFactory;
-import com.xuggle.mediatool.event.IAudioSamplesEvent;
-import com.xuggle.xuggler.IAudioSamples;
-import com.xuggle.xuggler.ICodec;
-import com.xuggle.xuggler.IContainer;
-import com.xuggle.xuggler.IMetaData;
-import com.xuggle.xuggler.IStream;
-import com.xuggle.xuggler.IStreamCoder;
-import com.xuggle.xuggler.IVideoResampler;
-
+/*
 public class Sound extends JPanel
 {
 	private static final long serialVersionUID = 5373991180139317820L;
@@ -120,7 +109,7 @@ public class Sound extends JPanel
 			}
 			AudioFormat audioFormat = new AudioFormat(audioCoder.getSampleRate(),
 					(int) IAudioSamples.findSampleBitDepth(audioCoder.getSampleFormat()), audioCoder.getChannels(),
-					true, /* xuggler defaults to signed 16 bit samples */
+					true, 
 					false);
 			DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
 			try
@@ -216,4 +205,4 @@ public class Sound extends JPanel
 			mLine.write(rawBytes, 0, samples.getSize());
 		}
 	}
-}
+}*/
