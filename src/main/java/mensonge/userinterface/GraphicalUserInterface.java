@@ -12,6 +12,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -174,10 +175,10 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			}
 			else
 			{
-				for (String nom : mapPlugins.keySet())
+				for (Entry<String, Plugin> entry : mapPlugins.entrySet())
 				{
-					JMenuItem item = new JMenuItem(nom);
-					item.addActionListener(new ItemPluginListener(mapPlugins.get(nom)));
+					JMenuItem item = new JMenuItem(entry.getKey());
+					item.addActionListener(new ItemPluginListener(mapPlugins.get(entry.getKey())));
 					menuOutils.add(item);
 				}
 			}
