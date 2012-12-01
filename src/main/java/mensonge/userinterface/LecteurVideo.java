@@ -88,8 +88,8 @@ public class LecteurVideo extends JPanel implements ActionListener
 		this.imageIconStop = new ImageIcon("images/Stop.png");
 		this.imageIconLecture = new ImageIcon("images/Lecture.png");
 
-		this.labelDureeActuelle = new JLabel("00:00:00 ");
-		this.labelDureeMax = new JLabel(" 00:00:00");
+		this.labelDureeActuelle = new JLabel("00:00:00");
+		this.labelDureeMax = new JLabel("00:00:00");
 
 		this.boutonLecture = new JButton();
 		this.boutonLecture.setToolTipText("Lancer");
@@ -122,9 +122,9 @@ public class LecteurVideo extends JPanel implements ActionListener
 		this.sliderVolume.setMaximum(100);
 		this.sliderVolume.setValue(50);
 		this.sliderVolume.setToolTipText("Volume");
-		this.sliderVolume.setMinimumSize(new Dimension(200, 30));
-		this.sliderVolume.setMaximumSize(new Dimension(200, 30));
-		this.sliderVolume.setPreferredSize(new Dimension(200, 30));
+		this.sliderVolume.setMinimumSize(new Dimension(150, 30));
+		this.sliderVolume.setMaximumSize(new Dimension(150, 30));
+		this.sliderVolume.setPreferredSize(new Dimension(150, 30));
 		this.sliderVolume.addChangeListener(new ChangeListener()
 		{
 			public void stateChanged(ChangeEvent e)
@@ -146,10 +146,15 @@ public class LecteurVideo extends JPanel implements ActionListener
 		this.slider.addChangeListener(sliderListener);
 		this.slider.addKeyListener(sliderListener);
 
-		JPanel panelDuree = new JPanel(new BorderLayout());
+		JPanel panelDuree = new JPanel();
+		panelDuree.setLayout(new BoxLayout(panelDuree, BoxLayout.X_AXIS));
+		panelDuree.add(Box.createHorizontalStrut(5));
 		panelDuree.add(labelDureeActuelle, BorderLayout.WEST);
+		panelDuree.add(Box.createHorizontalStrut(5));
 		panelDuree.add(slider, BorderLayout.CENTER);
+		panelDuree.add(Box.createHorizontalStrut(5));
 		panelDuree.add(labelDureeMax, BorderLayout.EAST);
+		panelDuree.add(Box.createHorizontalStrut(5));
 
 		JToolBar toolBar = new JToolBar();
 		toolBar.setLayout(new BoxLayout(toolBar, BoxLayout.X_AXIS));
@@ -160,8 +165,10 @@ public class LecteurVideo extends JPanel implements ActionListener
 		toolBar.add(boutonMarqueur1);
 		toolBar.add(boutonMarqueur2);
 		toolBar.add(Box.createHorizontalGlue());
-		toolBar.add(new JLabel("Volume "));
+		toolBar.add(new JLabel(new ImageIcon("images/Volume.png")));
+		toolBar.add(Box.createHorizontalStrut(5));
 		toolBar.add(sliderVolume);
+		toolBar.add(Box.createHorizontalStrut(5));
 		
 		JPanel panelControls = new JPanel(new GridLayout(2,1));
 		panelControls.add(panelDuree);
@@ -245,7 +252,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 			int heures = (int) (duree / 3600);
 			int minutes = (int) ((duree % 3600) / 60);
 			int secondes = (int) ((duree % 3600) % 60);
-			labelDureeActuelle.setText(String.format("%02d:%02d:%02d ", heures, minutes, secondes));
+			labelDureeActuelle.setText(String.format("%02d:%02d:%02d", heures, minutes, secondes));
 		}
 
 		@Override
@@ -271,7 +278,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 			int heures = (int) (duree / 3600);
 			int minutes = (int) ((duree % 3600) / 60);
 			int secondes = (int) ((duree % 3600) % 60);
-			labelDureeMax.setText(String.format(" %02d:%02d:%02d", heures, minutes, secondes));
+			labelDureeMax.setText(String.format("%02d:%02d:%02d", heures, minutes, secondes));
 		}
 
 		@Override
