@@ -7,6 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
 
@@ -24,6 +25,7 @@ import javax.swing.plaf.metal.MetalSliderUI;
 import uk.co.caprica.vlcj.binding.internal.libvlc_media_t;
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
 import uk.co.caprica.vlcj.player.MediaPlayer;
+import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter;
 import uk.co.caprica.vlcj.player.MediaPlayerEventListener;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
@@ -145,31 +147,12 @@ public class LecteurVideo extends JPanel implements ActionListener
 		this.slider.setPaintLabels(false);
 		this.slider.setMinimum(0);
 		this.slider.setValue(0);
-		this.slider.addMouseMotionListener(new MouseSliderEventListener());
 
-		this.slider.setUI(new MetalSliderUI()
-		{
-			protected void scrollDueToClickInTrack(int direction)
-			{
-				int value = slider.getValue();
-				if (slider.getOrientation() == JSlider.HORIZONTAL)
-				{
-					value = this.valueForXPosition(slider.getMousePosition().x);
-				}
-				mediaPlayer.setPosition((float) (((float) slider.getValue()) / 100.0));
-				slider.setValue(value);
-			}
-		});
-		this.slider.addKeyListener(new SliderKeyListener());
-
-		this.slider.addChangeListener(new ChangeListener()
-		{
-			public void stateChanged(ChangeEvent e)
-			{
-				float perCent = (float) (((float) slider.getValue()) / 100.0);
-				mediaPlayer.setPosition(perCent);
-			}
-		});
+		SliderPositionEventListener sliderListener = new SliderPositionEventListener(this.slider, this.mediaPlayer);
+		this.slider.addMouseMotionListener(sliderListener);
+		this.slider.addMouseListener(sliderListener);
+		this.slider.addChangeListener(sliderListener);
+		this.slider.addKeyListener(sliderListener);
 
 		JToolBar toolBar = new JToolBar();
 
@@ -217,27 +200,10 @@ public class LecteurVideo extends JPanel implements ActionListener
 			this.mediaPlayer.pause();
 		}
 		else
+		{
 			this.mediaPlayer.play();
-		this.pause = false;
-		this.stop = false;
-		this.boutonLecture.setIcon(imageIconPause);
-		this.boutonLecture.setToolTipText("Mettre en pause");
-	}
+		}
 
-	public void pause()
-	{
-		this.mediaPlayer.pause();
-		this.pause = true;
-		boutonLecture.setIcon(imageIconLecture);
-		boutonLecture.setToolTipText("Lancer");
-	}
-
-	public void stop()
-	{
-		this.mediaPlayer.stop();
-		this.stop = true;
-		this.pause = true;
-		this.slider.setValue(0);
 	}
 
 	@Override
@@ -245,30 +211,20 @@ public class LecteurVideo extends JPanel implements ActionListener
 	{
 		if (event.getSource() == boutonLecture)
 		{
-			if (this.pause == true)
+			if (this.pause)
 			{
-				this.play();
+				this.mediaPlayer.play();
 			}
 			else
 			{
-				this.pause();
+				this.mediaPlayer.pause();
 			}
 		}
 		else if (event.getSource() == boutonStop)
 		{
 			if (!this.stop)
 			{
-				if (this.pause == true)
-				{
-					this.boutonLecture.setIcon(imageIconPause);
-					this.boutonLecture.setToolTipText("Mettre en pause");
-				}
-				else
-				{
-					this.boutonLecture.setIcon(imageIconLecture);
-					this.boutonLecture.setToolTipText("Lancer");
-				}
-				this.stop();
+				this.mediaPlayer.stop();
 			}
 		}
 		else if (event.getSource() == boutonMarqueur1)
@@ -285,108 +241,29 @@ public class LecteurVideo extends JPanel implements ActionListener
 		}
 	}
 
-	private class PlayerEventListener implements MediaPlayerEventListener
+	private class PlayerEventListener extends MediaPlayerEventAdapter
 	{
-
-		@Override
-		public void backward(MediaPlayer arg0)
-		{
-		}
-
-		@Override
-		public void buffering(MediaPlayer arg0, float arg1)
-		{
-		}
-
-		@Override
-		public void endOfSubItems(MediaPlayer arg0)
-		{
-		}
-
-		@Override
-		public void error(MediaPlayer arg0)
-		{
-		}
-
-		@Override
-		public void finished(MediaPlayer arg0)
-		{
-		}
-
-		@Override
-		public void forward(MediaPlayer arg0)
-		{
-		}
-
-		@Override
-		public void lengthChanged(MediaPlayer arg0, long arg1)
-		{
-		}
-
-		@Override
-		public void mediaChanged(MediaPlayer arg0, libvlc_media_t arg1, String arg2)
-		{
-		}
-
-		@Override
-		public void mediaDurationChanged(MediaPlayer arg0, long arg1)
-		{
-		}
-
-		@Override
-		public void mediaFreed(MediaPlayer arg0)
-		{
-		}
-
-		@Override
-		public void mediaMetaChanged(MediaPlayer arg0, int arg1)
-		{
-		}
-
-		@Override
-		public void mediaParsedChanged(MediaPlayer arg0, int arg1)
-		{
-		}
-
-		@Override
-		public void mediaStateChanged(MediaPlayer arg0, int arg1)
-		{
-		}
-
-		@Override
-		public void mediaSubItemAdded(MediaPlayer arg0, libvlc_media_t arg1)
-		{
-		}
-
-		@Override
-		public void newMedia(MediaPlayer arg0)
-		{
-		}
-
-		@Override
-		public void opening(MediaPlayer arg0)
-		{
-		}
-
-		@Override
-		public void pausableChanged(MediaPlayer arg0, int arg1)
-		{
-		}
-
 		@Override
 		public void paused(MediaPlayer arg0)
 		{
+			pause = true;
+			boutonLecture.setIcon(imageIconLecture);
+			boutonLecture.setToolTipText("Lancer");
 		}
 
 		@Override
 		public void playing(MediaPlayer arg0)
 		{
+			pause = false;
+			stop = false;
+			boutonLecture.setIcon(imageIconPause);
+			boutonLecture.setToolTipText("Mettre en pause");
 		}
 
 		@Override
-		public void positionChanged(MediaPlayer arg0, float time)
+		public void positionChanged(MediaPlayer event, float time)
 		{
-			duration = arg0.getTime() / 1000;
+			duration = event.getTime() / 1000;
 			long duree = duration;
 			int heures = (int) (duree / 3600);
 			int minutes = (int) ((duree % 3600) / 60);
@@ -395,103 +272,104 @@ public class LecteurVideo extends JPanel implements ActionListener
 		}
 
 		@Override
-		public void seekableChanged(MediaPlayer arg0, int arg1)
-		{
-		}
-
-		@Override
-		public void snapshotTaken(MediaPlayer arg0, String arg1)
-		{
-		}
-
-		@Override
 		public void stopped(MediaPlayer arg0)
 		{
+			stop = true;
+			pause = true;
+			boutonLecture.setIcon(imageIconLecture);
+			boutonLecture.setToolTipText("Lancer");
+			slider.setValue(0);
 		}
 
 		@Override
-		public void subItemFinished(MediaPlayer arg0, int arg1)
+		public void timeChanged(MediaPlayer event, long time)
 		{
-		}
-
-		@Override
-		public void subItemPlayed(MediaPlayer arg0, int arg1)
-		{
-		}
-
-		@Override
-		public void timeChanged(MediaPlayer arg0, long time)
-		{
-			slider.setValue((int) (arg0.getPosition() * 100));
-		}
-
-		@Override
-		public void titleChanged(MediaPlayer arg0, int arg1)
-		{
-		}
-
-		@Override
-		public void videoOutput(MediaPlayer arg0, int arg1)
-		{
+			slider.setValue((int) (event.getPosition() * 100));
 		}
 	}
 
-	private class MouseSliderEventListener implements MouseMotionListener
+	private static class SliderPositionEventListener extends MouseAdapter implements ChangeListener, KeyListener
 	{
+		private JSlider slider;
+		private EmbeddedMediaPlayer mediaPlayer;
 
-		@Override
-		public void mouseDragged(MouseEvent arg0)
+		public SliderPositionEventListener(JSlider slider, EmbeddedMediaPlayer mediaPlayer)
 		{
+			this.slider = slider;
+			this.mediaPlayer = mediaPlayer;
+		}
 
+		private int valueForXPosition(int x)
+		{
+			return ((BasicSliderUI) slider.getUI()).valueForXPosition(x);
 		}
 
 		@Override
-		public void mouseMoved(MouseEvent e)
+		public void mouseClicked(MouseEvent event)
 		{
-			int positionValue = ((BasicSliderUI) slider.getUI()).valueForXPosition(e.getX());
-			long duree = (long) ((positionValue / 100.0) * vidComp.getMediaPlayer().getLength() / 1000);
+			int value = slider.getValue();
+			if (slider.getOrientation() == JSlider.HORIZONTAL)
+			{
+				value = this.valueForXPosition(event.getX());
+			}
+			mediaPlayer.setPosition((float) (((float) slider.getValue()) / 100.0));
+			slider.setValue(value);
+		}
+
+		@Override
+		public void mouseMoved(MouseEvent event)
+		{
+			int positionValue = this.valueForXPosition(event.getX());
+			long duree = (long) ((positionValue / 100.0) * mediaPlayer.getLength() / 1000);
 			int heures = (int) (duree / 3600);
 			int minutes = (int) ((duree % 3600) / 60);
 			int secondes = (int) ((duree % 3600) % 60);
 			slider.setToolTipText(String.format("%02d:%02d:%02d", heures, minutes, secondes));
 		}
-	}
-
-	private class SliderKeyListener implements KeyListener
-	{
 
 		@Override
-		public void keyTyped(KeyEvent ke)
+		public void stateChanged(ChangeEvent e)
 		{
-			if (ke.getKeyCode() == KeyEvent.VK_RIGHT)
+			float perCent = (float) (((float) slider.getValue()) / 100.0);
+			mediaPlayer.setPosition(perCent);
+		}
+
+		@Override
+		public void keyPressed(KeyEvent e)
+		{
+
+		}
+
+		@Override
+		public void keyReleased(KeyEvent e)
+		{
+
+		}
+
+		@Override
+		public void keyTyped(KeyEvent event)
+		{
+			if (event.getKeyCode() == KeyEvent.VK_RIGHT)
 			{
 				float perCent = (float) (((float) slider.getValue()) / 100.0) + 5;
 				mediaPlayer.setPosition(perCent);
 			}
-			else if (ke.getKeyCode() == KeyEvent.VK_LEFT)
+			else if (event.getKeyCode() == KeyEvent.VK_LEFT)
 			{
 				float perCent = (float) (((float) slider.getValue()) / 100.0) - 5;
 				mediaPlayer.setPosition(perCent);
 			}
-			else if (ke.getKeyCode() == 0)// FIXME 0 sur mon pc KeyEvent.VK_SPACE normalement
+			else if (event.getKeyCode() == 0)// FIXME 0 sur mon pc KeyEvent.VK_SPACE normalement
 			{
 				if (mediaPlayer.isPlaying())
 				{
-					pause();
+					this.mediaPlayer.pause();
 				}
 				else
-					play();
+				{
+					this.mediaPlayer.play();
+				}
 			}
-		}
-
-		@Override
-		public void keyReleased(KeyEvent arg0)
-		{
-		}
-
-		@Override
-		public void keyPressed(KeyEvent arg0)
-		{
 		}
 	}
 }

@@ -26,6 +26,7 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
+import javax.swing.UIManager;
 
 import mensonge.core.Extraction;
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
@@ -499,6 +500,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			@Override
 			public void run()
 			{
+			
 				new GraphicalUserInterface();
 			}
 		});
