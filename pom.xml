@@ -26,14 +26,13 @@
 		<sonar.profile>Pytheas</sonar.profile>
 		<sonar.language>java</sonar.language>
 		<sonar.exclusions>**fftw3**</sonar.exclusions>
+		<maven.test.failure.ignore>true</maven.test.failure.ignore>
   	</properties>
 	<repositories>
 		<repository>
-			<id>xuggleRepository</id>
-			<name>Xuggle Repository</name>
-			<url>
-				http://xuggle.googlecode.com/svn/trunk/repo/share/java
-			</url>
+			<id>jave</id>
+			<name>jave</name>
+			<url>file:${project.basedir}/lib</url>
 		</repository>
 		<repository>
 			<id>caprica</id>
@@ -53,9 +52,9 @@
 			<version>2.1.0</version>
 		</dependency>
 		<dependency>
-			<groupId>xuggle</groupId>
-			<artifactId>xuggle-xuggler</artifactId>
-			<version>5.2</version>
+			<groupId>it.sauronsoftware.jave</groupId>
+			<artifactId>jave</artifactId>
+			<version>1.0.2</version>
 		</dependency>
     		<dependency>
       			<groupId>junit</groupId>
