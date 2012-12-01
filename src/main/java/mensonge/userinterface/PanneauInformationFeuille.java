@@ -23,7 +23,7 @@ public class PanneauInformationFeuille extends JPanel
 		int i = 0;
 		Font font = new Font("Courier", Font.BOLD, 15);
 		g.setFont(font);
-		g.setColor(Color.WHITE);
+		g.setColor(this.getBackground());
 		g.fillRect(0, 0, this.getWidth(), this.getHeight());
 		g.setColor(Color.BLACK);
 		if (listeInfo != null)

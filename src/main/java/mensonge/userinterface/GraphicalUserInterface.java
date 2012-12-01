@@ -82,7 +82,6 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		/*
 		 * Fenêtre
 		 */
-		this.setBackground(Color.WHITE);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setResizable(true);
 		this.setTitle("LieLab");
