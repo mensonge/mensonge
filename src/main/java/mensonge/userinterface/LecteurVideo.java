@@ -25,6 +25,7 @@ import uk.co.caprica.vlcj.binding.internal.libvlc_media_t;
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.MediaPlayerEventListener;
+import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 public class LecteurVideo extends JPanel implements ActionListener
 {
@@ -51,9 +52,15 @@ public class LecteurVideo extends JPanel implements ActionListener
 	private long timeMarqueur1 = 0;
 	private long timeMarqueur2 = 0;
 	private Marqueur t1;
+	private EmbeddedMediaPlayer mediaPlayer;
 
 	public LecteurVideo(final File fichierVideo)
 	{
+		this.vidComp = new EmbeddedMediaPlayerComponent();
+		this.vidComp.setVisible(true);
+		this.vidComp.getMediaPlayer().addMediaPlayerEventListener(new PlayerEventListener());
+		this.mediaPlayer = this.vidComp.getMediaPlayer();
+
 		this.volume = 50;
 		this.pause = true;
 		this.stop = true;
@@ -71,7 +78,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 		{
 			public void run()
 			{
-				vidComp.getMediaPlayer().playMedia(nom);
+				mediaPlayer.playMedia(nom);
 				ouvrirVideo();
 			}
 		});
@@ -127,7 +134,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 			public void stateChanged(ChangeEvent e)
 			{
 				volume = sliderVolume.getValue();
-				vidComp.getMediaPlayer().setVolume(sliderVolume.getValue());
+				mediaPlayer.setVolume(sliderVolume.getValue());
 			}
 		});
 
@@ -149,7 +156,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 				{
 					value = this.valueForXPosition(slider.getMousePosition().x);
 				}
-				vidComp.getMediaPlayer().setPosition((float) (((float) slider.getValue()) / 100.0));
+				mediaPlayer.setPosition((float) (((float) slider.getValue()) / 100.0));
 				slider.setValue(value);
 			}
 		});
@@ -160,13 +167,12 @@ public class LecteurVideo extends JPanel implements ActionListener
 			public void stateChanged(ChangeEvent e)
 			{
 				float perCent = (float) (((float) slider.getValue()) / 100.0);
-				vidComp.getMediaPlayer().setPosition(perCent);
+				mediaPlayer.setPosition(perCent);
 			}
 		});
 
-	
 		JToolBar toolBar = new JToolBar();
-		
+
 		toolBar.setFloatable(false);
 		toolBar.add(boutonStop);
 		toolBar.add(boutonLecture);
@@ -175,10 +181,6 @@ public class LecteurVideo extends JPanel implements ActionListener
 
 		toolBar.add(boutonMarqueur1);
 		toolBar.add(boutonMarqueur2);
-
-		vidComp = new EmbeddedMediaPlayerComponent();
-		vidComp.setVisible(true);
-		vidComp.getMediaPlayer().addMediaPlayerEventListener(new PlayerEventListener());
 
 		this.setLayout(new BorderLayout());
 		this.add(vidComp, BorderLayout.CENTER);
@@ -198,7 +200,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 		this.pause = false;
 		this.boutonLecture.setIcon(imageIconPause);
 		this.boutonLecture.setToolTipText("Mettre en pause");
-		vidComp.getMediaPlayer().setVolume(sliderVolume.getValue());
+		mediaPlayer.setVolume(sliderVolume.getValue());
 		this.duration = vidComp.getMediaPlayer().getLength() / 1000;
 		this.slider.setMaximum(100);
 		long duree = duration;
@@ -210,12 +212,12 @@ public class LecteurVideo extends JPanel implements ActionListener
 
 	public void play()
 	{
-		if (this.vidComp.getMediaPlayer().isPlaying())
+		if (mediaPlayer.isPlaying())
 		{
-			this.vidComp.getMediaPlayer().pause();
+			this.mediaPlayer.pause();
 		}
 		else
-			this.vidComp.getMediaPlayer().play();
+			this.mediaPlayer.play();
 		this.pause = false;
 		this.stop = false;
 		this.boutonLecture.setIcon(imageIconPause);
@@ -224,7 +226,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 
 	public void pause()
 	{
-		this.vidComp.getMediaPlayer().pause();
+		this.mediaPlayer.pause();
 		this.pause = true;
 		boutonLecture.setIcon(imageIconLecture);
 		boutonLecture.setToolTipText("Lancer");
@@ -232,7 +234,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 
 	public void stop()
 	{
-		this.vidComp.getMediaPlayer().stop();
+		this.mediaPlayer.stop();
 		this.stop = true;
 		this.pause = true;
 		this.slider.setValue(0);
@@ -271,15 +273,15 @@ public class LecteurVideo extends JPanel implements ActionListener
 		}
 		else if (event.getSource() == boutonMarqueur1)
 		{
-			timeMarqueur1 = vidComp.getMediaPlayer().getTime();
-			t1=new Marqueur(-volume);
+			timeMarqueur1 = mediaPlayer.getTime();
+			t1 = new Marqueur(-volume);
 			t1.setVisible(true);
 			slider.add(t1);
 			t1.repaint();
 		}
 		else if (event.getSource() == boutonMarqueur2)
 		{
-			timeMarqueur2 = vidComp.getMediaPlayer().getTime();
+			timeMarqueur2 = mediaPlayer.getTime();
 		}
 	}
 
@@ -464,16 +466,16 @@ public class LecteurVideo extends JPanel implements ActionListener
 			if (ke.getKeyCode() == KeyEvent.VK_RIGHT)
 			{
 				float perCent = (float) (((float) slider.getValue()) / 100.0) + 5;
-				vidComp.getMediaPlayer().setPosition(perCent);
+				mediaPlayer.setPosition(perCent);
 			}
 			else if (ke.getKeyCode() == KeyEvent.VK_LEFT)
 			{
 				float perCent = (float) (((float) slider.getValue()) / 100.0) - 5;
-				vidComp.getMediaPlayer().setPosition(perCent);
+				mediaPlayer.setPosition(perCent);
 			}
 			else if (ke.getKeyCode() == 0)// FIXME 0 sur mon pc KeyEvent.VK_SPACE normalement
 			{
-				if (vidComp.getMediaPlayer().isPlaying())
+				if (mediaPlayer.isPlaying())
 				{
 					pause();
 				}
