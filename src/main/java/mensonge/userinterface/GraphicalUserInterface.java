@@ -2,6 +2,7 @@ package mensonge.userinterface;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -103,10 +104,10 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		this.fichierOuvrir = new JMenuItem("Ouvrir", 'O');
 		this.fichierOuvrir.addActionListener(this);
 
-		JMenuItem baseExporter = new JMenuItem("Exporter",'E');
+		JMenuItem baseExporter = new JMenuItem("Exporter", 'E');
 		baseExporter.addActionListener(new ExporterBaseListener(this));
 
-		JMenuItem baseImporter = new JMenuItem("Importer",'I');
+		JMenuItem baseImporter = new JMenuItem("Importer", 'I');
 		baseImporter.addActionListener(new ImporterBaseListener(this));
 
 		JMenuItem baseAjouterCategorie = new JMenuItem("Ajouter catégorie");
@@ -233,13 +234,34 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		this.onglets.add(onglet);
 		this.onglets.setTabComponentAt(this.onglets.getTabCount() - 1, panelFermeture);
 	}
+	
+	private void closeAllTabs()
+	{
+		// On ferme proprement tous les onglets avant de quitter
+		for (Component comp : onglets.getComponents())
+		{
+			if (comp instanceof OngletLecteur)
+			{
+				// On met le focus sur l'onglet si celui-ci génère un event du genre popup pour qu'on soit sur le bon
+				// onglet
+				onglets.setSelectedComponent(comp);
+				comp.requestFocusInWindow();
+
+				// on appel sa méthode pour qu'il ferme proprement tout ce qu'il a ouvert
+				((OngletLecteur) comp).fermerOnglet();
+				// Puis on le supprime
+				onglets.remove(comp);
+			}
+		}
+	}
 
 	/**
 	 * Quitte le programme
 	 */
 	private void quitter()
 	{
-		this.processEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+		this.closeAllTabs();
+		this.dispose();
 	}
 
 	@Override
@@ -247,7 +269,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	{
 		if (event.getID() == WindowEvent.WINDOW_CLOSING)
 		{
-			this.dispose();
+			this.quitter();
 		}
 		else if (event.getID() == WindowEvent.WINDOW_DEACTIVATED)
 		{
@@ -500,7 +522,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			@Override
 			public void run()
 			{
-			
+
 				new GraphicalUserInterface();
 			}
 		});

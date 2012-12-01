@@ -203,7 +203,16 @@ public class LecteurVideo extends JPanel implements ActionListener
 		{
 			this.mediaPlayer.play();
 		}
-
+	}
+	
+	/**
+	 * Ferme le lecteur vidéo proprement en fermant les instances de mediaPlayer
+	 */
+	public void close()
+	{
+		this.mediaPlayer.stop();
+		this.mediaPlayer.release();
+		this.vidComp.release();
 	}
 
 	@Override
