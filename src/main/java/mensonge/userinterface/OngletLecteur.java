@@ -11,23 +11,16 @@ public class OngletLecteur extends JPanel
 
 	private String nom;
 
-	private File fichierVideo;
-	private LecteurVideo leLecteur;
+	private LecteurVideo lecteurVideo;
 
 	public OngletLecteur(File fichierVideo)
 	{
-		this.fichierVideo = fichierVideo;
 		this.nom = fichierVideo.getName();
 
-		this.initialiserComposants();
-	}
-
-	public void initialiserComposants()
-	{
-		leLecteur = new LecteurVideo(this.fichierVideo);
+		this.lecteurVideo = new LecteurVideo(fichierVideo);
 
 		this.setLayout(new BorderLayout());
-		this.add(leLecteur, BorderLayout.CENTER);
+		this.add(lecteurVideo, BorderLayout.CENTER);
 	}
 
 	public String getNom()
@@ -37,6 +30,6 @@ public class OngletLecteur extends JPanel
 
 	public void fermerOnglet()
 	{
-		this.leLecteur.stop();
+		this.lecteurVideo.close();
 	}
 }
