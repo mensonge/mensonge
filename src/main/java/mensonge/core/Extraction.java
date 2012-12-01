@@ -44,16 +44,6 @@ public class Extraction implements IExtraction
 			dataOut.close();
 
 		}
-		catch (IllegalArgumentException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		catch (InputFormatException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		catch (IOException e)
 		{
 			// TODO Auto-generated catch block

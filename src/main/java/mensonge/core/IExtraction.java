@@ -1,7 +1,6 @@
 package mensonge.core;
 
 import it.sauronsoftware.jave.EncoderException;
-import it.sauronsoftware.jave.InputFormatException;
 
 import java.io.IOException;
 
@@ -34,7 +33,6 @@ public interface IExtraction
 	 *            La borne de fin de l'intervalle en millisecondes où terminer l'extraction
 	 * @return Un tableau d'octet contenant le fichier WAV
 	 */
-	byte[] extraireIntervalle(String filePath, float debut, float fin) throws IOException, IllegalArgumentException,
-			InputFormatException, EncoderException;
+	byte[] extraireIntervalle(String filePath, float debut, float fin) throws IOException, EncoderException;
 
 }
