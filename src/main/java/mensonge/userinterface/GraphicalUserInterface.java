@@ -234,7 +234,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		this.onglets.add(onglet);
 		this.onglets.setTabComponentAt(this.onglets.getTabCount() - 1, panelFermeture);
 	}
-	
+
 	private void closeAllTabs()
 	{
 		// On ferme proprement tous les onglets avant de quitter
@@ -516,13 +516,19 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	{
 		System.setProperty("awt.useSystemAAFontSettings", "on");
 		System.setProperty("swing.aatext", "true");
-
+		try
+		{
+			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+		}
+		catch (Exception e)
+		{
+			// No Nimbus
+		}
 		javax.swing.SwingUtilities.invokeLater(new Runnable()
 		{
 			@Override
 			public void run()
 			{
-
 				new GraphicalUserInterface();
 			}
 		});
