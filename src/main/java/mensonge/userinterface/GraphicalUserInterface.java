@@ -73,6 +73,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		 * Conteneur
 		 */
 		this.onglets = new JTabbedPane();
+		this.onglets.setBorder(BorderFactory.createMatteBorder(0, 0, 0, 1, Color.GRAY));
 
 		JPanel conteneur = new JPanel(new BorderLayout());
 		conteneur.add(onglets, BorderLayout.CENTER);
