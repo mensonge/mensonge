@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -24,6 +25,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
+import javax.swing.KeyStroke;
 
 import mensonge.core.Extraction;
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
@@ -94,16 +96,16 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	 */
 	private void ajoutBarMenu()
 	{
-		this.fichierFermer = new JMenuItem("Fermer");
+		this.fichierFermer = new JMenuItem("Quitter", 'Q');
 		this.fichierFermer.addActionListener(this);
 
-		this.fichierOuvrir = new JMenuItem("Ouvrir");
+		this.fichierOuvrir = new JMenuItem("Ouvrir", 'O');
 		this.fichierOuvrir.addActionListener(this);
 
-		JMenuItem baseExporter = new JMenuItem("Exporter");
+		JMenuItem baseExporter = new JMenuItem("Exporter",'E');
 		baseExporter.addActionListener(new ExporterBaseListener(this));
 
-		JMenuItem baseImporter = new JMenuItem("Importer");
+		JMenuItem baseImporter = new JMenuItem("Importer",'I');
 		baseImporter.addActionListener(new ImporterBaseListener(this));
 
 		JMenuItem baseAjouterCategorie = new JMenuItem("Ajouter catégorie");
@@ -128,11 +130,16 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		menuBase.add(baseAjouterCategorie);
 		menuBase.add(baseAjouterSujet);
 
+		this.fichierFermer.setAccelerator(KeyStroke.getKeyStroke('Q', KeyEvent.CTRL_DOWN_MASK));
+		this.fichierOuvrir.setAccelerator(KeyStroke.getKeyStroke('O', KeyEvent.CTRL_DOWN_MASK));
+		baseImporter.setAccelerator(KeyStroke.getKeyStroke('I', KeyEvent.CTRL_DOWN_MASK));
+		baseExporter.setAccelerator(KeyStroke.getKeyStroke('E', KeyEvent.CTRL_DOWN_MASK));
+
 		this.menuBar = new JMenuBar();
 		this.menuBar.add(menuFichier);
-		this.menuBar.add(menuAide);
 		this.ajoutMenuPlugins();
 		this.menuBar.add(menuBase);
+		this.menuBar.add(menuAide);
 		this.setJMenuBar(this.menuBar);
 	}
 
@@ -147,7 +154,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		pluginManager = new PluginManager();
 		this.chargerListePlugins();
 	}
-	
+
 	/**
 	 * Charge la liste des plugins et l'affiche dans le menu
 	 */
@@ -193,14 +200,14 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			GraphicalUserInterface.popupErreur("Impossible de charger les outils : " + e.getMessage());
 			menuOutils.add(new JMenuItem("Aucun outil"));
 		}
-		
+
 		this.menuOutils.add(new JSeparator(JSeparator.HORIZONTAL));
-		
+
 		JMenuItem itemRechargerPlugins = new JMenuItem("Rafraîchir la liste des outils");
 		itemRechargerPlugins.addActionListener(new ReloadPluginsListener());
 		menuOutils.add(itemRechargerPlugins);
 	}
-	
+
 	/**
 	 * Ajoute un nouvel onglet à l'interface graphique
 	 * 
@@ -472,7 +479,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			this.plugin.lancer(EXTRACTION, null);
 		}
 	}
-	
+
 	private class ReloadPluginsListener implements ActionListener
 	{
 		@Override

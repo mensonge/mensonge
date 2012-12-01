@@ -151,13 +151,10 @@ npts = number of points
 	 */
 	public double[][] extraireEchantillons(String filePath) throws IOException, UnsupportedAudioFileException
 	{
-		AudioFormat audioFormat;
-
 		AudioInputStream inputAIS = AudioSystem.getAudioInputStream(new File(filePath));
-		audioFormat = inputAIS.getFormat();
+		AudioFormat audioFormat = inputAIS.getFormat();
 		ByteArrayOutputStream byteOutput = new ByteArrayOutputStream();
 
-		// Read the audio data into a memory buffer.
 		int nBufferSize = BUFFER_LENGTH * audioFormat.getFrameSize();
 
 		byte[] abBuffer = new byte[nBufferSize];
