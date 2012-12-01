@@ -100,7 +100,6 @@
 						</goals>
 						<configuration>
 							<argLine>${jacoco.agent.argLine}</argLine>
-							<skip>true</skip>
 						</configuration>
 					</execution>
 				</executions>
