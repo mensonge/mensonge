@@ -23,7 +23,6 @@
 		<sonar.binaries>target/classes/**</sonar.binaries>
 		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
 		<sonar.surefire.reportsPath>target/surefire-reports</sonar.surefire.reportsPath>
-		<sonar.profile>Pytheas</sonar.profile>
 		<sonar.language>java</sonar.language>
 		<sonar.exclusions>**fftw3**</sonar.exclusions>
 		<maven.test.failure.ignore>true</maven.test.failure.ignore>
@@ -101,6 +100,7 @@
 						</goals>
 						<configuration>
 							<argLine>${jacoco.agent.argLine}</argLine>
+							<skip>true</skip>
 						</configuration>
 					</execution>
 				</executions>
