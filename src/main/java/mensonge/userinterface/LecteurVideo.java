@@ -1,5 +1,8 @@
 package mensonge.userinterface;
 
+import it.sauronsoftware.jave.EncoderException;
+import it.sauronsoftware.jave.InputFormatException;
+
 import java.io.File;
 import java.io.IOException;
 import java.awt.BorderLayout;
@@ -17,6 +20,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.InputMap;
 import javax.swing.JComponent;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JButton;
@@ -24,6 +28,9 @@ import javax.swing.JSlider;
 import javax.swing.ImageIcon;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
+
+import mensonge.core.Extraction;
+import mensonge.core.BaseDeDonnees.BaseDeDonnees;
 
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
 import uk.co.caprica.vlcj.player.MediaPlayer;
@@ -40,16 +47,21 @@ public class LecteurVideo extends JPanel implements ActionListener
 	private ImageIcon imageIconStop;
 	private ImageIcon imageIconLecture;
 	private EmbeddedMediaPlayerComponent vidComp;
-
+	private JPanel panelDuree;
 	private JButton boutonMarqueur1;
 	private JButton boutonMarqueur2;
+	private JButton boutonExtract;
 	private long timeMarqueur1 = 0;
 	private long timeMarqueur2 = 0;
+	private BaseDeDonnees maBDD;
 	private Marqueur t1;
 	private MediaPlayer mediaPlayer;
-
-	public LecteurVideo(final File fichierVideo)
+	private String pathVideo="";
+	private JFrame parent;
+	public LecteurVideo(final File fichierVideo,final String nom,BaseDeDonnees bdd,JFrame parent)
 	{
+		this.parent=parent;
+		this.maBDD=bdd;
 		this.vidComp = new EmbeddedMediaPlayerComponent();
 		this.vidComp.setVisible(true);
 		this.mediaPlayer = this.vidComp.getMediaPlayer();
@@ -74,7 +86,8 @@ public class LecteurVideo extends JPanel implements ActionListener
 				}
 			}
 		});
-	}
+		pathVideo=nom;
+ 	}
 
 	private void initialiserComposants()
 	{
@@ -102,6 +115,12 @@ public class LecteurVideo extends JPanel implements ActionListener
 		this.boutonMarqueur2.addActionListener(this);
 		this.boutonMarqueur2.setEnabled(true);
 
+		this.boutonExtract= new JButton();
+		this.boutonExtract.setToolTipText("Ajouter a la bdd");
+		this.boutonExtract.setText("Extraire");
+		this.boutonExtract.addActionListener(this);
+		this.boutonExtract.setEnabled(true);
+		
 		this.boutonStop = new JButton();
 		this.boutonStop.setToolTipText("Stoper");
 		this.boutonStop.setIcon(imageIconStop);
@@ -137,7 +156,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 		this.slider.addMouseListener(sliderListener);
 		this.slider.addMouseMotionListener(sliderListener);
 
-		JPanel panelDuree = new JPanel();
+		this.panelDuree = new JPanel();
 		panelDuree.setLayout(new BoxLayout(panelDuree, BoxLayout.X_AXIS));
 		panelDuree.add(Box.createHorizontalStrut(5));
 		panelDuree.add(labelDureeActuelle, BorderLayout.WEST);
@@ -155,6 +174,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 		toolBar.addSeparator();
 		toolBar.add(boutonMarqueur1);
 		toolBar.add(boutonMarqueur2);
+		toolBar.add(boutonExtract);
 		toolBar.add(Box.createHorizontalGlue());
 		toolBar.add(new JLabel(new ImageIcon("images/Volume.png")));
 		toolBar.add(Box.createHorizontalStrut(5));
@@ -223,14 +243,46 @@ public class LecteurVideo extends JPanel implements ActionListener
 		else if (event.getSource() == boutonMarqueur1)
 		{
 			timeMarqueur1 = mediaPlayer.getTime();
-			t1 = new Marqueur(-50);
+			t1 = new Marqueur(slider.getX());
 			t1.setVisible(true);
-			slider.add(t1);
 			t1.repaint();
 		}
 		else if (event.getSource() == boutonMarqueur2)
 		{
 			timeMarqueur2 = mediaPlayer.getTime();
+		}
+		else if (event.getSource() == boutonExtract)
+		{
+			Extraction extract =new Extraction();
+			byte[] tabOfByte = null;
+			//	public void ajouterEnregistrement(final String nom, final int duree, final int idCat, final byte[] enregistrement,final int idSuj) 
+			try
+			{
+				tabOfByte=extract.extraireIntervalle(pathVideo, timeMarqueur1, timeMarqueur1);
+			}
+			catch (IllegalArgumentException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			catch (InputFormatException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			catch (IOException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			catch (EncoderException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			DialogueAjouterEnregistrement diag =new DialogueAjouterEnregistrement(parent, "Ajouter enregistrement", true, this.maBDD, tabOfByte);
+			diag.setVisible(true);
+			diag.setAlwaysOnTop(true);
 		}
 	}
 }

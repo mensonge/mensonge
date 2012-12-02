@@ -389,7 +389,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			{
 				try
 				{
-					this.ajouterOnglet(new OngletLecteur(new File(fileChooser.getSelectedFile().getCanonicalPath())));
+					this.ajouterOnglet(new OngletLecteur(new File(fileChooser.getSelectedFile().getCanonicalPath()),this.bdd,this));
 				}
 				catch (IOException e)
 				{

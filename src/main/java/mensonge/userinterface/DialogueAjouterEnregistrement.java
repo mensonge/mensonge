@@ -47,10 +47,10 @@ public class DialogueAjouterEnregistrement extends JDialog
 		super(parent, title, modal);
 		this.enregistrement = enregistrement;
 		this.bdd = bdd;
-
 		JPanel pan = new JPanel();
 		pan.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
+		this.envoyer.addMouseListener(new BouttonValiderListener());
 
 		this.annuler.addMouseListener(new BouttonAnnulerListener());
 
@@ -144,6 +144,7 @@ public class DialogueAjouterEnregistrement extends JDialog
 		@Override
 		public void mouseClicked(MouseEvent e)
 		{
+		
 		}
 
 		@Override
@@ -174,7 +175,7 @@ public class DialogueAjouterEnregistrement extends JDialog
 			}
 			catch (Exception e1)
 			{
-
+				e1.printStackTrace();
 			}
 
 			setVisible(false);
