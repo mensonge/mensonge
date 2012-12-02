@@ -184,7 +184,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		menuOutils.removeAll();
 		try
 		{
-			pluginManager.chargerPlugins();
+			pluginManager.loadPlugins();
 			Map<String, Plugin> mapPlugins = pluginManager.getPlugins();
 
 			if (pluginManager.getPlugins().isEmpty())
@@ -280,6 +280,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	 */
 	private void quitter()
 	{
+		this.pluginManager.unloadPlugins();
 		this.closeAllTabs();
 		this.dispose();
 	}

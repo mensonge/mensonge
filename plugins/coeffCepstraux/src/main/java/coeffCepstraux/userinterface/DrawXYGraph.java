@@ -34,8 +34,8 @@ public class DrawXYGraph extends JFrame
 	{
 		super(applicationTitle);
 		JFreeChart chart = ChartFactory.createXYLineChart(chartTitle, "Abscisse", "Ordonnée", null,
-				PlotOrientation.VERTICAL, true, true, true);
-		this.plot = (XYPlot) chart.getPlot();
+				PlotOrientation.VERTICAL, true, false, false);
+		this.plot = chart.getXYPlot();
 		this.index = 0;
 		ChartPanel chartPanel = new ChartPanel(chart);
 		chartPanel.setPreferredSize(new Dimension(500, 270));

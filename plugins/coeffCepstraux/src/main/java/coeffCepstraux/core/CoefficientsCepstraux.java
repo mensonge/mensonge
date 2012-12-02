@@ -22,6 +22,7 @@ public class CoefficientsCepstraux implements Plugin
 {
 	private static Logger logger = Logger.getLogger("coeffCepstraux");
 	private boolean isActive = false;
+	private DrawXYGraph graph;
 
 	private void drawGraph(final double[][] echantillons)
 	{
@@ -37,7 +38,7 @@ public class CoefficientsCepstraux implements Plugin
 			@Override
 			public void run()
 			{
-				final DrawXYGraph graph = new DrawXYGraph("Canard ?", "Variation d'amplitudes");
+				graph = new DrawXYGraph("Canard ?", "Variation d'amplitudes");
 				Thread t1 = new Thread(new Runnable()
 				{
 					
@@ -61,9 +62,9 @@ public class CoefficientsCepstraux implements Plugin
 					public void run()
 					{
 						XYSeries series = new XYSeries("Canal " +1);
-						for (int j = 0; j < echantillons.length; j++)
+						for (int j = 0; j < echantillons.length/4; j++)
 						{
-							series.add(j, echantillons[j][1]);
+							series.add(j*44100, echantillons[j][1]);
 
 						}
 						XYDataset xyDataset = new XYSeriesCollection(series);
@@ -71,11 +72,11 @@ public class CoefficientsCepstraux implements Plugin
 					}
 				});
 				t1.run();
-				t2.run();
+			//	t2.run();
 				try
 				{
 					t1.join();
-					t2.join();
+				//	t2.join();
 				}
 				catch (InterruptedException e)
 				{
@@ -115,6 +116,10 @@ public class CoefficientsCepstraux implements Plugin
 	public void stopper()
 	{
 		this.isActive = false;
+		if(graph != null)
+		{
+			graph.dispose();
+		}
 	}
 
 	@Override

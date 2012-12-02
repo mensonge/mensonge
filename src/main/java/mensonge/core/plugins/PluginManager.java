@@ -45,7 +45,7 @@ public class PluginManager
 	 * @throws IllegalAccessException
 	 * @throws InstantiationException
 	 */
-	public void chargerPlugins() throws IOException, ClassNotFoundException, InstantiationException,
+	public void loadPlugins() throws IOException, ClassNotFoundException, InstantiationException,
 			IllegalAccessException
 	{
 		this.listePlugins.clear();
@@ -113,6 +113,17 @@ public class PluginManager
 			logger.log(Level.WARNING, dossierPlugins.getName() + " n'est pas un dossier.");
 		}
 	}
+	
+	/**
+	 * Stop tous les plugins
+	 */
+	public void unloadPlugins()
+	{
+		for(Plugin plugin : listePlugins.values())
+		{
+			plugin.stopper();
+		}
+	}
 
 	/**
 	 * Récupère les plugins sous la forme d'une Map
@@ -131,7 +142,7 @@ public class PluginManager
 		PluginManager p = new PluginManager();
 		try
 		{
-			p.chargerPlugins();
+			p.loadPlugins();
 		}
 		catch (IOException e)
 		{
