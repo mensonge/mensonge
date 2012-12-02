@@ -14,14 +14,19 @@ import java.awt.event.MouseEvent;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
+import javax.swing.InputMap;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JLabel;
 import javax.swing.JButton;
 import javax.swing.JSlider;
 import javax.swing.ImageIcon;
 import javax.swing.JToolBar;
+import javax.swing.KeyStroke;
 import javax.swing.plaf.SliderUI;
 import javax.swing.plaf.basic.BasicSliderUI;
 
@@ -179,6 +184,28 @@ public class LecteurVideo extends JPanel implements ActionListener
 		this.setLayout(new BorderLayout());
 		this.add(vidComp, BorderLayout.CENTER);
 		this.add(panelControls, BorderLayout.SOUTH);
+		
+		ActionMap actionMap = this.getActionMap();
+		InputMap inputMap = this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0), "space bar");
+		actionMap.put("space bar", new AbstractAction()
+		{
+			private static final long serialVersionUID = -7449791455625215682L;
+
+			@Override
+			public void actionPerformed(ActionEvent arg0)
+			{
+				if (mediaPlayer.isPlaying())
+				{
+					mediaPlayer.pause();
+				}
+				else
+				{
+					mediaPlayer.play();
+				}
+			}
+		});
 	}
 
 	/**
@@ -324,44 +351,6 @@ public class LecteurVideo extends JPanel implements ActionListener
 			int minutes = (int) ((duree % 3600) / 60);
 			int secondes = (int) ((duree % 3600) % 60);
 			slider.setToolTipText(String.format("%02d:%02d:%02d", heures, minutes, secondes));
-		}
-
-		@Override
-		public void keyTyped(KeyEvent event)
-		{
-			if (event.getKeyCode() == KeyEvent.VK_RIGHT)
-			{
-				float perCent = mediaPlayer.getPosition() * 1.1f;
-				mediaPlayer.setPosition(perCent);
-			}
-			else if (event.getKeyCode() == KeyEvent.VK_LEFT)
-			{
-				float perCent = mediaPlayer.getPosition() * 0.9f;
-				mediaPlayer.setPosition(perCent);
-			}
-			else if (event.getKeyCode() == 0)// FIXME 0 sur mon pc KeyEvent.VK_SPACE normalement
-			{
-				if (mediaPlayer.isPlaying())
-				{
-					this.mediaPlayer.pause();
-				}
-				else
-				{
-					this.mediaPlayer.play();
-				}
-			}
-		}
-
-		@Override
-		public void keyPressed(KeyEvent e)
-		{
-
-		}
-
-		@Override
-		public void keyReleased(KeyEvent e)
-		{
-
 		}
 	}
 }

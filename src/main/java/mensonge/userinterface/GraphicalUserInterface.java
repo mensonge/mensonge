@@ -241,6 +241,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 		this.onglets.add(onglet);
 		this.onglets.setTabComponentAt(this.onglets.getTabCount() - 1, panelFermeture);
+		onglet.requestFocus();
 	}
 
 	private void closeAllTabs()
