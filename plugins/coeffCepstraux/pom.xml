@@ -40,6 +40,11 @@
 			<artifactId>jave</artifactId>
 			<version>1.0.2</version>
 		</dependency>
+		<dependency>
+			<groupId>jfreechart</groupId>
+			<artifactId>jfreechart</artifactId>
+			<version>1.0.0</version>
+		</dependency>
     		<dependency>
       			<groupId>junit</groupId>
       			<artifactId>junit</artifactId>
