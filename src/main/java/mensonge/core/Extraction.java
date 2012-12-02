@@ -139,7 +139,7 @@ public class Extraction implements IExtraction
 			return null;
 		}
 		int nbSamplesChannel = nbSamples / nbChannels;
-		return reshape(doubleArray, nbChannels, nbSamplesChannel);
+		return reshape(doubleArray, nbSamplesChannel, nbChannels);
 	}
 
 	/**
