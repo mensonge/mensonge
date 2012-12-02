@@ -4,6 +4,9 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
@@ -474,12 +477,30 @@ public class TestBase
 	@Test
 	public void testAjoutEnregistrement() throws DBException, SQLException
 	{
-		db.ajouterEnregistrement("Tornado", 24, 2, "abcdefg".getBytes(), 3);
-		db.ajouterEnregistrement("Esperan", 23, 2, "love".getBytes(), 2);
+		db.ajouterCategorie("Poney");
+		
+		try
+		{
+			db.ajouterEnregistrement("Tornado", 24, db.getCategorie("Poney"), Files.readAllBytes(Paths.get("sons/test_sortie.wav")), 3);
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		db.ajouterEnregistrement("Esperan", 23, db.getCategorie("Poney"), "love".getBytes(), 2);
 		db.ajouterEnregistrement("Gracia", 22, 3, "mort".getBytes(), 3);
 		db.ajouterEnregistrement("Chuck", 21, 3, "naissance".getBytes(), 2);
 		db.ajouterEnregistrement("Tarzan", 20, 2, "vivre".getBytes(), 3);
-		db.ajouterEnregistrement("Jane", 19, 2, "???".getBytes(), 2);
+		try
+		{
+			db.ajouterEnregistrement("Jane", 20, 2, Files.readAllBytes(Paths.get("sons/test_sortie.wav")), 2);
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		db.ajouterEnregistrement("Jilano", 18, 3, "erreur".getBytes(), 3);
 		int i = 0;
 		ResultSet rs = db.getListeEnregistrement();

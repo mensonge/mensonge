@@ -1,33 +1,30 @@
 package mensonge.userinterface;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+
 import java.awt.GridLayout;
-import java.awt.Image;
-import java.awt.Toolkit;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.File;
-import java.net.URL;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.ResultSet;
 
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JFileChooser;
-import javax.swing.JLabel;
+
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
-import javax.swing.JSlider;
+
 import javax.swing.JTree;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
+
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -35,7 +32,6 @@ import javax.swing.tree.TreePath;
 
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
 import mensonge.core.BaseDeDonnees.DBException;
-
 
 public class PanneauArbre extends JPanel
 {
@@ -48,16 +44,9 @@ public class PanneauArbre extends JPanel
 
 	private BaseDeDonnees bdd = null;
 
-	private JButton playEcouteArbre = new JButton("play");
-	private JButton stopEcouteArbre = new JButton("Stop");
-	private JButton pauseEcouteArbre = new JButton("Pause");
-	private JSlider slideAvance;
-	private JSlider slideSon;
+	private LecteurAudio lecteurAudio;
 
-	private JPanel panelLecteur;
-
-	private double volume = 0.5;
-	//private Sound lecteurSonArbre;
+	private LecteurAudio lecteurSonArbre;
 
 	private PanneauInformationFeuille infoArbre = new PanneauInformationFeuille();
 	private DefaultMutableTreeNode racine;
@@ -70,31 +59,8 @@ public class PanneauArbre extends JPanel
 
 	public PanneauArbre(BaseDeDonnees bdd)
 	{
+		this.setLayout(new BorderLayout());
 		this.bdd = bdd;
-
-		Toolkit tk;
-		Image i;
-		URL url = this.getClass().getResource("/images/Lecture.png");
-		if (url != null)
-		{
-			tk = this.getToolkit();
-			i = tk.getImage(url);
-			playEcouteArbre = new JButton(new ImageIcon(i));
-		}
-		url = this.getClass().getResource("/images/Pause.png");
-		if (url != null)
-		{
-			tk = this.getToolkit();
-			i = tk.getImage(url);
-			pauseEcouteArbre = new JButton(new ImageIcon(i));
-		}
-		url = this.getClass().getResource("/images/CloseTab.png");
-		if (url != null)
-		{
-			tk = this.getToolkit();
-			i = tk.getImage(url);
-			stopEcouteArbre = new JButton(new ImageIcon(i));
-		}
 
 		this.racine = new DefaultMutableTreeNode("Sujet");
 		this.remplirArbreEnregistrementSujet();
@@ -115,13 +81,13 @@ public class PanneauArbre extends JPanel
 																										// panneau
 																										// d'information
 					infoArbre.repaint();// on le repaint
-					panelLecteur.setVisible(true);
+					lecteurAudio.setVisible(true);
 				}
 				else
 				{
 					infoArbre.setListeInfo(null);
 					infoArbre.repaint();// on le repaint
-					panelLecteur.setVisible(false);
+					lecteurAudio.setVisible(false);
 				}
 			}
 		});
@@ -133,63 +99,22 @@ public class PanneauArbre extends JPanel
 		this.infoArbre.setPreferredSize(new Dimension(270, 100));
 
 		JPanel panelArbre = new JPanel(new GridLayout(0, 1));
-		this.panelLecteur = new JPanel(new GridBagLayout());
-		this.panelLecteur.setVisible(false);
 		panelArbre.add(this.scrollPane);
 		panelArbre.add(this.infoArbre);
 
-		// panelEnregistrements.add(panelArbre, BorderLayout.CENTER);
+		this.lecteurAudio = new LecteurAudio();
+		this.lecteurAudio.setVisible(false);
 
-		/*
-		 * Creation du mini lecteur audio
-		 */
-		this.slideAvance = new JSlider();
-		this.slideAvance.setValue(0);
-		this.slideSon = new JSlider();
-		this.slideSon.setMinimum(0);
-		this.slideSon.setMaximum(100);
-		this.slideSon.setValue((int) (volume * 100));
-		this.slideSon.addChangeListener(new ChangeListener()
-		{
-			@Override
-			public void stateChanged(ChangeEvent event)
-			{
-				volume = ((double) slideSon.getValue() / 100);
-				/*if (lecteurSonArbre != null)
-				{
-					lecteurSonArbre.setVolume(volume);
-				}*/
-			}
-		});
-		// Ajout de bouton pour le lecteur
-		this.playEcouteArbre.addMouseListener(new PlayEcouteArbre());
-		this.stopEcouteArbre.addMouseListener(new StopEcouteArbre());
-		this.pauseEcouteArbre.addMouseListener(new PauseEcouteArbre());
+		this.add(panelArbre, BorderLayout.CENTER);
+		this.add(lecteurAudio, BorderLayout.SOUTH);
+	}
 
-		GridBagConstraints c = new GridBagConstraints();
-		c.gridx = 0;
-		c.gridy = 0;
-		this.panelLecteur.add(slideSon, c);
-		c.gridx = 1;
-		c.gridy = 0;
-		this.panelLecteur.add(new JLabel("Volume"), c);
-		c.gridx = 0;
-		c.gridy = 1;
-		this.panelLecteur.add(slideAvance, c);
-		c.gridx = 1;
-		c.gridy = 1;
-		this.panelLecteur.add(new JLabel("Curseur"), c);
-		c.gridx = 0;
-		c.gridy = 2;
-		this.panelLecteur.add(playEcouteArbre, c);
-		c.gridx = 1;
-		c.gridy = 2;
-		this.panelLecteur.add(pauseEcouteArbre, c);
-		c.gridx = 2;
-		c.gridy = 2;
-		this.panelLecteur.add(stopEcouteArbre, c);
-		panelArbre.add(this.panelLecteur);
-		this.add(panelArbre);
+	/**
+	 * Permet de fermer proprement ce qu'il a ouvert
+	 */
+	public void close()
+	{
+		this.lecteurAudio.close();
 	}
 
 	public void updateArbre()
@@ -1138,117 +1063,48 @@ public class PanneauArbre extends JPanel
 
 	class PlayEcouteArbre extends MouseAdapter
 	{
-		private int id_lu;
+		private int idLu = -1;
 
 		@Override
 		public void mouseReleased(MouseEvent event)
 		{
-			/*// Créer le fichier
-			File f = new File("tmp.wav");
 			if (menuClicDroit != null)
 			{
 				menuClicDroit.setEnabled(false);
 				menuClicDroit.setVisible(false);
 			}
-			try
+
+			if (((Feuille) arbre.getLastSelectedPathComponent()).getId() != idLu)
 			{
-				if (lecteurSonArbre != null && lecteurSonArbre.isPause() == true
-						&& ((Feuille) arbre.getLastSelectedPathComponent()).getId() == id_lu)
+				try
 				{
-					lecteurSonArbre.setPause(false);
-				}
-				else
-				// if(! (lecteurSonArbre.isPause() == true && ((Feuille) arbre.getLastSelectedPathComponent()).getId()
-				// == id_lu))
-				{
-					if (lecteurSonArbre != null)
-					{
-						lecteurSonArbre.stop();
-					}
-					if (f.exists())
-					{
-						f.delete();
-					}
-					if (!f.createNewFile())
-					{
-						throw new Exception("Impossible de créer le fichier temporaire.");
-					}
+					lecteurAudio.stop();
+					File tempFile = File.createTempFile("tempFile", ".wav");
+					tempFile.deleteOnExit();
 					byte[] contenu = bdd.recupererEnregistrement(((Feuille) arbre.getLastSelectedPathComponent())
 							.getId());
-					GraphicalUserInterface.ecrireFichier(contenu, f);
-					lecteurSonArbre = new Sound(f, slideAvance, volume);
-					id_lu = ((Feuille) arbre.getLastSelectedPathComponent()).getId();
-					lecteurSonArbre.play();
+					FileOutputStream fos = new FileOutputStream(tempFile);
+					fos.write(contenu);
+					fos.flush();
+					fos.close();
+
+					idLu = ((Feuille) arbre.getLastSelectedPathComponent()).getId();
+					lecteurAudio.play(tempFile.getCanonicalPath());
+				}
+				catch (FileNotFoundException e)
+				{
+					GraphicalUserInterface.popupErreur(e.getMessage());
+				}
+				catch (IOException e)
+				{
+					GraphicalUserInterface.popupErreur(e.getMessage());
+				}
+				catch (DBException e)
+				{
+					GraphicalUserInterface.popupErreur(e.getMessage());
 				}
 			}
-			catch (Exception e)
-			{
-				GraphicalUserInterface.popupErreur("Erreur lors du lancement de l'écoute: " + e.getMessage(), "Erreur");
-				return;
-			}*/
 
 		}
 	}
-
-	class StopEcouteArbre extends MouseAdapter
-	{
-		@Override
-		public void mouseReleased(MouseEvent event)
-		{
-			/*// Créer le fichier
-			File f = new File("tmp.wav");
-			if (menuClicDroit != null)
-			{
-				menuClicDroit.setEnabled(false);
-				menuClicDroit.setVisible(false);
-			}
-			try
-			{
-				if (lecteurSonArbre != null)
-				{
-					lecteurSonArbre.stop();
-				}
-				if (f.exists())
-				{
-					f.delete();
-				}
-			}
-			catch (Exception e)
-			{
-				GraphicalUserInterface.popupErreur("Erreur lors du lancement de l'écoute: " + e.getMessage(), "Erreur");
-				return;
-			}
-*/
-		}
-	}
-
-	class PauseEcouteArbre extends MouseAdapter
-	{
-		@Override
-		public void mouseReleased(MouseEvent event)
-		{
-			// DialogueOperationLongue d = new DialogueOperationLongue(null, "toot", true);
-			// d.exporterBase();
-			if (menuClicDroit != null)
-			{
-				menuClicDroit.setEnabled(false);
-				menuClicDroit.setVisible(false);
-			}
-/*
-			try
-			{
-				if (lecteurSonArbre != null)
-				{
-					lecteurSonArbre.pause();
-				}
-			}
-			catch (Exception e)
-			{
-				GraphicalUserInterface.popupErreur("Erreur lors du lancement de l'écoute: " + e.getMessage(), "Erreur");
-				return;
-			}
-*/
-		}
-	}
-
 }

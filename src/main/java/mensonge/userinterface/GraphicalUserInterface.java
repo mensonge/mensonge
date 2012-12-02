@@ -358,15 +358,6 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		JOptionPane.showMessageDialog(null, message, title, JOptionPane.INFORMATION_MESSAGE);
 	}
 
-	public static void ecrireFichier(byte[] contenu, File fichier) throws Exception
-	{
-		FileOutputStream destinationFile = null;
-		destinationFile = new FileOutputStream(fichier);
-		destinationFile.write(contenu);
-		destinationFile.flush();
-		destinationFile.close();
-	}
-
 	@Override
 	public void actionPerformed(ActionEvent event)
 	{
