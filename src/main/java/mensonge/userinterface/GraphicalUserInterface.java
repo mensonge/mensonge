@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -90,6 +91,14 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		/*
 		 * Fenêtre
 		 */
+		try
+		{
+			this.setIconImage(ImageIO.read(new File("images/LieLabIcon.png")));
+		}
+		catch (IOException e)
+		{
+			popupErreur(e.getMessage());
+		}
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setResizable(true);
 		this.setTitle("LieLab");
