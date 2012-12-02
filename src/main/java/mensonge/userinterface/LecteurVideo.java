@@ -8,8 +8,6 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -26,29 +24,21 @@ import javax.swing.JSlider;
 import javax.swing.ImageIcon;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
-import javax.swing.plaf.SliderUI;
-import javax.swing.plaf.basic.BasicSliderUI;
 
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
-import uk.co.caprica.vlcj.player.MediaPlayer;
-import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter;
 import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
 
 public class LecteurVideo extends JPanel implements ActionListener
 {
 	private static final long serialVersionUID = 5373991180139317820L;
-	private static final float SLIDER_POSITION_MAX = 100.0f;
 	private JButton boutonLecture;
 	private JButton boutonStop;
 	private JLabel labelDureeActuelle;
 	private JLabel labelDureeMax;
 	private JSlider slider;
 	private JSlider sliderVolume;
-	private ImageIcon imageIconPause;
 	private ImageIcon imageIconStop;
 	private ImageIcon imageIconLecture;
-	private boolean pause;
-	private boolean stop;
 	private EmbeddedMediaPlayerComponent vidComp;
 
 	private JButton boutonMarqueur1;
@@ -63,12 +53,10 @@ public class LecteurVideo extends JPanel implements ActionListener
 		this.vidComp = new EmbeddedMediaPlayerComponent();
 		this.vidComp.setVisible(true);
 		this.mediaPlayer = this.vidComp.getMediaPlayer();
-		this.mediaPlayer.addMediaPlayerEventListener(new PlayerEventListener());
-
-		this.pause = true;
-		this.stop = true;
 
 		initialiserComposants();
+		this.mediaPlayer.addMediaPlayerEventListener(new PlayerEventListener(slider, boutonLecture, labelDureeMax,
+				labelDureeActuelle));
 
 		javax.swing.SwingUtilities.invokeLater(new Runnable()
 		{
@@ -90,10 +78,8 @@ public class LecteurVideo extends JPanel implements ActionListener
 
 	private void initialiserComposants()
 	{
-
-		this.imageIconPause = new ImageIcon("images/Pause.png");
-		this.imageIconStop = new ImageIcon("images/Stop.png");
-		this.imageIconLecture = new ImageIcon("images/Lecture.png");
+		this.imageIconStop = PlayerEventListener.IMG_ICON_STOP;
+		this.imageIconLecture = PlayerEventListener.IMG_ICON_STOP;
 
 		this.labelDureeActuelle = new JLabel("00:00:00");
 		this.labelDureeMax = new JLabel("00:00:00");
@@ -145,7 +131,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 		this.slider.setPaintLabels(false);
 		this.slider.setMinimum(0);
 		this.slider.setValue(0);
-		this.slider.setMaximum((int) SLIDER_POSITION_MAX);
+		this.slider.setMaximum((int) SliderPositionEventListener.SLIDER_POSITION_MAX);
 
 		SliderPositionEventListener sliderListener = new SliderPositionEventListener(this.slider, this.mediaPlayer);
 		this.slider.addMouseListener(sliderListener);
@@ -221,21 +207,18 @@ public class LecteurVideo extends JPanel implements ActionListener
 	{
 		if (event.getSource() == boutonLecture)
 		{
-			if (this.pause)
+			if (this.mediaPlayer.isPlaying())
 			{
-				this.mediaPlayer.play();
+				this.mediaPlayer.pause();
 			}
 			else
 			{
-				this.mediaPlayer.pause();
+				this.mediaPlayer.play();
 			}
 		}
 		else if (event.getSource() == boutonStop)
 		{
-			if (!this.stop)
-			{
-				this.mediaPlayer.stop();
-			}
+			this.mediaPlayer.stop();
 		}
 		else if (event.getSource() == boutonMarqueur1)
 		{
@@ -248,107 +231,6 @@ public class LecteurVideo extends JPanel implements ActionListener
 		else if (event.getSource() == boutonMarqueur2)
 		{
 			timeMarqueur2 = mediaPlayer.getTime();
-		}
-	}
-
-	private class PlayerEventListener extends MediaPlayerEventAdapter
-	{
-		@Override
-		public void paused(MediaPlayer arg0)
-		{
-			pause = true;
-			boutonLecture.setIcon(imageIconLecture);
-			boutonLecture.setToolTipText("Lancer");
-		}
-
-		@Override
-		public void playing(MediaPlayer arg0)
-		{
-			pause = false;
-			stop = false;
-			boutonLecture.setIcon(imageIconPause);
-			boutonLecture.setToolTipText("Mettre en pause");
-		}
-
-		@Override
-		public void positionChanged(MediaPlayer event, float newPosition)
-		{
-			slider.setValue((int) (newPosition * SLIDER_POSITION_MAX));
-		}
-
-		@Override
-		public void timeChanged(MediaPlayer mediaPlayer, long newTime)
-		{
-			long duree = newTime / 1000;
-			int heures = (int) (duree / 3600);
-			int minutes = (int) ((duree % 3600) / 60);
-			int secondes = (int) ((duree % 3600) % 60);
-			labelDureeActuelle.setText(String.format("%02d:%02d:%02d", heures, minutes, secondes));
-		}
-
-		@Override
-		public void stopped(MediaPlayer arg0)
-		{
-			stop = true;
-			pause = true;
-			boutonLecture.setIcon(imageIconLecture);
-			boutonLecture.setToolTipText("Lancer");
-			slider.setValue(0);
-		}
-
-		@Override
-		public void lengthChanged(MediaPlayer mediaPlayer, long newLength)
-		{
-			long duree = mediaPlayer.getLength() / 1000;
-			int heures = (int) (duree / 3600);
-			int minutes = (int) ((duree % 3600) / 60);
-			int secondes = (int) ((duree % 3600) % 60);
-			labelDureeMax.setText(String.format("%02d:%02d:%02d", heures, minutes, secondes));
-		}
-
-		@Override
-		public void finished(MediaPlayer mediaPlayer)
-		{
-			stop = true;
-			pause = true;
-			boutonLecture.setIcon(imageIconLecture);
-			boutonLecture.setToolTipText("Lancer");
-		}
-
-	}
-
-	private static class SliderPositionEventListener extends MouseAdapter
-	{
-		private JSlider slider;
-		private EmbeddedMediaPlayer mediaPlayer;
-
-		public SliderPositionEventListener(JSlider slider, EmbeddedMediaPlayer mediaPlayer)
-		{
-			this.slider = slider;
-			this.mediaPlayer = mediaPlayer;
-		}
-
-		private int valueForXPosition(int x)
-		{
-			return ((BasicSliderUI) slider.getUI()).valueForXPosition(x) + 1;
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent event)
-		{
-			int value = this.valueForXPosition(event.getX());
-			mediaPlayer.setPosition(value / SLIDER_POSITION_MAX);
-		}
-
-		@Override
-		public void mouseMoved(MouseEvent event)
-		{
-			int positionValue = this.valueForXPosition(event.getX());
-			long duree = (long) ((positionValue / SLIDER_POSITION_MAX) * mediaPlayer.getLength() / 1000);
-			int heures = (int) (duree / 3600);
-			int minutes = (int) ((duree % 3600) / 60);
-			int secondes = (int) ((duree % 3600) % 60);
-			slider.setToolTipText(String.format("%02d:%02d:%02d", heures, minutes, secondes));
 		}
 	}
 }
