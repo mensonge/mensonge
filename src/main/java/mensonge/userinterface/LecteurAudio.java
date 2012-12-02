@@ -27,8 +27,6 @@ public class LecteurAudio extends JPanel
 {
 	private static final long serialVersionUID = 5373991180139317820L;
 
-	private double volume; // Entre 0 et 1
-	private boolean pause;
 	private JButton boutonStop;
 
 	private JButton boutonLecture;
@@ -48,12 +46,12 @@ public class LecteurAudio extends JPanel
 	{
 		factory = new MediaPlayerFactory();
 		this.mediaPlayer = factory.newHeadlessMediaPlayer();
-		this.pause = true;
 		this.addControls();
-		this.mediaPlayer.addMediaPlayerEventListener(new PlayerEventListener(slider, boutonLecture, labelDureeMax, labelDureeActuelle));
+		this.mediaPlayer.addMediaPlayerEventListener(new PlayerEventListener(slider, boutonLecture, labelDureeMax,
+				labelDureeActuelle));
 
 	}
-	
+
 	/**
 	 * Ferme le lecteur audio proprement en fermant les instances de mediaPlayer
 	 */
@@ -63,7 +61,7 @@ public class LecteurAudio extends JPanel
 		this.mediaPlayer.release();
 		this.factory.release();
 	}
-	
+
 	private void addControls()
 	{
 		this.imageIconStop = new ImageIcon("images/Stop.png");
@@ -99,11 +97,11 @@ public class LecteurAudio extends JPanel
 		this.sliderVolume.setMinimumSize(new Dimension(100, 30));
 		this.sliderVolume.setMaximumSize(new Dimension(100, 30));
 		this.sliderVolume.setPreferredSize(new Dimension(100, 30));
-		
+
 		SliderPositionEventListener sliderListener = new SliderPositionEventListener(this.slider, this.mediaPlayer);
 		this.slider.addMouseListener(sliderListener);
 		this.slider.addMouseMotionListener(sliderListener);
-		
+
 		JPanel panelDuree = new JPanel();
 		panelDuree.setLayout(new BoxLayout(panelDuree, BoxLayout.X_AXIS));
 		panelDuree.add(Box.createHorizontalStrut(5));
@@ -128,7 +126,7 @@ public class LecteurAudio extends JPanel
 		this.setLayout(new GridLayout(2, 1));
 		this.add(panelDuree);
 		this.add(toolBar);
-		
+
 		ActionMap actionMap = this.getActionMap();
 		InputMap inputMap = this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
 
@@ -152,20 +150,9 @@ public class LecteurAudio extends JPanel
 		});
 	}
 
-	public boolean isPause()
-	{
-		return pause;
-	}
-
-	public void setPause(boolean pause)
-	{
-		this.pause = pause;
-	}
-
 	public void play()
 	{
 		this.mediaPlayer.play();
-		this.pause = false;
 	}
 
 	public void play(final String filePath)
@@ -177,29 +164,11 @@ public class LecteurAudio extends JPanel
 				mediaPlayer.playMedia(filePath);
 			}
 		});
-		this.pause = false;
 	}
 
 	public void stop()
 	{
 		this.mediaPlayer.stop();
-		this.pause = true;
-	}
-
-	public void pause()
-	{
-		this.mediaPlayer.pause();
-		this.pause = true;
-	}
-
-	public double getVolume()
-	{
-		return volume;
-	}
-
-	public void setVolume(double volume)
-	{
-		this.volume = volume;
 	}
 
 }

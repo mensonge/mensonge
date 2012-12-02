@@ -46,8 +46,6 @@ public class PanneauArbre extends JPanel
 
 	private LecteurAudio lecteurAudio;
 
-	private LecteurAudio lecteurSonArbre;
-
 	private PanneauInformationFeuille infoArbre = new PanneauInformationFeuille();
 	private DefaultMutableTreeNode racine;
 	private JTree arbre;
