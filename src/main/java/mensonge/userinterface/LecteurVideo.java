@@ -26,7 +26,7 @@ import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
-import uk.co.caprica.vlcj.player.embedded.EmbeddedMediaPlayer;
+import uk.co.caprica.vlcj.player.MediaPlayer;
 
 public class LecteurVideo extends JPanel implements ActionListener
 {
@@ -46,7 +46,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 	private long timeMarqueur1 = 0;
 	private long timeMarqueur2 = 0;
 	private Marqueur t1;
-	private EmbeddedMediaPlayer mediaPlayer;
+	private MediaPlayer mediaPlayer;
 
 	public LecteurVideo(final File fichierVideo)
 	{
@@ -79,7 +79,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 	private void initialiserComposants()
 	{
 		this.imageIconStop = PlayerEventListener.IMG_ICON_STOP;
-		this.imageIconLecture = PlayerEventListener.IMG_ICON_STOP;
+		this.imageIconLecture = PlayerEventListener.IMG_ICON_LECTURE;
 
 		this.labelDureeActuelle = new JLabel("00:00:00");
 		this.labelDureeMax = new JLabel("00:00:00");
