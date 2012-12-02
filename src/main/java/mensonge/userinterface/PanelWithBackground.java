@@ -1,6 +1,7 @@
 package mensonge.userinterface;
 
 import java.awt.Graphics;
+import java.awt.LayoutManager;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -13,9 +14,9 @@ public class PanelWithBackground extends JPanel
 	private static final long serialVersionUID = 4969722390664163943L;
 	private BufferedImage image;
 
-	public PanelWithBackground()
+	public PanelWithBackground(LayoutManager layout)
 	{
-		super();
+		super(layout);
 		try
 		{
 			image = ImageIO.read(new File("images/LieLabLogo.png"));

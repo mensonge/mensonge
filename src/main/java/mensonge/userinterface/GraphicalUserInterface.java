@@ -80,9 +80,9 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		 * Conteneur
 		 */
 		this.onglets = new JTabbedPane();
-		PanelWithBackground panel = new PanelWithBackground();
-		panel.add(onglets);
-		
+		PanelWithBackground panel = new PanelWithBackground(new BorderLayout());
+		panel.add(onglets, BorderLayout.CENTER);
+
 		JPanel conteneur = new JPanel(new BorderLayout());
 		conteneur.add(panel, BorderLayout.CENTER);
 		conteneur.add(panneauArbre, BorderLayout.EAST);
