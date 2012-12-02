@@ -11,6 +11,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -508,7 +510,9 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		{
 			// TODO Ajouter la liste des fichiers selectionnés
 			// Peut être voir pour aussi donner en plus l'instance de la BDD ça pourrait être utile au final ? :D
-			this.plugin.lancer(EXTRACTION, null);
+			List<File> liste = new ArrayList<File>();
+			liste.add(new File("sons/test_sortie.wav"));
+			this.plugin.lancer(EXTRACTION, liste);
 		}
 	}
 
