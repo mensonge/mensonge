@@ -12,17 +12,16 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
 import org.jfree.data.xy.XYDataset;
 
-public class DrawXYGraph extends JFrame
+public class DrawTimeGraph extends JFrame
 {
 	private static final long serialVersionUID = 1L;
 	private XYPlot plot;
 	private int index;
 
-	public DrawXYGraph(String applicationTitle, String chartTitle, XYDataset xyDataset, String xLabel, String yLabel)
+	public DrawTimeGraph(String applicationTitle, String chartTitle, XYDataset xyDataset, String xLabel, String yLabel)
 	{
 		super(applicationTitle);
-		JFreeChart chart = ChartFactory.createXYLineChart(chartTitle, xLabel, yLabel, xyDataset,
-				PlotOrientation.VERTICAL, true, true, true);
+		JFreeChart chart = ChartFactory.createTimeSeriesChart(chartTitle, xLabel, yLabel, xyDataset, true, true, true);
 		this.index = 1;
 		this.plot = (XYPlot) chart.getPlot();
 		ChartPanel chartPanel = new ChartPanel(chart);
@@ -30,11 +29,10 @@ public class DrawXYGraph extends JFrame
 		this.setContentPane(chartPanel);
 	}
 
-	public DrawXYGraph(String applicationTitle, String chartTitle, String xLabel, String yLabel)
+	public DrawTimeGraph(String applicationTitle, String chartTitle, String xLabel, String yLabel)
 	{
 		super(applicationTitle);
-		JFreeChart chart = ChartFactory.createXYLineChart(chartTitle, xLabel, yLabel, null,
-				PlotOrientation.VERTICAL, true, false, false);
+		JFreeChart chart = ChartFactory.createTimeSeriesChart(chartTitle, xLabel, yLabel, null, true, true, true);
 		this.plot = chart.getXYPlot();
 		this.index = 0;
 		ChartPanel chartPanel = new ChartPanel(chart);

@@ -2,6 +2,7 @@ package coeffCepstraux.core;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -12,10 +13,15 @@ import javax.swing.SwingUtilities;
 import mensonge.core.IExtraction;
 import mensonge.core.plugins.Plugin;
 
+import org.jfree.data.time.Millisecond;
+import org.jfree.data.time.Second;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
+import coeffCepstraux.userinterface.DrawTimeGraph;
 import coeffCepstraux.userinterface.DrawXYGraph;
 
 public class CoefficientsCepstraux implements Plugin
@@ -23,6 +29,7 @@ public class CoefficientsCepstraux implements Plugin
 	private static Logger logger = Logger.getLogger("coeffCepstraux");
 	private boolean isActive = false;
 	private DrawXYGraph graph;
+	private DrawTimeGraph timeGraph;
 
 	private void drawGraph(final double[][] echantillons)
 	{
@@ -38,51 +45,57 @@ public class CoefficientsCepstraux implements Plugin
 			@Override
 			public void run()
 			{
-				graph = new DrawXYGraph("Canard ?", "Variation d'amplitudes");
+				graph = new DrawXYGraph("Canard ?", "Variation d'amplitudes", "Millisecondes", "Amplitudes");
+				timeGraph = new DrawTimeGraph("Canard ?", "Variation d'amplitudes", "Temps", "Amplitudes");
+
 				Thread t1 = new Thread(new Runnable()
 				{
-					
+					// Juste en affichant les millisecondes
 					@Override
 					public void run()
 					{
-						XYSeries series = new XYSeries("Canal " + 0);
+						XYSeries series = new XYSeries("Canal 0");
 						for (int j = 0; j < echantillons.length; j++)
 						{
-							series.add(j, echantillons[j][0]);
+							series.add(j / 44.1, echantillons[j][0]);
 
 						}
 						XYDataset xyDataset = new XYSeriesCollection(series);
 						graph.addDataset(xyDataset);
+						graph.display();
+
 					}
 				});
 				Thread t2 = new Thread(new Runnable()
 				{
-					
+					// Avec une échelle de temps
 					@Override
 					public void run()
 					{
-						XYSeries series = new XYSeries("Canal " +1);
-						for (int j = 0; j < echantillons.length/4; j++)
+						TimeSeries timeSeries = new TimeSeries("Canal 1");
+						for (int j = 0; j < echantillons.length; j++)
 						{
-							series.add(j*44100, echantillons[j][1]);
+
+							timeSeries.addOrUpdate(new Millisecond((int) (j / 44.1), 0, 0, 0, 2, 12, 2012),
+									echantillons[j][1]);
 
 						}
-						XYDataset xyDataset = new XYSeriesCollection(series);
-						graph.addDataset(xyDataset);
+						TimeSeriesCollection timeDataset = new TimeSeriesCollection(timeSeries);
+						timeGraph.addDataset(timeDataset);
+						timeGraph.display();
 					}
 				});
-				t1.run();
-			//	t2.run();
+				 t1.run();
+				//t2.run();
 				try
 				{
-					t1.join();
-				//	t2.join();
+					 t1.join();
+					//t2.join();
 				}
 				catch (InterruptedException e)
 				{
 					logger.log(Level.WARNING, e.getMessage());
 				}
-				graph.display();
 			}
 		});
 	}
@@ -116,7 +129,7 @@ public class CoefficientsCepstraux implements Plugin
 	public void stopper()
 	{
 		this.isActive = false;
-		if(graph != null)
+		if (graph != null)
 		{
 			graph.dispose();
 		}
