@@ -3,9 +3,9 @@ TARGETDIR=.
 TARGET=coeffCepstraux.core.CoefficientsCepstraux
 ARGS=
 
-SRCDIR=src
-OBJDIR=bin
-LIBDIR=../../lib
+SRCDIR=src/main/java
+OBJDIR=target/classes
+LIBDIR=lib
 
 SRC=$(shell find $(SRCDIR) -name "*.java")
 OBJ=$(patsubst $(SRCDIR)/%.java,$(OBJDIR)/%.class,$(SRC))

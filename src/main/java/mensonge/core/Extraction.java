@@ -4,7 +4,6 @@ import it.sauronsoftware.jave.AudioAttributes;
 import it.sauronsoftware.jave.Encoder;
 import it.sauronsoftware.jave.EncoderException;
 import it.sauronsoftware.jave.EncodingAttributes;
-import it.sauronsoftware.jave.InputFormatException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -179,8 +178,7 @@ public class Extraction implements IExtraction
 	 *            La borne de fin de l'intervalle en millisecondes où terminer l'extraction
 	 * @return Un tableau d'octet contenant le fichier WAV
 	 */
-	public byte[] extraireIntervalle(String filePath, float debut, float fin) throws IOException,
-			IllegalArgumentException, InputFormatException, EncoderException
+	public byte[] extraireIntervalle(String filePath, float debut, float fin) throws IOException, EncoderException
 	{
 		File source = new File(filePath);
 		File target = File.createTempFile("tempFile", ".wav");

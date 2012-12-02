@@ -109,8 +109,7 @@
 				<artifactId>exec-maven-plugin</artifactId>
 				<version>1.2.1</version>
 				<configuration>
-					<!--<mainClass>mensonge.userinterface.GraphicalUserInterface</mainClass>-->
-					<mainClass>mensonge.core.Extraction</mainClass>
+					<mainClass>mensonge.userinterface.GraphicalUserInterface</mainClass>
 				</configuration>
 			</plugin>
 			<plugin>
