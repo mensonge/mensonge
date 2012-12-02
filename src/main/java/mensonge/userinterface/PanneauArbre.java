@@ -17,6 +17,7 @@ import java.sql.ResultSet;
 
 import javax.swing.JFileChooser;
 
+import javax.swing.BorderFactory;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -58,6 +59,7 @@ public class PanneauArbre extends JPanel
 	public PanneauArbre(BaseDeDonnees bdd)
 	{
 		this.setLayout(new BorderLayout());
+		this.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.GRAY));
 		this.bdd = bdd;
 
 		this.racine = new DefaultMutableTreeNode("Sujet");
