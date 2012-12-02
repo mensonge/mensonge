@@ -8,6 +8,7 @@ import it.sauronsoftware.jave.InputFormatException;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -20,10 +21,11 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+import sun.misc.IOUtils;
 
 /**
  * Classe gérant l'extraction d'échantillons ou intervalle d'un flux audio d'un fichier multimédia
- *
+ * 
  */
 public class Extraction implements IExtraction
 {
@@ -54,80 +56,46 @@ public class Extraction implements IExtraction
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		logger.log(Level.INFO, "[+] Fin de l'extraction de l'intervalle");
-/*
- *
- *                double sinusoid[] = new double[1024];
- *                for(int i=0;i<1024;i++)
- *                {
- *                        sinusoid[i] = Math.sin(i);
- *                }
- *                long start = System.currentTimeMillis();
- *                double intervalles[] = ext.extraireEchantillons(new File("sons/test.wav"));
- *                //double intervalles[] = sinusoid;
- *
- *
- *
- *                FFTW3Library fftw = FFTW3Library.INSTANCE;
- *                System.out.println("Interval length: "+intervalles.length);
- *                int n0_in = 2;
- *                int n1_in = intervalles.length/2;
- *                int n_in = intervalles.length;
- *                System.out.println("N_in: "+n_in);
- *                System.out.println("N0_in: "+n0_in);
- *                System.out.println("N1_in: "+n1_in);
- *                int n_out = n0_in*(2*(n1_in/2+1));
- *                System.out.println("N_out: "+n_out);
- *
- *                int inBytes = (Double.SIZE/Byte.SIZE)*n_in;
- *                int outBytes = (Double.SIZE/Byte.SIZE)*n_out;
- *                Pointer in = fftw.fftw_malloc(new NativeLong(inBytes));
- *                Pointer out = fftw.fftw_malloc(new NativeLong(outBytes));
- *                DoubleBuffer inbuf = in.getByteBuffer(0, inBytes).asDoubleBuffer();
- *                DoubleBuffer outbuf = out.getByteBuffer(0, outBytes).asDoubleBuffer();
- *                int flags = FFTW3Library.FFTW_ESTIMATE;
- *
- *                FFTW3Library.fftw_plan planForward = fftw.fftw_plan_dft_r2c_2d(2,n1_in, inbuf, outbuf, flags); // Real to complex
- *
- *                double dest[] = new double[n_out];
- *                inbuf.put(intervalles);
- *                fftw.fftw_execute_dft_r2c(planForward,inbuf,outbuf);
- *                outbuf.get(dest);
- *                for(int i =0;i<n_out;i++)
- *                {
- *                        System.out.println(Math.round(dest[i]));
- *                }
- */
-/*
 
-npts = number of points
- *int
- * 795 octave_fftw::fft (const double *in, Complex *out, size_t npts,
- * 796                   size_t nsamples, octave_idx_type stride, octave_idx_type dist)
- * 797 {
- * 798   dist = (dist < 0 ? npts : dist);
- * 799 
- * 800   dim_vector dv (npts, 1);
- * 801   fftw_plan plan = octave_fftw_planner::create_plan (1, dv, nsamples,
- * 802                                                      stride, dist, in, out);
- * 803 
- * 804   fftw_execute_dft_r2c (plan, (const_cast<double *>(in)),
- * 805                          reinterpret_cast<fftw_complex *> (out));
- * 806 
- * 807   // Need to create other half of the transform.
- * 808 
- * 809   convert_packcomplex_1d (out, nsamples, npts, stride, dist);
- * 810 
- * 811   return 0;
- * 812 }
- *
- */
-			/*
-			 *System.out.println(intervalles[11000][0]);
-			 *System.out.println(intervalles[11000][1]);
-			 */
-//		System.out.println("Done in "+(System.currentTimeMillis()-start)/1000.0+"s !");
+		logger.log(Level.INFO, "[+] Fin de l'extraction de l'intervalle");
+		/*
+		 * 
+		 * double sinusoid[] = new double[1024]; for(int i=0;i<1024;i++) { sinusoid[i] = Math.sin(i); } long start =
+		 * System.currentTimeMillis(); double intervalles[] = ext.extraireEchantillons(new File("sons/test.wav"));
+		 * //double intervalles[] = sinusoid;
+		 * 
+		 * 
+		 * 
+		 * FFTW3Library fftw = FFTW3Library.INSTANCE; System.out.println("Interval length: "+intervalles.length); int
+		 * n0_in = 2; int n1_in = intervalles.length/2; int n_in = intervalles.length;
+		 * System.out.println("N_in: "+n_in); System.out.println("N0_in: "+n0_in); System.out.println("N1_in: "+n1_in);
+		 * int n_out = n0_in*(2*(n1_in/2+1)); System.out.println("N_out: "+n_out);
+		 * 
+		 * int inBytes = (Double.SIZE/Byte.SIZE)*n_in; int outBytes = (Double.SIZE/Byte.SIZE)*n_out; Pointer in =
+		 * fftw.fftw_malloc(new NativeLong(inBytes)); Pointer out = fftw.fftw_malloc(new NativeLong(outBytes));
+		 * DoubleBuffer inbuf = in.getByteBuffer(0, inBytes).asDoubleBuffer(); DoubleBuffer outbuf =
+		 * out.getByteBuffer(0, outBytes).asDoubleBuffer(); int flags = FFTW3Library.FFTW_ESTIMATE;
+		 * 
+		 * FFTW3Library.fftw_plan planForward = fftw.fftw_plan_dft_r2c_2d(2,n1_in, inbuf, outbuf, flags); // Real to
+		 * complex
+		 * 
+		 * double dest[] = new double[n_out]; inbuf.put(intervalles);
+		 * fftw.fftw_execute_dft_r2c(planForward,inbuf,outbuf); outbuf.get(dest); for(int i =0;i<n_out;i++) {
+		 * System.out.println(Math.round(dest[i])); }
+		 */
+		/*
+		 * 
+		 * npts = number of pointsint 795 octave_fftw::fft (const double *in, Complex *out, size_t npts, 796 size_t
+		 * nsamples, octave_idx_type stride, octave_idx_type dist) 797 { 798 dist = (dist < 0 ? npts : dist); 799 800
+		 * dim_vector dv (npts, 1); 801 fftw_plan plan = octave_fftw_planner::create_plan (1, dv, nsamples, 802 stride,
+		 * dist, in, out); 803 804 fftw_execute_dft_r2c (plan, (const_cast<double *>(in)), 805
+		 * reinterpret_cast<fftw_complex *> (out)); 806 807 // Need to create other half of the transform. 808 809
+		 * convert_packcomplex_1d (out, nsamples, npts, stride, dist); 810 811 return 0; 812 }
+		 */
+		/*
+		 * System.out.println(intervalles[11000][0]);System.out.println(intervalles[11000][1]);
+		 */
+		// System.out.println("Done in "+(System.currentTimeMillis()-start)/1000.0+"s !");
 	}
 
 	/**
@@ -136,8 +104,8 @@ npts = number of points
 	 * @param fichier
 	 *            Fichier multimédia où extraire les échantillons du premier flux audio trouvé
 	 * @return Un tableau de double contenant les échantillons
-	 * @throws IOException 
-	 * @throws UnsupportedAudioFileException 
+	 * @throws IOException
+	 * @throws UnsupportedAudioFileException
 	 */
 	public double[][] extraireEchantillons(String filePath) throws IOException, UnsupportedAudioFileException
 	{
@@ -180,10 +148,14 @@ npts = number of points
 
 	/**
 	 * Transforme un vecteur (tableau à une dimension) en tableau à 2 dimension
-	 * @param doubleArray Vecteur qui sera restructuré
-	 * @param n Nombre de lignes
-	 * @param m Nombre de colonnes
-	 * @return Un tableau à 2 dimensions fait à partir du vecteur en entrée 
+	 * 
+	 * @param doubleArray
+	 *            Vecteur qui sera restructuré
+	 * @param n
+	 *            Nombre de lignes
+	 * @param m
+	 *            Nombre de colonnes
+	 * @return Un tableau à 2 dimensions fait à partir du vecteur en entrée
 	 */
 	private double[][] reshape(double doubleArray[], int n, int m)
 	{
@@ -198,15 +170,20 @@ npts = number of points
 		}
 		return reshapeArray;
 	}
-	
+
 	/**
 	 * Extrait le flux audio d'un fichier multimédia et le converti en WAV, format PCM Signé 16 bit little endian
-	 * @param fichier Fichier multimédia où extraire l'intervalle défini du premier flux audio trouvé
-	 * @param debut La borne de début de l'intervalle en millisecondes où commencer l'extraction 
-	 * @param fin La borne de fin de l'intervalle en millisecondes où terminer l'extraction
+	 * 
+	 * @param fichier
+	 *            Fichier multimédia où extraire l'intervalle défini du premier flux audio trouvé
+	 * @param debut
+	 *            La borne de début de l'intervalle en millisecondes où commencer l'extraction
+	 * @param fin
+	 *            La borne de fin de l'intervalle en millisecondes où terminer l'extraction
 	 * @return Un tableau d'octet contenant le fichier WAV
 	 */
-	public byte[] extraireIntervalle(String filePath, float debut, float fin) throws IOException, IllegalArgumentException, InputFormatException, EncoderException
+	public byte[] extraireIntervalle(String filePath, float debut, float fin) throws IOException,
+			IllegalArgumentException, InputFormatException, EncoderException
 	{
 		File source = new File(filePath);
 		File target = File.createTempFile("tempFile", ".wav");
@@ -217,12 +194,17 @@ npts = number of points
 		EncodingAttributes attrs = new EncodingAttributes();
 		attrs.setFormat("wav");
 		attrs.setAudioAttributes(audio);
-		attrs.setOffset(debut/1000);
-		attrs.setDuration(fin/1000);
-		
+		attrs.setOffset(debut / 1000);
+		attrs.setDuration(fin / 1000);
+
 		Encoder encoder = new Encoder();
 		encoder.encode(source, target, attrs);
-		
-		return Files.readAllBytes(Paths.get(target.getCanonicalPath()));
+
+		byte[] data = new byte[(int) target.length()];
+		FileInputStream fis = new FileInputStream(target);
+		fis.read(data);
+		fis.close();
+
+		return data;
 	}
 }
