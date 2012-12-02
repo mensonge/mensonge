@@ -8,7 +8,6 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -151,7 +150,6 @@ public class LecteurVideo extends JPanel implements ActionListener
 		SliderPositionEventListener sliderListener = new SliderPositionEventListener(this.slider, this.mediaPlayer);
 		this.slider.addMouseListener(sliderListener);
 		this.slider.addMouseMotionListener(sliderListener);
-		this.slider.addKeyListener(sliderListener);
 
 		JPanel panelDuree = new JPanel();
 		panelDuree.setLayout(new BoxLayout(panelDuree, BoxLayout.X_AXIS));
@@ -184,7 +182,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 		this.setLayout(new BorderLayout());
 		this.add(vidComp, BorderLayout.CENTER);
 		this.add(panelControls, BorderLayout.SOUTH);
-		
+
 		ActionMap actionMap = this.getActionMap();
 		InputMap inputMap = this.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
 
@@ -319,7 +317,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 
 	}
 
-	private static class SliderPositionEventListener extends MouseAdapter implements KeyListener
+	private static class SliderPositionEventListener extends MouseAdapter
 	{
 		private JSlider slider;
 		private EmbeddedMediaPlayer mediaPlayer;
