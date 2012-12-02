@@ -246,14 +246,19 @@ public class LecteurVideo extends JPanel implements ActionListener
 		}
 
 		@Override
-		public void positionChanged(MediaPlayer event, float time)
+		public void positionChanged(MediaPlayer event, float newPosition)
 		{
-			long duree = event.getTime() / 1000;
+			slider.setValue((int) (newPosition * SLIDER_POSITION_MAX));
+		}
+
+		@Override
+		public void timeChanged(MediaPlayer mediaPlayer, long newTime)
+		{
+			long duree = newTime / 1000;
 			int heures = (int) (duree / 3600);
 			int minutes = (int) ((duree % 3600) / 60);
 			int secondes = (int) ((duree % 3600) % 60);
 			labelDureeActuelle.setText(String.format("%02d:%02d:%02d", heures, minutes, secondes));
-			slider.setValue((int) (event.getPosition() * SLIDER_POSITION_MAX));
 		}
 
 		@Override
@@ -284,7 +289,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 			boutonLecture.setIcon(imageIconLecture);
 			boutonLecture.setToolTipText("Lancer");
 		}
-		
+
 	}
 
 	private static class SliderPositionEventListener extends MouseAdapter implements KeyListener
