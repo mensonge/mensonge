@@ -169,17 +169,15 @@ public class LecteurVideo extends JPanel implements ActionListener
 		toolBar.add(Box.createHorizontalStrut(5));
 		toolBar.add(sliderVolume);
 		toolBar.add(Box.createHorizontalStrut(5));
-		
-		JPanel panelControls = new JPanel(new GridLayout(2,1));
+
+		JPanel panelControls = new JPanel(new GridLayout(2, 1));
 		panelControls.add(panelDuree);
 		panelControls.add(toolBar);
-		
+
 		this.setLayout(new BorderLayout());
 		this.add(vidComp, BorderLayout.CENTER);
 		this.add(panelControls, BorderLayout.SOUTH);
 	}
-
-
 
 	/**
 	 * Ferme le lecteur vidéo proprement en fermant les instances de mediaPlayer

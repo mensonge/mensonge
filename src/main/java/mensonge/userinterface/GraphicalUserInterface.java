@@ -11,6 +11,7 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -29,6 +30,12 @@ import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
+
+import com.sun.jna.Native;
+import com.sun.jna.NativeLibrary;
+
+import uk.co.caprica.vlcj.binding.LibVlc;
+import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
 import mensonge.core.Extraction;
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
@@ -525,6 +532,15 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		{
 			// No Nimbus
 		}
+		try
+		{
+			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), new File("lib").getCanonicalPath());
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+		Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
 		javax.swing.SwingUtilities.invokeLater(new Runnable()
 		{
 			@Override
