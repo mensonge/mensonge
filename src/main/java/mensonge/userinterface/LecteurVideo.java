@@ -275,7 +275,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 			{
 				GraphicalUserInterface.popupErreur("Extraction : "+e.getMessage());
 			}
-			new DialogueAjouterEnregistrement(parent, "Ajouter enregistrement",
+			DialogueAjouterEnregistrement dia = new DialogueAjouterEnregistrement(parent, "Ajouter enregistrement",
 					true, this.bdd, tabOfByte);
 			this.mediaPlayer.pause();
 		}

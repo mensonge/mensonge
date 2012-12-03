@@ -26,10 +26,10 @@ public class DialogueAjouterEnregistrement extends JDialog implements ActionList
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private JComboBox<String> comboCategorie = new JComboBox<String>();
+	private JComboBox comboCategorie = new JComboBox();
 	private JLabel labelCategorie = new JLabel("Liste des catégories");
 
-	private JComboBox<String> comboSujet = new JComboBox<String>();
+	private JComboBox comboSujet = new JComboBox();
 	private JLabel labelSujet = new JLabel("Liste des sujets");
 
 	private JLabel labelNom = new JLabel("Nom : ");
