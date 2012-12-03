@@ -53,15 +53,16 @@ public class LecteurVideo extends JPanel implements ActionListener
 	private JButton boutonExtract;
 	private long timeMarqueur1 = 0;
 	private long timeMarqueur2 = 0;
-	private BaseDeDonnees maBDD;
+	private BaseDeDonnees bdd;
 	private Marqueur t1;
 	private MediaPlayer mediaPlayer;
-	private String pathVideo="";
+	private String pathVideo = "";
 	private JFrame parent;
-	public LecteurVideo(final File fichierVideo,final String nom,BaseDeDonnees bdd,JFrame parent)
+
+	public LecteurVideo(final File fichierVideo, final String nom, BaseDeDonnees bdd, JFrame parent)
 	{
-		this.parent=parent;
-		this.maBDD=bdd;
+		this.parent = parent;
+		this.bdd = bdd;
 		this.vidComp = new EmbeddedMediaPlayerComponent();
 		this.vidComp.setVisible(true);
 		this.mediaPlayer = this.vidComp.getMediaPlayer();
@@ -87,8 +88,8 @@ public class LecteurVideo extends JPanel implements ActionListener
 				}
 			}
 		});
-		pathVideo=nom;
- 	}
+		pathVideo = nom;
+	}
 
 	private void initialiserComposants()
 	{
@@ -116,12 +117,12 @@ public class LecteurVideo extends JPanel implements ActionListener
 		this.boutonMarqueur2.addActionListener(this);
 		this.boutonMarqueur2.setEnabled(true);
 
-		this.boutonExtract= new JButton();
+		this.boutonExtract = new JButton();
 		this.boutonExtract.setToolTipText("Ajouter a la bdd");
 		this.boutonExtract.setText("Extraire");
 		this.boutonExtract.addActionListener(this);
 		this.boutonExtract.setEnabled(true);
-		
+
 		this.boutonStop = new JButton();
 		this.boutonStop.setToolTipText("Stoper");
 		this.boutonStop.setIcon(imageIconStop);
@@ -254,34 +255,32 @@ public class LecteurVideo extends JPanel implements ActionListener
 		}
 		else if (event.getSource() == boutonExtract)
 		{
-			Extraction extract =new Extraction();
+			Extraction extract = new Extraction();
 			byte[] tabOfByte = null;
-			//	public void ajouterEnregistrement(final String nom, final int duree, final int idCat, final byte[] enregistrement,final int idSuj) 
+			// public void ajouterEnregistrement(final String nom, final int duree, final int idCat, final byte[]
+			// enregistrement,final int idSuj)
 			try
 			{
-				tabOfByte=extract.extraireIntervalle(pathVideo, timeMarqueur1, timeMarqueur1);
+				tabOfByte = extract.extraireIntervalle(pathVideo, timeMarqueur1, timeMarqueur1);
 			}
 			catch (IllegalArgumentException e)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				GraphicalUserInterface.popupErreur("Extraction : "+e.getMessage());
 			}
 			catch (InputFormatException e)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				GraphicalUserInterface.popupErreur("Extraction : "+e.getMessage());
 			}
 			catch (IOException e)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				GraphicalUserInterface.popupErreur("Extraction : "+e.getMessage());
 			}
 			catch (EncoderException e)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				GraphicalUserInterface.popupErreur("Extraction : "+e.getMessage());
 			}
-			DialogueAjouterEnregistrement diag =new DialogueAjouterEnregistrement(parent, "Ajouter enregistrement", true, this.maBDD, tabOfByte);
+			DialogueAjouterEnregistrement diag = new DialogueAjouterEnregistrement(parent, "Ajouter enregistrement",
+					true, this.bdd, tabOfByte);
 			diag.setVisible(true);
 			diag.setAlwaysOnTop(true);
 		}
