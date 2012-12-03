@@ -2,6 +2,8 @@ package mensonge.userinterface;
 
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.sql.ResultSet;
@@ -17,7 +19,7 @@ import javax.swing.JTextField;
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
 
 
-public class DialogueAjouterEnregistrement extends JDialog
+public class DialogueAjouterEnregistrement extends JDialog implements ActionListener
 {
 
 	/**
@@ -50,9 +52,9 @@ public class DialogueAjouterEnregistrement extends JDialog
 		JPanel pan = new JPanel();
 		pan.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
-		this.envoyer.addMouseListener(new BouttonValiderListener());
+		this.envoyer.addActionListener(this);
 
-		this.annuler.addMouseListener(new BouttonAnnulerListener());
+		this.annuler.addActionListener(this);
 
 		try
 		{
@@ -72,7 +74,7 @@ public class DialogueAjouterEnregistrement extends JDialog
 		}
 		catch (Exception e)
 		{
-
+			GraphicalUserInterface.popupErreur("Absence de sujet ou de categorie dans la base");
 		}
 
 		c.gridx = 0;
@@ -109,78 +111,38 @@ public class DialogueAjouterEnregistrement extends JDialog
 	{
 		this.setVisible(true);
 	}
-
-	public class BouttonAnnulerListener implements MouseListener
+	
+	public void valider()
 	{
-		@Override
-		public void mouseClicked(MouseEvent e)
+		int duree;
+		int octetParSeconde, taille_total = this.enregistrement.length;
+		octetParSeconde = enregistrement[28] | enregistrement[29]<<8 | enregistrement[30]<<16 | enregistrement[31] << 24;
+		duree = (int)(taille_total/octetParSeconde);
+		try
 		{
+			int idCat = this.bdd.getCategorie((String) comboCategorie.getSelectedItem());
+			int idSuj = this.bdd.getSujet((String) comboSujet.getSelectedItem());
+			this.bdd.ajouterEnregistrement(champsNom.getText(), duree, idCat, enregistrement, idSuj);
+		}
+		catch (Exception e1)
+		{
+			e1.printStackTrace();
 		}
 
-		@Override
-		public void mouseEntered(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e)
-		{
-			setVisible(false);
-		}
+		this.setVisible(false);
 	}
 
-	public class BouttonValiderListener implements MouseListener
+	@Override
+	public void actionPerformed(ActionEvent e)
 	{
-		@Override
-		public void mouseClicked(MouseEvent e)
+		if(e.getSource() == this.envoyer)
 		{
+			this.valider();
+		}
+		else if(e.getSource() == this.annuler)
+		{
+			this.setVisible(false);
+		}
 		
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e)
-		{
-			int duree;
-			int octetParSeconde, taille_total = enregistrement.length;
-			octetParSeconde = enregistrement[28] | enregistrement[29]<<8 | enregistrement[30]<<16 | enregistrement[31] << 24;
-			duree = (int)(taille_total/octetParSeconde);
-			try
-			{
-				int idCat = bdd.getCategorie((String) comboCategorie.getSelectedItem());
-				int idSuj = bdd.getSujet((String) comboSujet.getSelectedItem());
-				bdd.ajouterEnregistrement(champsNom.getText(), duree, idCat, enregistrement, idSuj);
-			}
-			catch (Exception e1)
-			{
-				e1.printStackTrace();
-			}
-
-			setVisible(false);
-		}
 	}
 }
