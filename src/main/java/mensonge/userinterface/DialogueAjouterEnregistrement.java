@@ -46,7 +46,6 @@ public class DialogueAjouterEnregistrement extends JDialog implements ActionList
 			byte[] enregistrement)
 	{
 		super(parent, title, modal);
-		parent.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		this.enregistrement = enregistrement;
 		this.bdd = bdd;
 		JPanel pan = new JPanel();
@@ -105,7 +104,6 @@ public class DialogueAjouterEnregistrement extends JDialog implements ActionList
 		this.setTitle("Ajouter un enregistrement");
 		this.setSize(350, 300);
 		activer();
-		parent.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 	}
 
 	public void activer()
@@ -121,6 +119,7 @@ public class DialogueAjouterEnregistrement extends JDialog implements ActionList
 		duree = (int)(taille_total/octetParSeconde);
 		try
 		{
+			this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			int idCat = this.bdd.getCategorie((String) comboCategorie.getSelectedItem());
 			int idSuj = this.bdd.getSujet((String) comboSujet.getSelectedItem());
 			this.bdd.ajouterEnregistrement(champsNom.getText(), duree, idCat, enregistrement, idSuj);
@@ -129,7 +128,7 @@ public class DialogueAjouterEnregistrement extends JDialog implements ActionList
 		{
 			e1.printStackTrace();
 		}
-
+		this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		this.setVisible(false);
 	}
 

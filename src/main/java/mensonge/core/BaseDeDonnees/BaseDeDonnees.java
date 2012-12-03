@@ -11,7 +11,6 @@ import java.sql.Statement;
 
 import mensonge.core.BetterObservable;
 import mensonge.core.BaseDeDonnees.DBException;
-import mensonge.userinterface.GraphicalUserInterface;
 
 /**
  * Classe permettant les interraction avec la base de donnees

@@ -6,6 +6,7 @@ import it.sauronsoftware.jave.InputFormatException;
 import java.io.File;
 import java.io.IOException;
 import java.awt.BorderLayout;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -253,6 +254,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 			byte[] tabOfByte = null;
 			try
 			{
+				this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 				tabOfByte = extract.extraireIntervalle(pathVideo, timeMarqueur1, timeMarqueur2);
 			}
 			catch (IllegalArgumentException e)
@@ -271,7 +273,8 @@ public class LecteurVideo extends JPanel implements ActionListener
 			{
 				GraphicalUserInterface.popupErreur("Extraction : "+e.getMessage());
 			}
-			DialogueAjouterEnregistrement dia = new DialogueAjouterEnregistrement(parent, "Ajouter enregistrement",
+			this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			new DialogueAjouterEnregistrement(parent, "Ajouter enregistrement",
 					true, this.bdd, tabOfByte);
 			this.mediaPlayer.pause();
 		}
