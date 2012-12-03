@@ -165,8 +165,10 @@ public class DialogueAjouterEnregistrement extends JDialog
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
-			int duree = 10;
-
+			int duree;
+			int octetParSeconde, taille_total = enregistrement.length;
+			octetParSeconde = enregistrement[28] | enregistrement[29]<<8 | enregistrement[30]<<16 | enregistrement[31] << 24;
+			duree = (int)(taille_total/octetParSeconde);
 			try
 			{
 				int idCat = bdd.getCategorie((String) comboCategorie.getSelectedItem());

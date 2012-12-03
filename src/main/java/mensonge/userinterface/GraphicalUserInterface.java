@@ -69,6 +69,9 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 	private JMenu menuOutils;
 
+	/**
+	 * Constructeur de base
+	 */
 	public GraphicalUserInterface()
 	{
 		/*

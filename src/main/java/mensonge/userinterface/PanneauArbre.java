@@ -129,7 +129,13 @@ public class PanneauArbre extends JPanel
 			remplirArbreEnregistrementSujet();
 		}
 		this.arbre.updateUI();
-
+		this.arbre.setExpandsSelectedPaths(true);
+		int nb = this.arbre.getRowCount();
+		
+		for(int i = 0; i < nb; i++)
+		{
+			this.arbre.expandRow(i);
+		}
 	}
 
 	public void remplirArbreEnregistrementCategorie()
