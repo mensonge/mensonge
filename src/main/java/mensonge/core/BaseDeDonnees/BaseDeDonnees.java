@@ -11,6 +11,7 @@ import java.sql.Statement;
 
 import mensonge.core.BetterObservable;
 import mensonge.core.BaseDeDonnees.DBException;
+import mensonge.userinterface.GraphicalUserInterface;
 
 /**
  * Classe permettant les interraction avec la base de donnees
@@ -417,17 +418,18 @@ public class BaseDeDonnees extends BetterObservable
 	 * 
 	 * @param id
 	 *            id de l'enregistrement a supprimer.
+	 * @throws DBException 
 	 */
-	public void supprimerEnregistrement(final int id)
+	public void supprimerEnregistrement(final int id) throws DBException
 	{
 		if (connexion == null)
 		{
 			return;
 		}
+		PreparedStatement ps;
 		try
 		{
-			PreparedStatement ps = connexion.prepareStatement("DELETE FROM enregistrements WHERE id=?");// preparation
-																										// de la requete
+			ps = connexion.prepareStatement("DELETE FROM enregistrements WHERE id=?");
 			ps.setInt(1, id);// On rempli les trou
 			if (ps.executeUpdate() > 0)// On execute la requete et on test la reussite de cette dernier
 			{
@@ -436,8 +438,9 @@ public class BaseDeDonnees extends BetterObservable
 			ps.close();// On ferme les ressources
 			notifyUpdateDataBase();
 		}
-		catch (Exception e)
+		catch (SQLException e)
 		{
+			throw new DBException(e.getLocalizedMessage(),3);
 		}
 	}
 

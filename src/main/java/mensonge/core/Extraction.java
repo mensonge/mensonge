@@ -190,7 +190,7 @@ public class Extraction implements IExtraction
 		attrs.setFormat("wav");
 		attrs.setAudioAttributes(audio);
 		attrs.setOffset(debut / 1000);
-		attrs.setDuration(fin / 1000);
+		attrs.setDuration((fin - debut) / 1000);
 
 		Encoder encoder = new Encoder();
 		encoder.encode(source, target, attrs);

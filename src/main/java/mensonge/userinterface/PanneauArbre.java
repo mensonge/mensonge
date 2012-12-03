@@ -2,6 +2,7 @@ package mensonge.userinterface;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 
 import java.awt.GridLayout;
@@ -420,8 +421,16 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 				{
 					if (arbre.getSelectionPaths()[i].getLastPathComponent() instanceof Feuille)
 					{
-						bdd.supprimerEnregistrement(((Feuille) arbre.getSelectionPaths()[i].getLastPathComponent())
-								.getId());
+						try
+						{
+							bdd.supprimerEnregistrement(((Feuille) arbre.getSelectionPaths()[i].getLastPathComponent())
+									.getId());
+						}
+						catch (DBException exception)
+						{
+							GraphicalUserInterface.popupErreur("Impossible de supprimer l'enregistrement : "
+									+ exception.getMessage());
+						}
 					}
 				}
 			}
