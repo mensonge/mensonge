@@ -2,13 +2,11 @@ package mensonge.userinterface;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -393,28 +391,8 @@ public class PanneauArbre extends JPanel
 		}
 	}
 
-	class SupprimerEnregistrementClicDroit implements MouseListener
+	class SupprimerEnregistrementClicDroit extends MouseAdapter
 	{
-		@Override
-		public void mouseClicked(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e)
-		{
-		}
-
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
@@ -439,28 +417,8 @@ public class PanneauArbre extends JPanel
 
 	}
 
-	class ExporterEnregistrementClicDroit implements MouseListener
+	class ExporterEnregistrementClicDroit extends MouseAdapter
 	{
-		@Override
-		public void mouseClicked(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e)
-		{
-		}
-
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
@@ -487,28 +445,8 @@ public class PanneauArbre extends JPanel
 		}
 	}
 
-	class RenommerEnregistrementClicDroit implements MouseListener
+	class RenommerEnregistrementClicDroit extends MouseAdapter
 	{
-		@Override
-		public void mouseClicked(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e)
-		{
-		}
-
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
@@ -546,28 +484,8 @@ public class PanneauArbre extends JPanel
 		}
 	}
 
-	class RenommerCategorieClicDroit implements MouseListener
+	class RenommerCategorieClicDroit extends MouseAdapter
 	{
-		@Override
-		public void mouseClicked(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e)
-		{
-		}
-
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
@@ -595,28 +513,8 @@ public class PanneauArbre extends JPanel
 		}
 	}
 
-	class RenommerSujetClicDroit implements MouseListener
+	class RenommerSujetClicDroit extends MouseAdapter
 	{
-		@Override
-		public void mouseClicked(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e)
-		{
-		}
-
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
@@ -644,7 +542,7 @@ public class PanneauArbre extends JPanel
 		}
 	}
 
-	class AjouterCategorieEnregistrementClicDroit implements MouseListener
+	class AjouterCategorieEnregistrementClicDroit extends MouseAdapter
 	{
 		private JPopupMenu menuClicDroit;
 		private BaseDeDonnees bdd;
@@ -653,26 +551,6 @@ public class PanneauArbre extends JPanel
 		{
 			this.bdd = bdd;
 			this.menuClicDroit = menuClicDroit;
-		}
-
-		@Override
-		public void mouseClicked(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e)
-		{
 		}
 
 		@Override
@@ -701,28 +579,8 @@ public class PanneauArbre extends JPanel
 		}
 	}
 
-	class ModifierCategorieEnregistrementClicDroit implements MouseListener
+	class ModifierCategorieEnregistrementClicDroit extends MouseAdapter
 	{
-		@Override
-		public void mouseClicked(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e)
-		{
-		}
-
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
@@ -752,28 +610,8 @@ public class PanneauArbre extends JPanel
 		}
 	}
 
-	class SupprimerCategorieEnregistrementClicDroit implements MouseListener
+	class SupprimerCategorieEnregistrementClicDroit extends MouseAdapter
 	{
-		@Override
-		public void mouseClicked(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e)
-		{
-		}
-
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
@@ -815,7 +653,7 @@ public class PanneauArbre extends JPanel
 		}
 	}
 
-	class AjouterSujetClicDroit implements MouseListener
+	class AjouterSujetClicDroit extends MouseAdapter
 	{
 		private JPopupMenu menuClicDroit;
 		private BaseDeDonnees bdd;
@@ -825,27 +663,7 @@ public class PanneauArbre extends JPanel
 			this.bdd = bdd;
 			this.menuClicDroit = menuClicDroit;
 		}
-
-		@Override
-		public void mouseClicked(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e)
-		{
-		}
-
+		
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
@@ -871,28 +689,8 @@ public class PanneauArbre extends JPanel
 		}
 	}
 
-	class SupprimerSujetClicDroit implements MouseListener
+	class SupprimerSujetClicDroit extends MouseAdapter
 	{
-		@Override
-		public void mouseClicked(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e)
-		{
-		}
-
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
@@ -933,28 +731,8 @@ public class PanneauArbre extends JPanel
 		}
 	}
 
-	class ModifierSujetEnregistrementClicDroit implements MouseListener
+	class ModifierSujetEnregistrementClicDroit extends MouseAdapter
 	{
-		@Override
-		public void mouseClicked(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e)
-		{
-		}
-
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
@@ -984,28 +762,8 @@ public class PanneauArbre extends JPanel
 		}
 	}
 
-	class ModifierTri implements MouseListener
+	class ModifierTri extends MouseAdapter
 	{
-		@Override
-		public void mouseClicked(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e)
-		{
-		}
-
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
@@ -1020,27 +778,6 @@ public class PanneauArbre extends JPanel
 				typeTrie = PanneauArbre.TYPE_TRIE_CATEGORIE;
 			}
 			updateArbre();
-		}
-	}
-
-	class HighlightClicDroit extends MouseAdapter
-	{
-		@Override
-		public void mouseEntered(MouseEvent e)
-		{
-			menuClicDroit.setBackground(new Color(238, 238, 238));
-			Component a = menuClicDroit.getComponentAt(e.getX(), e.getY());
-			if (a instanceof JMenuItem)
-			{
-				a.setBackground(Color.CYAN);
-			}
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e)
-		{
-			Component a = menuClicDroit.getComponentAt(e.getX(), e.getY());
-			a.setBackground(new Color(238, 238, 238));
 		}
 	}
 
