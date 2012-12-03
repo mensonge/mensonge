@@ -1,11 +1,10 @@
 package mensonge.userinterface;
 
+import java.awt.Cursor;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.sql.ResultSet;
 
 import javax.swing.JButton;
@@ -23,14 +22,14 @@ public class DialogueAjouterEnregistrement extends JDialog implements ActionList
 {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private JComboBox comboCategorie = new JComboBox();
+	private JComboBox<String> comboCategorie = new JComboBox<String>();
 	private JLabel labelCategorie = new JLabel("Liste des catégories");
 
-	private JComboBox comboSujet = new JComboBox();
+	private JComboBox<String> comboSujet = new JComboBox<String>();
 	private JLabel labelSujet = new JLabel("Liste des sujets");
 
 	private JLabel labelNom = new JLabel("Nom : ");
@@ -47,6 +46,7 @@ public class DialogueAjouterEnregistrement extends JDialog implements ActionList
 			byte[] enregistrement)
 	{
 		super(parent, title, modal);
+		parent.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		this.enregistrement = enregistrement;
 		this.bdd = bdd;
 		JPanel pan = new JPanel();
@@ -105,13 +105,15 @@ public class DialogueAjouterEnregistrement extends JDialog implements ActionList
 		this.setLocationRelativeTo(null);
 		this.setTitle("Ajouter un enregistrement");
 		this.setSize(350, 300);
+		activer();
+		parent.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 	}
 
 	public void activer()
 	{
 		this.setVisible(true);
 	}
-	
+
 	public void valider()
 	{
 		int duree;
@@ -143,6 +145,6 @@ public class DialogueAjouterEnregistrement extends JDialog implements ActionList
 		{
 			this.setVisible(false);
 		}
-		
+
 	}
 }
