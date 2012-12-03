@@ -169,7 +169,6 @@ public class LecteurAudio extends JPanel implements ActionListener
 
 	public void play(final String filePath)
 	{
-		this.mediaPlayer.release();
 		javax.swing.SwingUtilities.invokeLater(new Runnable()
 		{
 			public void run()

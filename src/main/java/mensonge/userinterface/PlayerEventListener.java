@@ -73,6 +73,7 @@ public class PlayerEventListener extends MediaPlayerEventAdapter
 		boutonLecture.setIcon(IMG_ICON_LECTURE);
 		boutonLecture.setToolTipText("Lancer");
 		slider.setValue(0);
+		labelDureeActuelle.setText("00:00:00");
 	}
 
 	@Override
@@ -88,7 +89,6 @@ public class PlayerEventListener extends MediaPlayerEventAdapter
 	@Override
 	public void finished(MediaPlayer mediaPlayer)
 	{
-		boutonLecture.setIcon(IMG_ICON_LECTURE);
-		boutonLecture.setToolTipText("Lancer");
+		mediaPlayer.stop();
 	}
 }

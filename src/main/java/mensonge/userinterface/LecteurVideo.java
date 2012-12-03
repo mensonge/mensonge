@@ -77,7 +77,6 @@ public class LecteurVideo extends JPanel implements ActionListener
 			{
 				try
 				{
-					mediaPlayer.setRepeat(true);
 					mediaPlayer.startMedia(fichierVideo.getCanonicalPath());
 					mediaPlayer.stop();
 					mediaPlayer.setVolume(sliderVolume.getValue());
