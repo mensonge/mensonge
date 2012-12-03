@@ -791,6 +791,7 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 				menuClicDroit.setEnabled(false);
 				menuClicDroit.setVisible(false);
 			}
+			loadAudioFile(((Feuille) arbre.getLastSelectedPathComponent()).getId());
 			lecteurAudio.play();
 		}
 	}
