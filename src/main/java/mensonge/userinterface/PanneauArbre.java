@@ -359,6 +359,7 @@ public class PanneauArbre extends JPanel
 				{
 					menuClicDroit.add(renommer);
 					menuClicDroit.add(ecouter);
+					menuClicDroit.add(exporter);
 				}
 
 				if (arbre.getSelectionCount() >= 1 && onlySelectBranche()
