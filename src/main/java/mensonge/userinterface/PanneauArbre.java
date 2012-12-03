@@ -12,7 +12,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.ResultSet;
-import java.util.Observable;
 
 import javax.swing.JFileChooser;
 
@@ -56,20 +55,19 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 	private JPopupMenu menuClicDroit = new JPopupMenu();// sers au clic droit
 
 	private int typeTrie = PanneauArbre.TYPE_TRIE_SUJET;
-	private File tempDirectory;
+	private File cacheDirectory;
 
 	public PanneauArbre(BaseDeDonnees bdd)
 	{
-		try
+		cacheDirectory = new File("cache");
+		if (!cacheDirectory.exists())
 		{
-			tempDirectory = File.createTempFile("tempAudioFiles", "");
-			tempDirectory.delete();
-			tempDirectory.mkdir();
-			tempDirectory.deleteOnExit();
+			cacheDirectory.mkdir();
 		}
-		catch (IOException e)
+		else if (cacheDirectory.exists() && !cacheDirectory.isDirectory())
 		{
-			GraphicalUserInterface.popupErreur("Création du répertoire temporaire : " + e.getMessage());
+			cacheDirectory.delete();
+			cacheDirectory.mkdir();
 		}
 
 		this.setLayout(new BorderLayout());
@@ -665,7 +663,7 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 			this.bdd = bdd;
 			this.menuClicDroit = menuClicDroit;
 		}
-		
+
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
@@ -822,7 +820,7 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 				try
 				{
 					lecteurAudio.stop();
-					File idAudioFile = new File(tempDirectory, id + ".wav");
+					File idAudioFile = new File(cacheDirectory, id + ".wav");
 					if (!idAudioFile.exists())
 					{
 						idAudioFile.createNewFile();
@@ -833,7 +831,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 						fos.close();
 					}
 					lecteurAudio.load(idAudioFile.getCanonicalPath());
-
 				}
 				catch (FileNotFoundException e)
 				{
