@@ -46,6 +46,7 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 	private static final int TYPE_TRIE_SUJET = 2;
 
 	private BaseDeDonnees bdd = null;
+	private int idLu = -1;
 
 	private LecteurAudio lecteurAudio;
 
@@ -383,7 +384,11 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 						menuClicDroit.add(renommer);
 						menuClicDroit.add(ecouter);
 						menuClicDroit.add(exporter);
-						loadAudioFile(((Feuille) arbre.getLastSelectedPathComponent()).getId());
+						if (idLu != ((Feuille) arbre.getLastSelectedPathComponent()).getId())
+						{
+							idLu = ((Feuille) arbre.getLastSelectedPathComponent()).getId();
+							loadAudioFile(idLu);
+						}
 					}
 
 				}
@@ -823,8 +828,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 	 */
 	private class ClicGauche extends MouseAdapter
 	{
-		private int idLu = -1;
-
 		@Override
 		public void mouseClicked(MouseEvent e)
 		{
