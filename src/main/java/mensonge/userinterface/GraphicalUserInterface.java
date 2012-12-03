@@ -40,6 +40,7 @@ import uk.co.caprica.vlcj.binding.LibVlc;
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
 import mensonge.core.Extraction;
+import mensonge.core.Utils;
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
 import mensonge.core.BaseDeDonnees.DBException;
 import mensonge.core.plugins.Plugin;
@@ -534,19 +535,22 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			chargerListePlugins();
 		}
 	}
-	
+
 	private class PurgerCacheListener implements ActionListener
 	{
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
 			File cacheDirectory = new File("cache");
-			if(cacheDirectory.exists() && cacheDirectory.isDirectory())
+			if (cacheDirectory.exists() && cacheDirectory.isDirectory())
 			{
+				long length = 0;
 				for (File file : cacheDirectory.listFiles())
 				{
+					length += file.length();
 					file.delete();
 				}
+				popupInfo("Le cache a été purgé.\nVous avez gagné "+Utils.humanReadableByteCount(length,false)+" d'espace disque.", "Purge du cache");
 			}
 		}
 	}
