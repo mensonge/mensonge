@@ -2,13 +2,11 @@ package mensonge.userinterface;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -23,6 +21,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 
 import javax.swing.JTree;
 
@@ -55,9 +54,22 @@ public class PanneauArbre extends JPanel
 	private JPopupMenu menuClicDroit = new JPopupMenu();// sers au clic droit
 
 	private int typeTrie = PanneauArbre.TYPE_TRIE_SUJET;
+	private File tempDirectory;
 
 	public PanneauArbre(BaseDeDonnees bdd)
 	{
+		try
+		{
+			tempDirectory = File.createTempFile("tempAudioFiles", "");
+			tempDirectory.delete();
+			tempDirectory.mkdir();
+			tempDirectory.deleteOnExit();
+		}
+		catch (IOException e)
+		{
+			GraphicalUserInterface.popupErreur("Création du répertoire temporaire : " + e.getMessage());
+		}
+
 		this.setLayout(new BorderLayout());
 		this.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.GRAY));
 		this.bdd = bdd;
@@ -66,10 +78,10 @@ public class PanneauArbre extends JPanel
 		this.remplirArbreEnregistrementSujet();
 		this.arbre = new JTree(racine);
 		this.arbre.addMouseListener(new ClicDroit());
+		this.arbre.addMouseListener(new ClicGauche());
 
 		this.arbre.addTreeSelectionListener(new TreeSelectionListener()
 		{
-
 			@Override
 			public void valueChanged(TreeSelectionEvent event)
 			{
@@ -131,8 +143,8 @@ public class PanneauArbre extends JPanel
 		this.arbre.updateUI();
 		this.arbre.setExpandsSelectedPaths(true);
 		int nb = this.arbre.getRowCount();
-		
-		for(int i = 0; i < nb; i++)
+
+		for (int i = 0; i < nb; i++)
 		{
 			this.arbre.expandRow(i);
 		}
@@ -268,24 +280,8 @@ public class PanneauArbre extends JPanel
 		this.menuClicDroit = menuClicDroit;
 	}
 
-	class ClicDroit implements MouseListener
+	class ClicDroit extends MouseAdapter
 	{
-
-		@Override
-		public void mouseClicked(MouseEvent arg0)
-		{
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent arg0)
-		{
-		}
-
-		@Override
-		public void mouseExited(MouseEvent arg0)
-		{
-		}
-
 		@Override
 		public void mousePressed(MouseEvent e)
 		{
@@ -393,36 +389,10 @@ public class PanneauArbre extends JPanel
 				menuClicDroit.setVisible(false);
 			}
 		}
-
-		@Override
-		public void mouseReleased(MouseEvent arg0)
-		{
-		}
-
 	}
 
-	class SupprimerEnregistrementClicDroit implements MouseListener
+	class SupprimerEnregistrementClicDroit extends MouseAdapter
 	{
-		@Override
-		public void mouseClicked(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e)
-		{
-		}
-
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
@@ -447,28 +417,8 @@ public class PanneauArbre extends JPanel
 
 	}
 
-	class ExporterEnregistrementClicDroit implements MouseListener
+	class ExporterEnregistrementClicDroit extends MouseAdapter
 	{
-		@Override
-		public void mouseClicked(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e)
-		{
-		}
-
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
@@ -495,28 +445,8 @@ public class PanneauArbre extends JPanel
 		}
 	}
 
-	class RenommerEnregistrementClicDroit implements MouseListener
+	class RenommerEnregistrementClicDroit extends MouseAdapter
 	{
-		@Override
-		public void mouseClicked(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e)
-		{
-		}
-
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
@@ -554,28 +484,8 @@ public class PanneauArbre extends JPanel
 		}
 	}
 
-	class RenommerCategorieClicDroit implements MouseListener
+	class RenommerCategorieClicDroit extends MouseAdapter
 	{
-		@Override
-		public void mouseClicked(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e)
-		{
-		}
-
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
@@ -603,28 +513,8 @@ public class PanneauArbre extends JPanel
 		}
 	}
 
-	class RenommerSujetClicDroit implements MouseListener
+	class RenommerSujetClicDroit extends MouseAdapter
 	{
-		@Override
-		public void mouseClicked(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e)
-		{
-		}
-
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
@@ -652,7 +542,7 @@ public class PanneauArbre extends JPanel
 		}
 	}
 
-	class AjouterCategorieEnregistrementClicDroit implements MouseListener
+	class AjouterCategorieEnregistrementClicDroit extends MouseAdapter
 	{
 		private JPopupMenu menuClicDroit;
 		private BaseDeDonnees bdd;
@@ -661,26 +551,6 @@ public class PanneauArbre extends JPanel
 		{
 			this.bdd = bdd;
 			this.menuClicDroit = menuClicDroit;
-		}
-
-		@Override
-		public void mouseClicked(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e)
-		{
 		}
 
 		@Override
@@ -709,28 +579,8 @@ public class PanneauArbre extends JPanel
 		}
 	}
 
-	class ModifierCategorieEnregistrementClicDroit implements MouseListener
+	class ModifierCategorieEnregistrementClicDroit extends MouseAdapter
 	{
-		@Override
-		public void mouseClicked(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e)
-		{
-		}
-
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
@@ -760,28 +610,8 @@ public class PanneauArbre extends JPanel
 		}
 	}
 
-	class SupprimerCategorieEnregistrementClicDroit implements MouseListener
+	class SupprimerCategorieEnregistrementClicDroit extends MouseAdapter
 	{
-		@Override
-		public void mouseClicked(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e)
-		{
-		}
-
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
@@ -823,7 +653,7 @@ public class PanneauArbre extends JPanel
 		}
 	}
 
-	class AjouterSujetClicDroit implements MouseListener
+	class AjouterSujetClicDroit extends MouseAdapter
 	{
 		private JPopupMenu menuClicDroit;
 		private BaseDeDonnees bdd;
@@ -833,27 +663,7 @@ public class PanneauArbre extends JPanel
 			this.bdd = bdd;
 			this.menuClicDroit = menuClicDroit;
 		}
-
-		@Override
-		public void mouseClicked(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e)
-		{
-		}
-
+		
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
@@ -879,28 +689,8 @@ public class PanneauArbre extends JPanel
 		}
 	}
 
-	class SupprimerSujetClicDroit implements MouseListener
+	class SupprimerSujetClicDroit extends MouseAdapter
 	{
-		@Override
-		public void mouseClicked(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e)
-		{
-		}
-
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
@@ -941,28 +731,8 @@ public class PanneauArbre extends JPanel
 		}
 	}
 
-	class ModifierSujetEnregistrementClicDroit implements MouseListener
+	class ModifierSujetEnregistrementClicDroit extends MouseAdapter
 	{
-		@Override
-		public void mouseClicked(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e)
-		{
-		}
-
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
@@ -992,28 +762,8 @@ public class PanneauArbre extends JPanel
 		}
 	}
 
-	class ModifierTri implements MouseListener
+	class ModifierTri extends MouseAdapter
 	{
-		@Override
-		public void mouseClicked(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e)
-		{
-		}
-
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
@@ -1031,47 +781,8 @@ public class PanneauArbre extends JPanel
 		}
 	}
 
-	class HighlightClicDroit implements MouseListener
-	{
-		@Override
-		public void mouseClicked(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e)
-		{
-			menuClicDroit.setBackground(new Color(238, 238, 238));
-			Component a = menuClicDroit.getComponentAt(e.getX(), e.getY());
-			if (a instanceof JMenuItem)
-			{
-				a.setBackground(Color.CYAN);
-			}
-			System.out.println(a.getClass());
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e)
-		{
-			Component a = menuClicDroit.getComponentAt(e.getX(), e.getY());
-			a.setBackground(new Color(238, 238, 238));
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e)
-		{
-		}
-	}
-
 	class PlayEcouteArbre extends MouseAdapter
 	{
-		private int idLu = -1;
-
 		@Override
 		public void mouseReleased(MouseEvent event)
 		{
@@ -1080,38 +791,61 @@ public class PanneauArbre extends JPanel
 				menuClicDroit.setEnabled(false);
 				menuClicDroit.setVisible(false);
 			}
+			lecteurAudio.play();
+		}
+	}
 
-			if (((Feuille) arbre.getLastSelectedPathComponent()).getId() != idLu)
+	private class ClicGauche extends MouseAdapter
+	{
+		@Override
+		public void mousePressed(MouseEvent e)
+		{
+			if ((e.getModifiers() & MouseEvent.BUTTON1_MASK) != 0)
+			{
+				if (arbre.getSelectionCount() == 1 && onlySelectFeuille())
+				{
+					loadAudioFile(((Feuille) arbre.getLastSelectedPathComponent()).getId());
+				}
+			}
+		}
+	}
+
+	private void loadAudioFile(final int id)
+	{
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			@Override
+			public void run()
 			{
 				try
 				{
 					lecteurAudio.stop();
-					File tempFile = File.createTempFile("tempFile", ".wav");
-					tempFile.deleteOnExit();
-					byte[] contenu = bdd.recupererEnregistrement(((Feuille) arbre.getLastSelectedPathComponent())
-							.getId());
-					FileOutputStream fos = new FileOutputStream(tempFile);
-					fos.write(contenu);
-					fos.flush();
-					fos.close();
+					File idAudioFile = new File(tempDirectory, id + ".wav");
+					if (!idAudioFile.exists())
+					{
+						idAudioFile.createNewFile();
+						byte[] contenu = bdd.recupererEnregistrement(id);
+						FileOutputStream fos = new FileOutputStream(idAudioFile);
+						fos.write(contenu);
+						fos.flush();
+						fos.close();
+					}
+					lecteurAudio.load(idAudioFile.getCanonicalPath());
 
-					idLu = ((Feuille) arbre.getLastSelectedPathComponent()).getId();
-					lecteurAudio.play(tempFile.getCanonicalPath());
 				}
 				catch (FileNotFoundException e)
 				{
-					GraphicalUserInterface.popupErreur(e.getMessage());
+					GraphicalUserInterface.popupErreur("Création du fichier audio temporaire : " + e.getMessage());
 				}
 				catch (IOException e)
 				{
-					GraphicalUserInterface.popupErreur(e.getMessage());
+					GraphicalUserInterface.popupErreur("Création du fichier audio temporaire : " + e.getMessage());
 				}
 				catch (DBException e)
 				{
-					GraphicalUserInterface.popupErreur(e.getMessage());
+					GraphicalUserInterface.popupErreur("Création du fichier audio temporaire : " + e.getMessage());
 				}
 			}
-
-		}
+		});
 	}
 }

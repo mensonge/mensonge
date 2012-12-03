@@ -53,7 +53,6 @@ public class DialogueAjouterEnregistrement extends JDialog implements ActionList
 		pan.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		this.envoyer.addActionListener(this);
-
 		this.annuler.addActionListener(this);
 
 		try

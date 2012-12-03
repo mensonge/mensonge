@@ -283,6 +283,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	 */
 	private void quitter()
 	{
+		this.panneauArbre.close();
 		this.pluginManager.unloadPlugins();
 		this.closeAllTabs();
 		this.dispose();
@@ -393,7 +394,8 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			{
 				try
 				{
-					this.ajouterOnglet(new OngletLecteur(new File(fileChooser.getSelectedFile().getCanonicalPath()),this.bdd,this));
+					this.ajouterOnglet(new OngletLecteur(new File(fileChooser.getSelectedFile().getCanonicalPath()),
+							this.bdd, this));
 				}
 				catch (IOException e)
 				{
@@ -531,8 +533,10 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 	public static void main(String args[])
 	{
+		// On active l'anti-aliasing
 		System.setProperty("awt.useSystemAAFontSettings", "on");
 		System.setProperty("swing.aatext", "true");
+
 		try
 		{
 			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");

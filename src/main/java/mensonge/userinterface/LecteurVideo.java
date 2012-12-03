@@ -53,15 +53,16 @@ public class LecteurVideo extends JPanel implements ActionListener
 	private JButton boutonExtract;
 	private long timeMarqueur1 = 0;
 	private long timeMarqueur2 = 1;
-	private BaseDeDonnees maBDD;
+	private BaseDeDonnees bdd;
 	private Marqueur t1;
 	private MediaPlayer mediaPlayer;
-	private String pathVideo="";
+	private String pathVideo = "";
 	private JFrame parent;
-	public LecteurVideo(final File fichierVideo,final String nom,BaseDeDonnees bdd,JFrame parent)
+
+	public LecteurVideo(final File fichierVideo, final String nom, BaseDeDonnees bdd, JFrame parent)
 	{
-		this.parent=parent;
-		this.maBDD=bdd;
+		this.parent = parent;
+		this.bdd = bdd;
 		this.vidComp = new EmbeddedMediaPlayerComponent();
 		this.vidComp.setVisible(true);
 		this.mediaPlayer = this.vidComp.getMediaPlayer();
@@ -77,7 +78,8 @@ public class LecteurVideo extends JPanel implements ActionListener
 				try
 				{
 					mediaPlayer.setRepeat(true);
-					mediaPlayer.prepareMedia(fichierVideo.getCanonicalPath());
+					mediaPlayer.startMedia(fichierVideo.getCanonicalPath());
+					mediaPlayer.stop();
 					mediaPlayer.setVolume(sliderVolume.getValue());
 				}
 				catch (IOException e)
@@ -86,8 +88,8 @@ public class LecteurVideo extends JPanel implements ActionListener
 				}
 			}
 		});
-		pathVideo=nom;
- 	}
+		pathVideo = nom;
+	}
 
 	private void initialiserComposants()
 	{
@@ -115,7 +117,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 		this.boutonMarqueur2.addActionListener(this);
 		this.boutonMarqueur2.setEnabled(true);
 
-		this.boutonExtract= new JButton();
+		this.boutonExtract = new JButton();
 		this.boutonExtract.setToolTipText("Ajouter a la bdd");
 		this.boutonExtract.setText("Extraire");
 		this.boutonExtract.addActionListener(this);
@@ -254,29 +256,31 @@ public class LecteurVideo extends JPanel implements ActionListener
 		else if (event.getSource() == boutonExtract)
 		{
 			this.mediaPlayer.pause();
-			Extraction extract =new Extraction();
+			Extraction extract = new Extraction();
 			byte[] tabOfByte = null;
 			try
 			{
-				tabOfByte=extract.extraireIntervalle(pathVideo, timeMarqueur1, timeMarqueur2);
+				tabOfByte = extract.extraireIntervalle(pathVideo, timeMarqueur1, timeMarqueur1);
 			}
 			catch (IllegalArgumentException e)
 			{
-				GraphicalUserInterface.popupErreur(e.getMessage());
+				GraphicalUserInterface.popupErreur("Extraction : "+e.getMessage());
 			}
 			catch (InputFormatException e)
 			{
-				GraphicalUserInterface.popupErreur(e.getMessage());
+				GraphicalUserInterface.popupErreur("Extraction : "+e.getMessage());
 			}
 			catch (IOException e)
 			{
-				GraphicalUserInterface.popupErreur(e.getMessage());
+				GraphicalUserInterface.popupErreur("Extraction : "+e.getMessage());
 			}
 			catch (EncoderException e)
 			{
-				GraphicalUserInterface.popupErreur(e.getMessage());
+				GraphicalUserInterface.popupErreur("Extraction : "+e.getMessage());
 			}
-			DialogueAjouterEnregistrement diag =new DialogueAjouterEnregistrement(parent, "Ajouter enregistrement", true, this.maBDD, tabOfByte);
+			DialogueAjouterEnregistrement diag = new DialogueAjouterEnregistrement(parent, "Ajouter enregistrement",
+					true, this.bdd, tabOfByte);
+			diag.setVisible(true);
 			diag.setAlwaysOnTop(true);
 			this.mediaPlayer.pause();
 		}

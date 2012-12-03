@@ -5,6 +5,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JSlider;
 
+import uk.co.caprica.vlcj.binding.internal.libvlc_media_t;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter;
 
@@ -48,6 +49,15 @@ public class PlayerEventListener extends MediaPlayerEventAdapter
 	}
 
 	@Override
+	public void mediaChanged(MediaPlayer mediaPlayer, libvlc_media_t media, String mrl)
+	{
+		slider.setValue(0);
+		boutonLecture.setIcon(IMG_ICON_LECTURE);
+		boutonLecture.setToolTipText("Lancer");
+		labelDureeActuelle.setText("00:00:00");
+	}
+
+	@Override
 	public void timeChanged(MediaPlayer mediaPlayer, long newTime)
 	{
 		long duree = newTime / 1000;
@@ -81,5 +91,4 @@ public class PlayerEventListener extends MediaPlayerEventAdapter
 		boutonLecture.setIcon(IMG_ICON_LECTURE);
 		boutonLecture.setToolTipText("Lancer");
 	}
-
 }

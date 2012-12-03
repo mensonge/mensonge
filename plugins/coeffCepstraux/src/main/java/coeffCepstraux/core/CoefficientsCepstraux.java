@@ -2,7 +2,6 @@ package coeffCepstraux.core;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -14,7 +13,6 @@ import mensonge.core.IExtraction;
 import mensonge.core.plugins.Plugin;
 
 import org.jfree.data.time.Millisecond;
-import org.jfree.data.time.Second;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
@@ -45,7 +43,7 @@ public class CoefficientsCepstraux implements Plugin
 			@Override
 			public void run()
 			{
-				graph = new DrawXYGraph("Canard ?", "Variation d'amplitudes", "Millisecondes", "Amplitudes");
+				graph = new DrawXYGraph("Canard ?", "Variation d'amplitudes", "Secondes", "Amplitudes");
 				timeGraph = new DrawTimeGraph("Canard ?", "Variation d'amplitudes", "Temps", "Amplitudes");
 
 				Thread t1 = new Thread(new Runnable()
@@ -57,7 +55,7 @@ public class CoefficientsCepstraux implements Plugin
 						XYSeries series = new XYSeries("Canal 0");
 						for (int j = 0; j < echantillons.length; j++)
 						{
-							series.add(j / 44.1, echantillons[j][0]);
+							series.add(j / 44100.0, echantillons[j][0]);
 
 						}
 						XYDataset xyDataset = new XYSeriesCollection(series);
@@ -111,7 +109,6 @@ public class CoefficientsCepstraux implements Plugin
 			{
 				double[][] echantillons = extraction.extraireEchantillons(test.getCanonicalPath());
 				this.drawGraph(echantillons);
-
 			}
 			catch (IOException e)
 			{
