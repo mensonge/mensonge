@@ -23,6 +23,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
+import javax.swing.SwingUtilities;
 
 import javax.swing.JTree;
 
@@ -1072,34 +1073,42 @@ public class PanneauArbre extends JPanel
 		}
 	}
 
-	private void loadAudioFile(int id)
+	private void loadAudioFile(final int id)
 	{
-		try
+		SwingUtilities.invokeLater(new Runnable()
 		{
-			lecteurAudio.stop();
-			File idAudioFile = new File(tempDirectory, id + ".wav");
-			if (!idAudioFile.exists())
+			@Override
+			public void run()
 			{
-				idAudioFile.createNewFile();
-				byte[] contenu = bdd.recupererEnregistrement(id);
-				FileOutputStream fos = new FileOutputStream(idAudioFile);
-				fos.write(contenu);
-				fos.flush();
-				fos.close();
+				try
+				{
+					lecteurAudio.stop();
+					File idAudioFile = new File(tempDirectory, id + ".wav");
+					if (!idAudioFile.exists())
+					{
+						idAudioFile.createNewFile();
+						byte[] contenu = bdd.recupererEnregistrement(id);
+						FileOutputStream fos = new FileOutputStream(idAudioFile);
+						fos.write(contenu);
+						fos.flush();
+						fos.close();
+					}
+					lecteurAudio.load(idAudioFile.getCanonicalPath());
+
+				}
+				catch (FileNotFoundException e)
+				{
+					GraphicalUserInterface.popupErreur("Création du fichier audio temporaire : " + e.getMessage());
+				}
+				catch (IOException e)
+				{
+					GraphicalUserInterface.popupErreur("Création du fichier audio temporaire : " + e.getMessage());
+				}
+				catch (DBException e)
+				{
+					GraphicalUserInterface.popupErreur("Création du fichier audio temporaire : " + e.getMessage());
+				}
 			}
-			lecteurAudio.load(idAudioFile.getCanonicalPath());
-		}
-		catch (FileNotFoundException e)
-		{
-			GraphicalUserInterface.popupErreur("Création du fichier audio temporaire : " + e.getMessage());
-		}
-		catch (IOException e)
-		{
-			GraphicalUserInterface.popupErreur("Création du fichier audio temporaire : " + e.getMessage());
-		}
-		catch (DBException e)
-		{
-			GraphicalUserInterface.popupErreur("Création du fichier audio temporaire : " + e.getMessage());
-		}
+		});
 	}
 }
