@@ -20,7 +20,7 @@ public class DialogueNouveauSujet extends JDialog
 {
 	private static final long serialVersionUID = 1L;
 
-	private JComboBox combo = new JComboBox();
+	private JComboBox<String> combo = new JComboBox<String>();
 	private JLabel label = new JLabel("Liste des catégories");
 
 	private JButton envoyer = new JButton("Valider");
