@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractAction;
@@ -19,11 +20,13 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 
-public class LecteurAudio extends JPanel
+public class LecteurAudio extends JPanel implements ActionListener
 {
 	private static final long serialVersionUID = 5373991180139317820L;
 
@@ -73,11 +76,13 @@ public class LecteurAudio extends JPanel
 		this.boutonLecture = new JButton();
 		this.boutonLecture.setToolTipText("Lancer");
 		this.boutonLecture.setIcon(imageIconLecture);
+		this.boutonLecture.addActionListener(this);
 		this.boutonLecture.setEnabled(true);
 
 		this.boutonStop = new JButton();
 		this.boutonStop.setToolTipText("Stoper");
 		this.boutonStop.setIcon(imageIconStop);
+		this.boutonLecture.addActionListener(this);
 		this.boutonStop.setEnabled(true);
 
 		this.slider = new JSlider(JSlider.HORIZONTAL);
@@ -97,6 +102,13 @@ public class LecteurAudio extends JPanel
 		this.sliderVolume.setMinimumSize(new Dimension(100, 30));
 		this.sliderVolume.setMaximumSize(new Dimension(100, 30));
 		this.sliderVolume.setPreferredSize(new Dimension(100, 30));
+		this.sliderVolume.addChangeListener(new ChangeListener()
+		{
+			public void stateChanged(ChangeEvent e)
+			{
+				mediaPlayer.setVolume(sliderVolume.getValue());
+			}
+		});
 
 		SliderPositionEventListener sliderListener = new SliderPositionEventListener(this.slider, this.mediaPlayer);
 		this.slider.addMouseListener(sliderListener);
@@ -169,6 +181,26 @@ public class LecteurAudio extends JPanel
 	public void stop()
 	{
 		this.mediaPlayer.stop();
+	}
+	
+	@Override
+	public void actionPerformed(ActionEvent event)
+	{
+		if (event.getSource() == boutonLecture)
+		{
+			if (this.mediaPlayer.isPlaying())
+			{
+				this.mediaPlayer.pause();
+			}
+			else
+			{
+				this.mediaPlayer.play();
+			}
+		}
+		else if (event.getSource() == boutonStop)
+		{
+			this.mediaPlayer.stop();
+		}
 	}
 
 }
