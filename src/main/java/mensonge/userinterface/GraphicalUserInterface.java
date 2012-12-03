@@ -463,7 +463,6 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				{
 					popupErreur(e1.getMessage());
 				}
-
 			}
 		}
 	}
@@ -501,7 +500,6 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 					popupErreur(e2.getMessage());
 
 				}
-				// updateArbre();
 			}
 		}
 	}
@@ -551,6 +549,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 					file.delete();
 				}
 				popupInfo("Le cache a été purgé.\nVous avez gagné "+Utils.humanReadableByteCount(length,false)+" d'espace disque.", "Purge du cache");
+				panneauArbre.updateCacheSizeInfo();
 			}
 		}
 	}

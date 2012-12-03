@@ -3,6 +3,8 @@ package mensonge.userinterface;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
@@ -18,6 +20,7 @@ import java.util.Enumeration;
 import javax.swing.JFileChooser;
 
 import javax.swing.BorderFactory;
+import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -33,6 +36,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
 import mensonge.core.DataBaseObserver;
+import mensonge.core.Utils;
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
 import mensonge.core.BaseDeDonnees.DBException;
 
@@ -59,6 +63,7 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 
 	private int typeTrie = PanneauArbre.TYPE_TRIE_SUJET;
 	private File cacheDirectory;
+	private JLabel labelCacheSize;
 
 	public PanneauArbre(BaseDeDonnees bdd)
 	{
@@ -108,19 +113,25 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		});
 
 		this.scrollPane = new JScrollPane(arbre);
-		this.scrollPane.setPreferredSize(new Dimension(270, 300));
+		this.scrollPane.setPreferredSize(new Dimension(270, 450));
 		this.scrollPane.setAutoscrolls(true);
 
 		this.infoArbre.setPreferredSize(new Dimension(270, 100));
 
-		JPanel panelArbre = new JPanel(new GridLayout(0, 1));
-		panelArbre.add(this.scrollPane);
-		panelArbre.add(this.infoArbre);
+		this.labelCacheSize = new JLabel("Taille du cache : "
+				+ Utils.humanReadableByteCount(Utils.getCacheSize(), false));
+		JPanel panelArbreInfo = new JPanel(new BorderLayout());
+		panelArbreInfo.add(scrollPane, BorderLayout.CENTER);
+		panelArbreInfo.add(labelCacheSize, BorderLayout.SOUTH);
+
+		JPanel panelArbre = new JPanel(new BorderLayout());
+		panelArbre.add(panelArbreInfo, BorderLayout.NORTH);
+		panelArbre.add(this.infoArbre,  BorderLayout.SOUTH);
 
 		this.lecteurAudio = new LecteurAudio();
 		this.lecteurAudio.setVisible(false);
 
-		this.add(panelArbre, BorderLayout.CENTER);
+		this.add(panelArbre, BorderLayout.NORTH);
 		this.add(lecteurAudio, BorderLayout.SOUTH);
 	}
 
@@ -916,6 +927,7 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 						fos.write(contenu);
 						fos.flush();
 						fos.close();
+						updateCacheSizeInfo();
 					}
 					lecteurAudio.load(idAudioFile.getCanonicalPath());
 				}
@@ -935,6 +947,12 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		});
 	}
 
+	public void updateCacheSizeInfo()
+	{
+		labelCacheSize.setText("Taille du cache : "
+				+ Utils.humanReadableByteCount(Utils.getCacheSize(), false));
+	}
+	
 	@Override
 	public void onUpdateDataBase()
 	{
