@@ -55,9 +55,22 @@ public class PanneauArbre extends JPanel
 	private JPopupMenu menuClicDroit = new JPopupMenu();// sers au clic droit
 
 	private int typeTrie = PanneauArbre.TYPE_TRIE_SUJET;
+	private File tempDirectory;
 
 	public PanneauArbre(BaseDeDonnees bdd)
 	{
+		try
+		{
+			tempDirectory = File.createTempFile("tempAudioFiles", "");
+			tempDirectory.delete();
+			tempDirectory.mkdir();
+			tempDirectory.deleteOnExit();
+		}
+		catch (IOException e)
+		{
+			GraphicalUserInterface.popupErreur("Création du répertoire temporaire : " + e.getMessage());
+		}
+
 		this.setLayout(new BorderLayout());
 		this.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.GRAY));
 		this.bdd = bdd;
@@ -66,6 +79,7 @@ public class PanneauArbre extends JPanel
 		this.remplirArbreEnregistrementSujet();
 		this.arbre = new JTree(racine);
 		this.arbre.addMouseListener(new ClicDroit());
+		this.arbre.addMouseListener(new ClicGauche());
 
 		this.arbre.addTreeSelectionListener(new TreeSelectionListener()
 		{
@@ -130,8 +144,8 @@ public class PanneauArbre extends JPanel
 		this.arbre.updateUI();
 		this.arbre.setExpandsSelectedPaths(true);
 		int nb = this.arbre.getRowCount();
-		
-		for(int i = 0; i < nb; i++)
+
+		for (int i = 0; i < nb; i++)
 		{
 			this.arbre.expandRow(i);
 		}
@@ -267,24 +281,8 @@ public class PanneauArbre extends JPanel
 		this.menuClicDroit = menuClicDroit;
 	}
 
-	class ClicDroit implements MouseListener
+	class ClicDroit extends MouseAdapter
 	{
-
-		@Override
-		public void mouseClicked(MouseEvent arg0)
-		{
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent arg0)
-		{
-		}
-
-		@Override
-		public void mouseExited(MouseEvent arg0)
-		{
-		}
-
 		@Override
 		public void mousePressed(MouseEvent e)
 		{
@@ -392,12 +390,6 @@ public class PanneauArbre extends JPanel
 				menuClicDroit.setVisible(false);
 			}
 		}
-
-		@Override
-		public void mouseReleased(MouseEvent arg0)
-		{
-		}
-
 	}
 
 	class SupprimerEnregistrementClicDroit implements MouseListener
@@ -1030,13 +1022,8 @@ public class PanneauArbre extends JPanel
 		}
 	}
 
-	class HighlightClicDroit implements MouseListener
+	class HighlightClicDroit extends MouseAdapter
 	{
-		@Override
-		public void mouseClicked(MouseEvent e)
-		{
-		}
-
 		@Override
 		public void mouseEntered(MouseEvent e)
 		{
@@ -1046,7 +1033,6 @@ public class PanneauArbre extends JPanel
 			{
 				a.setBackground(Color.CYAN);
 			}
-			System.out.println(a.getClass());
 		}
 
 		@Override
@@ -1055,22 +1041,10 @@ public class PanneauArbre extends JPanel
 			Component a = menuClicDroit.getComponentAt(e.getX(), e.getY());
 			a.setBackground(new Color(238, 238, 238));
 		}
-
-		@Override
-		public void mousePressed(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e)
-		{
-		}
 	}
 
 	class PlayEcouteArbre extends MouseAdapter
 	{
-		private int idLu = -1;
-
 		@Override
 		public void mouseReleased(MouseEvent event)
 		{
@@ -1079,38 +1053,53 @@ public class PanneauArbre extends JPanel
 				menuClicDroit.setEnabled(false);
 				menuClicDroit.setVisible(false);
 			}
+			lecteurAudio.play();
+		}
+	}
 
-			if (((Feuille) arbre.getLastSelectedPathComponent()).getId() != idLu)
+	private class ClicGauche extends MouseAdapter
+	{
+		@Override
+		public void mousePressed(MouseEvent e)
+		{
+			if ((e.getModifiers() & MouseEvent.BUTTON1_MASK) != 0)
 			{
-				try
+				if (arbre.getSelectionCount() == 1 && onlySelectFeuille())
 				{
-					lecteurAudio.stop();
-					File tempFile = File.createTempFile("tempFile", ".wav");
-					tempFile.deleteOnExit();
-					byte[] contenu = bdd.recupererEnregistrement(((Feuille) arbre.getLastSelectedPathComponent())
-							.getId());
-					FileOutputStream fos = new FileOutputStream(tempFile);
-					fos.write(contenu);
-					fos.flush();
-					fos.close();
-
-					idLu = ((Feuille) arbre.getLastSelectedPathComponent()).getId();
-					lecteurAudio.play(tempFile.getCanonicalPath());
-				}
-				catch (FileNotFoundException e)
-				{
-					GraphicalUserInterface.popupErreur(e.getMessage());
-				}
-				catch (IOException e)
-				{
-					GraphicalUserInterface.popupErreur(e.getMessage());
-				}
-				catch (DBException e)
-				{
-					GraphicalUserInterface.popupErreur(e.getMessage());
+					loadAudioFile(((Feuille) arbre.getLastSelectedPathComponent()).getId());
 				}
 			}
+		}
+	}
 
+	private void loadAudioFile(int id)
+	{
+		try
+		{
+			lecteurAudio.stop();
+			File idAudioFile = new File(tempDirectory, id + ".wav");
+			if (!idAudioFile.exists())
+			{
+				idAudioFile.createNewFile();
+				byte[] contenu = bdd.recupererEnregistrement(id);
+				FileOutputStream fos = new FileOutputStream(idAudioFile);
+				fos.write(contenu);
+				fos.flush();
+				fos.close();
+			}
+			lecteurAudio.load(idAudioFile.getCanonicalPath());
+		}
+		catch (FileNotFoundException e)
+		{
+			GraphicalUserInterface.popupErreur("Création du fichier audio temporaire : " + e.getMessage());
+		}
+		catch (IOException e)
+		{
+			GraphicalUserInterface.popupErreur("Création du fichier audio temporaire : " + e.getMessage());
+		}
+		catch (DBException e)
+		{
+			GraphicalUserInterface.popupErreur("Création du fichier audio temporaire : " + e.getMessage());
 		}
 	}
 }

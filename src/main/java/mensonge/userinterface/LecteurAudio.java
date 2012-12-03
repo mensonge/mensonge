@@ -169,6 +169,7 @@ public class LecteurAudio extends JPanel implements ActionListener
 
 	public void play(final String filePath)
 	{
+		this.mediaPlayer.release();
 		javax.swing.SwingUtilities.invokeLater(new Runnable()
 		{
 			public void run()
@@ -176,6 +177,17 @@ public class LecteurAudio extends JPanel implements ActionListener
 				mediaPlayer.playMedia(filePath);
 			}
 		});
+	}
+	
+	public void load(final String filePath)
+	{
+		javax.swing.SwingUtilities.invokeLater(new Runnable()
+		{
+			public void run()
+			{
+				mediaPlayer.prepareMedia(filePath);
+			}
+		});		
 	}
 
 	public void stop()
