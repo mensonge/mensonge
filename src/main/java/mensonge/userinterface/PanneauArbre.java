@@ -173,7 +173,7 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 				while (rsEnr.next())
 				{
 					Feuille f = new Feuille(rsEnr.getInt("id"), rsEnr.getString("nom"), rsEnr.getInt("duree"),
-							rsEnr.getInt("taille"), rsEnr.getString("nomCat"), rsEnr.getString("nomsuj"));
+							rsEnr.getLong("taille"), rsEnr.getString("nomCat"), rsEnr.getString("nomsuj"));
 					node.add(f);
 				}
 				rsEnr.close();
@@ -209,7 +209,7 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 				while (rsEnr.next())
 				{
 					Feuille f = new Feuille(rsEnr.getInt("id"), rsEnr.getString("nom"), rsEnr.getInt("duree"),
-							rsEnr.getInt("taille"), rsEnr.getString("nomCat"), rsEnr.getString("nomsuj"));
+							rsEnr.getLong("taille"), rsEnr.getString("nomCat"), rsEnr.getString("nomsuj"));
 					node.add(f);
 				}
 				rsEnr.close();

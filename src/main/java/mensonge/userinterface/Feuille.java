@@ -5,6 +5,8 @@ import java.util.Map;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
+import mensonge.core.Utils;
+
 public class Feuille extends DefaultMutableTreeNode
 {
 	/**
@@ -14,11 +16,11 @@ public class Feuille extends DefaultMutableTreeNode
 	int id;
 	String nom;
 	int duree;
-	int taille;
+	long taille;
 	String categorie;
 	String sujet;
 
-	public Feuille(int id, String nom, int duree, int taille, String categorie, String sujet)
+	public Feuille(int id, String nom, int duree, long taille, String categorie, String sujet)
 	{
 		super(nom);
 		this.id = id;
@@ -34,7 +36,7 @@ public class Feuille extends DefaultMutableTreeNode
 		Map<String, String> retour = new HashMap<String, String>();
 		retour.put("Nom", nom);
 		retour.put("Duree", Integer.toString(duree) + " Seconde(s)");
-		retour.put("Taille", Integer.toString(taille) + " Octet(s)");
+		retour.put("Taille", Utils.humanReadableByteCount(taille, false));
 		retour.put("Categorie", categorie);
 		retour.put("Sujet", sujet);
 		return retour;
@@ -70,12 +72,12 @@ public class Feuille extends DefaultMutableTreeNode
 		this.duree = duree;
 	}
 
-	public int getTaille()
+	public long getTaille()
 	{
 		return taille;
 	}
 
-	public void setTaille(int taille)
+	public void setTaille(long taille)
 	{
 		this.taille = taille;
 	}
