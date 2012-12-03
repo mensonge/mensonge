@@ -142,12 +142,7 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		}
 		this.arbre.updateUI();
 		this.arbre.setExpandsSelectedPaths(true);
-		int nb = this.arbre.getRowCount();
-
-		for (int i = 0; i < nb; i++)
-		{
-			this.arbre.expandRow(i);
-		}
+		this.arbre.expandPath(new TreePath(this.racine));
 	}
 
 	public void remplirArbreEnregistrementCategorie()
