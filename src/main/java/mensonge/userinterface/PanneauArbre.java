@@ -12,6 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.ResultSet;
+import java.util.Observable;
 
 import javax.swing.JFileChooser;
 
@@ -30,10 +31,11 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
+import mensonge.core.DataBaseObserver;
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
 import mensonge.core.BaseDeDonnees.DBException;
 
-public class PanneauArbre extends JPanel
+public class PanneauArbre extends JPanel implements DataBaseObserver
 {
 	/**
 	 * 
@@ -847,5 +849,11 @@ public class PanneauArbre extends JPanel
 				}
 			}
 		});
+	}
+
+	@Override
+	public void onUpdateDataBase()
+	{
+		this.updateArbre();
 	}
 }

@@ -1,14 +1,16 @@
 package mensonge.core;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
-import java.util.Observer;
 import java.util.Set;
 import java.util.WeakHashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class BetterObservable implements Observable
 {
-
-	private Set<Observer> observers = Collections.newSetFromMap(new WeakHashMap<Observer, Boolean>());
+	private static Logger logger = Logger.getLogger("Notifier");
+	private Set<IObserver> observers = Collections.newSetFromMap(new WeakHashMap<IObserver, Boolean>());
 
 	private Object objectWhichNotify;
 
@@ -22,26 +24,38 @@ public class BetterObservable implements Observable
 		this.objectWhichNotify = o;
 	}
 
-	public void addObserver(Observer o)
+	public void addObserver(IObserver o)
 	{
 		this.observers.add(o);
 	}
 
-	public void removeObserver(Observer o)
+	public void removeObserver(IObserver o)
 	{
 		this.observers.remove(o);
 	}
 
-/*	private void callWithObservers(String name, Object... args)
+	public void notifyUpdateDataBase()
+	{
+		callWithObservers("onUpdateDataBase");
+	}
+	
+	private void callWithObservers(String name, Object... args)
 	{
 		try
 		{
 			Notifier.call(observers, name, args);
 		}
-		catch (NotificationException e)
+		catch (IllegalArgumentException e)
 		{
-			e.printStackTrace();
+			logger.log(Level.WARNING, e.getMessage());
+		}
+		catch (IllegalAccessException e)
+		{
+			logger.log(Level.WARNING, e.getMessage());
+		}
+		catch (InvocationTargetException e)
+		{
+			logger.log(Level.WARNING, e.getMessage());
 		}
 	}
-*/
 }

@@ -80,6 +80,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		connexionBase("LieLab.db");
 
 		this.panneauArbre = new PanneauArbre(bdd);
+		this.bdd.addObserver(panneauArbre);
 		this.ajoutBarMenu();
 
 		/*
