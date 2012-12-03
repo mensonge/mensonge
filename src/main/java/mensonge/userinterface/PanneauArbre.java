@@ -311,7 +311,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 			effacerMenuContextuel();
 			if ((e.getModifiers() & MouseEvent.BUTTON3_MASK) != 0)
 			{
-				System.out.println("oij "+arbre.getSelectionCount());
 				if (arbre.getSelectionCount() <= 1)
 				{
 					arbre.setSelectionPath(arbre.getPathForLocation(e.getX(), e.getY()));
