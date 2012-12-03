@@ -82,7 +82,7 @@ public class LecteurAudio extends JPanel implements ActionListener
 		this.boutonStop = new JButton();
 		this.boutonStop.setToolTipText("Stoper");
 		this.boutonStop.setIcon(imageIconStop);
-		this.boutonLecture.addActionListener(this);
+		this.boutonStop.addActionListener(this);
 		this.boutonStop.setEnabled(true);
 
 		this.slider = new JSlider(JSlider.HORIZONTAL);
@@ -185,7 +185,8 @@ public class LecteurAudio extends JPanel implements ActionListener
 		{
 			public void run()
 			{
-				mediaPlayer.prepareMedia(filePath);
+				mediaPlayer.startMedia(filePath);
+				mediaPlayer.stop();
 			}
 		});		
 	}
