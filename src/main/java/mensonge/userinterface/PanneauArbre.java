@@ -12,6 +12,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Enumeration;
 
 import javax.swing.JFileChooser;
@@ -148,61 +149,75 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 
 	public void remplirArbreEnregistrementCategorie()
 	{
-		ResultSet rs_cat = null, rs_enr = null;
+		ResultSet rsCat = null, rsEnr = null;
+
 		try
 		{
-			rs_cat = this.bdd.getListeCategorie();
-			while (rs_cat.next())
+			rsCat = this.bdd.getListeCategorie();
+			while (rsCat.next())
 			{
-				Branche node = new Branche(rs_cat.getString("nomcat"));
-				rs_enr = this.bdd.getListeEnregistrementCategorie(rs_cat.getInt("idcat"));
-				while (rs_enr.next())
+				Branche node = new Branche(rsCat.getString("nomcat"));
+				rsEnr = this.bdd.getListeEnregistrementCategorie(rsCat.getInt("idcat"));
+				while (rsEnr.next())
 				{
-					Feuille f = new Feuille(rs_enr.getInt("id"), rs_enr.getString("nom"), rs_enr.getInt("duree"),
-							rs_enr.getInt("taille"), rs_enr.getString("nomCat"), rs_enr.getString("nomsuj"));
+					Feuille f = new Feuille(rsEnr.getInt("id"), rsEnr.getString("nom"), rsEnr.getInt("duree"),
+							rsEnr.getInt("taille"), rsEnr.getString("nomCat"), rsEnr.getString("nomsuj"));
 					node.add(f);
 				}
-				rs_enr.close();
+				rsEnr.close();
 				this.racine.add(node);
 
 			}
-			rs_cat.close();
+			rsCat.close();
 			this.racine.setUserObject("Categorie");
 		}
-		catch (Exception e)
+		catch (DBException e)
 		{
-			GraphicalUserInterface.popupErreur("Erreur lors du chargement des enregistrements", "Erreur");
+			GraphicalUserInterface.popupErreur(
+					"Erreur lors du chargement des enregistrements : " + e.getLocalizedMessage(), "Erreur");
+		}
+		catch (SQLException e)
+		{
+			GraphicalUserInterface.popupErreur(
+					"Erreur lors du chargement des enregistrements : " + e.getLocalizedMessage(), "Erreur");
 		}
 	}
 
 	public void remplirArbreEnregistrementSujet()
 	{
-		ResultSet rs_cat = null, rs_enr = null;
+		ResultSet rsCat = null, rsEnr = null;
+
 		try
 		{
-			rs_cat = this.bdd.getListeSujet();
-			while (rs_cat.next())
+			rsCat = this.bdd.getListeSujet();
+			while (rsCat.next())
 			{
-				Branche node = new Branche(rs_cat.getString("nomsuj"));
-				rs_enr = this.bdd.getListeEnregistrementSujet(rs_cat.getInt("idsuj"));
-				while (rs_enr.next())
+				Branche node = new Branche(rsCat.getString("nomsuj"));
+				rsEnr = this.bdd.getListeEnregistrementSujet(rsCat.getInt("idsuj"));
+				while (rsEnr.next())
 				{
-					Feuille f = new Feuille(rs_enr.getInt("id"), rs_enr.getString("nom"), rs_enr.getInt("duree"),
-							rs_enr.getInt("taille"), rs_enr.getString("nomCat"), rs_enr.getString("nomsuj"));
+					Feuille f = new Feuille(rsEnr.getInt("id"), rsEnr.getString("nom"), rsEnr.getInt("duree"),
+							rsEnr.getInt("taille"), rsEnr.getString("nomCat"), rsEnr.getString("nomsuj"));
 					node.add(f);
 				}
-				rs_enr.close();
+				rsEnr.close();
 				this.racine.add(node);
 
 			}
-			rs_cat.close();
+			rsCat.close();
 			this.racine.setUserObject("Sujet");
 		}
-		catch (Exception e)
+		catch (DBException e)
 		{
-			e.printStackTrace();
-			GraphicalUserInterface.popupErreur("Erreur lors du chargement des enregistrements", "Erreur");
+			GraphicalUserInterface.popupErreur(
+					"Erreur lors du chargement des enregistrements : " + e.getLocalizedMessage(), "Erreur");
 		}
+		catch (SQLException e)
+		{
+			GraphicalUserInterface.popupErreur(
+					"Erreur lors du chargement des enregistrements : " + e.getLocalizedMessage(), "Erreur");
+		}
+
 	}
 
 	public void viderNoeud(DefaultMutableTreeNode selectednode)
@@ -231,9 +246,9 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		TreePath[] paths = arbre.getSelectionPaths();
 		if (paths != null)
 		{
-			for (int i = 0; i < paths.length; i++)
+			for (TreePath path : paths)
 			{
-				if (!(paths[i].getLastPathComponent() instanceof Branche))
+				if (!(path.getLastPathComponent() instanceof Branche))
 				{
 					return false;
 				}
@@ -251,9 +266,9 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		TreePath[] paths = arbre.getSelectionPaths();
 		if (paths != null)
 		{
-			for (int i = 0; i < paths.length; i++)
+			for (TreePath path : paths)
 			{
-				if (!(paths[i].getLastPathComponent() instanceof Feuille))
+				if (!(path.getLastPathComponent() instanceof Feuille))
 				{
 					return false;
 				}
@@ -275,19 +290,19 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 	{
 		this.menuClicDroit = menuClicDroit;
 	}
-	
+
 	/**
 	 * Efface le menu contextuel dû à un clic droit
 	 */
 	public void effacerMenuContextuel()
 	{
-		if(this.menuClicDroit != null)
+		if (this.menuClicDroit != null)
 		{
 			this.menuClicDroit.setEnabled(false);// On efface le menu contextuel
 			this.menuClicDroit.setVisible(false);
 		}
 	}
-	
+
 	class ClicDroit extends MouseAdapter
 	{
 		@Override
@@ -301,39 +316,10 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 				}
 				effacerMenuContextuel();
 				menuClicDroit = new JPopupMenu();
-				JMenuItem exporter = new JMenuItem("Exporter");
-				JMenuItem renommer = new JMenuItem("Renommer");
 
-				JMenuItem ecouter = new JMenuItem("Écouter");
-				JMenuItem modifierCategorie = new JMenuItem("Changer catégorie");
-				JMenuItem supprimer = new JMenuItem("Supprimer les enregistrements");
-				JMenuItem ajouterCategorie = new JMenuItem("Ajouter catégorie");
-				JMenuItem supprimerCategorie = new JMenuItem("Supprimer catégorie");
-				JMenuItem ajouterSujet = new JMenuItem("Ajouter sujet");
-				JMenuItem supprimerSujet = new JMenuItem("Supprimer sujet");
-				JMenuItem modifierSujet = new JMenuItem("Changer sujet");
 				JMenuItem changerTri = new JMenuItem();
-				JMenuItem renomerCategorie = new JMenuItem("Renommer catégorie");
-				JMenuItem renomerSujet = new JMenuItem("Renommer sujet");
-				JMenuItem collapseAll = new JMenuItem("Replier tout");
-				JMenuItem expandAll = new JMenuItem("Développer tout");
-
-				exporter.addMouseListener(new ExporterEnregistrementClicDroit());
-				renommer.addMouseListener(new RenommerEnregistrementClicDroit());
-				ecouter.addMouseListener(new PlayEcouteArbre());
-				ajouterCategorie.addMouseListener(new AjouterCategorieEnregistrementClicDroit(menuClicDroit, bdd));
-				modifierCategorie.addMouseListener(new ModifierCategorieEnregistrementClicDroit());
-				supprimer.addMouseListener(new SupprimerEnregistrementClicDroit());
-				supprimerCategorie.addMouseListener(new SupprimerCategorieEnregistrementClicDroit());
-				ajouterSujet.addMouseListener(new AjouterSujetClicDroit(menuClicDroit, bdd));
-				supprimerSujet.addMouseListener(new SupprimerSujetClicDroit());
-				modifierSujet.addMouseListener(new ModifierSujetEnregistrementClicDroit());
 				changerTri.addMouseListener(new ModifierTri());
-				renomerCategorie.addMouseListener(new RenommerCategorieClicDroit());
-				renomerSujet.addMouseListener(new RenommerSujetClicDroit());
-				collapseAll.addMouseListener(new CollapseClicDroit());
-				expandAll.addMouseListener(new ExpandClicDroit());
-				
+
 				if (typeTrie == PanneauArbre.TYPE_TRIE_SUJET)
 				{
 					changerTri.setText("Grouper par catégorie");
@@ -345,48 +331,83 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 
 				if (arbre.getSelectionCount() == 0)
 				{
+					JMenuItem collapseAll = new JMenuItem("Replier tout");
+					JMenuItem expandAll = new JMenuItem("Développer tout");
+					collapseAll.addMouseListener(new CollapseClicDroit());
+					expandAll.addMouseListener(new ExpandClicDroit());
 					menuClicDroit.add(expandAll);
 					menuClicDroit.add(collapseAll);
 					if (typeTrie == PanneauArbre.TYPE_TRIE_SUJET)
 					{
+						JMenuItem ajouterSujet = new JMenuItem("Ajouter sujet");
+						ajouterSujet.addMouseListener(new AjouterSujetClicDroit(menuClicDroit, bdd));
 						menuClicDroit.add(ajouterSujet);
 					}
 					else if (typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)
 					{
+						JMenuItem ajouterCategorie = new JMenuItem("Ajouter catégorie");
+						ajouterCategorie.addMouseListener(new AjouterCategorieEnregistrementClicDroit(menuClicDroit,
+								bdd));
 						menuClicDroit.add(ajouterCategorie);
 					}
 
 				}
-				if (arbre.getSelectionCount() >= 1 && onlySelectFeuille())
+				else if (onlySelectFeuille())
 				{
-					menuClicDroit.add(supprimer);
+					if (arbre.getSelectionCount() >= 1)
+					{
+						JMenuItem supprimer = new JMenuItem("Supprimer les enregistrements");
+						supprimer.addMouseListener(new SupprimerEnregistrementClicDroit());
+
+						menuClicDroit.add(supprimer);
+						if (typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)
+						{
+							JMenuItem modifierCategorie = new JMenuItem("Changer catégorie");
+							modifierCategorie.addMouseListener(new ModifierCategorieEnregistrementClicDroit());
+							menuClicDroit.add(modifierCategorie);
+						}
+						else if (typeTrie == PanneauArbre.TYPE_TRIE_SUJET)
+						{
+							JMenuItem modifierSujet = new JMenuItem("Changer sujet");
+							modifierSujet.addMouseListener(new ModifierSujetEnregistrementClicDroit());
+							menuClicDroit.add(modifierSujet);
+						}
+					}
+					if (arbre.getSelectionCount() == 1)
+					{
+						JMenuItem exporter = new JMenuItem("Exporter");
+						JMenuItem renommer = new JMenuItem("Renommer");
+						JMenuItem ecouter = new JMenuItem("Écouter");
+						exporter.addMouseListener(new ExporterEnregistrementClicDroit());
+						ecouter.addMouseListener(new PlayEcouteArbre());
+						renommer.addMouseListener(new RenommerEnregistrementClicDroit());
+						menuClicDroit.add(renommer);
+						menuClicDroit.add(ecouter);
+						menuClicDroit.add(exporter);
+						loadAudioFile(((Feuille) arbre.getLastSelectedPathComponent()).getId());
+					}
+
+				}
+				else if (arbre.getSelectionCount() >= 1 && onlySelectBranche())
+				{
 					if (typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)
 					{
-						menuClicDroit.add(modifierCategorie);
+						JMenuItem renomerCategorie = new JMenuItem("Renommer catégorie");
+						renomerCategorie.addMouseListener(new RenommerCategorieClicDroit());
+						JMenuItem supprimerCategorie = new JMenuItem("Supprimer catégorie");
+						supprimerCategorie.addMouseListener(new SupprimerCategorieEnregistrementClicDroit());
+						menuClicDroit.add(renomerCategorie);
+						menuClicDroit.add(supprimerCategorie);
 					}
-					if (typeTrie == PanneauArbre.TYPE_TRIE_SUJET)
+					else if (typeTrie == PanneauArbre.TYPE_TRIE_SUJET)
 					{
-						menuClicDroit.add(modifierSujet);
+						JMenuItem renomerSujet = new JMenuItem("Renommer sujet");
+						renomerSujet.addMouseListener(new RenommerSujetClicDroit());
+						JMenuItem supprimerSujet = new JMenuItem("Supprimer sujet");
+						supprimerSujet.addMouseListener(new SupprimerSujetClicDroit());
+						menuClicDroit.add(renomerSujet);
+						menuClicDroit.add(supprimerSujet);
 					}
-
-				}
-				if (arbre.getSelectionCount() == 1 && onlySelectFeuille())
-				{
-					menuClicDroit.add(renommer);
-					menuClicDroit.add(ecouter);
-					menuClicDroit.add(exporter);
-				}
-
-				if (arbre.getSelectionCount() >= 1 && onlySelectBranche()
-						&& typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)
-				{
-					menuClicDroit.add(renomerCategorie);
-					menuClicDroit.add(supprimerCategorie);
-				}
-				if (arbre.getSelectionCount() >= 1 && onlySelectBranche() && typeTrie == PanneauArbre.TYPE_TRIE_SUJET)
-				{
-					menuClicDroit.add(renomerSujet);
-					menuClicDroit.add(supprimerSujet);
 				}
 
 				menuClicDroit.add(changerTri);
@@ -797,15 +818,13 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		public void mouseReleased(MouseEvent event)
 		{
 			effacerMenuContextuel();
-			loadAudioFile(((Feuille) arbre.getLastSelectedPathComponent()).getId());
 			lecteurAudio.play();
 		}
 	}
-	
+
 	/**
 	 * Charge un fichier enregistrement.
-	 * @author Statl3r
-	 *
+	 * 
 	 */
 	private class ClicGauche extends MouseAdapter
 	{
@@ -822,6 +841,7 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 			}
 		}
 	}
+
 	/**
 	 * Permet replier l'arbre
 	 * 
@@ -837,7 +857,7 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 			Enumeration children = racine.children();
 			Object tmp, tab[] = new Object[2];
 			tab[0] = racine;
-			while(children.hasMoreElements())
+			while (children.hasMoreElements())
 			{
 				tmp = children.nextElement();
 				tab[1] = tmp;
@@ -845,7 +865,7 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 			}
 		}
 	}
-	
+
 	/**
 	 * Permet deplier l'arbre
 	 * 
@@ -861,7 +881,7 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 			Enumeration children = racine.children();
 			Object tmp, tab[] = new Object[2];
 			tab[0] = racine;
-			while(children.hasMoreElements())
+			while (children.hasMoreElements())
 			{
 				tmp = children.nextElement();
 				tab[1] = tmp;
