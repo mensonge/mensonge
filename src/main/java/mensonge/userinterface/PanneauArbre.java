@@ -69,7 +69,6 @@ public class PanneauArbre extends JPanel
 
 		this.arbre.addTreeSelectionListener(new TreeSelectionListener()
 		{
-
 			@Override
 			public void valueChanged(TreeSelectionEvent event)
 			{

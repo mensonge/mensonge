@@ -283,6 +283,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	 */
 	private void quitter()
 	{
+		this.panneauArbre.close();
 		this.pluginManager.unloadPlugins();
 		this.closeAllTabs();
 		this.dispose();
