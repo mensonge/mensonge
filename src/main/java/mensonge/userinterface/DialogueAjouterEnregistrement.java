@@ -4,8 +4,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.sql.ResultSet;
 
 import javax.swing.JButton;
@@ -53,7 +51,6 @@ public class DialogueAjouterEnregistrement extends JDialog implements ActionList
 		pan.setLayout(new GridBagLayout());
 		GridBagConstraints c = new GridBagConstraints();
 		this.envoyer.addActionListener(this);
-
 		this.annuler.addActionListener(this);
 
 		try
