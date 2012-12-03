@@ -964,7 +964,7 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 	{
 		if (this.labelCacheSize != null)
 		{
-			this.labelDBSize.setText("Taille de la BDD : " + Utils.humanReadableByteCount(Utils.getDBSize(), false));
+			this.labelDBSize.setText("Taille de la base de données : " + Utils.humanReadableByteCount(Utils.getDBSize(), false));
 		}
 		this.updateArbre();
 	}
