@@ -823,14 +823,24 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 	 */
 	private class ClicGauche extends MouseAdapter
 	{
+		private int idLu = -1;
+
 		@Override
-		public void mousePressed(MouseEvent e)
+		public void mouseClicked(MouseEvent e)
 		{
 			if ((e.getModifiers() & MouseEvent.BUTTON1_MASK) != 0)
 			{
 				if (arbre.getSelectionCount() == 1 && onlySelectFeuille())
 				{
-					loadAudioFile(((Feuille) arbre.getLastSelectedPathComponent()).getId());
+					if (idLu != ((Feuille) arbre.getLastSelectedPathComponent()).getId())
+					{
+						idLu = ((Feuille) arbre.getLastSelectedPathComponent()).getId();
+						loadAudioFile(idLu);
+					}
+					if (e.getClickCount() > 1)
+					{
+						lecteurAudio.play();
+					}
 				}
 			}
 		}
