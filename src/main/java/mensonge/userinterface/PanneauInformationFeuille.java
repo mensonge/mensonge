@@ -3,6 +3,8 @@ package mensonge.userinterface;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -21,11 +23,15 @@ public class PanneauInformationFeuille extends JPanel
 	public void paint(Graphics g)
 	{
 		int i = 0;
+		Graphics2D g2 = (Graphics2D)g;
+		g2.setRenderingHint(
+		        RenderingHints.KEY_ANTIALIASING, 
+		        RenderingHints.VALUE_ANTIALIAS_ON);
 		Font font = new Font("Courier", Font.BOLD, 15);
-		g.setFont(font);
-		g.setColor(this.getBackground());
-		g.fillRect(0, 0, this.getWidth(), this.getHeight());
-		g.setColor(Color.BLACK);
+		g2.setFont(font);
+		g2.setColor(this.getBackground());
+		g2.fillRect(0, 0, this.getWidth(), this.getHeight());
+		g2.setColor(Color.BLACK);
 		if (listeInfo != null)
 		{
 			Set<String> listeKey = listeInfo.keySet();
@@ -35,7 +41,7 @@ public class PanneauInformationFeuille extends JPanel
 				int y = 20 + 20 * i;
 				int x = 10;
 				String current = iterator.next();
-				g.drawString(current + " : " + listeInfo.get(current), x, y);
+				g2.drawString(current + " : " + listeInfo.get(current), x, y);
 				i++;
 			}
 		}

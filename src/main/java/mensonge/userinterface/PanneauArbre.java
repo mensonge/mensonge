@@ -181,7 +181,7 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 
 			}
 			rsCat.close();
-			this.racine.setUserObject("Categorie");
+			this.racine.setUserObject("Catégorie");
 		}
 		catch (DBException e)
 		{
