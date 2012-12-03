@@ -2,8 +2,6 @@ package mensonge.core;
 
 import java.io.File;
 
-import sun.security.util.Length;
-
 public class Utils
 {
 	public static String humanReadableByteCount(long bytes, boolean si)
