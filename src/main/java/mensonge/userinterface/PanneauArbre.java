@@ -308,13 +308,14 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mousePressed(MouseEvent e)
 		{
+			effacerMenuContextuel();
 			if ((e.getModifiers() & MouseEvent.BUTTON3_MASK) != 0)
 			{
+				System.out.println("oij "+arbre.getSelectionCount());
 				if (arbre.getSelectionCount() <= 1)
 				{
 					arbre.setSelectionPath(arbre.getPathForLocation(e.getX(), e.getY()));
 				}
-				effacerMenuContextuel();
 				menuClicDroit = new JPopupMenu();
 
 				JMenuItem changerTri = new JMenuItem();
@@ -358,7 +359,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 					{
 						JMenuItem supprimer = new JMenuItem("Supprimer les enregistrements");
 						supprimer.addMouseListener(new SupprimerEnregistrementClicDroit());
-
 						menuClicDroit.add(supprimer);
 						if (typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)
 						{
@@ -416,10 +416,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 				menuClicDroit.setVisible(true);
 
 				menuClicDroit.show(arbre, e.getX(), e.getY());
-			}
-			else
-			{
-				effacerMenuContextuel();
 			}
 		}
 	}
@@ -831,7 +827,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mousePressed(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			if ((e.getModifiers() & MouseEvent.BUTTON1_MASK) != 0)
 			{
 				if (arbre.getSelectionCount() == 1 && onlySelectFeuille())
