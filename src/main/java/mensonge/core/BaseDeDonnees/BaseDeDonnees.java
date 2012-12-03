@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import mensonge.core.BetterObservable;
 import mensonge.core.BaseDeDonnees.DBException;
 
 /**
@@ -17,7 +18,7 @@ import mensonge.core.BaseDeDonnees.DBException;
  * @author Azazel
  * 
  */
-public class BaseDeDonnees
+public class BaseDeDonnees extends BetterObservable
 {
 	/**
 	 * Permet d'instancier des objet qui permettrons de faire des requetes.
@@ -115,49 +116,27 @@ public class BaseDeDonnees
 	 */
 	public void importer(final String cheminFichier) throws DBException
 	{
+		notifyUpdateDataBase();
 		throw new DBException("Importation non disponible dans cette version.", 3);
-		/*if(connexion == null)
-		{
-			return;
-		}
-		//etablir une connexion
-		BaseDeDonnees in = new BaseDeDonnees(cheminFichier);
-		in.connexion();
-		
-		//regarder les categories qui change et ajouter d'eventuelle nouvelle
-		ResultSet rs = in.getListeCategorie();
-		LinkedList<String> listeN = new LinkedList<String>();
-		LinkedList<Integer> listeI = new LinkedList<Integer>();
-		try
-		{
-			while(rs != null && rs.next())//On stock dans des listes chainees le resultat
-			{
-				listeN.add(rs.getString(1));
-				listeI.add(new Integer(rs.getInt(2)));
-			}
-			rs.close();//on ferme le resultat set
-			String nomCat;
-			for(int i = 0; i < listeN.size(); i++)//on parcour la liste des categories
-			{
-				nomCat = listeN.get(i);
-				if(!this.categorieExiste(nomCat))//On verifie si la categorie existe et si non, on l'ajoute
-				{
-					this.ajouterCategorie(nomCat);
-				}
-				rs = in.getListeEnregistrementCategorie(listeI.get(i).intValue());//On recupere tous les enregistrement de la categorie dans la base a importer
-				int categorie = this.getCategorie(nomCat);//on recupere la categorie dans cette base la.
-				while(rs != null && rs.next())//on ajoute tous les enregistrements dans la base
-				{
-					this.ajouterEnregistrement(rs.getString(3), rs.getInt(1), categorie, in.recupererEnregistrement(rs.getInt(5)), 0);//FIXME modifier l'idSuj pour qu'il soit réel
-				}
-				rs.close();//On ferme la ressource
-			}
-		}
-		catch (Exception e)
-		{
-			throw new DBException("Erreur lors du parcour des categories en important un fichier: " + e.getMessage(), 3);
-		}*/
-		//ajouter les enregistrement avec leurs categorie (modifiee) (ceux qu'il n'existe pas)
+		/*
+		 * if(connexion == null) { return; } //etablir une connexion BaseDeDonnees in = new
+		 * BaseDeDonnees(cheminFichier); in.connexion();
+		 * 
+		 * //regarder les categories qui change et ajouter d'eventuelle nouvelle ResultSet rs = in.getListeCategorie();
+		 * LinkedList<String> listeN = new LinkedList<String>(); LinkedList<Integer> listeI = new LinkedList<Integer>();
+		 * try { while(rs != null && rs.next())//On stock dans des listes chainees le resultat {
+		 * listeN.add(rs.getString(1)); listeI.add(new Integer(rs.getInt(2))); } rs.close();//on ferme le resultat set
+		 * String nomCat; for(int i = 0; i < listeN.size(); i++)//on parcour la liste des categories { nomCat =
+		 * listeN.get(i); if(!this.categorieExiste(nomCat))//On verifie si la categorie existe et si non, on l'ajoute {
+		 * this.ajouterCategorie(nomCat); } rs = in.getListeEnregistrementCategorie(listeI.get(i).intValue());//On
+		 * recupere tous les enregistrement de la categorie dans la base a importer int categorie =
+		 * this.getCategorie(nomCat);//on recupere la categorie dans cette base la. while(rs != null && rs.next())//on
+		 * ajoute tous les enregistrements dans la base { this.ajouterEnregistrement(rs.getString(3), rs.getInt(1),
+		 * categorie, in.recupererEnregistrement(rs.getInt(5)), 0);//FIXME modifier l'idSuj pour qu'il soit réel }
+		 * rs.close();//On ferme la ressource } } catch (Exception e) { throw new
+		 * DBException("Erreur lors du parcour des categories en important un fichier: " + e.getMessage(), 3); }
+		 */
+		// ajouter les enregistrement avec leurs categorie (modifiee) (ceux qu'il n'existe pas)
 	}
 
 	/**
@@ -397,11 +376,11 @@ public class BaseDeDonnees
 		}
 		if (!this.categorieExiste(idCat))// On verifie si la categorie existe
 		{
-			throw new DBException("Categorie inexistante.", 3);
+			throw new DBException("Catégorie inexistante.", 3);
 		}
 		if (!this.sujetExiste(idSuj))// test l'existance de la categorie
 		{
-			throw new DBException("Sujet inexistante.", 3);
+			throw new DBException("Sujet inexistant.", 3);
 		}
 		if (this.enregistrementExist(nom))
 		{
@@ -410,10 +389,7 @@ public class BaseDeDonnees
 		try
 		{
 			PreparedStatement ps = connexion
-					.prepareStatement("INSERT INTO enregistrements(enregistrement, duree, taille, nom, idCat, idSuj) VALUES (?, ?, ?, ?, ?, ?);");// Peparation
-																																					// de
-																																					// la
-																																					// requete
+					.prepareStatement("INSERT INTO enregistrements(enregistrement, duree, taille, nom, idCat, idSuj) VALUES (?, ?, ?, ?, ?, ?);");
 			ps.setBytes(1, enregistrement);
 			ps.setInt(2, duree);
 			ps.setInt(3, enregistrement.length);
@@ -426,6 +402,7 @@ public class BaseDeDonnees
 				connexion.commit();
 			}
 			ps.close();
+			notifyUpdateDataBase();
 		}
 		catch (Exception e)
 		{
@@ -457,6 +434,7 @@ public class BaseDeDonnees
 				connexion.commit();// On valide le changement
 			}
 			ps.close();// On ferme les ressources
+			notifyUpdateDataBase();
 		}
 		catch (Exception e)
 		{
@@ -515,6 +493,7 @@ public class BaseDeDonnees
 				connexion.commit();// On valide les changement
 			}
 			ps.close();// On ferme les ressources
+			notifyUpdateDataBase();
 		}
 		catch (Exception e)
 		{
@@ -575,6 +554,7 @@ public class BaseDeDonnees
 				connexion.commit();// validation des modifications
 			}
 			ps.close();// fermeture des ressources
+			notifyUpdateDataBase();
 		}
 		catch (Exception e)
 		{
@@ -614,6 +594,7 @@ public class BaseDeDonnees
 				connexion.commit();// Validation des modifications
 			}
 			ps.close();// Fermeture des ressources
+			notifyUpdateDataBase();
 		}
 		catch (Exception e)
 		{
@@ -649,6 +630,7 @@ public class BaseDeDonnees
 				connexion.commit();// Validation des modifications
 			}
 			ps.close();// Fermeture des ressources
+			notifyUpdateDataBase();
 		}
 		catch (Exception e)
 		{
@@ -686,6 +668,7 @@ public class BaseDeDonnees
 				connexion.commit();// Validation des modifications
 			}
 			ps.close();// Fermeture des ressources
+			notifyUpdateDataBase();
 		}
 		catch (Exception e)
 		{
@@ -725,6 +708,7 @@ public class BaseDeDonnees
 				connexion.commit();// Validation des modifications
 			}
 			ps.close();// Fermeture des ressources
+			notifyUpdateDataBase();
 		}
 		catch (Exception e)
 		{
@@ -766,6 +750,7 @@ public class BaseDeDonnees
 				connexion.commit();// Validation des modifications
 			}
 			ps.close();// Fermeture des ressources
+			notifyUpdateDataBase();
 		}
 		catch (Exception e)
 		{
@@ -805,6 +790,7 @@ public class BaseDeDonnees
 				connexion.commit();// Validation des modifications
 			}
 			ps.close();// Fermeture des ressources
+			notifyUpdateDataBase();
 		}
 		catch (Exception e)
 		{
@@ -846,6 +832,7 @@ public class BaseDeDonnees
 				connexion.commit();// Validation des modifications
 			}
 			ps.close();// Fermeture des ressources
+			notifyUpdateDataBase();
 		}
 		catch (Exception e)
 		{
@@ -919,6 +906,7 @@ public class BaseDeDonnees
 				connexion.commit();// Validation des modifications
 			}
 			ps.close();
+			notifyUpdateDataBase();
 		}
 		catch (Exception e)
 		{
@@ -975,6 +963,7 @@ public class BaseDeDonnees
 				connexion.commit();// Validation des modifications
 			}
 			ps.close();// Fermeture des ressources
+			notifyUpdateDataBase();
 		}
 		catch (Exception e)
 		{
@@ -1014,6 +1003,7 @@ public class BaseDeDonnees
 				connexion.commit();// Validation des modifications
 			}
 			ps.close();// Fermeture des ressources
+			notifyUpdateDataBase();
 		}
 		catch (Exception e)
 		{
@@ -1119,6 +1109,7 @@ public class BaseDeDonnees
 				connexion.commit();// Validation des modifications
 			}
 			ps.close();
+			notifyUpdateDataBase();
 		}
 		catch (Exception e)
 		{
@@ -1151,6 +1142,7 @@ public class BaseDeDonnees
 				connexion.commit();// Validation des modifications
 			}
 			ps.close();// Fermeture des ressources
+			notifyUpdateDataBase();
 		}
 		catch (Exception e)
 		{
@@ -1214,6 +1206,7 @@ public class BaseDeDonnees
 				connexion.commit();// Validation des modifications
 			}
 			ps.close();// Fermeture des ressources
+			notifyUpdateDataBase();
 		}
 		catch (Exception e)
 		{
@@ -1310,25 +1303,13 @@ public class BaseDeDonnees
 			{
 				throw new Exception("Erreur de creation de la table categorie.");
 			}
-			if (stat.executeUpdate("CREATE TABLE enregistrements (id  INTEGER PRIMARY KEY AUTOINCREMENT, enregistrement BLOB, duree INTEGER, taille INTEGER, nom VARCHAR2(128) UNIQUE, idcat INTEGER, idsuj INTEGER);") != 0)// FIXME
-																																																								// ajouter
-																																																								// la
-																																																								// reference
-																																																								// pour
-																																																								// le
-																																																								// champ
-																																																								// idcat
+			// FIXME ajouter la reference pour le champ idcat
+			if (stat.executeUpdate("CREATE TABLE enregistrements (id  INTEGER PRIMARY KEY AUTOINCREMENT, enregistrement BLOB, duree INTEGER, taille INTEGER, nom VARCHAR2(128) UNIQUE, idcat INTEGER, idsuj INTEGER);") != 0)
 			{
 				throw new Exception("Erreur de creation de la table enregistrement.");
 			}
-			if (stat.executeUpdate("CREATE TABLE sujet (idsuj  INTEGER PRIMARY KEY AUTOINCREMENT, nomsuj VARCHAR2(128) UNIQUE);") != 0)// FIXME
-																																		// ajouter
-																																		// la
-																																		// reference
-																																		// pour
-																																		// le
-																																		// champ
-																																		// idcat
+			// FIXME ajouter la reference pour le champ idcat
+			if (stat.executeUpdate("CREATE TABLE sujet (idsuj  INTEGER PRIMARY KEY AUTOINCREMENT, nomsuj VARCHAR2(128) UNIQUE);") != 0)
 			{
 				throw new Exception("Erreur de creation de la table enregistrement.");
 			}

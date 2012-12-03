@@ -30,10 +30,11 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
+import mensonge.core.DataBaseObserver;
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
 import mensonge.core.BaseDeDonnees.DBException;
 
-public class PanneauArbre extends JPanel
+public class PanneauArbre extends JPanel implements DataBaseObserver
 {
 	/**
 	 * 
@@ -54,20 +55,19 @@ public class PanneauArbre extends JPanel
 	private JPopupMenu menuClicDroit = new JPopupMenu();// sers au clic droit
 
 	private int typeTrie = PanneauArbre.TYPE_TRIE_SUJET;
-	private File tempDirectory;
+	private File cacheDirectory;
 
 	public PanneauArbre(BaseDeDonnees bdd)
 	{
-		try
+		cacheDirectory = new File("cache");
+		if (!cacheDirectory.exists())
 		{
-			tempDirectory = File.createTempFile("tempAudioFiles", "");
-			tempDirectory.delete();
-			tempDirectory.mkdir();
-			tempDirectory.deleteOnExit();
+			cacheDirectory.mkdir();
 		}
-		catch (IOException e)
+		else if (cacheDirectory.exists() && !cacheDirectory.isDirectory())
 		{
-			GraphicalUserInterface.popupErreur("Création du répertoire temporaire : " + e.getMessage());
+			cacheDirectory.delete();
+			cacheDirectory.mkdir();
 		}
 
 		this.setLayout(new BorderLayout());
@@ -663,7 +663,7 @@ public class PanneauArbre extends JPanel
 			this.bdd = bdd;
 			this.menuClicDroit = menuClicDroit;
 		}
-		
+
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
@@ -820,7 +820,7 @@ public class PanneauArbre extends JPanel
 				try
 				{
 					lecteurAudio.stop();
-					File idAudioFile = new File(tempDirectory, id + ".wav");
+					File idAudioFile = new File(cacheDirectory, id + ".wav");
 					if (!idAudioFile.exists())
 					{
 						idAudioFile.createNewFile();
@@ -831,7 +831,6 @@ public class PanneauArbre extends JPanel
 						fos.close();
 					}
 					lecteurAudio.load(idAudioFile.getCanonicalPath());
-
 				}
 				catch (FileNotFoundException e)
 				{
@@ -847,5 +846,11 @@ public class PanneauArbre extends JPanel
 				}
 			}
 		});
+	}
+
+	@Override
+	public void onUpdateDataBase()
+	{
+		this.updateArbre();
 	}
 }
