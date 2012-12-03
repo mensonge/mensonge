@@ -64,6 +64,7 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 	private int typeTrie = PanneauArbre.TYPE_TRIE_SUJET;
 	private File cacheDirectory;
 	private JLabel labelCacheSize;
+	private JLabel labelDBSize;
 
 	public PanneauArbre(BaseDeDonnees bdd)
 	{
@@ -120,18 +121,24 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 
 		this.labelCacheSize = new JLabel("Taille du cache : "
 				+ Utils.humanReadableByteCount(Utils.getCacheSize(), false));
+		this.labelDBSize = new JLabel("Taille de la base de données : " + Utils.humanReadableByteCount(Utils.getDBSize(), false));
+
+		JPanel panelInfo = new JPanel(new GridLayout(0, 1));
+		panelInfo.add(labelCacheSize);
+		panelInfo.add(labelDBSize);
+
 		JPanel panelArbreInfo = new JPanel(new BorderLayout());
 		panelArbreInfo.add(scrollPane, BorderLayout.CENTER);
-		panelArbreInfo.add(labelCacheSize, BorderLayout.SOUTH);
+		panelArbreInfo.add(panelInfo, BorderLayout.SOUTH);
 
-		JPanel panelArbre = new JPanel(new BorderLayout());
-		panelArbre.add(panelArbreInfo, BorderLayout.NORTH);
-		panelArbre.add(this.infoArbre,  BorderLayout.SOUTH);
+		JPanel panelConteneur = new JPanel(new BorderLayout());
+		panelConteneur.add(panelArbreInfo, BorderLayout.NORTH);
+		panelConteneur.add(this.infoArbre, BorderLayout.SOUTH);
 
 		this.lecteurAudio = new LecteurAudio();
 		this.lecteurAudio.setVisible(false);
 
-		this.add(panelArbre, BorderLayout.NORTH);
+		this.add(panelConteneur, BorderLayout.NORTH);
 		this.add(lecteurAudio, BorderLayout.SOUTH);
 	}
 
@@ -949,13 +956,16 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 
 	public void updateCacheSizeInfo()
 	{
-		labelCacheSize.setText("Taille du cache : "
-				+ Utils.humanReadableByteCount(Utils.getCacheSize(), false));
+		labelCacheSize.setText("Taille du cache : " + Utils.humanReadableByteCount(Utils.getCacheSize(), false));
 	}
-	
+
 	@Override
 	public void onUpdateDataBase()
 	{
+		if (this.labelCacheSize != null)
+		{
+			this.labelDBSize.setText("Taille de la BDD : " + Utils.humanReadableByteCount(Utils.getDBSize(), false));
+		}
 		this.updateArbre();
 	}
 }

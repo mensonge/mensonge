@@ -75,6 +75,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	 */
 	public GraphicalUserInterface()
 	{
+		
 		/*
 		 * Connexion à la base
 		 */
@@ -576,6 +577,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		{
 			e.printStackTrace();
 		}
+
 		Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
 		javax.swing.SwingUtilities.invokeLater(new Runnable()
 		{
