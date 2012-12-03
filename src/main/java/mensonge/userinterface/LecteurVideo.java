@@ -105,19 +105,16 @@ public class LecteurVideo extends JPanel implements ActionListener
 		this.boutonLecture.setEnabled(true);
 
 		this.boutonMarqueur1 = new JButton();
-		this.boutonMarqueur1.setToolTipText("Placer Marqueur 1");
 		this.boutonMarqueur1.setText("Marqueur 1");
 		this.boutonMarqueur1.addActionListener(this);
 		this.boutonMarqueur1.setEnabled(true);
 
 		this.boutonMarqueur2 = new JButton();
-		this.boutonMarqueur2.setToolTipText("Placer Marqueur 2");
 		this.boutonMarqueur2.setText("Marqueur 2");
 		this.boutonMarqueur2.addActionListener(this);
 		this.boutonMarqueur2.setEnabled(true);
 
 		this.boutonExtract = new JButton();
-		this.boutonExtract.setToolTipText("Ajouter a la bdd");
 		this.boutonExtract.setText("Extraire");
 		this.boutonExtract.addActionListener(this);
 		this.boutonExtract.setEnabled(true);
