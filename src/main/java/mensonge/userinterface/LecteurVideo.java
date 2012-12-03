@@ -52,7 +52,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 	private JButton boutonMarqueur2;
 	private JButton boutonExtract;
 	private long timeMarqueur1 = 0;
-	private long timeMarqueur2 = 0;
+	private long timeMarqueur2 = 1;
 	private BaseDeDonnees maBDD;
 	private Marqueur t1;
 	private MediaPlayer mediaPlayer;
@@ -120,7 +120,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 		this.boutonExtract.setText("Extraire");
 		this.boutonExtract.addActionListener(this);
 		this.boutonExtract.setEnabled(true);
-		
+
 		this.boutonStop = new JButton();
 		this.boutonStop.setToolTipText("Stoper");
 		this.boutonStop.setIcon(imageIconStop);
@@ -253,36 +253,32 @@ public class LecteurVideo extends JPanel implements ActionListener
 		}
 		else if (event.getSource() == boutonExtract)
 		{
+			this.mediaPlayer.pause();
 			Extraction extract =new Extraction();
 			byte[] tabOfByte = null;
-			//	public void ajouterEnregistrement(final String nom, final int duree, final int idCat, final byte[] enregistrement,final int idSuj) 
 			try
 			{
-				tabOfByte=extract.extraireIntervalle(pathVideo, timeMarqueur1, timeMarqueur1);
+				tabOfByte=extract.extraireIntervalle(pathVideo, timeMarqueur1, timeMarqueur2);
 			}
 			catch (IllegalArgumentException e)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				GraphicalUserInterface.popupErreur(e.getMessage());
 			}
 			catch (InputFormatException e)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				GraphicalUserInterface.popupErreur(e.getMessage());
 			}
 			catch (IOException e)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				GraphicalUserInterface.popupErreur(e.getMessage());
 			}
 			catch (EncoderException e)
 			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				GraphicalUserInterface.popupErreur(e.getMessage());
 			}
 			DialogueAjouterEnregistrement diag =new DialogueAjouterEnregistrement(parent, "Ajouter enregistrement", true, this.maBDD, tabOfByte);
-			diag.setVisible(true);
 			diag.setAlwaysOnTop(true);
+			this.mediaPlayer.pause();
 		}
 	}
 }
