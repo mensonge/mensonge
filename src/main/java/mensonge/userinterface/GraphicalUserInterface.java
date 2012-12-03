@@ -138,10 +138,13 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		baseAjouterCategorie.addMouseListener(panneauArbre.new AjouterCategorieEnregistrementClicDroit(null, bdd));
 		baseAjouterSujet.addMouseListener(panneauArbre.new AjouterSujetClicDroit(null, bdd));
 
+		JMenuItem fichierPurger = new JMenuItem("Purger le cache");
+		fichierPurger.addActionListener(new PurgerCacheListener());
 		JMenu menuFichier = new JMenu("Fichier");
 		menuFichier.add(fichierOuvrir);
 		menuFichier.add(baseExporter);
 		menuFichier.add(baseImporter);
+		menuFichier.add(fichierPurger);
 		menuFichier.addSeparator();
 		menuFichier.add(fichierFermer);
 
@@ -529,6 +532,22 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		public void actionPerformed(ActionEvent e)
 		{
 			chargerListePlugins();
+		}
+	}
+	
+	private class PurgerCacheListener implements ActionListener
+	{
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{
+			File cacheDirectory = new File("cache");
+			if(cacheDirectory.exists() && cacheDirectory.isDirectory())
+			{
+				for (File file : cacheDirectory.listFiles())
+				{
+					file.delete();
+				}
+			}
 		}
 	}
 
