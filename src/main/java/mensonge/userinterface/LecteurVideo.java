@@ -245,9 +245,6 @@ public class LecteurVideo extends JPanel implements ActionListener
 		else if (event.getSource() == boutonMarqueur1)
 		{
 			timeMarqueur1 = mediaPlayer.getTime();
-			t1 = new Marqueur(slider.getX());
-			t1.setVisible(true);
-			t1.repaint();
 		}
 		else if (event.getSource() == boutonMarqueur2)
 		{
@@ -260,7 +257,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 			byte[] tabOfByte = null;
 			try
 			{
-				tabOfByte = extract.extraireIntervalle(pathVideo, timeMarqueur1, timeMarqueur1);
+				tabOfByte = extract.extraireIntervalle(pathVideo, timeMarqueur1, timeMarqueur2);
 			}
 			catch (IllegalArgumentException e)
 			{
@@ -278,10 +275,8 @@ public class LecteurVideo extends JPanel implements ActionListener
 			{
 				GraphicalUserInterface.popupErreur("Extraction : "+e.getMessage());
 			}
-			DialogueAjouterEnregistrement diag = new DialogueAjouterEnregistrement(parent, "Ajouter enregistrement",
+			new DialogueAjouterEnregistrement(parent, "Ajouter enregistrement",
 					true, this.bdd, tabOfByte);
-			diag.setVisible(true);
-			diag.setAlwaysOnTop(true);
 			this.mediaPlayer.pause();
 		}
 	}
