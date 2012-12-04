@@ -39,4 +39,12 @@ public class Utils
 		}
 		return 0;
 	}
+	
+	public static String getFormattedTime(long time)
+	{
+		int heures = (int) (time / 3600);
+		int minutes = (int) ((time % 3600) / 60);
+		int secondes = (int) ((time % 3600) % 60);
+		return String.format("%02d:%02d:%02d", heures, minutes, secondes);
+	}
 }

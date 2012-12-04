@@ -35,7 +35,7 @@ public class Feuille extends DefaultMutableTreeNode
 	{
 		Map<String, String> retour = new HashMap<String, String>();
 		retour.put("Nom", nom);
-		retour.put("Durée", Integer.toString(duree) + " Seconde(s)");
+		retour.put("Durée", Utils.getFormattedTime(duree));
 		retour.put("Taille", Utils.humanReadableByteCount(taille, false));
 		retour.put("Catégorie", categorie);
 		retour.put("Sujet", sujet);

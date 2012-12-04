@@ -5,6 +5,8 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JSlider;
 
+import mensonge.core.Utils;
+
 import uk.co.caprica.vlcj.binding.internal.libvlc_media_t;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter;
@@ -54,7 +56,7 @@ public class PlayerEventListener extends MediaPlayerEventAdapter
 	@Override
 	public void timeChanged(MediaPlayer mediaPlayer, long newTime)
 	{
-		labelDureeActuelle.setText(getFormattedTime(newTime / 1000));
+		labelDureeActuelle.setText(Utils.getFormattedTime(newTime / 1000));
 		slider.setValue((int) (newTime * SliderPositionEventListener.SLIDER_POSITION_MAX / mediaPlayer.getLength()));
 	}
 
@@ -70,20 +72,12 @@ public class PlayerEventListener extends MediaPlayerEventAdapter
 	@Override
 	public void lengthChanged(MediaPlayer mediaPlayer, long newLength)
 	{
-		labelDureeMax.setText(getFormattedTime(mediaPlayer.getLength() / 1000));
+		labelDureeMax.setText(Utils.getFormattedTime(mediaPlayer.getLength() / 1000));
 	}
 
 	@Override
 	public void finished(MediaPlayer mediaPlayer)
 	{
 		mediaPlayer.stop();
-	}
-
-	private String getFormattedTime(long time)
-	{
-		int heures = (int) (time / 3600);
-		int minutes = (int) ((time % 3600) / 60);
-		int secondes = (int) ((time % 3600) % 60);
-		return String.format("%02d:%02d:%02d", heures, minutes, secondes);
 	}
 }
