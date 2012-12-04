@@ -14,7 +14,7 @@ public class PlayerEventListener extends MediaPlayerEventAdapter
 	public static final ImageIcon IMG_ICON_PAUSE = new ImageIcon("images/Pause.png");
 	public static final ImageIcon IMG_ICON_LECTURE = new ImageIcon("images/Lecture.png");
 	public static final ImageIcon IMG_ICON_STOP = new ImageIcon("images/Stop.png");
-	
+
 	private JSlider slider;
 	private JButton boutonLecture;
 	private JLabel labelDureeActuelle;
@@ -43,12 +43,6 @@ public class PlayerEventListener extends MediaPlayerEventAdapter
 	}
 
 	@Override
-	public void positionChanged(MediaPlayer event, float newPosition)
-	{
-		slider.setValue((int) (newPosition * SliderPositionEventListener.SLIDER_POSITION_MAX));
-	}
-
-	@Override
 	public void mediaChanged(MediaPlayer mediaPlayer, libvlc_media_t media, String mrl)
 	{
 		slider.setValue(0);
@@ -65,6 +59,7 @@ public class PlayerEventListener extends MediaPlayerEventAdapter
 		int minutes = (int) ((duree % 3600) / 60);
 		int secondes = (int) ((duree % 3600) % 60);
 		labelDureeActuelle.setText(String.format("%02d:%02d:%02d", heures, minutes, secondes));
+		slider.setValue((int) (newTime * SliderPositionEventListener.SLIDER_POSITION_MAX / mediaPlayer.getLength()));
 	}
 
 	@Override

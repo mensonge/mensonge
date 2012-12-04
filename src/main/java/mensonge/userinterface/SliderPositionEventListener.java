@@ -22,14 +22,14 @@ public class SliderPositionEventListener extends MouseAdapter
 
 	private int valueForXPosition(int x)
 	{
-		return ((BasicSliderUI) slider.getUI()).valueForXPosition(x) + 1;
+		return ((BasicSliderUI) slider.getUI()).valueForXPosition(x);
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent event)
 	{
 		int value = this.valueForXPosition(event.getX());
-		mediaPlayer.setPosition(value / SLIDER_POSITION_MAX);
+		mediaPlayer.setTime((long) ((value / SLIDER_POSITION_MAX) * mediaPlayer.getLength()));
 	}
 
 	@Override

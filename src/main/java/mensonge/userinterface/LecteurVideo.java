@@ -105,13 +105,11 @@ public class LecteurVideo extends JPanel implements ActionListener
 		this.boutonLecture.addActionListener(this);
 		this.boutonLecture.setEnabled(true);
 
-		this.boutonMarqueur1 = new JButton();
-		this.boutonMarqueur1.setText("Marqueur 1");
+		this.boutonMarqueur1 = new JButton("Marqueur 1");
 		this.boutonMarqueur1.addActionListener(this);
 		this.boutonMarqueur1.setEnabled(true);
 
-		this.boutonMarqueur2 = new JButton();
-		this.boutonMarqueur2.setText("Marqueur 2");
+		this.boutonMarqueur2 = new JButton("Marqueur 2");
 		this.boutonMarqueur2.addActionListener(this);
 		this.boutonMarqueur2.setEnabled(true);
 
@@ -131,8 +129,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 		this.sliderVolume.setPaintLabels(false);
 		this.sliderVolume.setMinimum(0);
 		this.sliderVolume.setMaximum(100);
-		this.sliderVolume.setValue(50);
-		this.sliderVolume.setToolTipText("Volume");
+		this.sliderVolume.setValue(100);
 		this.sliderVolume.setMinimumSize(new Dimension(150, 30));
 		this.sliderVolume.setMaximumSize(new Dimension(150, 30));
 		this.sliderVolume.setPreferredSize(new Dimension(150, 30));
@@ -259,23 +256,22 @@ public class LecteurVideo extends JPanel implements ActionListener
 			}
 			catch (IllegalArgumentException e)
 			{
-				GraphicalUserInterface.popupErreur("Extraction : "+e.getMessage());
+				GraphicalUserInterface.popupErreur("Extraction : " + e.getMessage());
 			}
 			catch (InputFormatException e)
 			{
-				GraphicalUserInterface.popupErreur("Extraction : "+e.getMessage());
+				GraphicalUserInterface.popupErreur("Extraction : " + e.getMessage());
 			}
 			catch (IOException e)
 			{
-				GraphicalUserInterface.popupErreur("Extraction : "+e.getMessage());
+				GraphicalUserInterface.popupErreur("Extraction : " + e.getMessage());
 			}
 			catch (EncoderException e)
 			{
-				GraphicalUserInterface.popupErreur("Extraction : "+e.getMessage());
+				GraphicalUserInterface.popupErreur("Extraction : " + e.getMessage());
 			}
 			this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-			new DialogueAjouterEnregistrement(parent, "Ajouter enregistrement",
-					true, this.bdd, tabOfByte);
+			new DialogueAjouterEnregistrement(parent, "Ajout d'un enregistrement", true, this.bdd, tabOfByte);
 			this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			this.mediaPlayer.pause();
 		}
