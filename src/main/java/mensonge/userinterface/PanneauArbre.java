@@ -2,6 +2,7 @@ package mensonge.userinterface;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -453,6 +454,7 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 					"Suppression", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if (option == JOptionPane.OK_OPTION)
 			{
+				setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 				for (int i = 0; i < arbre.getSelectionPaths().length; i++)
 				{
 					if (arbre.getSelectionPaths()[i].getLastPathComponent() instanceof Feuille)
@@ -469,8 +471,8 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 						}
 					}
 				}
+				setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			}
-			updateArbre();
 		}
 
 	}
@@ -536,7 +538,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 					GraphicalUserInterface.popupErreur(e1.getMessage(), "Erreur");
 				}
 			}
-			updateArbre();
 		}
 	}
 
@@ -564,7 +565,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 					GraphicalUserInterface.popupErreur(e1.getMessage(), "Erreur");
 				}
 			}
-			updateArbre();
 		}
 	}
 
@@ -592,7 +592,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 					GraphicalUserInterface.popupErreur(e1.getMessage(), "Erreur");
 				}
 			}
-			updateArbre();
 		}
 	}
 
@@ -629,7 +628,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 					GraphicalUserInterface.popupErreur(e1.getMessage(), "Erreur");
 				}
 			}
-			updateArbre();
 		}
 	}
 
@@ -658,7 +656,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 						}
 					}
 				}
-				updateArbre();
 			}
 		}
 	}
@@ -701,7 +698,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 					}
 				}
 			}
-			updateArbre();
 		}
 	}
 
@@ -737,7 +733,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 							"Erreur lors de l'ajout du sujet " + option + " " + e1.getMessage(), "Erreur");
 				}
 			}
-			updateArbre();
 		}
 	}
 
@@ -778,7 +773,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 					}
 				}
 			}
-			updateArbre();
 		}
 	}
 
@@ -807,7 +801,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 						}
 					}
 				}
-				updateArbre();
 			}
 		}
 	}
@@ -826,7 +819,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 			{
 				typeTrie = PanneauArbre.TYPE_TRIE_CATEGORIE;
 			}
-			updateArbre();
 		}
 	}
 

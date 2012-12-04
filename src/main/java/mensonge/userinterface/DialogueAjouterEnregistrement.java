@@ -138,6 +138,7 @@ public class DialogueAjouterEnregistrement extends JDialog implements ActionList
 		String nomSuj = nomSujet();
 		try
 		{
+			this.getParent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			int idCat = this.bdd.getCategorie(nomCat);
 			int idSuj = this.bdd.getSujet(nomSuj);
@@ -147,6 +148,7 @@ public class DialogueAjouterEnregistrement extends JDialog implements ActionList
 		{
 			e1.printStackTrace();
 		}
+		this.getParent().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		this.setVisible(false);
 	}
