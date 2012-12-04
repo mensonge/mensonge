@@ -4,8 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
@@ -115,10 +113,10 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		});
 
 		this.scrollPane = new JScrollPane(arbre);
-		this.scrollPane.setPreferredSize(new Dimension(270, 450));
+		this.scrollPane.setPreferredSize(new Dimension(332, 450));
 		this.scrollPane.setAutoscrolls(true);
 
-		this.infoArbre.setPreferredSize(new Dimension(270, 100));
+		this.infoArbre.setPreferredSize(new Dimension(332, 100));
 
 		this.labelCacheSize = new JLabel("Taille du cache : "
 				+ Utils.humanReadableByteCount(Utils.getCacheSize(), false));
@@ -348,7 +346,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 				{
 					changerTri.setText("Grouper par sujet");
 				}
-
 				if (arbre.getSelectionCount() == 0)
 				{
 					JMenuItem collapseAll = new JMenuItem("Replier tout");
