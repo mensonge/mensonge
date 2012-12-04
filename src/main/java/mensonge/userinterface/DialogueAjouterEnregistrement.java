@@ -15,11 +15,13 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
+import mensonge.core.BaseDeDonnees.DBException;
 
 
 public class DialogueAjouterEnregistrement extends JDialog implements ActionListener
@@ -29,6 +31,10 @@ public class DialogueAjouterEnregistrement extends JDialog implements ActionList
 	 *
 	 */
 	private static final long serialVersionUID = 1L;
+	
+	private static final String CREER_CAT = "Creer Catégorie";
+	
+	private static final String CREER_SUJ = "Creer Sujet";
 
 	private JComboBox comboCategorie = new JComboBox();
 	private JLabel labelCategorie = new JLabel("Liste des catégories");
@@ -78,6 +84,9 @@ public class DialogueAjouterEnregistrement extends JDialog implements ActionList
 		{
 			GraphicalUserInterface.popupErreur("Absence de sujet ou de categorie dans la base");
 		}
+		
+		comboCategorie.addItem(CREER_CAT);
+		comboSujet.addItem(CREER_SUJ);
 
 		c.gridx = 0;
 		c.gridy = 0;
@@ -125,11 +134,13 @@ public class DialogueAjouterEnregistrement extends JDialog implements ActionList
 		int octetParSeconde = bb.getInt();
 		int dataSize = bb.getInt();
 		int duree = (int)(dataSize/octetParSeconde);
+		String nomCat = nomCategorie();
+		String nomSuj = nomSujet();
 		try
 		{
 			this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-			int idCat = this.bdd.getCategorie((String) comboCategorie.getSelectedItem());
-			int idSuj = this.bdd.getSujet((String) comboSujet.getSelectedItem());
+			int idCat = this.bdd.getCategorie(nomCat);
+			int idSuj = this.bdd.getSujet(nomSuj);
 			this.bdd.ajouterEnregistrement(champsNom.getText(), duree, idCat, enregistrement, idSuj);
 		}
 		catch (Exception e1)
@@ -140,6 +151,54 @@ public class DialogueAjouterEnregistrement extends JDialog implements ActionList
 		this.setVisible(false);
 	}
 
+	public String nomCategorie()
+	{
+		String nom = (String) comboCategorie.getSelectedItem();
+		if(nom.equals(CREER_CAT))
+		{
+			String name = null;
+			while(name == null || name.equals(""))
+			{
+				name = JOptionPane.showInputDialog(null, "Entrez le nom de la nouvelle categorie", "Ajout",
+					JOptionPane.QUESTION_MESSAGE);
+			}
+			try
+			{
+				bdd.ajouterCategorie(name);
+			}
+			catch (DBException e1)
+			{
+				GraphicalUserInterface.popupErreur(e1.getMessage(), "Erreur");
+			}
+			nom = name;
+		}
+		return nom;
+	}
+	
+	public String nomSujet()
+	{
+		String nom = (String) comboSujet.getSelectedItem();
+		if(nom.equals(CREER_SUJ))
+		{
+			String name = null;
+			while(name == null || name.equals(""))
+			{
+				name = JOptionPane.showInputDialog(null, "Entrez le nom du nouveau sujet", "Ajout",
+					JOptionPane.QUESTION_MESSAGE);
+			}
+			try
+			{
+				bdd.ajouterSujet(name);
+			}
+			catch (DBException e1)
+			{
+				GraphicalUserInterface.popupErreur(e1.getMessage(), "Erreur");
+			}
+			nom = name;
+		}
+		return nom;
+	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e)
 	{
@@ -151,6 +210,5 @@ public class DialogueAjouterEnregistrement extends JDialog implements ActionList
 		{
 			this.setVisible(false);
 		}
-
 	}
 }
