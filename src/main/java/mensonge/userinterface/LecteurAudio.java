@@ -97,7 +97,7 @@ public class LecteurAudio extends JPanel implements ActionListener
 		this.sliderVolume.setPaintLabels(false);
 		this.sliderVolume.setMinimum(0);
 		this.sliderVolume.setMaximum(100);
-		this.sliderVolume.setValue(50);
+		this.sliderVolume.setValue(100);
 		this.sliderVolume.setToolTipText("Volume");
 		this.sliderVolume.setMinimumSize(new Dimension(100, 30));
 		this.sliderVolume.setMaximumSize(new Dimension(100, 30));
