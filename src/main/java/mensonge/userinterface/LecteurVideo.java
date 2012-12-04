@@ -246,7 +246,10 @@ public class LecteurVideo extends JPanel implements ActionListener
 		}
 		else if (event.getSource() == boutonExtract)
 		{
-			this.mediaPlayer.pause();
+			if(this.mediaPlayer.isPlaying())
+			{
+				this.mediaPlayer.pause();
+			}
 			Extraction extract = new Extraction();
 			byte[] tabOfByte = null;
 			try
@@ -273,7 +276,6 @@ public class LecteurVideo extends JPanel implements ActionListener
 			this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			new DialogueAjouterEnregistrement(parent, "Ajout d'un enregistrement", true, this.bdd, tabOfByte);
 			this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-			this.mediaPlayer.pause();
 		}
 	}
 }
