@@ -5,6 +5,9 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileInputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.sql.ResultSet;
 
 import javax.swing.JButton;
@@ -14,6 +17,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+
 
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
 
@@ -113,10 +117,14 @@ public class DialogueAjouterEnregistrement extends JDialog implements ActionList
 
 	public void valider()
 	{
-		int duree;
-		int octetParSeconde, taille_total = this.enregistrement.length;
-		octetParSeconde = enregistrement[28] | enregistrement[29]<<8 | enregistrement[30]<<16 | enregistrement[31] << 24;
-		duree = (int)(taille_total/octetParSeconde);
+		ByteBuffer bb = ByteBuffer.allocate(8);	
+		bb.put(enregistrement, 28, 4);
+		bb.put(enregistrement, 40, 4);
+		bb.rewind();
+		bb.order(ByteOrder.LITTLE_ENDIAN);
+		int octetParSeconde = bb.getInt();
+		int dataSize = bb.getInt();
+		int duree = (int)(dataSize/octetParSeconde);
 		try
 		{
 			this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
