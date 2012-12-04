@@ -2,6 +2,7 @@ package mensonge.core.BaseDeDonnees;
 
 import java.io.FileOutputStream;
 import java.io.File;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -428,6 +429,7 @@ public class BaseDeDonnees extends BetterObservable
 		PreparedStatement ps;
 		try
 		{
+
 			ps = connexion.prepareStatement("DELETE FROM enregistrements WHERE id=?");
 			ps.setInt(1, id);// On rempli les trou
 			if (ps.executeUpdate() > 0)// On execute la requete et on test la reussite de cette dernier

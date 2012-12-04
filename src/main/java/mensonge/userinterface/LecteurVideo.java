@@ -273,9 +273,10 @@ public class LecteurVideo extends JPanel implements ActionListener
 			{
 				GraphicalUserInterface.popupErreur("Extraction : "+e.getMessage());
 			}
-			this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			new DialogueAjouterEnregistrement(parent, "Ajouter enregistrement",
 					true, this.bdd, tabOfByte);
+			this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			this.mediaPlayer.pause();
 		}
 	}

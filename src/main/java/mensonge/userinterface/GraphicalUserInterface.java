@@ -75,7 +75,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	 */
 	public GraphicalUserInterface()
 	{
-		
+
 		/*
 		 * Connexion à la base
 		 */
@@ -549,7 +549,8 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 					length += file.length();
 					file.delete();
 				}
-				popupInfo("Le cache a été purgé.\nVous avez gagné "+Utils.humanReadableByteCount(length,false)+" d'espace disque.", "Purge du cache");
+				popupInfo("Le cache a été purgé.\nVous avez gagné " + Utils.humanReadableByteCount(length, false)
+						+ " d'espace disque.", "Purge du cache");
 				panneauArbre.updateCacheSizeInfo();
 			}
 		}
@@ -571,7 +572,8 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		}
 		try
 		{
-			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), new File("lib").getCanonicalPath());
+			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(),
+					new File("lib/libvlc" + System.getProperty("sun.arch.data.model")).getCanonicalPath());
 		}
 		catch (IOException e)
 		{
