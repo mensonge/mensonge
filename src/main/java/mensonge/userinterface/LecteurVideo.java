@@ -148,7 +148,8 @@ public class LecteurVideo extends JPanel implements ActionListener
 		this.slider.setValue(0);
 		this.slider.setMaximum((int) SliderPositionEventListener.SLIDER_POSITION_MAX);
 
-		SliderPositionEventListener sliderListener = new SliderPositionEventListener(this.slider, this.labelDureeActuelle, this.mediaPlayer);
+		SliderPositionEventListener sliderListener = new SliderPositionEventListener(this.slider,
+				this.labelDureeActuelle, this.mediaPlayer);
 		this.slider.addMouseListener(sliderListener);
 		this.slider.addMouseMotionListener(sliderListener);
 
@@ -246,16 +247,19 @@ public class LecteurVideo extends JPanel implements ActionListener
 		}
 		else if (event.getSource() == boutonExtract)
 		{
-			if(this.mediaPlayer.isPlaying())
+			if (this.mediaPlayer.isPlaying())
 			{
 				this.mediaPlayer.pause();
 			}
-			Extraction extract = new Extraction();
-			byte[] tabOfByte = null;
 			try
 			{
+				Extraction extract = new Extraction();
+				byte[] tabOfByte = null;
 				this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 				tabOfByte = extract.extraireIntervalle(pathVideo, timeMarqueur1, timeMarqueur2);
+				this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+				new DialogueAjouterEnregistrement(parent, "Ajout d'un enregistrement", true, this.bdd, tabOfByte);
+				this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			}
 			catch (IllegalArgumentException e)
 			{
@@ -273,9 +277,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 			{
 				GraphicalUserInterface.popupErreur("Extraction : " + e.getMessage());
 			}
-			this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-			new DialogueAjouterEnregistrement(parent, "Ajout d'un enregistrement", true, this.bdd, tabOfByte);
-			this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+
 		}
 	}
 }
