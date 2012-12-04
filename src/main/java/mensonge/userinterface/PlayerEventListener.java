@@ -54,11 +54,7 @@ public class PlayerEventListener extends MediaPlayerEventAdapter
 	@Override
 	public void timeChanged(MediaPlayer mediaPlayer, long newTime)
 	{
-		long duree = newTime / 1000;
-		int heures = (int) (duree / 3600);
-		int minutes = (int) ((duree % 3600) / 60);
-		int secondes = (int) ((duree % 3600) % 60);
-		labelDureeActuelle.setText(String.format("%02d:%02d:%02d", heures, minutes, secondes));
+		labelDureeActuelle.setText(getFormattedTime(newTime / 1000));
 		slider.setValue((int) (newTime * SliderPositionEventListener.SLIDER_POSITION_MAX / mediaPlayer.getLength()));
 	}
 
@@ -74,16 +70,20 @@ public class PlayerEventListener extends MediaPlayerEventAdapter
 	@Override
 	public void lengthChanged(MediaPlayer mediaPlayer, long newLength)
 	{
-		long duree = mediaPlayer.getLength() / 1000;
-		int heures = (int) (duree / 3600);
-		int minutes = (int) ((duree % 3600) / 60);
-		int secondes = (int) ((duree % 3600) % 60);
-		labelDureeMax.setText(String.format("%02d:%02d:%02d", heures, minutes, secondes));
+		labelDureeMax.setText(getFormattedTime(mediaPlayer.getLength() / 1000));
 	}
 
 	@Override
 	public void finished(MediaPlayer mediaPlayer)
 	{
 		mediaPlayer.stop();
+	}
+
+	private String getFormattedTime(long time)
+	{
+		int heures = (int) (time / 3600);
+		int minutes = (int) ((time % 3600) / 60);
+		int secondes = (int) ((time % 3600) % 60);
+		return String.format("%02d:%02d:%02d", heures, minutes, secondes);
 	}
 }

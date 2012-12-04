@@ -110,7 +110,7 @@ public class LecteurAudio extends JPanel implements ActionListener
 			}
 		});
 
-		SliderPositionEventListener sliderListener = new SliderPositionEventListener(this.slider, this.mediaPlayer);
+		SliderPositionEventListener sliderListener = new SliderPositionEventListener(this.slider, this.labelDureeActuelle, this.mediaPlayer);
 		this.slider.addMouseListener(sliderListener);
 		this.slider.addMouseMotionListener(sliderListener);
 

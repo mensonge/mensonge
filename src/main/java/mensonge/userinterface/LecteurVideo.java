@@ -148,7 +148,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 		this.slider.setValue(0);
 		this.slider.setMaximum((int) SliderPositionEventListener.SLIDER_POSITION_MAX);
 
-		SliderPositionEventListener sliderListener = new SliderPositionEventListener(this.slider, this.mediaPlayer);
+		SliderPositionEventListener sliderListener = new SliderPositionEventListener(this.slider, this.labelDureeActuelle, this.mediaPlayer);
 		this.slider.addMouseListener(sliderListener);
 		this.slider.addMouseMotionListener(sliderListener);
 
