@@ -10,10 +10,8 @@ import javax.swing.JSlider;
 public class SliderWithMarkers extends JSlider
 {
 
-	float position1 = 0.0f;
-	float position2 = 0.0f;
-	boolean pos1 = false;
-	boolean pos2 = false;
+	float position1 = -1.0f;
+	float position2 = -1.0f;
 	/**
 	 *
 	 */
@@ -37,7 +35,6 @@ public class SliderWithMarkers extends JSlider
 	public void setMarkerOneAt(float position)
 	{
 		position1 = position;
-		pos1 = true;
 		this.repaint();
 
 	}
@@ -45,7 +42,6 @@ public class SliderWithMarkers extends JSlider
 	public void setMarkerTwoAt(float position)
 	{
 		position2 = position;
-		pos2 = true;
 		this.repaint();
 	}
 
@@ -53,33 +49,36 @@ public class SliderWithMarkers extends JSlider
 	{
 		int h = getHeight();
 		int w = getWidth();
-		int[] polygoneX1 = new int[3];
-		int[] polygoneY1 = new int[3];
-		int[] polygoneX2 = new int[3];
-		int[] polygoneY2 = new int[3];
-		g.setColor(Color.RED);
-		if (pos1)
+
+		if (position1 >= 0)
 		{
-			polygoneX1[0] = (Math.round(position1 * w)) + 5;
-			polygoneX1[1] = (Math.round(position1 * w));
-			polygoneX1[2] = (Math.round(position1 * w)) - 5;
+			g.setColor(Color.RED);
+			int[] polygoneX1 = new int[3];
+			int[] polygoneY1 = new int[3];
+			int pos = Math.round(position1 * w);
+			polygoneX1[0] = pos;
+			polygoneX1[1] = pos + 5;
+			polygoneX1[2] = pos + 10;
 			polygoneY1[0] = h;
-			polygoneY1[1] = h - 6;
+			polygoneY1[1] = h - 7;
 			polygoneY1[2] = h;
 			g.fillPolygon(polygoneX1, polygoneY1, polygoneX1.length);
-			g.fillRect(Math.round(position1 * w), 0, 1, h + 5);
+			g.fillRect(pos + 5, 0, 1, h);
 		}
-		g.setColor(Color.BLUE);
-		if (pos2)
+		if (position2 >= 0)
 		{
-			polygoneX2[0] = (Math.round(position2 * w)) + 5;
-			polygoneX2[1] = (Math.round(position2 * w));
-			polygoneX2[2] = (Math.round(position2 * w)) - 4;
+			g.setColor(Color.BLUE);
+			int[] polygoneX2 = new int[3];
+			int[] polygoneY2 = new int[3];
+			int pos = Math.round(position2 * w);
+			polygoneX2[0] = pos;
+			polygoneX2[1] = pos + 5;
+			polygoneX2[2] = pos + 10;
 			polygoneY2[0] = 0;
-			polygoneY2[1] = h - 16;
+			polygoneY2[1] = 7;
 			polygoneY2[2] = 0;
 			g.fillPolygon(polygoneX2, polygoneY2, polygoneY2.length);
-			g.fillRect(Math.round(position2 * w), 0, 1, h);
+			g.fillRect(pos + 5, 0, 1, h);
 		}
 		super.paintComponent(g);
 	}
@@ -94,11 +93,11 @@ public class SliderWithMarkers extends JSlider
 			{
 				if (e.getX() > Math.round(position1 * w))
 				{
-					setMarkerOneAt((float) e.getX() / (float) w);
+					setMarkerOneAt((float) (e.getX() - 5) / (float) w);
 				}
 				else
 				{
-					setMarkerTwoAt((float) e.getX() / (float) w);
+					setMarkerTwoAt((float) (e.getX() - 5) / (float) w);
 				}
 			}
 		}
