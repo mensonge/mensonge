@@ -2,7 +2,7 @@ package mensonge.core;
 
 import java.io.File;
 
-public class Utils
+public final class Utils
 {
 	private Utils()
 	{

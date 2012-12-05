@@ -7,7 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -66,7 +66,7 @@ public final class DialogueAjouterEnregistrement extends JDialog implements Acti
 
 		try
 		{
-			LinkedList<LigneEnregistrement> liste = bdd.getListeCategorie();
+			List<LigneEnregistrement> liste = bdd.getListeCategorie();
 			for(LigneEnregistrement ligne : liste)
 			{
 				comboCategorie.addItem(ligne.getNomCat());

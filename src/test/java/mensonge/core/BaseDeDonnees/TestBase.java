@@ -9,7 +9,7 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Formatter;
-import java.util.LinkedList;
+import java.util.List;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -327,7 +327,7 @@ public class TestBase
 		db.ajouterCategorie("Flamment");
 		db.ajouterCategorie("Pegase");
 
-		LinkedList<LigneEnregistrement> liste = db.getListeCategorie();
+		List<LigneEnregistrement> liste = db.getListeCategorie();
 		i = liste.size();
 		assertTrue(i == 3);
 	}
@@ -339,7 +339,7 @@ public class TestBase
 		String nom = null;
 		db.modifierCategorie(2, "Licorne");
 
-		LinkedList<LigneEnregistrement> liste = db.getListeCategorie();
+		List<LigneEnregistrement> liste = db.getListeCategorie();
 		for(LigneEnregistrement ligne : liste)
 		{
 			i++;
@@ -355,7 +355,7 @@ public class TestBase
 	public void testAfficherCategorie() throws DBException, SQLException, NoSuchAlgorithmException
 	{
 		String nom = new String();
-		LinkedList<LigneEnregistrement> liste = db.getListeCategorie();
+		List<LigneEnregistrement> liste = db.getListeCategorie();
 		for(LigneEnregistrement ligne : liste)
 		{
 			nom += ligne.getNomCat();
@@ -375,7 +375,7 @@ public class TestBase
 		int i = 0;
 		db.supprimerCategorie(1);
 
-		LinkedList<LigneEnregistrement> liste = db.getListeCategorie();
+		List<LigneEnregistrement> liste = db.getListeCategorie();
 		i = liste.size();
 		assertTrue(i == 2);
 	}
@@ -388,7 +388,7 @@ public class TestBase
 		db.ajouterSujet("Ronald");
 		db.ajouterSujet("Gwen");
 
-		LinkedList<LigneEnregistrement> liste = db.getListeSujet();
+		List<LigneEnregistrement> liste = db.getListeSujet();
 		i = liste.size();
 		assertTrue(i == 3);
 	}
@@ -400,7 +400,7 @@ public class TestBase
 		String nom = null;
 		db.modifierSujet(2, "Toshiro");
 
-		LinkedList<LigneEnregistrement> liste = db.getListeSujet();
+		List<LigneEnregistrement> liste = db.getListeSujet();
 		for(LigneEnregistrement ligne : liste)
 		{
 			i++;
@@ -416,7 +416,7 @@ public class TestBase
 	public void testAfficherSujet() throws DBException, SQLException, NoSuchAlgorithmException
 	{
 		String nom = new String();
-		LinkedList<LigneEnregistrement> liste = db.getListeSujet();
+		List<LigneEnregistrement> liste = db.getListeSujet();
 		for(LigneEnregistrement ligne : liste)
 		{
 			nom += ligne.getNom();
@@ -436,7 +436,7 @@ public class TestBase
 		int i = 0;
 		db.supprimerSujet(1);
 
-		LinkedList<LigneEnregistrement> liste = db.getListeSujet();
+		List<LigneEnregistrement> liste = db.getListeSujet();
 		i = liste.size();
 		assertTrue(i == 2);
 	}
@@ -454,7 +454,7 @@ public class TestBase
 		db.ajouterEnregistrement("Knight", 18, 3, "IUT".getBytes(), 3);
 		db.ajouterEnregistrement("Ermes", 18, 3, "Olympe".getBytes(), 3);
 		int i = 0;
-		LinkedList<LigneEnregistrement> liste = db.getListeEnregistrement();
+		List<LigneEnregistrement> liste = db.getListeEnregistrement();
 		i = liste.size();
 		assertTrue(i == 7);
 	}
@@ -484,7 +484,7 @@ public class TestBase
 		int i = 0;
 		int taille = 0;
 		String nom1 = null, nom2 = null, categorie3 = null, nom4 = null;
-		LinkedList<LigneEnregistrement> liste = db.getListeEnregistrement();
+		List<LigneEnregistrement> liste = db.getListeEnregistrement();
 		i = liste.size();
 		for(LigneEnregistrement ligne : liste)
 		{
@@ -522,7 +522,7 @@ public class TestBase
 		db.supprimerEnregistrement(5);
 		int i = 0;
 		boolean tmp = true;
-		LinkedList<LigneEnregistrement> liste = db.getListeEnregistrement();
+		List<LigneEnregistrement> liste = db.getListeEnregistrement();
 		for(LigneEnregistrement ligne : liste)
 		{
 			i++;
@@ -561,7 +561,7 @@ public class TestBase
 		int nb = db.getNombreEnregistrement();
 		int i = 0;
 
-		LinkedList<LigneEnregistrement> liste = db.getListeEnregistrement();
+		List<LigneEnregistrement> liste = db.getListeEnregistrement();
 		i = liste.size();
 		assertTrue(i == 6 && nb == 6);
 	}

@@ -11,6 +11,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -216,7 +217,7 @@ public class BaseDeDonnees extends BetterObservable
 			byte sujet = 0, categorie = 0;
 			// coller l'enregistrement dans un fichier
 			FileOutputStream destinationFile = null;
-			LinkedList<LigneEnregistrement> liste = this.getListeEnregistrement();
+			List<LigneEnregistrement> liste = this.getListeEnregistrement();
 			try
 			{
 				for(LigneEnregistrement ligne : liste)
@@ -255,7 +256,7 @@ public class BaseDeDonnees extends BetterObservable
 	 * @return Le resultat sous forme d'objet ResultSet qui n'est parcourable qu'une fois.
 	 * @throws DBException
 	 */
-	public LinkedList<LigneEnregistrement> getListeEnregistrement() throws DBException
+	public List<LigneEnregistrement> getListeEnregistrement() throws DBException
 	{
 		if (connexion == null)
 		{
@@ -263,8 +264,8 @@ public class BaseDeDonnees extends BetterObservable
 		}
 		Statement stat = null;
 		ResultSet rs = null;
-		LinkedList<LigneEnregistrement> retour = null;
-		LinkedList<String> colonne = new LinkedList<String>();
+		List<LigneEnregistrement> retour = null;
+		List<String> colonne = new LinkedList<String>();
 		colonne.add("duree");
 		colonne.add("taille");
 		colonne.add("nom");
@@ -300,7 +301,7 @@ public class BaseDeDonnees extends BetterObservable
 	 * @return Le resultat sous forme d'objet ResultSet qui n'est parcourable qu'une fois.
 	 * @throws DBException
 	 */
-	public LinkedList<LigneEnregistrement> getListeEnregistrementCategorie(final int idCat) throws DBException
+	public List<LigneEnregistrement> getListeEnregistrementCategorie(final int idCat) throws DBException
 	{
 		if (connexion == null)
 		{
@@ -308,8 +309,8 @@ public class BaseDeDonnees extends BetterObservable
 		}
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		LinkedList<LigneEnregistrement> retour = null;
-		LinkedList<String> colonne = new LinkedList<String>();
+		List<LigneEnregistrement> retour = null;
+		List<String> colonne = new LinkedList<String>();
 		colonne.add("duree");
 		colonne.add("taille");
 		colonne.add("nom");
@@ -346,7 +347,7 @@ public class BaseDeDonnees extends BetterObservable
 	 * @return Le resultat sous forme d'objet ResultSet qui n'est parcourable qu'une fois.
 	 * @throws DBException
 	 */
-	public LinkedList<LigneEnregistrement> getListeEnregistrementSujet(final int idSuj) throws DBException
+	public List<LigneEnregistrement> getListeEnregistrementSujet(final int idSuj) throws DBException
 	{
 		if (connexion == null)
 		{
@@ -354,8 +355,8 @@ public class BaseDeDonnees extends BetterObservable
 		}
 		PreparedStatement ps = null;
 		ResultSet rs = null;
-		LinkedList<LigneEnregistrement> retour = null;
-		LinkedList<String> colonne = new LinkedList<String>();
+		List<LigneEnregistrement> retour = null;
+		List<String> colonne = new LinkedList<String>();
 		colonne.add("duree");
 		colonne.add("taille");
 		colonne.add("nom");
@@ -1036,7 +1037,7 @@ public class BaseDeDonnees extends BetterObservable
 	 * @return Le resultat sous la forme d'un tableau parcourable dans un sens
 	 * @throws DBException
 	 */
-	public LinkedList<LigneEnregistrement> getListeCategorie() throws DBException
+	public List<LigneEnregistrement> getListeCategorie() throws DBException
 	{
 		if (connexion == null)
 		{
@@ -1044,8 +1045,8 @@ public class BaseDeDonnees extends BetterObservable
 		}
 		Statement stat = null;
 		ResultSet rs = null;
-		LinkedList<LigneEnregistrement> retour = null;
-		LinkedList<String> colonne = new LinkedList<String>();
+		List<LigneEnregistrement> retour = null;
+		List<String> colonne = new LinkedList<String>();
 		colonne.add("nomcat");
 		colonne.add("idcat");
 		try
@@ -1297,7 +1298,7 @@ public class BaseDeDonnees extends BetterObservable
 	 * @return Le resultat sous la forme d'un tableau parcourable dans un sens
 	 * @throws DBException
 	 */
-	public LinkedList<LigneEnregistrement> getListeSujet() throws DBException
+	public List<LigneEnregistrement> getListeSujet() throws DBException
 	{
 		if (connexion == null)
 		{
@@ -1305,8 +1306,8 @@ public class BaseDeDonnees extends BetterObservable
 		}
 		Statement stat = null;
 		ResultSet rs = null;
-		LinkedList<LigneEnregistrement> retour = null;
-		LinkedList<String> colonne = new LinkedList<String>();
+		List<LigneEnregistrement> retour = null;
+		List<String> colonne = new LinkedList<String>();
 		colonne.add("nomsuj");
 		colonne.add("idsuj");
 		try
@@ -1688,7 +1689,7 @@ public class BaseDeDonnees extends BetterObservable
 
 		try
 		{
-			sourceFile = new java.io.FileInputStream(source);
+			sourceFile = new FileInputStream(source);
 			destinationFile = new FileOutputStream(dest);
 			// Lecture par segment de 0.5Mo
 			byte buffer[] = new byte[512 * 1024];

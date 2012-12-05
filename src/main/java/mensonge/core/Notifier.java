@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class Notifier
+public final class Notifier
 {
 
-	private static final Map<String, Method> methods = new HashMap<String, Method>();
+	private static final Map<String, Method> METHODS = new HashMap<String, Method>();
 
 	private Notifier()
 	{
@@ -27,7 +27,7 @@ public class Notifier
 			Method[] ms = i.getDeclaredMethods();
 			for (Method m : ms)
 			{
-				methods.put(m.getName(), m);
+				METHODS.put(m.getName(), m);
 			}
 		}
 	}
@@ -35,7 +35,7 @@ public class Notifier
 	public static void call(Set<IObserver> observers, String name, Object... args) throws IllegalAccessException,
 			InvocationTargetException
 	{
-		Method method = methods.get(name);
+		Method method = METHODS.get(name);
 		callMethodOnObservers(observers, method, args);
 	}
 
