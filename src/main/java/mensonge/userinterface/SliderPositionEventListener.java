@@ -13,7 +13,6 @@ import uk.co.caprica.vlcj.player.MediaPlayer;
 
 public class SliderPositionEventListener extends MouseAdapter
 {
-	public static final float SLIDER_POSITION_MAX = 100.0f;
 	private JSlider slider;
 	private MediaPlayer mediaPlayer;
 	private JLabel labelDureeActuelle;
@@ -37,7 +36,7 @@ public class SliderPositionEventListener extends MouseAdapter
 		if ((event.getModifiers() & MouseEvent.BUTTON1_MASK) != 0)
 		{
 			int value = this.valueForXPosition(event.getX());
-			long newTime = (long) ((value / SLIDER_POSITION_MAX) * mediaPlayer.getLength());
+			long newTime = (long) ((value / (float) slider.getMaximum()) * mediaPlayer.getLength());
 			mediaPlayer.setTime(newTime);
 			slider.setValue(value);
 			labelDureeActuelle.setText(Utils.getFormattedTime(newTime / 1000));
@@ -53,6 +52,6 @@ public class SliderPositionEventListener extends MouseAdapter
 	private long getTimeX(int x)
 	{
 		int positionValue = this.valueForXPosition(x);
-		return (long) ((positionValue / SLIDER_POSITION_MAX) * mediaPlayer.getLength() / 1000);
+		return (long) ((positionValue / (float) slider.getMaximum()) * mediaPlayer.getLength() / 1000);
 	}
 }

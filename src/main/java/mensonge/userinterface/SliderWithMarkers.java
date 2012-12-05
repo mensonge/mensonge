@@ -19,7 +19,7 @@ public class SliderWithMarkers extends JSlider
 	 */
 	private static final long serialVersionUID = 1L;
 
-	SliderWithMarkers(int orientation)
+	public SliderWithMarkers(int orientation)
 	{
 		super(orientation);
 		this.setOpaque(false);
@@ -30,7 +30,7 @@ public class SliderWithMarkers extends JSlider
 		this.setMinorTickSpacing(0);
 		this.setMinimum(0);
 		this.setValue(0);
-		this.setMaximum((int) SliderPositionEventListener.SLIDER_POSITION_MAX);
+		this.setMaximum(1000);
 		this.addMouseListener(new ClicDroit());
 	}
 

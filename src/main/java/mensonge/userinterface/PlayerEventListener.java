@@ -57,7 +57,7 @@ public class PlayerEventListener extends MediaPlayerEventAdapter
 	public void timeChanged(MediaPlayer mediaPlayer, long newTime)
 	{
 		labelDureeActuelle.setText(Utils.getFormattedTime(newTime / 1000));
-		slider.setValue((int) (newTime * SliderPositionEventListener.SLIDER_POSITION_MAX / mediaPlayer.getLength()));
+		slider.setValue((int) (newTime * (float) slider.getMaximum() / mediaPlayer.getLength()));
 	}
 
 	@Override
@@ -73,6 +73,7 @@ public class PlayerEventListener extends MediaPlayerEventAdapter
 	public void lengthChanged(MediaPlayer mediaPlayer, long newLength)
 	{
 		labelDureeMax.setText(Utils.getFormattedTime(mediaPlayer.getLength() / 1000));
+		slider.setMaximum((int) newLength);
 	}
 
 	@Override
