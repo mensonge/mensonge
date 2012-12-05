@@ -42,6 +42,7 @@ import com.sun.jna.NativeLibrary;
 import uk.co.caprica.vlcj.binding.LibVlc;
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
+import mensonge.core.Cache;
 import mensonge.core.Extraction;
 import mensonge.core.Utils;
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
@@ -214,7 +215,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				for (Entry<String, Plugin> entry : mapPlugins.entrySet())
 				{
 					JMenuItem item = new JMenuItem(entry.getKey());
-					item.addActionListener(new ItemPluginListener(mapPlugins.get(entry.getKey())));
+					item.addActionListener(new ItemPluginListener(mapPlugins.get(entry.getKey()), this.panneauArbre));
 					menuOutils.add(item);
 				}
 			}
@@ -521,10 +522,12 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	{
 		private static final Extraction EXTRACTION = new Extraction();
 		private Plugin plugin;
+		private PanneauArbre panneauArbre;
 
-		public ItemPluginListener(Plugin plugin)
+		public ItemPluginListener(Plugin plugin, PanneauArbre panneauArbre)
 		{
 			this.plugin = plugin;
+			this.panneauArbre = panneauArbre;
 		}
 
 		@Override
@@ -532,9 +535,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		{
 			// TODO Ajouter la liste des fichiers selectionnés
 			// Peut être voir pour aussi donner en plus l'instance de la BDD ça pourrait être utile au final ? :D
-			List<File> liste = new ArrayList<File>();
-			liste.add(new File("sons/test_sortie.wav"));
-			this.plugin.lancer(EXTRACTION, liste);
+			this.plugin.lancer(EXTRACTION, panneauArbre.getListSelectedRecords());
 		}
 	}
 
@@ -552,22 +553,9 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
-			File cacheDirectory = new File("cache");
-			if (cacheDirectory.exists() && cacheDirectory.isDirectory())
-			{
-				long length = 0;
-				for (File file : cacheDirectory.listFiles())
-				{
-					length += file.length();
-					if (!file.delete())
-					{
-						popupErreur("Impossible de supprimer " + file.getName() + " du cache");
-					}
-				}
-				popupInfo("Le cache a été purgé.\nVous avez gagné " + Utils.humanReadableByteCount(length, false)
-						+ " d'espace disque.", "Purge du cache");
-				panneauArbre.updateCacheSizeInfo();
-			}
+			popupInfo("Le cache a été purgé.\nVous avez gagné " + Utils.humanReadableByteCount(Cache.purge(), false)
+					+ " d'espace disque.", "Purge du cache");
+			panneauArbre.updateCacheSizeInfo();
 		}
 	}
 

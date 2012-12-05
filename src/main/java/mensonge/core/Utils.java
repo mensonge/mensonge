@@ -21,20 +21,6 @@ public final class Utils
 		return String.format("%.1f %so", bytes / Math.pow(unit, exp), pre);
 	}
 
-	public static long getCacheSize()
-	{
-		long length = 0;
-		File cacheDirectory = new File("cache");
-		if (cacheDirectory.exists() && cacheDirectory.isDirectory())
-		{
-			for (File file : cacheDirectory.listFiles())
-			{
-				length += file.length();
-			}
-		}
-		return length;
-	}
-
 	public static long getDBSize()
 	{
 		File dbFile = new File("LieLab.db");

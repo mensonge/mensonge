@@ -9,10 +9,9 @@ import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.swing.JFileChooser;
@@ -33,6 +32,7 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
+import mensonge.core.Cache;
 import mensonge.core.DataBaseObserver;
 import mensonge.core.Utils;
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
@@ -60,25 +60,11 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 	private JPopupMenu menuClicDroit = new JPopupMenu();// sers au clic droit
 
 	private int typeTrie = PanneauArbre.TYPE_TRIE_SUJET;
-	private File cacheDirectory;
 	private JLabel labelCacheSize;
 	private JLabel labelDBSize;
 
 	public PanneauArbre(BaseDeDonnees bdd)
 	{
-		cacheDirectory = new File("cache");
-
-		if (cacheDirectory.exists() && !cacheDirectory.isDirectory() && !cacheDirectory.delete())
-		{
-			GraphicalUserInterface
-					.popupErreur("Impossible de supprimer le fichier portant le même nom que le dossier de cache");
-
-		}
-		if (!cacheDirectory.exists() && !cacheDirectory.mkdir())
-		{
-			GraphicalUserInterface.popupErreur("Impossible de créer le dossier de cache");
-		}
-
 		this.setLayout(new BorderLayout());
 		this.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.GRAY));
 		this.bdd = bdd;
@@ -119,8 +105,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 
 		this.infoArbre.setPreferredSize(new Dimension(332, 100));
 
-		this.labelCacheSize = new JLabel("Taille du cache : "
-				+ Utils.humanReadableByteCount(Utils.getCacheSize(), false));
+		this.labelCacheSize = new JLabel("Taille du cache : " + Utils.humanReadableByteCount(Cache.getSize(), false));
 		this.labelDBSize = new JLabel("Taille de la base de données : "
 				+ Utils.humanReadableByteCount(Utils.getDBSize(), false));
 
@@ -149,6 +134,35 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 	public void close()
 	{
 		this.lecteurAudio.close();
+	}
+
+	public List<File> getListSelectedRecords()
+	{
+		List<File> recordsList = new LinkedList<File>();
+		TreePath[] paths = arbre.getSelectionPaths();
+		if (paths != null)
+		{
+			for (TreePath path : paths)
+			{
+				if (path.getLastPathComponent() instanceof Feuille)
+				{
+					Feuille record = (Feuille) path.getLastPathComponent();
+					try
+					{
+						recordsList.add(getRecordCacheFile(record.getId()));
+					}
+					catch (IOException e)
+					{
+						GraphicalUserInterface.popupErreur(e.getLocalizedMessage());
+					}
+					catch (DBException e)
+					{
+						GraphicalUserInterface.popupErreur(e.getLocalizedMessage());
+					}
+				}
+			}
+		}
+		return recordsList;
 	}
 
 	public void updateArbre()
@@ -801,26 +815,11 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 				try
 				{
 					lecteurAudio.stop();
-					File idAudioFile = new File(cacheDirectory, id + ".wav");
-					if (!idAudioFile.exists())
+					File idAudioFile = getRecordCacheFile(id);
+					if (idAudioFile != null)
 					{
-						if (!idAudioFile.createNewFile())
-						{
-							GraphicalUserInterface.popupErreur("Impossible de créer le fichier "
-									+ idAudioFile.getName() + " dans le dossier du cache");
-						}
-						byte[] contenu = bdd.recupererEnregistrement(id);
-						FileOutputStream fos = new FileOutputStream(idAudioFile);
-						fos.write(contenu);
-						fos.flush();
-						fos.close();
-						updateCacheSizeInfo();
+						lecteurAudio.load(idAudioFile.getCanonicalPath());
 					}
-					lecteurAudio.load(idAudioFile.getCanonicalPath());
-				}
-				catch (FileNotFoundException e)
-				{
-					GraphicalUserInterface.popupErreur("Création du fichier audio temporaire : " + e.getMessage());
 				}
 				catch (IOException e)
 				{
@@ -834,9 +833,21 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 		});
 	}
 
+	public File getRecordCacheFile(int id) throws IOException, DBException
+	{
+		final String fileName = id + ".wav";
+		if (!Cache.exists(fileName))
+		{
+			byte[] contenu = bdd.recupererEnregistrement(id);
+			Cache.createFile(fileName, contenu);
+			updateCacheSizeInfo();
+		}
+		return Cache.get(fileName);
+	}
+	
 	public void updateCacheSizeInfo()
 	{
-		labelCacheSize.setText("Taille du cache : " + Utils.humanReadableByteCount(Utils.getCacheSize(), false));
+		labelCacheSize.setText("Taille du cache : " + Utils.humanReadableByteCount(Cache.getSize(), false));
 	}
 
 	@Override
