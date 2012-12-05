@@ -12,9 +12,12 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.plaf.basic.BasicSliderUI;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.Box;
@@ -142,6 +145,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 				this.labelDureeActuelle, this.mediaPlayer);
 		this.slider.addMouseListener(sliderListener);
 		this.slider.addMouseMotionListener(sliderListener);
+		this.slider.addMouseListener(new ClicDroit());
 
 		this.panelDuree = new JPanel();
 		panelDuree.setLayout(new BoxLayout(panelDuree, BoxLayout.X_AXIS));
@@ -230,12 +234,12 @@ public class LecteurVideo extends JPanel implements ActionListener
 		else if (event.getSource() == boutonMarqueur1)
 		{
 			timeMarqueur1 = mediaPlayer.getTime();
-			slider.setMarkerOneAt(((float) mediaPlayer.getTime() / (float) mediaPlayer.getLength()));
+			slider.setMarkerOneAt(((float) timeMarqueur1 / (float) mediaPlayer.getLength()));
 		}
 		else if (event.getSource() == boutonMarqueur2)
 		{
 			timeMarqueur2 = mediaPlayer.getTime();
-			slider.setMarkerTwoAt(((float) mediaPlayer.getTime() / (float) mediaPlayer.getLength()));
+			slider.setMarkerTwoAt(((float) timeMarqueur2 / (float) mediaPlayer.getLength()));
 		}
 		else if (event.getSource() == boutonExtract)
 		{
@@ -277,6 +281,30 @@ public class LecteurVideo extends JPanel implements ActionListener
 				GraphicalUserInterface.popupErreur(msgErreur + e.getMessage());
 			}
 
+		}
+	}
+
+	private class ClicDroit extends MouseAdapter
+	{
+		@Override
+		public void mousePressed(MouseEvent e)
+		{
+			int w = slider.getWidth();
+			if ((e.getModifiers() & MouseEvent.BUTTON2_MASK) != 0)
+			{
+				timeMarqueur1 = valueForXPosition(e.getX());
+				slider.setMarkerOneAt((float) (e.getX() - 5) / (float) w);
+			}
+			else if ((e.getModifiers() & MouseEvent.BUTTON3_MASK) != 0)
+			{
+				timeMarqueur2 = valueForXPosition(e.getX());
+				slider.setMarkerTwoAt((float) (e.getX() - 5) / (float) w);
+			}
+		}
+
+		private int valueForXPosition(int x)
+		{
+			return ((BasicSliderUI) slider.getUI()).valueForXPosition(x);
 		}
 	}
 }

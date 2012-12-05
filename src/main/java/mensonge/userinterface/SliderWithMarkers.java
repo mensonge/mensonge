@@ -29,7 +29,6 @@ public class SliderWithMarkers extends JSlider
 		this.setMinimum(0);
 		this.setValue(0);
 		this.setMaximum(1000);
-		this.addMouseListener(new ClicDroit());
 	}
 
 	public void setMarkerOneAt(float position)
@@ -38,7 +37,7 @@ public class SliderWithMarkers extends JSlider
 		this.repaint();
 
 	}
-
+	
 	public void setMarkerTwoAt(float position)
 	{
 		position2 = position;
@@ -81,25 +80,5 @@ public class SliderWithMarkers extends JSlider
 			g.fillRect(pos + 5, 0, 1, h);
 		}
 		super.paintComponent(g);
-	}
-
-	private class ClicDroit extends MouseAdapter
-	{
-		@Override
-		public void mousePressed(MouseEvent e)
-		{
-			int w = getWidth();
-			if ((e.getModifiers() & MouseEvent.BUTTON3_MASK) != 0)
-			{
-				if (e.getX() > Math.round(position1 * w))
-				{
-					setMarkerOneAt((float) (e.getX() - 5) / (float) w);
-				}
-				else
-				{
-					setMarkerTwoAt((float) (e.getX() - 5) / (float) w);
-				}
-			}
-		}
 	}
 }
