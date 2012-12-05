@@ -265,7 +265,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 				{
 					tabOfByte = extract.extraireIntervalle(pathVideo, timeMarqueur2, timeMarqueur1);
 				}
-				this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+				this.setCursor(Cursor.getDefaultCursor());
 				new DialogueAjouterEnregistrement(parent, "Ajout d'un enregistrement", true, this.bdd, tabOfByte);
 			}
 			catch (IllegalArgumentException e)

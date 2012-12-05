@@ -64,6 +64,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	private JMenuItem aideAPropos;
 	private JMenuItem fichierFermer;
 	private JMenuItem fichierOuvrir;
+	private String previousPath;
 
 	private PanneauArbre panneauArbre;
 	private BaseDeDonnees bdd;
@@ -83,7 +84,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		 * Connexion à la base
 		 */
 		connexionBase("LieLab.db");
-
+		this.previousPath = null;
 		this.panneauArbre = new PanneauArbre(bdd);
 		this.bdd.addObserver(panneauArbre);
 		this.ajoutBarMenu();
@@ -406,14 +407,14 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		}
 		else if (event.getSource() == fichierOuvrir)
 		{
-			JFileChooser fileChooser = new JFileChooser();
+			JFileChooser fileChooser = new JFileChooser(previousPath);
 			fileChooser.showOpenDialog(this);
 			if (fileChooser.getSelectedFile() != null)
 			{
 				try
 				{
-					this.ajouterOnglet(new OngletLecteur(new File(fileChooser.getSelectedFile().getCanonicalPath()),
-							this.bdd, this));
+					previousPath = fileChooser.getSelectedFile().getCanonicalPath();
+					this.ajouterOnglet(new OngletLecteur(new File(previousPath), this.bdd, this));
 				}
 				catch (IOException e)
 				{
@@ -450,22 +451,25 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	private class ExporterBaseListener implements ActionListener
 	{
 		private GraphicalUserInterface fenetre;
+		private String previousPathBase;
 
 		public ExporterBaseListener(GraphicalUserInterface g)
 		{
+			previousPathBase = null;
 			fenetre = g;
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
-			JFileChooser fileChooser = new JFileChooser();
+			JFileChooser fileChooser = new JFileChooser(previousPathBase);
 			fileChooser.showOpenDialog(fenetre);
 			if (fileChooser.getSelectedFile() != null)
 			{
 				try
 				{
-					bdd.exporter(fileChooser.getSelectedFile().getCanonicalPath(), -1, 1);
+					previousPathBase = fileChooser.getSelectedFile().getCanonicalPath();
+					bdd.exporter(previousPathBase, -1, 1);
 				}
 				catch (DBException e1)
 				{
@@ -484,24 +488,25 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	private class ImporterBaseListener implements ActionListener
 	{
 		private GraphicalUserInterface fenetre;
+		private String previousPathBase;
 
 		public ImporterBaseListener(GraphicalUserInterface g)
 		{
+			previousPathBase = null;
 			fenetre = g;
 		}
 
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
-			JFileChooser fileChooser = new JFileChooser();
+			JFileChooser fileChooser = new JFileChooser(previousPathBase);
 			fileChooser.showOpenDialog(fenetre);
-			String fichier;
 			if (fileChooser.getSelectedFile() != null)
 			{
 				try
 				{
-					fichier = fileChooser.getSelectedFile().getCanonicalPath();
-					bdd.importer(fichier);
+					previousPathBase = fileChooser.getSelectedFile().getCanonicalPath();
+					bdd.importer(previousPathBase);
 
 				}
 				catch (IOException e1)
