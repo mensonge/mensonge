@@ -1771,23 +1771,21 @@ public class BaseDeDonnees extends BetterObservable
 	}
 
 	// GETTER et SETTER
+	/**
+	 * getter de la connexion
+	 * @return la connexion
+	 */
 	public Connection getConnexion()
 	{
 		return connexion;
 	}
 
-	public void setConnexion(Connection connexion)
-	{
-		this.connexion = connexion;
-	}
-
+	/**
+	 * Renvoie le chemin du fichier de base de donnée
+	 * @return le chemin du fichier
+	 */
 	public String getFileName()
 	{
 		return fileName;
-	}
-
-	public void setFileName(String fileName)
-	{
-		this.fileName = fileName;
 	}
 }
