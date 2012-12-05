@@ -42,6 +42,8 @@ import uk.co.caprica.vlcj.player.MediaPlayer;
 public class LecteurVideo extends JPanel implements ActionListener
 {
 	private static final long serialVersionUID = 5373991180139317820L;
+	private static final ImageIcon IMG_ICON_BLUE_MARKER = new ImageIcon("images/BlueMarker.png");
+	private static final ImageIcon IMG_ICON_RED_MARKER = new ImageIcon("images/RedMarker.png");
 
 	private JButton boutonLecture;
 	private JButton boutonStop;
@@ -104,11 +106,11 @@ public class LecteurVideo extends JPanel implements ActionListener
 		this.boutonLecture.addActionListener(this);
 		this.boutonLecture.setEnabled(true);
 
-		this.boutonMarqueur1 = new JButton("Marqueur 1");
+		this.boutonMarqueur1 = new JButton(IMG_ICON_RED_MARKER);
 		this.boutonMarqueur1.addActionListener(this);
 		this.boutonMarqueur1.setEnabled(true);
 
-		this.boutonMarqueur2 = new JButton("Marqueur 2");
+		this.boutonMarqueur2 = new JButton(IMG_ICON_BLUE_MARKER);
 		this.boutonMarqueur2.addActionListener(this);
 		this.boutonMarqueur2.setEnabled(true);
 
@@ -145,7 +147,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 				this.labelDureeActuelle, this.mediaPlayer);
 		this.slider.addMouseListener(sliderListener);
 		this.slider.addMouseMotionListener(sliderListener);
-		SliderWithMarkersListener sliderWithMarkersSlider  = new SliderWithMarkersListener();
+		SliderWithMarkersListener sliderWithMarkersSlider = new SliderWithMarkersListener();
 		this.slider.addMouseListener(sliderWithMarkersSlider);
 		this.slider.addMouseMotionListener(sliderWithMarkersSlider);
 
@@ -293,13 +295,13 @@ public class LecteurVideo extends JPanel implements ActionListener
 		{
 			setMarkers(e);
 		}
-		
+
 		@Override
 		public void mouseDragged(MouseEvent e)
 		{
 			setMarkers(e);
 		}
-		
+
 		private void setMarkers(MouseEvent e)
 		{
 			int w = slider.getWidth();
