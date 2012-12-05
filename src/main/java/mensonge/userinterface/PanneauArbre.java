@@ -68,20 +68,15 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 	{
 		cacheDirectory = new File("cache");
 
-		if (cacheDirectory.exists() && !cacheDirectory.isDirectory())
+		if (cacheDirectory.exists() && !cacheDirectory.isDirectory() && !cacheDirectory.delete())
 		{
-			if (!cacheDirectory.delete())
-			{
-				GraphicalUserInterface
-						.popupErreur("Impossible de supprimer le fichier portant le même nom que le dossier de cache");
-			}
+			GraphicalUserInterface
+					.popupErreur("Impossible de supprimer le fichier portant le même nom que le dossier de cache");
+
 		}
-		if (!cacheDirectory.exists())
+		if (!cacheDirectory.exists() && !cacheDirectory.mkdir())
 		{
-			if (!cacheDirectory.mkdir())
-			{
-				GraphicalUserInterface.popupErreur("Impossible de créer le dossier de cache");
-			}
+			GraphicalUserInterface.popupErreur("Impossible de créer le dossier de cache");
 		}
 
 		this.setLayout(new BorderLayout());
@@ -212,7 +207,6 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 	{
 		ResultSet rsCat = null, rsEnr = null;
 
-		
 		try
 		{
 			rsCat = this.bdd.getListeSujet();
@@ -418,8 +412,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 					else if (typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)
 					{
 						JMenuItem ajouterCategorie = new JMenuItem("Ajouter catégorie");
-						ajouterCategorie.addMouseListener(new AjouterCategorieListener(menuClicDroit,
-								bdd));
+						ajouterCategorie.addMouseListener(new AjouterCategorieListener(menuClicDroit, bdd));
 						menuClicDroit.add(ajouterCategorie);
 					}
 				}
@@ -580,8 +573,6 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 			}
 		}
 	}
-
-	
 
 	class ModifierCategorieEnregistrementClicDroit extends MouseAdapter
 	{

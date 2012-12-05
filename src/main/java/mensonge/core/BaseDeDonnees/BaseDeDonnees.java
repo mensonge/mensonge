@@ -1626,7 +1626,7 @@ public class BaseDeDonnees extends BetterObservable
 
 		try
 		{
-			sourceFile = new java.io.FileInputStream(source);
+			sourceFile = new FileInputStream(source);
 			destinationFile = new FileOutputStream(dest);
 			// Lecture par segment de 0.5Mo
 			byte buffer[] = new byte[512 * 1024];

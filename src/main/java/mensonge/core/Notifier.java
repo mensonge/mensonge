@@ -8,10 +8,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class Notifier
+public final class Notifier
 {
 
-	private static final Map<String, Method> methods = new HashMap<String, Method>();
+	private static final Map<String, Method> METHODS = new HashMap<String, Method>();
 
 	private Notifier()
 	{
