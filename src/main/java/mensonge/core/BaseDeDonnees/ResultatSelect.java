@@ -8,7 +8,7 @@ import java.sql.SQLException;
 
 public class ResultatSelect
 {
-	public static LinkedList<Object> convertirResultatSet(ResultSet rs, LinkedList<String> colonne)
+	public static LinkedList<LigneEnregistrement> convertirResultatSet(ResultSet rs, LinkedList<String> colonne)
 	{
 		LinkedList<LigneEnregistrement> liste = new LinkedList<LigneEnregistrement>();
 		LigneEnregistrement tmp = null;
@@ -27,12 +27,15 @@ public class ResultatSelect
 		{
 			e.printStackTrace();
 		}
-		return null;
+		return liste;
 	}
 	public static LigneEnregistrement getLigne(ResultSet rs, LinkedList<String> colonne)
 	{
 		LigneEnregistrement ligne = new LigneEnregistrement();
-		
+		for(String nomColonne : colonne)
+		{
+			remplirLigne(rs, nomColonne, ligne);
+		}
 		return ligne;
 	}
 	public static void remplirLigne(ResultSet rs, String colonne, LigneEnregistrement ligne)
@@ -45,32 +48,31 @@ public class ResultatSelect
 			}
 			else if(colonne.equals("nom"))
 			{
-				
+				ligne.setNom(rs.getString(colonne));
 			}
 			else if(colonne.equals("duree"))
 			{
-				
+				ligne.setDuree(rs.getInt(colonne));
 			}
-			else if(colonne.equals(""))
+			else if(colonne.equals("idcat"))
 			{
-				
+				ligne.setIdCat(rs.getInt(colonne));
 			}
-			else if(colonne.equals("nom"))
+			else if(colonne.equals("nomcat"))
 			{
-				
+				ligne.setNomCat(rs.getString(colonne));
 			}
-			else if(colonne.equals("nom"))
+			else if(colonne.equals("idsuj"))
 			{
-				
+				ligne.setIdSuj(rs.getInt(colonne));
 			}
-			else if(colonne.equals("nom"))
+			else if(colonne.equals("nomsuj"))
 			{
-				
+				ligne.setNomSuj(rs.getString(colonne));
 			}
 		}
 		catch (SQLException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
