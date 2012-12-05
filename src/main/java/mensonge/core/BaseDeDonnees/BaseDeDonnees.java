@@ -326,7 +326,7 @@ public class BaseDeDonnees extends BetterObservable
 		try
 		{
 			PreparedStatement ps = connexion
-					.prepareStatement("SELECT duree, taille, nom, nomcat, id, nomsuj FROM enregistrements en, categorie ca, sujet su WHERE en.idcat = ca.idcat AND en.idsuj = su.idsuj AND en.idsuj=? ORDER BY nom");// Preparation
+					.prepareStatement("SELECT duree, taille, nom, nomcat, id, nomsuj, en.idcat, ca.idcat FROM enregistrements en, categorie ca, sujet su WHERE en.idcat = ca.idcat AND en.idsuj = su.idsuj AND en.idsuj=? ORDER BY nom");// Preparation
 																																																						// de
 																																																						// la
 																																																						// requete
