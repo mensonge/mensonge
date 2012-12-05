@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -32,6 +34,7 @@ import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
@@ -54,7 +57,7 @@ import mensonge.core.plugins.PluginManager;
 public class GraphicalUserInterface extends JFrame implements ActionListener
 {
 	private static final long serialVersionUID = 5373991180139317820L;
-
+	private static Logger logger = Logger.getLogger("gui");
 	private JTabbedPane onglets;
 
 	private JMenuItem aideAPropos;
@@ -77,7 +80,6 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	 */
 	public GraphicalUserInterface()
 	{
-
 		/*
 		 * Connexion à la base
 		 */
@@ -107,6 +109,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		}
 		catch (IOException e)
 		{
+			logger.log(Level.WARNING, e.getLocalizedMessage());
 			popupErreur(e.getMessage());
 		}
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -154,7 +157,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 		this.aideAPropos = new JMenuItem("À propos");
 		this.aideAPropos.addActionListener(this);
-		
+
 		this.baseCompacter = new JMenuItem("Compacter la base de données");
 		this.baseCompacter.addActionListener(new CompacterBaseListener());
 
@@ -338,11 +341,13 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				}
 				catch (DBException e1)
 				{
+					logger.log(Level.SEVERE, e1.getLocalizedMessage());
 					popupErreur("Erreur lors de la création de la base de données : " + e1.getMessage());
 				}
 			}
 			else
 			{
+				logger.log(Level.SEVERE, e.getLocalizedMessage());
 				popupErreur("Erreur lors de la connexion de la base de données : " + e.getMessage());
 				return;
 			}
@@ -411,6 +416,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				}
 				catch (IOException e)
 				{
+					logger.log(Level.WARNING, e.getLocalizedMessage());
 					popupErreur(e.getMessage());
 				}
 
@@ -437,7 +443,6 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		{
 			onglet.fermerOnglet();
 			onglets.remove(onglet);
-
 		}
 	}
 
@@ -463,11 +468,12 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				}
 				catch (DBException e1)
 				{
+					logger.log(Level.WARNING, e1.getLocalizedMessage());
 					popupErreur(e1.getMessage());
-
 				}
 				catch (IOException e1)
 				{
+					logger.log(Level.WARNING, e1.getLocalizedMessage());
 					popupErreur(e1.getMessage());
 				}
 			}
@@ -499,13 +505,13 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				}
 				catch (IOException e1)
 				{
+					logger.log(Level.WARNING, e1.getLocalizedMessage());
 					popupErreur(e1.getMessage());
-
 				}
 				catch (DBException e2)
 				{
+					logger.log(Level.WARNING, e2.getLocalizedMessage());
 					popupErreur(e2.getMessage());
-
 				}
 			}
 		}
@@ -561,6 +567,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			}
 		}
 	}
+
 	private class CompacterBaseListener implements ActionListener
 	{
 		@Override
@@ -572,6 +579,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			}
 			catch (DBException e1)
 			{
+				logger.log(Level.WARNING, e1.getLocalizedMessage());
 				GraphicalUserInterface.popupErreur(e1.getLocalizedMessage());
 			}
 		}
@@ -587,10 +595,23 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		{
 			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
 		}
-		catch (Exception e)
+		catch (ClassNotFoundException e1)
 		{
-			// No Nimbus
+			logger.log(Level.WARNING, e1.getLocalizedMessage());
 		}
+		catch (InstantiationException e1)
+		{
+			logger.log(Level.WARNING, e1.getLocalizedMessage());
+		}
+		catch (IllegalAccessException e1)
+		{
+			logger.log(Level.WARNING, e1.getLocalizedMessage());
+		}
+		catch (UnsupportedLookAndFeelException e1)
+		{
+			logger.log(Level.WARNING, e1.getLocalizedMessage());
+		}
+
 		try
 		{
 			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(),
@@ -598,7 +619,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		}
 		catch (IOException e)
 		{
-			e.printStackTrace();
+			logger.log(Level.SEVERE, e.getLocalizedMessage());
 		}
 
 		Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
