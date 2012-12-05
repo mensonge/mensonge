@@ -37,6 +37,7 @@ public class BaseDeDonnees extends BetterObservable
 	 * Le logger
 	 */
 	private static Logger logger = Logger.getLogger("BDD");
+
 	/**
 	 * Constructeur de base.
 	 * 
@@ -64,7 +65,7 @@ public class BaseDeDonnees extends BetterObservable
 			Class.forName("org.sqlite.JDBC");
 			connexion = DriverManager.getConnection("jdbc:sqlite:" + fileName);
 			// desactive l'autocommit ce qui est plus securisant et augmente la vitesse
-			connexion.setAutoCommit(false);
+			connexion.setAutoCommit(true);
 		}
 		catch (Exception e)
 		{
@@ -91,8 +92,7 @@ public class BaseDeDonnees extends BetterObservable
 		catch (Exception e)
 		{
 			throw new DBException("Erreur lors de la verification de la structure de la base : " + e.getMessage(), 3);
-		}
-		finally
+		} finally
 		{
 			closeRessource(null, stat, null);
 		}
@@ -108,16 +108,13 @@ public class BaseDeDonnees extends BetterObservable
 	{
 		try
 		{
-			connexion.commit();// On commit les derniers changements au cas ou ... (Ce n'est pas une action repettitive
-								// donc on peut commiter en plus)
 			connexion.close();// On close la connexion
 			connexion = null;// On remet a null pour des test future
 		}
-		catch (Exception e)
+		catch (SQLException e)
 		{
 			throw new DBException("Probleme lors de la deconnexion de la base : " + e.getMessage(), 4);
-		}
-		finally
+		} finally
 		{
 			connexion = null;
 		}
@@ -366,10 +363,34 @@ public class BaseDeDonnees extends BetterObservable
 		catch (Exception e)
 		{
 			throw new DBException("Erreur lors de la recuperation du nombre d'enregistrement: " + e.getMessage(), 1);
-		}
-		finally
+		} finally
 		{
 			closeRessource(null, stat, rs);
+		}
+	}
+
+	/**
+	 * Compacte la base de données en effectuant un VACUUM
+	 * 
+	 * @throws DBException
+	 */
+	public void compacter() throws DBException
+	{
+		if (connexion == null)
+		{
+			return;
+		}
+		try
+		{
+			Statement stat = connexion.createStatement();
+			// Pour l'automatique ça serait : "PRAGMA auto_vacuum = 1"
+			stat.execute("VACUUM");
+			stat.close();
+			notifyUpdateDataBase();
+		}
+		catch (SQLException e)
+		{
+			throw new DBException("Impossible de compacter la base de données : " + e.getLocalizedMessage(), 5);
 		}
 	}
 
@@ -419,15 +440,13 @@ public class BaseDeDonnees extends BetterObservable
 
 			if (ps.executeUpdate() > 0)
 			{
-				connexion.commit();
 				notifyUpdateDataBase();
-			}			
+			}
 		}
 		catch (Exception e)
 		{
 			throw new DBException("Erreur lors de l'ajout de l'enregistrement : " + e.getMessage(), 3);
-		}
-		finally
+		} finally
 		{
 			closeRessource(ps, null, null);
 		}
@@ -438,7 +457,7 @@ public class BaseDeDonnees extends BetterObservable
 	 * 
 	 * @param id
 	 *            id de l'enregistrement a supprimer.
-	 * @throws DBException 
+	 * @throws DBException
 	 */
 	public void supprimerEnregistrement(final int id) throws DBException
 	{
@@ -454,15 +473,13 @@ public class BaseDeDonnees extends BetterObservable
 			ps.setInt(1, id);// On rempli les trou
 			if (ps.executeUpdate() > 0)// On execute la requete et on test la reussite de cette dernier
 			{
-				connexion.commit();// On valide le changement
 				notifyUpdateDataBase();
 			}
 		}
 		catch (SQLException e)
 		{
-			throw new DBException(e.getLocalizedMessage(),3);
-		}
-		finally
+			throw new DBException(e.getLocalizedMessage(), 3);
+		} finally
 		{
 			closeRessource(ps, null, null);
 		}
@@ -518,15 +535,13 @@ public class BaseDeDonnees extends BetterObservable
 
 			if (ps.executeUpdate() > 0)// On execute et on test la reussite
 			{
-				connexion.commit();// On valide les changement
 				notifyUpdateDataBase();
 			}
 		}
 		catch (Exception e)
 		{
 			throw new DBException("Erreur lors de la modification de l'enregistrement : " + e.getMessage(), 3);
-		}
-		finally
+		} finally
 		{
 			closeRessource(ps, null, null);
 		}
@@ -583,15 +598,13 @@ public class BaseDeDonnees extends BetterObservable
 
 			if (ps.executeUpdate() > 0)// Execution et test de reussite dans la foulee
 			{
-				connexion.commit();// validation des modifications
 				notifyUpdateDataBase();
 			}
 		}
 		catch (Exception e)
 		{
 			throw new DBException("Erreur lors de la modification de l'enregistrement : " + e.getMessage(), 3);
-		}
-		finally
+		} finally
 		{
 			closeRessource(ps, null, null);
 		}
@@ -620,14 +633,13 @@ public class BaseDeDonnees extends BetterObservable
 		try
 		{
 			ps = connexion.prepareStatement("UPDATE enregistrements SET nom=? WHERE id=?;");// preparation
-																												// de la
-																												// requete
+																							// de la
+																							// requete
 			ps.setString(1, nom);// Remplissage de la requete
 			ps.setInt(2, id);
 
 			if (ps.executeUpdate() > 0)// execution et test de la reussite de la requete
 			{
-				connexion.commit();// Validation des modifications
 				notifyUpdateDataBase();
 			}
 		}
@@ -656,22 +668,20 @@ public class BaseDeDonnees extends BetterObservable
 		try
 		{
 			ps = connexion.prepareStatement("UPDATE enregistrements SET duree=? WHERE id=?;");// preparation
-																												// de la
-																												// requete
+																								// de la
+																								// requete
 			ps.setInt(1, duree);// Remplissage de la requete
 			ps.setInt(2, id);
 
 			if (ps.executeUpdate() > 0)// execution et test de la reussite de la requete
 			{
-				connexion.commit();// Validation des modifications
 				notifyUpdateDataBase();
 			}
 		}
 		catch (Exception e)
 		{
 			throw new DBException("Erreur lors de la modification de la duree: " + e.getMessage(), 3);
-		}
-		finally
+		} finally
 		{
 			closeRessource(ps, null, null);
 		}
@@ -697,24 +707,22 @@ public class BaseDeDonnees extends BetterObservable
 		try
 		{
 			ps = connexion.prepareStatement("UPDATE enregistrements SET taille=? WHERE id=?;");// preparation
-																													// de
-																													// la
-																													// requete
+																								// de
+																								// la
+																								// requete
 			ps.setInt(1, taille);// Remplissage de la requete
 			ps.setInt(2, id);
 
 			if (ps.executeUpdate() > 0)// execution et test de la reussite de la requete
 			{
-				connexion.commit();// Validation des modifications
 				notifyUpdateDataBase();
 			}
-			
+
 		}
 		catch (Exception e)
 		{
 			throw new DBException("Erreur lors de la modification de la taille: " + e.getMessage(), 3);
-		}
-		finally
+		} finally
 		{
 			closeRessource(ps, null, null);
 		}
@@ -743,22 +751,20 @@ public class BaseDeDonnees extends BetterObservable
 		try
 		{
 			ps = connexion.prepareStatement("UPDATE enregistrements SET idCat=? WHERE id=?;");// preparation
-																												// de la
-																												// requete
+																								// de la
+																								// requete
 			ps.setInt(1, idCat);// Remplissage de la requete
 			ps.setInt(2, id);
 
 			if (ps.executeUpdate() > 0)// execution et test de la reussite de la requete
 			{
-				connexion.commit();// Validation des modifications
+				notifyUpdateDataBase();
 			}
-			notifyUpdateDataBase();
 		}
 		catch (Exception e)
 		{
 			throw new DBException("Erreur lors de la modification de la categorie: " + e.getMessage(), 3);
-		}
-		finally
+		} finally
 		{
 			closeRessource(ps, null, null);
 		}
@@ -796,16 +802,14 @@ public class BaseDeDonnees extends BetterObservable
 
 			if (ps.executeUpdate() > 0)// execution et test de la reussite de la requete
 			{
-				connexion.commit();// Validation des modifications
 				notifyUpdateDataBase();
 			}
-			
+
 		}
 		catch (Exception e)
 		{
 			throw new DBException("Erreur lors de la modification de la categorie: " + e.getMessage(), 3);
-		}
-		finally
+		} finally
 		{
 			closeRessource(ps, null, null);
 		}
@@ -834,22 +838,20 @@ public class BaseDeDonnees extends BetterObservable
 		try
 		{
 			ps = connexion.prepareStatement("UPDATE enregistrements SET idSuj=? WHERE id=?;");// preparation
-																												// de la
-																												// requete
+																								// de la
+																								// requete
 			ps.setInt(1, idSuj);// Remplissage de la requete
 			ps.setInt(2, id);
 
 			if (ps.executeUpdate() > 0)// execution et test de la reussite de la requete
 			{
-				connexion.commit();// Validation des modifications
+				notifyUpdateDataBase();
 			}
-			notifyUpdateDataBase();
 		}
 		catch (Exception e)
 		{
 			throw new DBException("Erreur lors de la modification du sujet: " + e.getMessage(), 3);
-		}
-		finally
+		} finally
 		{
 			closeRessource(ps, null, null);
 		}
@@ -887,16 +889,14 @@ public class BaseDeDonnees extends BetterObservable
 
 			if (ps.executeUpdate() > 0)// execution et test de la reussite de la requete
 			{
-				connexion.commit();// Validation des modifications
 				notifyUpdateDataBase();
 			}
-			
+
 		}
 		catch (Exception e)
 		{
 			throw new DBException("Erreur lors de la modification du sujet: " + e.getMessage(), 3);
-		}
-		finally
+		} finally
 		{
 			closeRessource(ps, null, null);
 		}
@@ -922,9 +922,9 @@ public class BaseDeDonnees extends BetterObservable
 		try
 		{
 			ps = connexion.prepareStatement("SELECT enregistrement FROM enregistrements WHERE id=?");// preparation
-																														// de
-																														// la
-																														// requete
+																										// de
+																										// la
+																										// requete
 			ps.setInt(1, id);// Remplissage de la requete
 			rs = ps.executeQuery();// execute la requete
 			if (rs.next())// s'il y a un retour on renvoie le tableau de byte sinon une exception est levee
@@ -937,8 +937,7 @@ public class BaseDeDonnees extends BetterObservable
 		catch (Exception e)
 		{
 			throw new DBException("Erreur lors de la recuperation de l'enregistrement : " + e.getMessage(), 3);
-		}
-		finally
+		} finally
 		{
 			closeRessource(ps, null, rs);
 		}
@@ -965,20 +964,18 @@ public class BaseDeDonnees extends BetterObservable
 		try
 		{
 			ps = connexion.prepareStatement("INSERT INTO categorie (nomcat) VALUES (?)");// preparation
-																											// de la
-																											// requete
+																							// de la
+																							// requete
 			ps.setString(1, nom);// Remplissage de la requete
 			if (ps.executeUpdate() > 0)// execution et test de la reussite de la requete
 			{
-				connexion.commit();// Validation des modifications
+				notifyUpdateDataBase();
 			}
-			notifyUpdateDataBase();
 		}
 		catch (Exception e)
 		{
 			throw new DBException("Erreur lors de l'ajout de la categorie : " + e.getMessage(), 3);
-		}
-		finally
+		} finally
 		{
 			closeRessource(ps, null, null);
 		}
@@ -1028,19 +1025,17 @@ public class BaseDeDonnees extends BetterObservable
 		try
 		{
 			ps = connexion.prepareStatement("DELETE FROM categorie WHERE idCat=?");// preparation de
-																										// la requete
+																					// la requete
 			ps.setInt(1, id);// Remplissage de la requete
 			if (ps.executeUpdate() > 0)// execution et test de la reussite de la requete
 			{
-				connexion.commit();// Validation des modifications
+				notifyUpdateDataBase();
 			}
-			notifyUpdateDataBase();
 		}
 		catch (Exception e)
 		{
 			throw new DBException("Erreur lors de la suppression de la categorie: " + e.getMessage(), 3);
-		}
-		finally
+		} finally
 		{
 			closeRessource(ps, null, null);
 		}
@@ -1069,21 +1064,19 @@ public class BaseDeDonnees extends BetterObservable
 		try
 		{
 			ps = connexion.prepareStatement("UPDATE categorie SET nomCat=? WHERE idCat=?");// preparation
-																												// de la
-																												// requete
+																							// de la
+																							// requete
 			ps.setString(1, nom);// Remplissage de la requete
 			ps.setInt(2, id);
 			if (ps.executeUpdate() > 0)// execution et test de la reussite de la requete
 			{
-				connexion.commit();// Validation des modifications
 				notifyUpdateDataBase();
 			}
 		}
 		catch (Exception e)
 		{
 			throw new DBException("Erreur lors de la modification de la categorie: " + e.getMessage(), 3);
-		}
-		finally
+		} finally
 		{
 			closeRessource(ps, null, null);
 		}
@@ -1114,8 +1107,8 @@ public class BaseDeDonnees extends BetterObservable
 		{
 
 			ps = connexion.prepareStatement("SELECT nomcat FROM categorie WHERE idcat=?;");// preparation
-																												// de la
-																												// requete
+																							// de la
+																							// requete
 			ps.setInt(1, idCat);// Remplissage de la requete
 			rs = ps.executeQuery();// execution de la requete
 			retour = rs.getString(1);
@@ -1125,8 +1118,7 @@ public class BaseDeDonnees extends BetterObservable
 		catch (Exception e)
 		{
 			throw new DBException("Erreur lors de la recuperation de la categories: " + e.getMessage(), 3);
-		}
-		finally
+		} finally
 		{
 			closeRessource(ps, null, rs);
 		}
@@ -1153,8 +1145,8 @@ public class BaseDeDonnees extends BetterObservable
 		try
 		{
 			ps = connexion.prepareStatement("SELECT idcat FROM categorie WHERE nomcat=?;");// preparation
-																												// de la
-																												// requete
+																							// de la
+																							// requete
 			ps.setString(1, nomCat);// Remplissage de la requete
 			rs = ps.executeQuery();
 			retour = rs.getInt(1);
@@ -1162,8 +1154,7 @@ public class BaseDeDonnees extends BetterObservable
 		catch (Exception e)
 		{
 			throw new DBException("Erreur lors de la recuperation de la categories: " + e.getMessage(), 3);
-		}
-		finally
+		} finally
 		{
 			closeRessource(ps, null, rs);
 		}
@@ -1191,19 +1182,17 @@ public class BaseDeDonnees extends BetterObservable
 		try
 		{
 			ps = connexion.prepareStatement("INSERT INTO sujet (nomsuj) VALUES (?)");// preparation de
-																										// la requete
+																						// la requete
 			ps.setString(1, nom);// Remplissage de la requete
 			if (ps.executeUpdate() > 0)// execution et test de la reussite de la requete
 			{
-				connexion.commit();// Validation des modifications
+				notifyUpdateDataBase();
 			}
-			notifyUpdateDataBase();
 		}
 		catch (Exception e)
 		{
 			throw new DBException("Erreur lors de l'ajout du sujet : " + e.getMessage(), 3);
-		}
-		finally
+		} finally
 		{
 			closeRessource(ps, null, null);
 		}
@@ -1227,19 +1216,17 @@ public class BaseDeDonnees extends BetterObservable
 		try
 		{
 			ps = connexion.prepareStatement("DELETE FROM sujet WHERE idSuj=?");// preparation de la
-																									// requete
+																				// requete
 			ps.setInt(1, id);// Remplissage de la requete
 			if (ps.executeUpdate() > 0)// execution et test de la reussite de la requete
 			{
-				connexion.commit();// Validation des modifications
+				notifyUpdateDataBase();
 			}
-			notifyUpdateDataBase();
 		}
 		catch (Exception e)
 		{
 			throw new DBException("Erreur lors de la suppression du sujet: " + e.getMessage(), 3);
-		}
-		finally
+		} finally
 		{
 			closeRessource(ps, null, null);
 		}
@@ -1295,21 +1282,19 @@ public class BaseDeDonnees extends BetterObservable
 		try
 		{
 			ps = connexion.prepareStatement("UPDATE sujet SET nomSuj=? WHERE idSuj=?");// preparation
-																											// de la
-																											// requete
+																						// de la
+																						// requete
 			ps.setString(1, nom);// Remplissage de la requete
 			ps.setInt(2, id);
 			if (ps.executeUpdate() > 0)// execution et test de la reussite de la requete
 			{
-				connexion.commit();// Validation des modifications
 				notifyUpdateDataBase();
 			}
 		}
 		catch (Exception e)
 		{
 			throw new DBException("Erreur lors de la modification du sujet: " + e.getMessage(), 3);
-		}
-		finally
+		} finally
 		{
 			closeRessource(ps, null, null);
 		}
@@ -1340,8 +1325,8 @@ public class BaseDeDonnees extends BetterObservable
 		{
 
 			ps = connexion.prepareStatement("SELECT nomSuj FROM sujet WHERE idSuj=?;");// preparation
-																											// de la
-																											// requete
+																						// de la
+																						// requete
 			ps.setInt(1, idSuj);// Remplissage de la requete
 			rs = ps.executeQuery();// execution de la requete
 			retour = rs.getString(1);
@@ -1349,8 +1334,7 @@ public class BaseDeDonnees extends BetterObservable
 		catch (Exception e)
 		{
 			throw new DBException("Erreur lors de la recuperation du sujet: " + e.getMessage(), 3);
-		}
-		finally
+		} finally
 		{
 			closeRessource(ps, null, rs);
 		}
@@ -1377,8 +1361,8 @@ public class BaseDeDonnees extends BetterObservable
 		try
 		{
 			ps = connexion.prepareStatement("SELECT idSuj FROM sujet WHERE nomSuj=?;");// preparation
-																											// de la
-																											// requete
+																						// de la
+																						// requete
 			ps.setString(1, nomSuj);// Remplissage de la requete
 			rs = ps.executeQuery();
 			retour = rs.getInt(1);
@@ -1386,8 +1370,7 @@ public class BaseDeDonnees extends BetterObservable
 		catch (Exception e)
 		{
 			throw new DBException("Erreur lors de la récupération du sujet : " + e.getMessage(), 3);
-		}
-		finally
+		} finally
 		{
 			closeRessource(ps, null, rs);
 		}
@@ -1423,13 +1406,11 @@ public class BaseDeDonnees extends BetterObservable
 			{
 				throw new Exception("Erreur de creation de la table enregistrement.");
 			}
-			connexion.commit();// Validation des modifications
 		}
 		catch (Exception e)
 		{
 			throw new DBException("Erreur lors de la création de la base : " + e.getMessage(), 3);
-		}
-		finally
+		} finally
 		{
 			closeRessource(null, stat, null);
 		}
@@ -1467,8 +1448,7 @@ public class BaseDeDonnees extends BetterObservable
 		{
 			throw new DBException(
 					"Problème lors de la vérification de l'existance de la catégorie : " + e.getMessage(), 1);
-		}
-		finally
+		} finally
 		{
 			closeRessource(ps, null, rs);
 		}
@@ -1507,8 +1487,7 @@ public class BaseDeDonnees extends BetterObservable
 		{
 			throw new DBException(
 					"Problème lors de la vérification de l'existance de la catégorie : " + e.getMessage(), 1);
-		}
-		finally
+		} finally
 		{
 			closeRessource(ps, null, rs);
 		}
@@ -1546,8 +1525,7 @@ public class BaseDeDonnees extends BetterObservable
 		catch (Exception e)
 		{
 			throw new DBException("Problème lors de la vérification de l'existence du sujet : " + e.getMessage(), 1);
-		}
-		finally
+		} finally
 		{
 			closeRessource(ps, null, rs);
 		}
@@ -1585,8 +1563,7 @@ public class BaseDeDonnees extends BetterObservable
 		catch (Exception e)
 		{
 			throw new DBException("Problème lors de la vérification de l'existence du sujet : " + e.getMessage(), 1);
-		}
-		finally
+		} finally
 		{
 			closeRessource(ps, null, rs);
 		}
@@ -1607,31 +1584,29 @@ public class BaseDeDonnees extends BetterObservable
 		{
 			return false;
 		}
-		
-			PreparedStatement ps = null;
-			boolean retour = false;
-			ResultSet rs = null;
-			DBException db;
-			try
-			{
-				ps = connexion.prepareStatement("SELECT 1 FROM enregistrements WHERE nom=?");
-				ps.setString(1, nom);
-				rs = ps.executeQuery();
 
-				if (rs.next())
-				{
-					retour = true;
-				}
-			}
-			catch (SQLException e)
+		PreparedStatement ps = null;
+		boolean retour = false;
+		ResultSet rs = null;
+		try
+		{
+			ps = connexion.prepareStatement("SELECT 1 FROM enregistrements WHERE nom=?");
+			ps.setString(1, nom);
+			rs = ps.executeQuery();
+
+			if (rs.next())
 			{
-				throw new DBException("Problème lors de la vérification de l'existence du sujet : " + e.getMessage(), 1);
+				retour = true;
 			}
-			finally
-			{
-				closeRessource(ps, null, rs);
-			}
-			return retour;
+		}
+		catch (SQLException e)
+		{
+			throw new DBException("Problème lors de la vérification de l'existence du sujet : " + e.getMessage(), 1);
+		} finally
+		{
+			closeRessource(ps, null, rs);
+		}
+		return retour;
 	}
 
 	/**
@@ -1679,47 +1654,48 @@ public class BaseDeDonnees extends BetterObservable
 
 	/**
 	 * Ferme les differente ressources
+	 * 
 	 * @param ps
 	 * @param st
 	 * @param rs
 	 */
 	private static void closeRessource(PreparedStatement ps, Statement st, ResultSet rs)
 	{
-		if(ps != null)
+		if (ps != null)
 		{
 			try
 			{
 				ps.close();
 			}
-			catch(SQLException e)
+			catch (SQLException e)
 			{
 				logger.log(Level.WARNING, e.getMessage());
 			}
 		}
-		if(st != null)
+		if (st != null)
 		{
 			try
 			{
 				st.close();
 			}
-			catch(SQLException e)
+			catch (SQLException e)
 			{
 				logger.log(Level.WARNING, e.getMessage());
 			}
 		}
-		if(rs != null)
+		if (rs != null)
 		{
 			try
 			{
 				rs.close();
 			}
-			catch(SQLException e)
+			catch (SQLException e)
 			{
 				logger.log(Level.WARNING, e.getMessage());
 			}
 		}
 	}
-	
+
 	// GETTER et SETTER
 	public Connection getConnexion()
 	{
