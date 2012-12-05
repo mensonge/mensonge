@@ -35,12 +35,27 @@ public class SliderPositionEventListener extends MouseAdapter
 		// On ne peut changer la pos qu'avec le clic gauche
 		if ((event.getModifiers() & MouseEvent.BUTTON1_MASK) != 0)
 		{
-			int value = this.valueForXPosition(event.getX());
-			long newTime = (long) value;
-			mediaPlayer.setTime(newTime);
-			slider.setValue(value);
-			labelDureeActuelle.setText(Utils.getFormattedTime(newTime / 1000));
+			this.setNewTime(event.getX());
 		}
+	}
+	
+	@Override
+	public void mouseDragged(MouseEvent event)
+	{
+		// On ne peut changer la pos qu'avec le clic gauche
+		if ((event.getModifiers() & MouseEvent.BUTTON1_MASK) != 0)
+		{
+			this.setNewTime(event.getX());
+		}
+	}
+	
+	private void setNewTime(int x)
+	{
+		int value = this.valueForXPosition(x);
+		long newTime = (long) value;
+		mediaPlayer.setTime(newTime);
+		slider.setValue(value);
+		labelDureeActuelle.setText(Utils.getFormattedTime(newTime / 1000));
 	}
 
 	@Override

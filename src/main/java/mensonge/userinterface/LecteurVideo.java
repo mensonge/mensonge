@@ -293,6 +293,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 		@Override
 		public void mousePressed(MouseEvent e)
 		{
+			setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
 			setMarkers(e);
 		}
 
@@ -300,6 +301,12 @@ public class LecteurVideo extends JPanel implements ActionListener
 		public void mouseDragged(MouseEvent e)
 		{
 			setMarkers(e);
+		}
+
+		@Override
+		public void mouseReleased(MouseEvent e)
+		{
+			setCursor(Cursor.getDefaultCursor());
 		}
 
 		private void setMarkers(MouseEvent e)
