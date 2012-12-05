@@ -341,6 +341,10 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 					if (arbre.getSelectionCount() >= 1)
 					{
 						JMenuItem supprimer = new JMenuItem("Supprimer les enregistrements");
+						if (arbre.getSelectionCount() == 1)
+						{
+							supprimer.setText("Supprimer l'enregistrement");
+						}
 						supprimer.addMouseListener(new SupprimerEnregistrementClicDroit());
 						menuClicDroit.add(supprimer);
 						if (typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)
@@ -379,20 +383,28 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 				{
 					if (typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)
 					{
-						JMenuItem renomerCategorie = new JMenuItem("Renommer catégorie");
-						renomerCategorie.addMouseListener(new RenommerCategorieClicDroit());
-						JMenuItem supprimerCategorie = new JMenuItem("Supprimer catégorie");
+						JMenuItem supprimerCategorie = new JMenuItem("Supprimer ces catégories");
+						if (arbre.getSelectionCount() == 1)
+						{
+							supprimerCategorie.setText("Supprimer cette catégorie");
+							JMenuItem renomerCategorie = new JMenuItem("Renommer cette catégorie");
+							renomerCategorie.addMouseListener(new RenommerCategorieClicDroit());
+							menuClicDroit.add(renomerCategorie);
+						}
 						supprimerCategorie.addMouseListener(new SupprimerCategorieEnregistrementClicDroit());
-						menuClicDroit.add(renomerCategorie);
 						menuClicDroit.add(supprimerCategorie);
 					}
 					else if (typeTrie == PanneauArbre.TYPE_TRIE_SUJET)
 					{
-						JMenuItem renomerSujet = new JMenuItem("Renommer sujet");
-						renomerSujet.addMouseListener(new RenommerSujetClicDroit());
-						JMenuItem supprimerSujet = new JMenuItem("Supprimer sujet");
+						JMenuItem supprimerSujet = new JMenuItem("Supprimer ces sujets");
+						if (arbre.getSelectionCount() == 1)
+						{
+							supprimerSujet.setText("Supprimer ce sujet");
+							JMenuItem renomerSujet = new JMenuItem("Renommer ce sujet");
+							renomerSujet.addMouseListener(new RenommerSujetClicDroit());
+							menuClicDroit.add(renomerSujet);
+						}
 						supprimerSujet.addMouseListener(new SupprimerSujetClicDroit());
-						menuClicDroit.add(renomerSujet);
 						menuClicDroit.add(supprimerSujet);
 					}
 				}
@@ -433,9 +445,19 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
-			int option = JOptionPane.showConfirmDialog(null,
-					"Voulez-vous supprimer les enregistrements ?\n(Notez que les catégories seront conservées)",
-					"Suppression", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+			int option = -1;
+			if (arbre.getSelectionCount() == 1)
+			{
+				option = JOptionPane.showConfirmDialog(null,
+						"Voulez-vous supprimer cet enregistrement ?\n(Notez que la catégorie sera conservée)",
+						"Suppression", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+			}
+			else
+			{
+				option = JOptionPane.showConfirmDialog(null,
+						"Êtes-vous sûr de vouloir ces enregistrements ?\n(Notez que les catégories seront conservées)",
+						"Suppression", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+			}
 			if (option == JOptionPane.OK_OPTION)
 			{
 				setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
@@ -608,8 +630,18 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
-			int option = JOptionPane.showConfirmDialog(null, "Voulez-vous supprimer les catégories ?\n", "Suppression",
-					JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+			int option = -1;
+
+			if (arbre.getSelectionCount() == 1)
+			{
+				option = JOptionPane.showConfirmDialog(null, "Êtes-vous sûr de vouloir supprimer cette catégorie ?\n",
+						"Suppression", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+			}
+			else
+			{
+				option = JOptionPane.showConfirmDialog(null, "Êtes-vous sûr de vouloir supprimer ces catégories ?\n",
+						"Suppression", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+			}
 			if (option == JOptionPane.OK_OPTION)
 			{
 				for (TreePath treePath : arbre.getSelectionPaths())
@@ -623,9 +655,10 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 									.getCategorie(nomCategorie));
 							if (liste.size() != 0)
 							{
-								GraphicalUserInterface.popupErreur(
-										"Une catégorie peut être supprimée quand elle n'a plus d'enregistrements.",
-										"Erreur");
+								GraphicalUserInterface
+										.popupErreur(
+												"Une catégorie ne peut être supprimée que quand elle n'a plus d'enregistrements.",
+												"Erreur");
 							}
 							else
 							{
@@ -647,8 +680,19 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
-			int option = JOptionPane.showConfirmDialog(null, "Voulez-vous supprimer les sujets ?\n", "Suppression",
-					JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+			int option = -1;
+
+			if (arbre.getSelectionCount() == 1)
+			{
+				option = JOptionPane.showConfirmDialog(null, "Êtes-vous sûr de vouloir supprimer ce sujet ?\n",
+						"Suppression", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+			}
+			else
+			{
+				option = JOptionPane.showConfirmDialog(null, "Êtes-vous sûr de vouloir supprimer ces sujets ?\n",
+						"Suppression", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+			}
+
 			if (option == JOptionPane.OK_OPTION)
 			{
 				for (TreePath treePath : arbre.getSelectionPaths())
@@ -662,7 +706,8 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 							if (liste.size() != 0)
 							{
 								GraphicalUserInterface.popupErreur(
-										"Un sujet peut être supprimé quand il n'a plus d'enregistrements.", "Erreur");
+										"Un sujet ne peut être supprimé que quand il n'a plus d'enregistrements.",
+										"Erreur");
 							}
 							else
 							{
@@ -844,7 +889,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 		}
 		return Cache.get(fileName);
 	}
-	
+
 	public void updateCacheSizeInfo()
 	{
 		labelCacheSize.setText("Taille du cache : " + Utils.humanReadableByteCount(Cache.getSize(), false));
