@@ -311,24 +311,11 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		this.menuClicDroit = menuClicDroit;
 	}
 
-	/**
-	 * Efface le menu contextuel dû à un clic droit
-	 */
-	public void effacerMenuContextuel()
-	{
-		if (this.menuClicDroit != null)
-		{
-			this.menuClicDroit.setEnabled(false);// On efface le menu contextuel
-			this.menuClicDroit.setVisible(false);
-		}
-	}
-
 	class ClicDroit extends MouseAdapter
 	{
 		@Override
 		public void mousePressed(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			if ((e.getModifiers() & MouseEvent.BUTTON3_MASK) != 0)
 			{
 				if (arbre.getSelectionCount() <= 1)
@@ -448,7 +435,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			int option = JOptionPane.showConfirmDialog(null,
 					"Voulez-vous supprimer les enregistrements ?\n(Notez que les catégories seront conservées)",
 					"Suppression", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
@@ -482,7 +468,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			JFileChooser fileChooser = new JFileChooser();
 			fileChooser.showOpenDialog(null);
 			String fichier;
@@ -509,7 +494,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			String nom = JOptionPane.showInputDialog(null, "Entrez le nouveau nom", "Renommer",
 					JOptionPane.QUESTION_MESSAGE);
 			if (nom != null && !nom.equals(""))
@@ -546,7 +530,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			String nom = JOptionPane.showInputDialog(null, "Entrez le nouveau nom", "Renommer",
 					JOptionPane.QUESTION_MESSAGE);
 			if (nom != null && !nom.equals(""))
@@ -573,7 +556,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			String nom = JOptionPane.showInputDialog(null, "Entrez le nouveau nom", "Renommer",
 					JOptionPane.QUESTION_MESSAGE);
 			if (nom != null && !nom.equals(""))
@@ -636,7 +618,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			DialogueNouvelleCategorie pop = new DialogueNouvelleCategorie(null, null, true, bdd);
 			String nom = ((String) pop.activer()[0]);
 			if (!nom.equals("Ne rien changer"))
@@ -665,7 +646,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			int option = JOptionPane.showConfirmDialog(null, "Voulez-vous supprimer les catégories ?\n", "Suppression",
 					JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if (option == JOptionPane.OK_OPTION)
@@ -741,7 +721,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			int option = JOptionPane.showConfirmDialog(null, "Voulez-vous supprimer les sujets ?\n", "Suppression",
 					JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if (option == JOptionPane.OK_OPTION)
@@ -781,7 +760,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			DialogueNouveauSujet pop = new DialogueNouveauSujet(null, null, true, bdd);
 			String nom = ((String) pop.activer()[0]);
 			if (!nom.equals("Ne rien changer"))
@@ -810,7 +788,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			if (typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)
 			{
 				typeTrie = PanneauArbre.TYPE_TRIE_SUJET;
@@ -819,6 +796,7 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 			{
 				typeTrie = PanneauArbre.TYPE_TRIE_CATEGORIE;
 			}
+			updateArbre();
 		}
 	}
 
@@ -827,7 +805,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mouseReleased(MouseEvent event)
 		{
-			effacerMenuContextuel();
 			lecteurAudio.play();
 		}
 	}
@@ -870,7 +847,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mousePressed(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			Enumeration children = racine.children();
 			Object tmp, tab[] = new Object[2];
 			tab[0] = racine;
@@ -894,7 +870,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mousePressed(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			Enumeration children = racine.children();
 			Object tmp, tab[] = new Object[2];
 			tab[0] = racine;
