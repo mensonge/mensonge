@@ -12,9 +12,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Enumeration;
+import java.util.List;
 
 import javax.swing.JFileChooser;
 
@@ -38,8 +37,9 @@ import mensonge.core.DataBaseObserver;
 import mensonge.core.Utils;
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
 import mensonge.core.BaseDeDonnees.DBException;
+import mensonge.core.BaseDeDonnees.LigneEnregistrement;
 
-public class PanneauArbre extends JPanel implements DataBaseObserver
+public final class PanneauArbre extends JPanel implements DataBaseObserver
 {
 	/**
 	 * 
@@ -56,7 +56,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 	private PanneauInformationFeuille infoArbre = new PanneauInformationFeuille();
 	private DefaultMutableTreeNode racine;
 	private JTree arbre;
-	private JScrollPane scrollPane;
 
 	private JPopupMenu menuClicDroit = new JPopupMenu();// sers au clic droit
 
@@ -68,14 +67,16 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 	public PanneauArbre(BaseDeDonnees bdd)
 	{
 		cacheDirectory = new File("cache");
-		if (!cacheDirectory.exists())
+
+		if (cacheDirectory.exists() && !cacheDirectory.isDirectory() && !cacheDirectory.delete())
 		{
-			cacheDirectory.mkdir();
+			GraphicalUserInterface
+					.popupErreur("Impossible de supprimer le fichier portant le même nom que le dossier de cache");
+
 		}
-		else if (cacheDirectory.exists() && !cacheDirectory.isDirectory())
+		if (!cacheDirectory.exists() && !cacheDirectory.mkdir())
 		{
-			cacheDirectory.delete();
-			cacheDirectory.mkdir();
+			GraphicalUserInterface.popupErreur("Impossible de créer le dossier de cache");
 		}
 
 		this.setLayout(new BorderLayout());
@@ -112,15 +113,16 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 			}
 		});
 
-		this.scrollPane = new JScrollPane(arbre);
-		this.scrollPane.setPreferredSize(new Dimension(332, 450));
-		this.scrollPane.setAutoscrolls(true);
+		JScrollPane scrollPane = new JScrollPane(arbre);
+		scrollPane.setPreferredSize(new Dimension(332, 450));
+		scrollPane.setAutoscrolls(true);
 
 		this.infoArbre.setPreferredSize(new Dimension(332, 100));
 
 		this.labelCacheSize = new JLabel("Taille du cache : "
 				+ Utils.humanReadableByteCount(Utils.getCacheSize(), false));
-		this.labelDBSize = new JLabel("Taille de la base de données : " + Utils.humanReadableByteCount(Utils.getDBSize(), false));
+		this.labelDBSize = new JLabel("Taille de la base de données : "
+				+ Utils.humanReadableByteCount(Utils.getDBSize(), false));
 
 		JPanel panelInfo = new JPanel(new GridLayout(0, 1));
 		panelInfo.add(labelCacheSize);
@@ -167,34 +169,28 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 
 	public void remplirArbreEnregistrementCategorie()
 	{
-		ResultSet rsCat = null, rsEnr = null;
+		List<LigneEnregistrement> rsCat = null;
+		List<LigneEnregistrement> rsEnr = null;
 
 		try
 		{
 			rsCat = this.bdd.getListeCategorie();
-			while (rsCat.next())
+			for (LigneEnregistrement ligneCat : rsCat)
 			{
-				Branche node = new Branche(rsCat.getString("nomcat"));
-				rsEnr = this.bdd.getListeEnregistrementCategorie(rsCat.getInt("idcat"));
-				while (rsEnr.next())
+				Branche node = new Branche(ligneCat.getNomCat());
+				rsEnr = this.bdd.getListeEnregistrementCategorie(ligneCat.getIdCat());
+				for (LigneEnregistrement ligne : rsEnr)
 				{
-					Feuille f = new Feuille(rsEnr.getInt("id"), rsEnr.getString("nom"), rsEnr.getInt("duree"),
-							rsEnr.getLong("taille"), rsEnr.getString("nomCat"), rsEnr.getString("nomsuj"));
+					Feuille f = new Feuille(ligne.getId(), ligne.getNom(), ligne.getDuree(), ligne.getTaille(),
+							ligne.getNomCat(), ligne.getNomSuj());
 					node.add(f);
 				}
-				rsEnr.close();
 				this.racine.add(node);
 
 			}
-			rsCat.close();
 			this.racine.setUserObject("Catégorie");
 		}
 		catch (DBException e)
-		{
-			GraphicalUserInterface.popupErreur(
-					"Erreur lors du chargement des enregistrements : " + e.getLocalizedMessage(), "Erreur");
-		}
-		catch (SQLException e)
 		{
 			GraphicalUserInterface.popupErreur(
 					"Erreur lors du chargement des enregistrements : " + e.getLocalizedMessage(), "Erreur");
@@ -203,26 +199,24 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 
 	public void remplirArbreEnregistrementSujet()
 	{
-		ResultSet rsCat = null, rsEnr = null;
+		List<LigneEnregistrement> rsSuj = null;
+		List<LigneEnregistrement> rsEnr = null;
 
 		try
 		{
-			rsCat = this.bdd.getListeSujet();
-			while (rsCat.next())
+			rsSuj = this.bdd.getListeSujet();
+			for (LigneEnregistrement ligneSuj : rsSuj)
 			{
-				Branche node = new Branche(rsCat.getString("nomsuj"));
-				rsEnr = this.bdd.getListeEnregistrementSujet(rsCat.getInt("idsuj"));
-				while (rsEnr.next())
+				Branche node = new Branche(ligneSuj.getNomSuj());
+				rsEnr = this.bdd.getListeEnregistrementSujet(ligneSuj.getIdSuj());
+				for (LigneEnregistrement ligne : rsEnr)
 				{
-					Feuille f = new Feuille(rsEnr.getInt("id"), rsEnr.getString("nom"), rsEnr.getInt("duree"),
-							rsEnr.getLong("taille"), rsEnr.getString("nomCat"), rsEnr.getString("nomsuj"));
+					Feuille f = new Feuille(ligne.getId(), ligne.getNom(), ligne.getDuree(), ligne.getTaille(),
+							ligne.getNomCat(), ligne.getNomSuj());
 					node.add(f);
 				}
-				rsEnr.close();
 				this.racine.add(node);
-
 			}
-			rsCat.close();
 			this.racine.setUserObject("Sujet");
 		}
 		catch (DBException e)
@@ -230,12 +224,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 			GraphicalUserInterface.popupErreur(
 					"Erreur lors du chargement des enregistrements : " + e.getLocalizedMessage(), "Erreur");
 		}
-		catch (SQLException e)
-		{
-			GraphicalUserInterface.popupErreur(
-					"Erreur lors du chargement des enregistrements : " + e.getLocalizedMessage(), "Erreur");
-		}
-
 	}
 
 	public void viderNoeud(DefaultMutableTreeNode selectednode)
@@ -309,24 +297,11 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		this.menuClicDroit = menuClicDroit;
 	}
 
-	/**
-	 * Efface le menu contextuel dû à un clic droit
-	 */
-	public void effacerMenuContextuel()
-	{
-		if (this.menuClicDroit != null)
-		{
-			this.menuClicDroit.setEnabled(false);// On efface le menu contextuel
-			this.menuClicDroit.setVisible(false);
-		}
-	}
-
 	class ClicDroit extends MouseAdapter
 	{
 		@Override
 		public void mousePressed(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			if ((e.getModifiers() & MouseEvent.BUTTON3_MASK) != 0)
 			{
 				if (arbre.getSelectionCount() <= 1)
@@ -346,30 +321,8 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 				{
 					changerTri.setText("Grouper par sujet");
 				}
-				if (arbre.getSelectionCount() == 0)
-				{
-					JMenuItem collapseAll = new JMenuItem("Replier tout");
-					JMenuItem expandAll = new JMenuItem("Développer tout");
-					collapseAll.addMouseListener(new CollapseClicDroit());
-					expandAll.addMouseListener(new ExpandClicDroit());
-					menuClicDroit.add(expandAll);
-					menuClicDroit.add(collapseAll);
-					if (typeTrie == PanneauArbre.TYPE_TRIE_SUJET)
-					{
-						JMenuItem ajouterSujet = new JMenuItem("Ajouter sujet");
-						ajouterSujet.addMouseListener(new AjouterSujetClicDroit(menuClicDroit, bdd));
-						menuClicDroit.add(ajouterSujet);
-					}
-					else if (typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)
-					{
-						JMenuItem ajouterCategorie = new JMenuItem("Ajouter catégorie");
-						ajouterCategorie.addMouseListener(new AjouterCategorieEnregistrementClicDroit(menuClicDroit,
-								bdd));
-						menuClicDroit.add(ajouterCategorie);
-					}
 
-				}
-				else if (onlySelectFeuille())
+				if (onlySelectFeuille())
 				{
 					if (arbre.getSelectionCount() >= 1)
 					{
@@ -429,6 +382,27 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 						menuClicDroit.add(supprimerSujet);
 					}
 				}
+				else if (arbre.getSelectionCount() == 0 || arbre.getSelectionCount() == 1)
+				{
+					JMenuItem collapseAll = new JMenuItem("Replier tout");
+					JMenuItem expandAll = new JMenuItem("Développer tout");
+					collapseAll.addMouseListener(new CollapseClicDroit());
+					expandAll.addMouseListener(new ExpandClicDroit());
+					menuClicDroit.add(expandAll);
+					menuClicDroit.add(collapseAll);
+					if (typeTrie == PanneauArbre.TYPE_TRIE_SUJET)
+					{
+						JMenuItem ajouterSujet = new JMenuItem("Ajouter sujet");
+						ajouterSujet.addMouseListener(new AjouterSujetListener(menuClicDroit, bdd));
+						menuClicDroit.add(ajouterSujet);
+					}
+					else if (typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)
+					{
+						JMenuItem ajouterCategorie = new JMenuItem("Ajouter catégorie");
+						ajouterCategorie.addMouseListener(new AjouterCategorieListener(menuClicDroit, bdd));
+						menuClicDroit.add(ajouterCategorie);
+					}
+				}
 
 				menuClicDroit.add(changerTri);
 
@@ -445,7 +419,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			int option = JOptionPane.showConfirmDialog(null,
 					"Voulez-vous supprimer les enregistrements ?\n(Notez que les catégories seront conservées)",
 					"Suppression", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
@@ -479,7 +452,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			JFileChooser fileChooser = new JFileChooser();
 			fileChooser.showOpenDialog(null);
 			String fichier;
@@ -506,7 +478,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			String nom = JOptionPane.showInputDialog(null, "Entrez le nouveau nom", "Renommer",
 					JOptionPane.QUESTION_MESSAGE);
 			if (nom != null && !nom.equals(""))
@@ -543,7 +514,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			String nom = JOptionPane.showInputDialog(null, "Entrez le nouveau nom", "Renommer",
 					JOptionPane.QUESTION_MESSAGE);
 			if (nom != null && !nom.equals(""))
@@ -570,7 +540,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			String nom = JOptionPane.showInputDialog(null, "Entrez le nouveau nom", "Renommer",
 					JOptionPane.QUESTION_MESSAGE);
 			if (nom != null && !nom.equals(""))
@@ -592,48 +561,11 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		}
 	}
 
-	class AjouterCategorieEnregistrementClicDroit extends MouseAdapter
-	{
-		private JPopupMenu menuClicDroit;
-		private BaseDeDonnees bdd;
-
-		public AjouterCategorieEnregistrementClicDroit(JPopupMenu menuClicDroit, BaseDeDonnees bdd)
-		{
-			this.bdd = bdd;
-			this.menuClicDroit = menuClicDroit;
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e)
-		{
-			if (menuClicDroit != null)
-			{
-				menuClicDroit.setEnabled(false);
-				menuClicDroit.setVisible(false);
-			}
-
-			String nom = JOptionPane.showInputDialog(null, "Entrez le nom de la nouvelle catégorie", "Renommer",
-					JOptionPane.QUESTION_MESSAGE);
-			if (nom != null && !nom.equals(""))
-			{
-				try
-				{
-					bdd.ajouterCategorie(nom);
-				}
-				catch (DBException e1)
-				{
-					GraphicalUserInterface.popupErreur(e1.getMessage(), "Erreur");
-				}
-			}
-		}
-	}
-
 	class ModifierCategorieEnregistrementClicDroit extends MouseAdapter
 	{
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			DialogueNouvelleCategorie pop = new DialogueNouvelleCategorie(null, null, true, bdd);
 			String nom = ((String) pop.activer()[0]);
 			if (!nom.equals("Ne rien changer"))
@@ -662,20 +594,20 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			int option = JOptionPane.showConfirmDialog(null, "Voulez-vous supprimer les catégories ?\n", "Suppression",
 					JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if (option == JOptionPane.OK_OPTION)
 			{
-				for (int i = 0; i < arbre.getSelectionPaths().length; i++)
+				for (TreePath treePath : arbre.getSelectionPaths())
 				{
 					try
 					{
-						if (!(arbre.getSelectionPaths()[i].getLastPathComponent() instanceof Feuille))
+						if (!(treePath.getLastPathComponent() instanceof Feuille))
 						{
-							ResultSet rs = bdd.getListeEnregistrementCategorie(bdd.getCategorie(arbre
-									.getSelectionPaths()[i].getLastPathComponent().toString()));
-							if (rs.next())
+							String nomCategorie = treePath.getLastPathComponent().toString();
+							List<LigneEnregistrement> liste = bdd.getListeEnregistrementCategorie(bdd
+									.getCategorie(nomCategorie));
+							if (liste.size() != 0)
 							{
 								GraphicalUserInterface.popupErreur(
 										"Une catégorie peut être supprimée quand elle n'a plus d'enregistrements.",
@@ -683,10 +615,8 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 							}
 							else
 							{
-								bdd.supprimerCategorie(bdd.getCategorie(arbre.getSelectionPaths()[i]
-										.getLastPathComponent().toString()));
+								bdd.supprimerCategorie(bdd.getCategorie(nomCategorie));
 							}
-							rs.close();
 						}
 					}
 					catch (Exception e1)
@@ -698,70 +628,32 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		}
 	}
 
-	class AjouterSujetClicDroit extends MouseAdapter
-	{
-		private JPopupMenu menuClicDroit;
-		private BaseDeDonnees bdd;
-
-		public AjouterSujetClicDroit(JPopupMenu menuClicDroit, BaseDeDonnees bdd)
-		{
-			this.bdd = bdd;
-			this.menuClicDroit = menuClicDroit;
-		}
-
-		@Override
-		public void mouseReleased(MouseEvent e)
-		{
-			if (menuClicDroit != null)
-			{
-				menuClicDroit.setEnabled(false);
-				menuClicDroit.setVisible(false);
-			}
-			String option = JOptionPane.showInputDialog("Nouveau sujet");
-			if (option != "" && option != null)
-			{
-				try
-				{
-					this.bdd.ajouterSujet(option);
-				}
-				catch (Exception e1)
-				{
-					GraphicalUserInterface.popupErreur(
-							"Erreur lors de l'ajout du sujet " + option + " " + e1.getMessage(), "Erreur");
-				}
-			}
-		}
-	}
-
 	class SupprimerSujetClicDroit extends MouseAdapter
 	{
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			int option = JOptionPane.showConfirmDialog(null, "Voulez-vous supprimer les sujets ?\n", "Suppression",
 					JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if (option == JOptionPane.OK_OPTION)
 			{
-				for (int i = 0; i < arbre.getSelectionPaths().length; i++)
+				for (TreePath treePath : arbre.getSelectionPaths())
 				{
 					try
 					{
-						if (!(arbre.getSelectionPaths()[i].getLastPathComponent() instanceof Feuille))
+						if (!(treePath.getLastPathComponent() instanceof Feuille))
 						{
-							ResultSet rs = bdd.getListeEnregistrementSujet(bdd.getSujet(arbre.getSelectionPaths()[i]
-									.getLastPathComponent().toString()));
-							if (rs.next())
+							String nomSujet = treePath.getLastPathComponent().toString();
+							List<LigneEnregistrement> liste = bdd.getListeEnregistrementSujet(bdd.getSujet(nomSujet));
+							if (liste.size() != 0)
 							{
 								GraphicalUserInterface.popupErreur(
 										"Un sujet peut être supprimé quand il n'a plus d'enregistrements.", "Erreur");
 							}
 							else
 							{
-								bdd.supprimerSujet(bdd.getSujet(arbre.getSelectionPaths()[i].getLastPathComponent()
-										.toString()));
+								bdd.supprimerSujet(bdd.getSujet(nomSujet));
 							}
-							rs.close();
 						}
 					}
 					catch (Exception e1)
@@ -778,19 +670,17 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			DialogueNouveauSujet pop = new DialogueNouveauSujet(null, null, true, bdd);
 			String nom = ((String) pop.activer()[0]);
 			if (!nom.equals("Ne rien changer"))
 			{
-				for (int i = 0; i < arbre.getSelectionPaths().length; i++)
+				for (TreePath treePath : arbre.getSelectionPaths())
 				{
-					if (arbre.getSelectionPaths()[i].getLastPathComponent() instanceof Feuille)
+					if (treePath.getLastPathComponent() instanceof Feuille)
 					{
 						try
 						{
-							bdd.modifierEnregistrementSujet(
-									((Feuille) arbre.getSelectionPaths()[i].getLastPathComponent()).getId(), nom);
+							bdd.modifierEnregistrementSujet(((Feuille) treePath.getLastPathComponent()).getId(), nom);
 						}
 						catch (DBException e1)
 						{
@@ -807,7 +697,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			if (typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)
 			{
 				typeTrie = PanneauArbre.TYPE_TRIE_SUJET;
@@ -816,6 +705,7 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 			{
 				typeTrie = PanneauArbre.TYPE_TRIE_CATEGORIE;
 			}
+			updateArbre();
 		}
 	}
 
@@ -824,7 +714,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mouseReleased(MouseEvent event)
 		{
-			effacerMenuContextuel();
 			lecteurAudio.play();
 		}
 	}
@@ -867,7 +756,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mousePressed(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			Enumeration children = racine.children();
 			Object tmp, tab[] = new Object[2];
 			tab[0] = racine;
@@ -891,7 +779,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mousePressed(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			Enumeration children = racine.children();
 			Object tmp, tab[] = new Object[2];
 			tab[0] = racine;
@@ -917,7 +804,11 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 					File idAudioFile = new File(cacheDirectory, id + ".wav");
 					if (!idAudioFile.exists())
 					{
-						idAudioFile.createNewFile();
+						if (!idAudioFile.createNewFile())
+						{
+							GraphicalUserInterface.popupErreur("Impossible de créer le fichier "
+									+ idAudioFile.getName() + " dans le dossier du cache");
+						}
 						byte[] contenu = bdd.recupererEnregistrement(id);
 						FileOutputStream fos = new FileOutputStream(idAudioFile);
 						fos.write(contenu);
@@ -953,7 +844,8 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 	{
 		if (this.labelCacheSize != null)
 		{
-			this.labelDBSize.setText("Taille de la base de données : " + Utils.humanReadableByteCount(Utils.getDBSize(), false));
+			this.labelDBSize.setText("Taille de la base de données : "
+					+ Utils.humanReadableByteCount(Utils.getDBSize(), false));
 		}
 		this.updateArbre();
 	}

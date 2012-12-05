@@ -39,14 +39,14 @@ import uk.co.caprica.vlcj.player.MediaPlayer;
 public class LecteurVideo extends JPanel implements ActionListener
 {
 	private static final long serialVersionUID = 5373991180139317820L;
+
 	private JButton boutonLecture;
 	private JButton boutonStop;
 	private JLabel labelDureeActuelle;
 	private JLabel labelDureeMax;
-	private JSlider slider;
+	private SliderWithMarkers slider;
 	private JSlider sliderVolume;
-	private ImageIcon imageIconStop;
-	private ImageIcon imageIconLecture;
+
 	private EmbeddedMediaPlayerComponent vidComp;
 	private JPanel panelDuree;
 	private JButton boutonMarqueur1;
@@ -55,7 +55,6 @@ public class LecteurVideo extends JPanel implements ActionListener
 	private long timeMarqueur1 = 0;
 	private long timeMarqueur2 = 1;
 	private BaseDeDonnees bdd;
-	private Marqueur t1;
 	private MediaPlayer mediaPlayer;
 	private String pathVideo = "";
 	private JFrame parent;
@@ -93,15 +92,12 @@ public class LecteurVideo extends JPanel implements ActionListener
 
 	private void initialiserComposants()
 	{
-		this.imageIconStop = PlayerEventListener.IMG_ICON_STOP;
-		this.imageIconLecture = PlayerEventListener.IMG_ICON_LECTURE;
-
 		this.labelDureeActuelle = new JLabel("00:00:00");
 		this.labelDureeMax = new JLabel("00:00:00");
 
 		this.boutonLecture = new JButton();
 		this.boutonLecture.setToolTipText("Lancer");
-		this.boutonLecture.setIcon(imageIconLecture);
+		this.boutonLecture.setIcon(PlayerEventListener.IMG_ICON_LECTURE);
 		this.boutonLecture.addActionListener(this);
 		this.boutonLecture.setEnabled(true);
 
@@ -120,7 +116,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 
 		this.boutonStop = new JButton();
 		this.boutonStop.setToolTipText("Stoper");
-		this.boutonStop.setIcon(imageIconStop);
+		this.boutonStop.setIcon(PlayerEventListener.IMG_ICON_STOP);
 		this.boutonStop.addActionListener(this);
 		this.boutonStop.setEnabled(true);
 
@@ -141,13 +137,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 			}
 		});
 
-		this.slider = new JSlider(JSlider.HORIZONTAL);
-		this.slider.setPaintTicks(false);
-		this.slider.setPaintLabels(false);
-		this.slider.setMinimum(0);
-		this.slider.setValue(0);
-		this.slider.setMaximum((int) SliderPositionEventListener.SLIDER_POSITION_MAX);
-
+		this.slider = new SliderWithMarkers(JSlider.HORIZONTAL);
 		SliderPositionEventListener sliderListener = new SliderPositionEventListener(this.slider,
 				this.labelDureeActuelle, this.mediaPlayer);
 		this.slider.addMouseListener(sliderListener);
@@ -240,13 +230,16 @@ public class LecteurVideo extends JPanel implements ActionListener
 		else if (event.getSource() == boutonMarqueur1)
 		{
 			timeMarqueur1 = mediaPlayer.getTime();
+			slider.setMarkerOneAt(((float) mediaPlayer.getTime() / (float) mediaPlayer.getLength()));
 		}
 		else if (event.getSource() == boutonMarqueur2)
 		{
 			timeMarqueur2 = mediaPlayer.getTime();
+			slider.setMarkerTwoAt(((float) mediaPlayer.getTime() / (float) mediaPlayer.getLength()));
 		}
 		else if (event.getSource() == boutonExtract)
 		{
+			final String msgErreur = "Extraction : ";
 			if (this.mediaPlayer.isPlaying())
 			{
 				this.mediaPlayer.pause();
@@ -256,25 +249,32 @@ public class LecteurVideo extends JPanel implements ActionListener
 				Extraction extract = new Extraction();
 				byte[] tabOfByte = null;
 				this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-				tabOfByte = extract.extraireIntervalle(pathVideo, timeMarqueur1, timeMarqueur2);
+				if (timeMarqueur1 < timeMarqueur2)
+				{
+					tabOfByte = extract.extraireIntervalle(pathVideo, timeMarqueur1, timeMarqueur2);
+				}
+				else
+				{
+					tabOfByte = extract.extraireIntervalle(pathVideo, timeMarqueur2, timeMarqueur1);
+				}
 				this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 				new DialogueAjouterEnregistrement(parent, "Ajout d'un enregistrement", true, this.bdd, tabOfByte);
 			}
 			catch (IllegalArgumentException e)
 			{
-				GraphicalUserInterface.popupErreur("Extraction : " + e.getMessage());
+				GraphicalUserInterface.popupErreur(msgErreur + e.getMessage());
 			}
 			catch (InputFormatException e)
 			{
-				GraphicalUserInterface.popupErreur("Extraction : " + e.getMessage());
+				GraphicalUserInterface.popupErreur(msgErreur + e.getMessage());
 			}
 			catch (IOException e)
 			{
-				GraphicalUserInterface.popupErreur("Extraction : " + e.getMessage());
+				GraphicalUserInterface.popupErreur(msgErreur + e.getMessage());
 			}
 			catch (EncoderException e)
 			{
-				GraphicalUserInterface.popupErreur("Extraction : " + e.getMessage());
+				GraphicalUserInterface.popupErreur(msgErreur + e.getMessage());
 			}
 
 		}

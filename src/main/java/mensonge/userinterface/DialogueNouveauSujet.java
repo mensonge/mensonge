@@ -4,7 +4,7 @@ import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.sql.ResultSet;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -14,9 +14,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
+import mensonge.core.BaseDeDonnees.LigneEnregistrement;
 
-
-public class DialogueNouveauSujet extends JDialog
+public final class DialogueNouveauSujet extends JDialog
 {
 	private static final long serialVersionUID = 1L;
 
@@ -33,14 +33,13 @@ public class DialogueNouveauSujet extends JDialog
 		JPanel pan = new JPanel(), j1 = new JPanel(), bouton = new JPanel();
 		try
 		{
-			combo.addItem("Ne rien changer");
 			retour[0] = new String("Ne rien changer");
-			ResultSet rs = bdd.getListeSujet();
-			while (rs.next())
+			combo.addItem(retour[0]);
+			List<LigneEnregistrement> liste = bdd.getListeSujet();
+			for (LigneEnregistrement ligne : liste)
 			{
-				combo.addItem(rs.getString("nomsuj"));
+				combo.addItem(ligne.getNomSuj());
 			}
-			rs.close();
 		}
 		catch (Exception e)
 		{

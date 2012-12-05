@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -32,6 +34,7 @@ import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 import javax.swing.UIManager;
+import javax.swing.UnsupportedLookAndFeelException;
 
 import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
@@ -54,7 +57,7 @@ import mensonge.core.plugins.PluginManager;
 public class GraphicalUserInterface extends JFrame implements ActionListener
 {
 	private static final long serialVersionUID = 5373991180139317820L;
-
+	private static Logger logger = Logger.getLogger("gui");
 	private JTabbedPane onglets;
 
 	private JMenuItem aideAPropos;
@@ -75,7 +78,6 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	 */
 	public GraphicalUserInterface()
 	{
-
 		/*
 		 * Connexion à la base
 		 */
@@ -105,6 +107,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		}
 		catch (IOException e)
 		{
+			logger.log(Level.WARNING, e.getLocalizedMessage());
 			popupErreur(e.getMessage());
 		}
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -137,8 +140,8 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 		JMenuItem baseAjouterCategorie = new JMenuItem("Ajouter catégorie");
 		JMenuItem baseAjouterSujet = new JMenuItem("Ajouter sujet");
-		baseAjouterCategorie.addMouseListener(panneauArbre.new AjouterCategorieEnregistrementClicDroit(null, bdd));
-		baseAjouterSujet.addMouseListener(panneauArbre.new AjouterSujetClicDroit(null, bdd));
+		baseAjouterCategorie.addMouseListener(new AjouterCategorieListener(bdd));
+		baseAjouterSujet.addMouseListener(new AjouterSujetListener(bdd));
 
 		JMenuItem fichierPurger = new JMenuItem("Purger le cache");
 		fichierPurger.addActionListener(new PurgerCacheListener());
@@ -153,12 +156,16 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		this.aideAPropos = new JMenuItem("À propos");
 		this.aideAPropos.addActionListener(this);
 
+		JMenuItem baseCompacter = new JMenuItem("Compacter la base de données");
+		baseCompacter.addActionListener(new CompacterBaseListener());
+
 		JMenu menuAide = new JMenu("Aide");
 		menuAide.add(aideAPropos);
 
-		JMenu menuBase = new JMenu("Base");
+		JMenu menuBase = new JMenu("Base de données");
 		menuBase.add(baseAjouterCategorie);
 		menuBase.add(baseAjouterSujet);
+		menuBase.add(baseCompacter);
 
 		this.fichierFermer.setAccelerator(KeyStroke.getKeyStroke('Q', KeyEvent.CTRL_DOWN_MASK));
 		this.fichierOuvrir.setAccelerator(KeyStroke.getKeyStroke('O', KeyEvent.CTRL_DOWN_MASK));
@@ -190,6 +197,8 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	 */
 	private void chargerListePlugins()
 	{
+		final String aucunOutil = "Aucun outil";
+		final String errorMsg = "Impossible de charger les outils : ";
 		menuOutils.removeAll();
 		try
 		{
@@ -212,23 +221,23 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		}
 		catch (ClassNotFoundException e)
 		{
-			GraphicalUserInterface.popupErreur("Impossible de charger les outils : " + e.getMessage());
-			menuOutils.add(new JMenuItem("Aucun outil"));
+			GraphicalUserInterface.popupErreur(errorMsg + e.getMessage());
+			menuOutils.add(new JMenuItem(aucunOutil));
 		}
 		catch (InstantiationException e)
 		{
-			GraphicalUserInterface.popupErreur("Impossible de charger les outils : " + e.getMessage());
-			menuOutils.add(new JMenuItem("Aucun outil"));
+			GraphicalUserInterface.popupErreur(errorMsg + e.getMessage());
+			menuOutils.add(new JMenuItem(aucunOutil));
 		}
 		catch (IllegalAccessException e)
 		{
-			GraphicalUserInterface.popupErreur("Impossible de charger les outils : " + e.getMessage());
-			menuOutils.add(new JMenuItem("Aucun outil"));
+			GraphicalUserInterface.popupErreur(errorMsg + e.getMessage());
+			menuOutils.add(new JMenuItem(aucunOutil));
 		}
 		catch (IOException e)
 		{
-			GraphicalUserInterface.popupErreur("Impossible de charger les outils : " + e.getMessage());
-			menuOutils.add(new JMenuItem("Aucun outil"));
+			GraphicalUserInterface.popupErreur(errorMsg + e.getMessage());
+			menuOutils.add(new JMenuItem(aucunOutil));
 		}
 
 		this.menuOutils.add(new JSeparator(JSeparator.HORIZONTAL));
@@ -332,11 +341,13 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				}
 				catch (DBException e1)
 				{
+					logger.log(Level.SEVERE, e1.getLocalizedMessage());
 					popupErreur("Erreur lors de la création de la base de données : " + e1.getMessage());
 				}
 			}
 			else
 			{
+				logger.log(Level.SEVERE, e.getLocalizedMessage());
 				popupErreur("Erreur lors de la connexion de la base de données : " + e.getMessage());
 				return;
 			}
@@ -405,6 +416,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				}
 				catch (IOException e)
 				{
+					logger.log(Level.WARNING, e.getLocalizedMessage());
 					popupErreur(e.getMessage());
 				}
 
@@ -431,7 +443,6 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		{
 			onglet.fermerOnglet();
 			onglets.remove(onglet);
-
 		}
 	}
 
@@ -457,11 +468,12 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				}
 				catch (DBException e1)
 				{
+					logger.log(Level.WARNING, e1.getLocalizedMessage());
 					popupErreur(e1.getMessage());
-
 				}
 				catch (IOException e1)
 				{
+					logger.log(Level.WARNING, e1.getLocalizedMessage());
 					popupErreur(e1.getMessage());
 				}
 			}
@@ -493,13 +505,13 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				}
 				catch (IOException e1)
 				{
+					logger.log(Level.WARNING, e1.getLocalizedMessage());
 					popupErreur(e1.getMessage());
-
 				}
 				catch (DBException e2)
 				{
+					logger.log(Level.WARNING, e2.getLocalizedMessage());
 					popupErreur(e2.getMessage());
-
 				}
 			}
 		}
@@ -547,11 +559,31 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				for (File file : cacheDirectory.listFiles())
 				{
 					length += file.length();
-					file.delete();
+					if (!file.delete())
+					{
+						popupErreur("Impossible de supprimer " + file.getName() + " du cache");
+					}
 				}
 				popupInfo("Le cache a été purgé.\nVous avez gagné " + Utils.humanReadableByteCount(length, false)
 						+ " d'espace disque.", "Purge du cache");
 				panneauArbre.updateCacheSizeInfo();
+			}
+		}
+	}
+
+	private class CompacterBaseListener implements ActionListener
+	{
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{
+			try
+			{
+				bdd.compacter();
+			}
+			catch (DBException e1)
+			{
+				logger.log(Level.WARNING, e1.getLocalizedMessage());
+				GraphicalUserInterface.popupErreur(e1.getLocalizedMessage());
 			}
 		}
 	}
@@ -566,10 +598,23 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		{
 			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
 		}
-		catch (Exception e)
+		catch (ClassNotFoundException e1)
 		{
-			// No Nimbus
+			logger.log(Level.WARNING, e1.getLocalizedMessage());
 		}
+		catch (InstantiationException e1)
+		{
+			logger.log(Level.WARNING, e1.getLocalizedMessage());
+		}
+		catch (IllegalAccessException e1)
+		{
+			logger.log(Level.WARNING, e1.getLocalizedMessage());
+		}
+		catch (UnsupportedLookAndFeelException e1)
+		{
+			logger.log(Level.WARNING, e1.getLocalizedMessage());
+		}
+
 		try
 		{
 			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(),
@@ -577,7 +622,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		}
 		catch (IOException e)
 		{
-			e.printStackTrace();
+			logger.log(Level.SEVERE, e.getLocalizedMessage());
 		}
 
 		Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);

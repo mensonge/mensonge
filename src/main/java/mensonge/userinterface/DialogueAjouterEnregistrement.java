@@ -3,12 +3,12 @@ package mensonge.userinterface;
 import java.awt.Cursor;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.FileInputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.sql.ResultSet;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -19,31 +19,30 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
 import mensonge.core.BaseDeDonnees.DBException;
+import mensonge.core.BaseDeDonnees.LigneEnregistrement;
 
-
-public class DialogueAjouterEnregistrement extends JDialog implements ActionListener
+public final class DialogueAjouterEnregistrement extends JDialog implements ActionListener
 {
 
 	/**
 	 *
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	private static final String CREER_CAT = "Creer Catégorie";
-	
-	private static final String CREER_SUJ = "Creer Sujet";
+
+	private static final String CREER_CAT = "Creer catégorie";
+
+	private static final String CREER_SUJ = "Creer sujet";
 
 	private JComboBox comboCategorie = new JComboBox();
-	private JLabel labelCategorie = new JLabel("Liste des catégories");
+	private JLabel labelCategorie = new JLabel("Catégorie");
 
 	private JComboBox comboSujet = new JComboBox();
-	private JLabel labelSujet = new JLabel("Liste des sujets");
+	private JLabel labelSujet = new JLabel("Sujet");
 
-	private JLabel labelNom = new JLabel("Nom : ");
-	private JTextField champsNom = new JTextField("                                            ");
+	private JLabel labelNom = new JLabel("Nom");
+	private JTextField champsNom = new JTextField();
 
 	private JButton envoyer = new JButton("Valider");
 	private JButton annuler = new JButton("Annuler");
@@ -66,28 +65,27 @@ public class DialogueAjouterEnregistrement extends JDialog implements ActionList
 
 		try
 		{
-			ResultSet rs = bdd.getListeCategorie();
-			while (rs.next())
+			List<LigneEnregistrement> liste = bdd.getListeCategorie();
+			for (LigneEnregistrement ligne : liste)
 			{
-				comboCategorie.addItem(rs.getString("nomCat"));
+				comboCategorie.addItem(ligne.getNomCat());
 			}
-			rs.close();
 
-			rs = bdd.getListeSujet();
-			while (rs.next())
+			liste = bdd.getListeSujet();
+			for (LigneEnregistrement ligne : liste)
 			{
-				comboSujet.addItem(rs.getString("nomSuj"));
+				comboSujet.addItem(ligne.getNomSuj());
 			}
-			rs.close();
 		}
 		catch (Exception e)
 		{
 			GraphicalUserInterface.popupErreur("Absence de sujet ou de categorie dans la base");
 		}
-		
+
 		comboCategorie.addItem(CREER_CAT);
 		comboSujet.addItem(CREER_SUJ);
-
+		c.fill = GridBagConstraints.BOTH;
+		c.insets = new Insets(4, 10, 0, 10);
 		c.gridx = 0;
 		c.gridy = 0;
 		pan.add(labelNom, c);
@@ -106,6 +104,7 @@ public class DialogueAjouterEnregistrement extends JDialog implements ActionList
 		c.gridx = 1;
 		pan.add(comboCategorie, c);
 
+		c.insets = new Insets(10, 10, 10, 10);
 		c.gridx = 0;
 		c.gridy++;
 		pan.add(envoyer, c);
@@ -115,7 +114,7 @@ public class DialogueAjouterEnregistrement extends JDialog implements ActionList
 		this.setContentPane(pan);
 		this.setLocationRelativeTo(null);
 		this.setTitle("Ajouter un enregistrement");
-		this.setSize(350, 300);
+		this.pack();
 		activer();
 	}
 
@@ -126,43 +125,50 @@ public class DialogueAjouterEnregistrement extends JDialog implements ActionList
 
 	public void valider()
 	{
-		ByteBuffer bb = ByteBuffer.allocate(8);	
-		bb.put(enregistrement, 28, 4);
-		bb.put(enregistrement, 40, 4);
-		bb.rewind();
-		bb.order(ByteOrder.LITTLE_ENDIAN);
-		int octetParSeconde = bb.getInt();
-		int dataSize = bb.getInt();
-		int duree = (int)(dataSize/octetParSeconde);
-		String nomCat = nomCategorie();
-		String nomSuj = nomSujet();
-		try
+		if (!champsNom.getText().isEmpty())
 		{
-			this.getParent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-			this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-			int idCat = this.bdd.getCategorie(nomCat);
-			int idSuj = this.bdd.getSujet(nomSuj);
-			this.bdd.ajouterEnregistrement(champsNom.getText(), duree, idCat, enregistrement, idSuj);
+			ByteBuffer bb = ByteBuffer.allocate(8);
+			bb.put(enregistrement, 28, 4);
+			bb.put(enregistrement, 40, 4);
+			bb.rewind();
+			bb.order(ByteOrder.LITTLE_ENDIAN);
+			int octetParSeconde = bb.getInt();
+			int dataSize = bb.getInt();
+			int duree = (int) (dataSize / octetParSeconde);
+			String nomCat = nomCategorie();
+			String nomSuj = nomSujet();
+			try
+			{
+				this.getParent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+				this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+				int idCat = this.bdd.getCategorie(nomCat);
+				int idSuj = this.bdd.getSujet(nomSuj);
+				this.bdd.ajouterEnregistrement(champsNom.getText(), duree, idCat, enregistrement, idSuj);
+			}
+			catch (Exception e1)
+			{
+				e1.printStackTrace();
+			}
+			this.getParent().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			this.setVisible(false);
 		}
-		catch (Exception e1)
+		else
 		{
-			e1.printStackTrace();
+			champsNom.requestFocus();
 		}
-		this.getParent().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-		this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-		this.setVisible(false);
 	}
 
 	public String nomCategorie()
 	{
 		String nom = (String) comboCategorie.getSelectedItem();
-		if(nom.equals(CREER_CAT))
+		if (nom.equals(CREER_CAT))
 		{
 			String name = null;
-			while(name == null || name.equals(""))
+			while (name == null || name.equals(""))
 			{
 				name = JOptionPane.showInputDialog(null, "Entrez le nom de la nouvelle categorie", "Ajout",
-					JOptionPane.QUESTION_MESSAGE);
+						JOptionPane.QUESTION_MESSAGE);
 			}
 			try
 			{
@@ -176,17 +182,17 @@ public class DialogueAjouterEnregistrement extends JDialog implements ActionList
 		}
 		return nom;
 	}
-	
+
 	public String nomSujet()
 	{
 		String nom = (String) comboSujet.getSelectedItem();
-		if(nom.equals(CREER_SUJ))
+		if (nom.equals(CREER_SUJ))
 		{
 			String name = null;
-			while(name == null || name.equals(""))
+			while (name == null || name.equals(""))
 			{
 				name = JOptionPane.showInputDialog(null, "Entrez le nom du nouveau sujet", "Ajout",
-					JOptionPane.QUESTION_MESSAGE);
+						JOptionPane.QUESTION_MESSAGE);
 			}
 			try
 			{
@@ -200,15 +206,15 @@ public class DialogueAjouterEnregistrement extends JDialog implements ActionList
 		}
 		return nom;
 	}
-	
+
 	@Override
 	public void actionPerformed(ActionEvent e)
 	{
-		if(e.getSource() == this.envoyer)
+		if (e.getSource() == this.envoyer)
 		{
 			this.valider();
 		}
-		else if(e.getSource() == this.annuler)
+		else if (e.getSource() == this.annuler)
 		{
 			this.setVisible(false);
 		}
