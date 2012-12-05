@@ -51,7 +51,7 @@ public class ResultatSelect
 	public static LigneEnregistrement getLigne(ResultSet rs, List<String> colonne)
 	{
 		LigneEnregistrement ligne = new LigneEnregistrement();
-		for (String nomColonne : colonne)//pour chaque colonne on remplis la Ligne
+		for (String nomColonne : colonne)//pour chaque colonne on remplis l
 		{
 			remplirLigne(rs, nomColonne, ligne);
 		}
