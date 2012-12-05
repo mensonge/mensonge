@@ -145,7 +145,9 @@ public class LecteurVideo extends JPanel implements ActionListener
 				this.labelDureeActuelle, this.mediaPlayer);
 		this.slider.addMouseListener(sliderListener);
 		this.slider.addMouseMotionListener(sliderListener);
-		this.slider.addMouseListener(new ClicDroit());
+		SliderWithMarkersListener sliderWithMarkersSlider  = new SliderWithMarkersListener();
+		this.slider.addMouseListener(sliderWithMarkersSlider);
+		this.slider.addMouseMotionListener(sliderWithMarkersSlider);
 
 		this.panelDuree = new JPanel();
 		panelDuree.setLayout(new BoxLayout(panelDuree, BoxLayout.X_AXIS));
@@ -284,10 +286,21 @@ public class LecteurVideo extends JPanel implements ActionListener
 		}
 	}
 
-	private class ClicDroit extends MouseAdapter
+	private class SliderWithMarkersListener extends MouseAdapter
 	{
 		@Override
 		public void mousePressed(MouseEvent e)
+		{
+			setMarkers(e);
+		}
+		
+		@Override
+		public void mouseDragged(MouseEvent e)
+		{
+			setMarkers(e);
+		}
+		
+		private void setMarkers(MouseEvent e)
 		{
 			int w = slider.getWidth();
 			if ((e.getModifiers() & MouseEvent.BUTTON2_MASK) != 0)

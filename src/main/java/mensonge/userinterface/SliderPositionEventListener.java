@@ -36,7 +36,7 @@ public class SliderPositionEventListener extends MouseAdapter
 		if ((event.getModifiers() & MouseEvent.BUTTON1_MASK) != 0)
 		{
 			int value = this.valueForXPosition(event.getX());
-			long newTime = (long) ((value / (float) slider.getMaximum()) * mediaPlayer.getLength());
+			long newTime = (long) value;
 			mediaPlayer.setTime(newTime);
 			slider.setValue(value);
 			labelDureeActuelle.setText(Utils.getFormattedTime(newTime / 1000));
@@ -46,12 +46,6 @@ public class SliderPositionEventListener extends MouseAdapter
 	@Override
 	public void mouseMoved(MouseEvent event)
 	{
-		slider.setToolTipText(Utils.getFormattedTime(getTimeX(event.getX())));
-	}
-
-	private long getTimeX(int x)
-	{
-		int positionValue = this.valueForXPosition(x);
-		return (long) ((positionValue / (float) slider.getMaximum()) * mediaPlayer.getLength() / 1000);
+		slider.setToolTipText(Utils.getFormattedTime(valueForXPosition(event.getX()) / 1000));
 	}
 }
