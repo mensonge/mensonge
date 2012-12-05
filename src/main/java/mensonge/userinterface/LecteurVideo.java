@@ -101,7 +101,6 @@ public class LecteurVideo extends JPanel implements ActionListener
 		this.labelDureeMax = new JLabel("00:00:00");
 
 		this.boutonLecture = new JButton();
-		this.boutonLecture.setToolTipText("Lancer");
 		this.boutonLecture.setIcon(PlayerEventListener.IMG_ICON_LECTURE);
 		this.boutonLecture.addActionListener(this);
 		this.boutonLecture.setEnabled(true);
@@ -120,7 +119,6 @@ public class LecteurVideo extends JPanel implements ActionListener
 		this.boutonExtract.setEnabled(true);
 
 		this.boutonStop = new JButton();
-		this.boutonStop.setToolTipText("Stoper");
 		this.boutonStop.setIcon(PlayerEventListener.IMG_ICON_STOP);
 		this.boutonStop.addActionListener(this);
 		this.boutonStop.setEnabled(true);

@@ -34,14 +34,12 @@ public class PlayerEventListener extends MediaPlayerEventAdapter
 	public void paused(MediaPlayer arg0)
 	{
 		boutonLecture.setIcon(IMG_ICON_LECTURE);
-		boutonLecture.setToolTipText("Lancer");
 	}
 
 	@Override
 	public void playing(MediaPlayer arg0)
 	{
 		boutonLecture.setIcon(IMG_ICON_PAUSE);
-		boutonLecture.setToolTipText("Mettre en pause");
 	}
 
 	@Override
@@ -49,7 +47,6 @@ public class PlayerEventListener extends MediaPlayerEventAdapter
 	{
 		slider.setValue(0);
 		boutonLecture.setIcon(IMG_ICON_LECTURE);
-		boutonLecture.setToolTipText("Lancer");
 		labelDureeActuelle.setText("00:00:00");
 	}
 
@@ -64,7 +61,6 @@ public class PlayerEventListener extends MediaPlayerEventAdapter
 	public void stopped(MediaPlayer arg0)
 	{
 		boutonLecture.setIcon(IMG_ICON_LECTURE);
-		boutonLecture.setToolTipText("Lancer");
 		slider.setValue(0);
 		labelDureeActuelle.setText("00:00:00");
 	}
