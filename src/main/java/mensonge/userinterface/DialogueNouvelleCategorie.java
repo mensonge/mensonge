@@ -16,7 +16,7 @@ import javax.swing.JPanel;
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
 
 
-public class DialogueNouvelleCategorie extends JDialog
+public final class DialogueNouvelleCategorie extends JDialog
 {
 	/**
 	 * 
@@ -37,7 +37,7 @@ public class DialogueNouvelleCategorie extends JDialog
 		try
 		{
 			combo.addItem("Ne rien changer");
-			retour[0] = new String("Ne rien changer");
+			retour[0] = "Ne rien changer";
 			ResultSet rs = bdd.getListeCategorie();
 			while (rs.next())
 			{

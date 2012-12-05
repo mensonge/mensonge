@@ -1,7 +1,9 @@
 package mensonge.core.BaseDeDonnees;
 
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -10,8 +12,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import javax.management.Query;
 
 import mensonge.core.BetterObservable;
 import mensonge.core.BaseDeDonnees.DBException;
@@ -190,8 +190,7 @@ public class BaseDeDonnees extends BetterObservable
 			{
 				throw new DBException("Impossible de créer le fichier de sortie: " + e.getMessage(), 3);
 			}
-			boolean tmp = copyFile(src, dest);// copi des fichiers
-			if (tmp == false)
+			if (!copyFile(src, dest))
 			{
 				throw new DBException("Impossible de copier le fichier de la base", 3);
 			}
@@ -264,9 +263,13 @@ public class BaseDeDonnees extends BetterObservable
 		try
 		{
 			Statement stat = connexion.createStatement(); // Creation du Statement
-			
+
 			ResultSet rs = stat
-					.executeQuery("SELECT duree, taille, nom, nomcat, id, nomsuj, en.idcat, en.idsuj FROM enregistrements en, categorie ca, sujet su WHERE en.idcat = ca.idcat AND en.idsuj = su.idsuj ORDER BY nomcat, nom;"); // Execution																																																			// de																																																	// requete
+					.executeQuery("SELECT duree, taille, nom, nomcat, id, nomsuj, en.idcat, en.idsuj FROM enregistrements en, categorie ca, sujet su WHERE en.idcat = ca.idcat AND en.idsuj = su.idsuj ORDER BY nomcat, nom;"); // Execution
+																																																								// //
+																																																								// de
+																																																								// //
+																																																								// requete
 			return rs;
 		}
 		catch (Exception e)
@@ -384,9 +387,11 @@ public class BaseDeDonnees extends BetterObservable
 		{
 			Statement stat = connexion.createStatement();
 			// Pour l'automatique ça serait : "PRAGMA auto_vacuum = 1"
-			stat.execute("VACUUM");
+			if(stat.execute("VACUUM"))
+			{
+				notifyUpdateDataBase();
+			}
 			stat.close();
-			notifyUpdateDataBase();
 		}
 		catch (SQLException e)
 		{
@@ -1614,39 +1619,45 @@ public class BaseDeDonnees extends BetterObservable
 	 */
 	private static boolean copyFile(File source, File dest)
 	{
+
+		// Declaration et ouverture des flux
+		FileInputStream sourceFile = null;
+		FileOutputStream destinationFile = null;
+
 		try
 		{
-			// Declaration et ouverture des flux
-			java.io.FileInputStream sourceFile = new java.io.FileInputStream(source);
+			sourceFile = new java.io.FileInputStream(source);
+			destinationFile = new FileOutputStream(dest);
+			// Lecture par segment de 0.5Mo
+			byte buffer[] = new byte[512 * 1024];
+			int nbLecture;
 
+			while ((nbLecture = sourceFile.read(buffer)) != -1)
+			{
+				destinationFile.write(buffer, 0, nbLecture);
+			}
+
+		}
+		catch (IOException e)
+		{
+			logger.log(Level.WARNING, e.getLocalizedMessage());
+		} finally
+		{
 			try
 			{
-				java.io.FileOutputStream destinationFile = null;
-
-				try
-				{
-					destinationFile = new FileOutputStream(dest);
-
-					// Lecture par segment de 0.5Mo
-					byte buffer[] = new byte[512 * 1024];
-					int nbLecture;
-
-					while ((nbLecture = sourceFile.read(buffer)) != -1)
-					{
-						destinationFile.write(buffer, 0, nbLecture);
-					}
-				} finally
+				if (destinationFile != null)
 				{
 					destinationFile.close();
 				}
-			} finally
-			{
-				sourceFile.close();
+				if (sourceFile != null)
+				{
+					sourceFile.close();
+				}
 			}
-		}
-		catch (Exception e)
-		{
-			return false; // Erreur
+			catch (IOException e)
+			{
+				logger.log(Level.WARNING, e.getLocalizedMessage());
+			}
 		}
 
 		return true; // Résultat OK

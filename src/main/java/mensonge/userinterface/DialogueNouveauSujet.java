@@ -16,7 +16,7 @@ import javax.swing.JPanel;
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
 
 
-public class DialogueNouveauSujet extends JDialog
+public final class DialogueNouveauSujet extends JDialog
 {
 	private static final long serialVersionUID = 1L;
 
@@ -34,7 +34,7 @@ public class DialogueNouveauSujet extends JDialog
 		try
 		{
 			combo.addItem("Ne rien changer");
-			retour[0] = new String("Ne rien changer");
+			retour[0] = "Ne rien changer";
 			ResultSet rs = bdd.getListeSujet();
 			while (rs.next())
 			{

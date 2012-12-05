@@ -39,14 +39,14 @@ import uk.co.caprica.vlcj.player.MediaPlayer;
 public class LecteurVideo extends JPanel implements ActionListener
 {
 	private static final long serialVersionUID = 5373991180139317820L;
+
 	private JButton boutonLecture;
 	private JButton boutonStop;
 	private JLabel labelDureeActuelle;
 	private JLabel labelDureeMax;
 	private JSlider slider;
 	private JSlider sliderVolume;
-	private ImageIcon imageIconStop;
-	private ImageIcon imageIconLecture;
+
 	private EmbeddedMediaPlayerComponent vidComp;
 	private JPanel panelDuree;
 	private JButton boutonMarqueur1;
@@ -93,15 +93,12 @@ public class LecteurVideo extends JPanel implements ActionListener
 
 	private void initialiserComposants()
 	{
-		this.imageIconStop = PlayerEventListener.IMG_ICON_STOP;
-		this.imageIconLecture = PlayerEventListener.IMG_ICON_LECTURE;
-
 		this.labelDureeActuelle = new JLabel("00:00:00");
 		this.labelDureeMax = new JLabel("00:00:00");
 
 		this.boutonLecture = new JButton();
 		this.boutonLecture.setToolTipText("Lancer");
-		this.boutonLecture.setIcon(imageIconLecture);
+		this.boutonLecture.setIcon(PlayerEventListener.IMG_ICON_LECTURE);
 		this.boutonLecture.addActionListener(this);
 		this.boutonLecture.setEnabled(true);
 
@@ -120,7 +117,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 
 		this.boutonStop = new JButton();
 		this.boutonStop.setToolTipText("Stoper");
-		this.boutonStop.setIcon(imageIconStop);
+		this.boutonStop.setIcon(PlayerEventListener.IMG_ICON_STOP);
 		this.boutonStop.addActionListener(this);
 		this.boutonStop.setEnabled(true);
 
@@ -247,6 +244,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 		}
 		else if (event.getSource() == boutonExtract)
 		{
+			final String msgErreur = "Extraction : ";
 			if (this.mediaPlayer.isPlaying())
 			{
 				this.mediaPlayer.pause();
@@ -262,19 +260,19 @@ public class LecteurVideo extends JPanel implements ActionListener
 			}
 			catch (IllegalArgumentException e)
 			{
-				GraphicalUserInterface.popupErreur("Extraction : " + e.getMessage());
+				GraphicalUserInterface.popupErreur(msgErreur + e.getMessage());
 			}
 			catch (InputFormatException e)
 			{
-				GraphicalUserInterface.popupErreur("Extraction : " + e.getMessage());
+				GraphicalUserInterface.popupErreur(msgErreur + e.getMessage());
 			}
 			catch (IOException e)
 			{
-				GraphicalUserInterface.popupErreur("Extraction : " + e.getMessage());
+				GraphicalUserInterface.popupErreur(msgErreur + e.getMessage());
 			}
 			catch (EncoderException e)
 			{
-				GraphicalUserInterface.popupErreur("Extraction : " + e.getMessage());
+				GraphicalUserInterface.popupErreur(msgErreur + e.getMessage());
 			}
 
 		}

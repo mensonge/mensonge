@@ -35,8 +35,6 @@ public class LecteurAudio extends JPanel implements ActionListener
 	private JButton boutonLecture;
 	private JLabel labelDureeActuelle;
 
-	private ImageIcon imageIconStop;
-	private ImageIcon imageIconLecture;
 	private JLabel labelDureeMax;
 	private JSlider slider;
 	private JSlider sliderVolume;
@@ -67,21 +65,18 @@ public class LecteurAudio extends JPanel implements ActionListener
 
 	private void addControls()
 	{
-		this.imageIconStop = new ImageIcon("images/Stop.png");
-		this.imageIconLecture = new ImageIcon("images/Lecture.png");
-
 		this.labelDureeActuelle = new JLabel("00:00:00");
 		this.labelDureeMax = new JLabel("00:00:00");
 
 		this.boutonLecture = new JButton();
 		this.boutonLecture.setToolTipText("Lancer");
-		this.boutonLecture.setIcon(imageIconLecture);
+		this.boutonLecture.setIcon(PlayerEventListener.IMG_ICON_LECTURE);
 		this.boutonLecture.addActionListener(this);
 		this.boutonLecture.setEnabled(true);
 
 		this.boutonStop = new JButton();
 		this.boutonStop.setToolTipText("Stoper");
-		this.boutonStop.setIcon(imageIconStop);
+		this.boutonStop.setIcon(PlayerEventListener.IMG_ICON_STOP);
 		this.boutonStop.addActionListener(this);
 		this.boutonStop.setEnabled(true);
 
@@ -110,7 +105,8 @@ public class LecteurAudio extends JPanel implements ActionListener
 			}
 		});
 
-		SliderPositionEventListener sliderListener = new SliderPositionEventListener(this.slider, this.labelDureeActuelle, this.mediaPlayer);
+		SliderPositionEventListener sliderListener = new SliderPositionEventListener(this.slider,
+				this.labelDureeActuelle, this.mediaPlayer);
 		this.slider.addMouseListener(sliderListener);
 		this.slider.addMouseMotionListener(sliderListener);
 
@@ -177,7 +173,7 @@ public class LecteurAudio extends JPanel implements ActionListener
 			}
 		});
 	}
-	
+
 	public void load(final String filePath)
 	{
 		javax.swing.SwingUtilities.invokeLater(new Runnable()
@@ -187,14 +183,14 @@ public class LecteurAudio extends JPanel implements ActionListener
 				mediaPlayer.startMedia(filePath);
 				mediaPlayer.stop();
 			}
-		});		
+		});
 	}
 
 	public void stop()
 	{
 		this.mediaPlayer.stop();
 	}
-	
+
 	@Override
 	public void actionPerformed(ActionEvent event)
 	{

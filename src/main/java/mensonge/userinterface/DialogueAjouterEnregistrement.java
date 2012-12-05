@@ -5,7 +5,6 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.FileInputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.sql.ResultSet;
@@ -24,7 +23,7 @@ import mensonge.core.BaseDeDonnees.BaseDeDonnees;
 import mensonge.core.BaseDeDonnees.DBException;
 
 
-public class DialogueAjouterEnregistrement extends JDialog implements ActionListener
+public final class DialogueAjouterEnregistrement extends JDialog implements ActionListener
 {
 
 	/**

@@ -73,8 +73,6 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 	private JMenu menuOutils;
 
-	private JMenuItem baseCompacter;
-
 	/**
 	 * Constructeur de base
 	 */
@@ -142,8 +140,8 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 		JMenuItem baseAjouterCategorie = new JMenuItem("Ajouter catégorie");
 		JMenuItem baseAjouterSujet = new JMenuItem("Ajouter sujet");
-		baseAjouterCategorie.addMouseListener(panneauArbre.new AjouterCategorieEnregistrementClicDroit(null, bdd));
-		baseAjouterSujet.addMouseListener(panneauArbre.new AjouterSujetClicDroit(null, bdd));
+		baseAjouterCategorie.addMouseListener(new AjouterCategorieListener(bdd));
+		baseAjouterSujet.addMouseListener(new AjouterSujetListener(bdd));
 
 		JMenuItem fichierPurger = new JMenuItem("Purger le cache");
 		fichierPurger.addActionListener(new PurgerCacheListener());
@@ -158,8 +156,8 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		this.aideAPropos = new JMenuItem("À propos");
 		this.aideAPropos.addActionListener(this);
 
-		this.baseCompacter = new JMenuItem("Compacter la base de données");
-		this.baseCompacter.addActionListener(new CompacterBaseListener());
+		JMenuItem baseCompacter = new JMenuItem("Compacter la base de données");
+		baseCompacter.addActionListener(new CompacterBaseListener());
 
 		JMenu menuAide = new JMenu("Aide");
 		menuAide.add(aideAPropos);
@@ -199,6 +197,8 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	 */
 	private void chargerListePlugins()
 	{
+		final String aucunOutil = "Aucun outil";
+		final String errorMsg = "Impossible de charger les outils : ";
 		menuOutils.removeAll();
 		try
 		{
@@ -221,23 +221,23 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		}
 		catch (ClassNotFoundException e)
 		{
-			GraphicalUserInterface.popupErreur("Impossible de charger les outils : " + e.getMessage());
-			menuOutils.add(new JMenuItem("Aucun outil"));
+			GraphicalUserInterface.popupErreur(errorMsg + e.getMessage());
+			menuOutils.add(new JMenuItem(aucunOutil));
 		}
 		catch (InstantiationException e)
 		{
-			GraphicalUserInterface.popupErreur("Impossible de charger les outils : " + e.getMessage());
-			menuOutils.add(new JMenuItem("Aucun outil"));
+			GraphicalUserInterface.popupErreur(errorMsg + e.getMessage());
+			menuOutils.add(new JMenuItem(aucunOutil));
 		}
 		catch (IllegalAccessException e)
 		{
-			GraphicalUserInterface.popupErreur("Impossible de charger les outils : " + e.getMessage());
-			menuOutils.add(new JMenuItem("Aucun outil"));
+			GraphicalUserInterface.popupErreur(errorMsg + e.getMessage());
+			menuOutils.add(new JMenuItem(aucunOutil));
 		}
 		catch (IOException e)
 		{
-			GraphicalUserInterface.popupErreur("Impossible de charger les outils : " + e.getMessage());
-			menuOutils.add(new JMenuItem("Aucun outil"));
+			GraphicalUserInterface.popupErreur(errorMsg + e.getMessage());
+			menuOutils.add(new JMenuItem(aucunOutil));
 		}
 
 		this.menuOutils.add(new JSeparator(JSeparator.HORIZONTAL));
@@ -559,7 +559,10 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				for (File file : cacheDirectory.listFiles())
 				{
 					length += file.length();
-					file.delete();
+					if (!file.delete())
+					{
+						popupErreur("Impossible de supprimer " + file.getName() + " du cache");
+					}
 				}
 				popupInfo("Le cache a été purgé.\nVous avez gagné " + Utils.humanReadableByteCount(length, false)
 						+ " d'espace disque.", "Purge du cache");
