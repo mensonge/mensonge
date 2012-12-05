@@ -25,6 +25,9 @@ public class SliderWithMarkers extends JSlider
 		this.setOpaque(false);
 		this.setPaintTicks(false);
 		this.setPaintLabels(false);
+		this.setSnapToTicks(false);
+		this.setMajorTickSpacing(1);
+		this.setMinorTickSpacing(0);
 		this.setMinimum(0);
 		this.setValue(0);
 		this.setMaximum((int) SliderPositionEventListener.SLIDER_POSITION_MAX);
