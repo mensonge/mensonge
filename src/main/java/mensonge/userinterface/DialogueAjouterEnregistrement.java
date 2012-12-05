@@ -5,10 +5,9 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.FileInputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.sql.ResultSet;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -22,9 +21,10 @@ import javax.swing.JTextField;
 
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
 import mensonge.core.BaseDeDonnees.DBException;
+import mensonge.core.BaseDeDonnees.LigneEnregistrement;
 
 
-public class DialogueAjouterEnregistrement extends JDialog implements ActionListener
+public final class DialogueAjouterEnregistrement extends JDialog implements ActionListener
 {
 
 	/**
@@ -66,19 +66,17 @@ public class DialogueAjouterEnregistrement extends JDialog implements ActionList
 
 		try
 		{
-			ResultSet rs = bdd.getListeCategorie();
-			while (rs.next())
+			List<LigneEnregistrement> liste = bdd.getListeCategorie();
+			for(LigneEnregistrement ligne : liste)
 			{
-				comboCategorie.addItem(rs.getString("nomCat"));
+				comboCategorie.addItem(ligne.getNomCat());
 			}
-			rs.close();
 
-			rs = bdd.getListeSujet();
-			while (rs.next())
+			liste = bdd.getListeSujet();
+			for(LigneEnregistrement ligne : liste)
 			{
-				comboSujet.addItem(rs.getString("nomSuj"));
+				comboSujet.addItem(ligne.getNomSuj());
 			}
-			rs.close();
 		}
 		catch (Exception e)
 		{
