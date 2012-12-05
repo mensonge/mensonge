@@ -120,7 +120,8 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 
 		this.labelCacheSize = new JLabel("Taille du cache : "
 				+ Utils.humanReadableByteCount(Utils.getCacheSize(), false));
-		this.labelDBSize = new JLabel("Taille de la base de données : " + Utils.humanReadableByteCount(Utils.getDBSize(), false));
+		this.labelDBSize = new JLabel("Taille de la base de données : "
+				+ Utils.humanReadableByteCount(Utils.getDBSize(), false));
 
 		JPanel panelInfo = new JPanel(new GridLayout(0, 1));
 		panelInfo.add(labelCacheSize);
@@ -648,14 +649,14 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 					JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if (option == JOptionPane.OK_OPTION)
 			{
-				for (int i = 0; i < arbre.getSelectionPaths().length; i++)
+				for (TreePath treePath : arbre.getSelectionPaths())
 				{
 					try
 					{
-						if (!(arbre.getSelectionPaths()[i].getLastPathComponent() instanceof Feuille))
+						if (!(treePath.getLastPathComponent() instanceof Feuille))
 						{
-							ResultSet rs = bdd.getListeEnregistrementCategorie(bdd.getCategorie(arbre
-									.getSelectionPaths()[i].getLastPathComponent().toString()));
+							ResultSet rs = bdd.getListeEnregistrementCategorie(bdd.getCategorie(treePath
+									.getLastPathComponent().toString()));
 							if (rs.next())
 							{
 								GraphicalUserInterface.popupErreur(
@@ -664,8 +665,7 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 							}
 							else
 							{
-								bdd.supprimerCategorie(bdd.getCategorie(arbre.getSelectionPaths()[i]
-										.getLastPathComponent().toString()));
+								bdd.supprimerCategorie(bdd.getCategorie(treePath.getLastPathComponent().toString()));
 							}
 							rs.close();
 						}
@@ -705,7 +705,7 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 				{
 					this.bdd.ajouterSujet(option);
 				}
-				catch (Exception e1)
+				catch (DBException e1)
 				{
 					GraphicalUserInterface.popupErreur(
 							"Erreur lors de l'ajout du sujet " + option + " " + e1.getMessage(), "Erreur");
@@ -723,14 +723,14 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 					JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if (option == JOptionPane.OK_OPTION)
 			{
-				for (int i = 0; i < arbre.getSelectionPaths().length; i++)
+				for (TreePath treePath : arbre.getSelectionPaths())
 				{
 					try
 					{
-						if (!(arbre.getSelectionPaths()[i].getLastPathComponent() instanceof Feuille))
+						if (!(treePath.getLastPathComponent() instanceof Feuille))
 						{
-							ResultSet rs = bdd.getListeEnregistrementSujet(bdd.getSujet(arbre.getSelectionPaths()[i]
-									.getLastPathComponent().toString()));
+							ResultSet rs = bdd.getListeEnregistrementSujet(bdd.getSujet(treePath.getLastPathComponent()
+									.toString()));
 							if (rs.next())
 							{
 								GraphicalUserInterface.popupErreur(
@@ -738,8 +738,7 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 							}
 							else
 							{
-								bdd.supprimerSujet(bdd.getSujet(arbre.getSelectionPaths()[i].getLastPathComponent()
-										.toString()));
+								bdd.supprimerSujet(bdd.getSujet(treePath.getLastPathComponent().toString()));
 							}
 							rs.close();
 						}
@@ -762,14 +761,13 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 			String nom = ((String) pop.activer()[0]);
 			if (!nom.equals("Ne rien changer"))
 			{
-				for (int i = 0; i < arbre.getSelectionPaths().length; i++)
+				for (TreePath treePath : arbre.getSelectionPaths())
 				{
-					if (arbre.getSelectionPaths()[i].getLastPathComponent() instanceof Feuille)
+					if (treePath.getLastPathComponent() instanceof Feuille)
 					{
 						try
 						{
-							bdd.modifierEnregistrementSujet(
-									((Feuille) arbre.getSelectionPaths()[i].getLastPathComponent()).getId(), nom);
+							bdd.modifierEnregistrementSujet(((Feuille) treePath.getLastPathComponent()).getId(), nom);
 						}
 						catch (DBException e1)
 						{
@@ -929,7 +927,8 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 	{
 		if (this.labelCacheSize != null)
 		{
-			this.labelDBSize.setText("Taille de la base de données : " + Utils.humanReadableByteCount(Utils.getDBSize(), false));
+			this.labelDBSize.setText("Taille de la base de données : "
+					+ Utils.humanReadableByteCount(Utils.getDBSize(), false));
 		}
 		this.updateArbre();
 	}
