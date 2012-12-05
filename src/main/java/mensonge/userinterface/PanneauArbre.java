@@ -335,30 +335,7 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 					changerTri.setText("Grouper par sujet");
 				}
 
-				if (arbre.getSelectionCount() == 0)
-				{
-					JMenuItem collapseAll = new JMenuItem("Replier tout");
-					JMenuItem expandAll = new JMenuItem("Développer tout");
-					collapseAll.addMouseListener(new CollapseClicDroit());
-					expandAll.addMouseListener(new ExpandClicDroit());
-					menuClicDroit.add(expandAll);
-					menuClicDroit.add(collapseAll);
-					if (typeTrie == PanneauArbre.TYPE_TRIE_SUJET)
-					{
-						JMenuItem ajouterSujet = new JMenuItem("Ajouter sujet");
-						ajouterSujet.addMouseListener(new AjouterSujetClicDroit(menuClicDroit, bdd));
-						menuClicDroit.add(ajouterSujet);
-					}
-					else if (typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)
-					{
-						JMenuItem ajouterCategorie = new JMenuItem("Ajouter catégorie");
-						ajouterCategorie.addMouseListener(new AjouterCategorieEnregistrementClicDroit(menuClicDroit,
-								bdd));
-						menuClicDroit.add(ajouterCategorie);
-					}
-
-				}
-				else if (onlySelectFeuille())
+				if (onlySelectFeuille())
 				{
 					if (arbre.getSelectionCount() >= 1)
 					{
@@ -416,6 +393,28 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 						supprimerSujet.addMouseListener(new SupprimerSujetClicDroit());
 						menuClicDroit.add(renomerSujet);
 						menuClicDroit.add(supprimerSujet);
+					}
+				}
+				else if (arbre.getSelectionCount() == 0 || arbre.getSelectionCount() == 1)
+				{
+					JMenuItem collapseAll = new JMenuItem("Replier tout");
+					JMenuItem expandAll = new JMenuItem("Développer tout");
+					collapseAll.addMouseListener(new CollapseClicDroit());
+					expandAll.addMouseListener(new ExpandClicDroit());
+					menuClicDroit.add(expandAll);
+					menuClicDroit.add(collapseAll);
+					if (typeTrie == PanneauArbre.TYPE_TRIE_SUJET)
+					{
+						JMenuItem ajouterSujet = new JMenuItem("Ajouter sujet");
+						ajouterSujet.addMouseListener(new AjouterSujetClicDroit(menuClicDroit, bdd));
+						menuClicDroit.add(ajouterSujet);
+					}
+					else if (typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)
+					{
+						JMenuItem ajouterCategorie = new JMenuItem("Ajouter catégorie");
+						ajouterCategorie.addMouseListener(new AjouterCategorieEnregistrementClicDroit(menuClicDroit,
+								bdd));
+						menuClicDroit.add(ajouterCategorie);
 					}
 				}
 
