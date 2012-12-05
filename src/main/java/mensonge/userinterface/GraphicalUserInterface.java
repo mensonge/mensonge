@@ -553,6 +553,15 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
+			Map<String, Plugin> mapPlugins = pluginManager.getPlugins();
+			for (Entry<String, Plugin> entry : mapPlugins.entrySet())
+			{
+				if(entry.getValue().isActive())
+				{
+					popupErreur("Vous avez au moins 1 plugin en cours d'éxecution. La purge du cache est donc désactivée.");
+					return;
+				}
+			}
 			popupInfo("Le cache a été purgé.\nVous avez gagné " + Utils.humanReadableByteCount(Cache.purge(), false)
 					+ " d'espace disque.", "Purge du cache");
 			panneauArbre.updateCacheSizeInfo();
