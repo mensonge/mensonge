@@ -5,6 +5,7 @@ import java.awt.event.ItemListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.sql.ResultSet;
+import java.util.LinkedList;
 
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -14,6 +15,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
+import mensonge.core.BaseDeDonnees.LigneEnregistrement;
 
 
 public class DialogueNouvelleCategorie extends JDialog
@@ -38,12 +40,11 @@ public class DialogueNouvelleCategorie extends JDialog
 		{
 			combo.addItem("Ne rien changer");
 			retour[0] = new String("Ne rien changer");
-			ResultSet rs = bdd.getListeCategorie();
-			while (rs.next())
+			LinkedList<LigneEnregistrement> liste = bdd.getListeCategorie();
+			for(LigneEnregistrement ligne : liste)
 			{
-				combo.addItem(rs.getString("nomCat"));
+				combo.addItem(ligne.getNomCat());
 			}
-			rs.close();
 		}
 		catch (Exception e)
 		{

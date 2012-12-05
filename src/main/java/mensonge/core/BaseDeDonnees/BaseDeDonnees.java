@@ -8,6 +8,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.LinkedList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -216,15 +217,15 @@ public class BaseDeDonnees extends BetterObservable
 			byte sujet = 0, categorie = 0;
 			// coller l'enregistrement dans un fichier
 			FileOutputStream destinationFile = null;
-			ResultSet rs = this.getListeEnregistrement();
+			LinkedList<LigneEnregistrement> liste = this.getListeEnregistrement();
 			try
 			{
-				while (rs.next())
+				for(LigneEnregistrement ligne : liste)
 				{
-					if (rs.getInt("id") == id)
+					if (ligne.getId() == id)
 					{
-						sujet = rs.getByte("idcat");
-						categorie = rs.getByte("idsuj");
+						sujet = (byte) ligne.getIdCat();
+						categorie = (byte) ligne.getIdSuj();
 					}
 				}
 			}
@@ -255,24 +256,41 @@ public class BaseDeDonnees extends BetterObservable
 	 * @return Le resultat sous forme d'objet ResultSet qui n'est parcourable qu'une fois.
 	 * @throws DBException
 	 */
-	public ResultSet getListeEnregistrement() throws DBException
+	public LinkedList<LigneEnregistrement> getListeEnregistrement() throws DBException
 	{
 		if (connexion == null)
 		{
 			return null;
 		}
+		Statement stat = null;
+		ResultSet rs = null;
+		LinkedList<LigneEnregistrement> retour = null;
+		LinkedList<String> colonne = new LinkedList<String>();
+		colonne.add("duree");
+		colonne.add("taille");
+		colonne.add("nom");
+		colonne.add("nomcat");
+		colonne.add("id");
+		colonne.add("nomsuj");
+		colonne.add("idcat");
+		colonne.add("idsuj");
 		try
 		{
-			Statement stat = connexion.createStatement(); // Creation du Statement
+			stat = connexion.createStatement(); // Creation du Statement
 			
-			ResultSet rs = stat
+			rs = stat
 					.executeQuery("SELECT duree, taille, nom, nomcat, id, nomsuj, en.idcat, en.idsuj FROM enregistrements en, categorie ca, sujet su WHERE en.idcat = ca.idcat AND en.idsuj = su.idsuj ORDER BY nomcat, nom;"); // Execution																																																			// de																																																	// requete
-			return rs;
+			retour = ResultatSelect.convertirResultatSet(rs, colonne);
 		}
 		catch (Exception e)
 		{
 			throw new DBException("Erreur lors de la recuperation de la liste des enregistrement: " + e.getMessage(), 1);
 		}
+		finally
+		{
+			closeRessource(null, stat, rs);
+		}
+		return retour;
 	}
 
 	/**
@@ -282,29 +300,43 @@ public class BaseDeDonnees extends BetterObservable
 	 * @return Le resultat sous forme d'objet ResultSet qui n'est parcourable qu'une fois.
 	 * @throws DBException
 	 */
-	public ResultSet getListeEnregistrementCategorie(final int idCat) throws DBException
+	public LinkedList<LigneEnregistrement> getListeEnregistrementCategorie(final int idCat) throws DBException
 	{
 		if (connexion == null)
 		{
 			return null;
 		}
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		LinkedList<LigneEnregistrement> retour = null;
+		LinkedList<String> colonne = new LinkedList<String>();
+		colonne.add("duree");
+		colonne.add("taille");
+		colonne.add("nom");
+		colonne.add("nomcat");
+		colonne.add("id");
+		colonne.add("nomsuj");
 		try
 		{
-			PreparedStatement ps = connexion
+			ps = connexion
 					.prepareStatement("SELECT duree, taille, nom, nomcat, id, nomsuj FROM enregistrements en, categorie ca, sujet su WHERE en.idcat = ca.idcat AND en.idsuj = su.idsuj AND en.idcat=? ORDER BY nom");// Preparation
 																																																						// de
 																																																						// la
 																																																						// requete
 			ps.setInt(1, idCat);// on rempli les trous
-			ResultSet rs = ps.executeQuery();// On execute
-			return rs;
+			rs = ps.executeQuery();// On execute
+			retour = ResultatSelect.convertirResultatSet(rs, colonne);
 		}
 		catch (Exception e)
 		{
 			throw new DBException("Erreur lors de la recuperation de la liste des enregistrements: " + e.getMessage(),
 					1);
-
 		}
+		finally
+		{
+			closeRessource(ps, null, rs);
+		}
+		return retour;
 	}
 
 	/**
@@ -314,27 +346,42 @@ public class BaseDeDonnees extends BetterObservable
 	 * @return Le resultat sous forme d'objet ResultSet qui n'est parcourable qu'une fois.
 	 * @throws DBException
 	 */
-	public ResultSet getListeEnregistrementSujet(final int idSuj) throws DBException
+	public LinkedList<LigneEnregistrement> getListeEnregistrementSujet(final int idSuj) throws DBException
 	{
 		if (connexion == null)
 		{
 			return null;
 		}
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		LinkedList<LigneEnregistrement> retour = null;
+		LinkedList<String> colonne = new LinkedList<String>();
+		colonne.add("duree");
+		colonne.add("taille");
+		colonne.add("nom");
+		colonne.add("nomcat");
+		colonne.add("id");
+		colonne.add("nomsuj");
 		try
 		{
-			PreparedStatement ps = connexion
-					.prepareStatement("SELECT duree, taille, nom, nomcat, id, nomsuj, en.idcat, ca.idcat FROM enregistrements en, categorie ca, sujet su WHERE en.idcat = ca.idcat AND en.idsuj = su.idsuj AND en.idsuj=? ORDER BY nom");// Preparation
+			ps = connexion
+					.prepareStatement("SELECT duree, taille, nom, nomcat, id, nomsuj FROM enregistrements en, categorie ca, sujet su WHERE en.idcat = ca.idcat AND en.idsuj = su.idsuj AND en.idsuj=? ORDER BY nom");// Preparation
 																																																						// de
 																																																						// la
 																																																						// requete
 			ps.setInt(1, idSuj);// on rempli les trous
-			ResultSet rs = ps.executeQuery();// On execute
-			return rs;
+			rs = ps.executeQuery();// On execute
+			retour = ResultatSelect.convertirResultatSet(rs, colonne);
 		}
 		catch (Exception e)
 		{
 			throw new DBException("Erreur lors de la recuperation de la liste des enregistrement: " + e.getMessage(), 1);
 		}
+		finally
+		{
+			closeRessource(ps, null, rs);
+		}
+		return retour;
 	}
 
 	/**
@@ -987,7 +1034,7 @@ public class BaseDeDonnees extends BetterObservable
 	 * @return Le resultat sous la forme d'un tableau parcourable dans un sens
 	 * @throws DBException
 	 */
-	public ResultSet getListeCategorie() throws DBException
+	public LinkedList<LigneEnregistrement> getListeCategorie() throws DBException
 	{
 		if (connexion == null)
 		{
@@ -995,16 +1042,25 @@ public class BaseDeDonnees extends BetterObservable
 		}
 		Statement stat = null;
 		ResultSet rs = null;
+		LinkedList<LigneEnregistrement> retour = null;
+		LinkedList<String> colonne = new LinkedList<String>();
+		colonne.add("nomcat");
+		colonne.add("idcat");
 		try
 		{
 			stat = connexion.createStatement();// creation du Statement
-			rs = stat.executeQuery("SELECT nomCat, idcat FROM categorie;");// execution de la requete
-			return rs;
+			rs = stat.executeQuery("SELECT nomcat, idcat FROM categorie;");// execution de la requete
+			retour = ResultatSelect.convertirResultatSet(rs, colonne);
 		}
 		catch (Exception e)
 		{
 			throw new DBException("Erreur lors de la recuperation des categories: " + e.getMessage(), 3);
 		}
+		finally
+		{
+			closeRessource(null, stat, rs);
+		}
+		return retour;
 	}
 
 	/**
@@ -1239,7 +1295,7 @@ public class BaseDeDonnees extends BetterObservable
 	 * @return Le resultat sous la forme d'un tableau parcourable dans un sens
 	 * @throws DBException
 	 */
-	public ResultSet getListeSujet() throws DBException
+	public LinkedList<LigneEnregistrement> getListeSujet() throws DBException
 	{
 		if (connexion == null)
 		{
@@ -1247,16 +1303,25 @@ public class BaseDeDonnees extends BetterObservable
 		}
 		Statement stat = null;
 		ResultSet rs = null;
+		LinkedList<LigneEnregistrement> retour = null;
+		LinkedList<String> colonne = new LinkedList<String>();
+		colonne.add("nomsuj");
+		colonne.add("idsuj");
 		try
 		{
 			stat = connexion.createStatement();// creation du Statement
 			rs = stat.executeQuery("SELECT nomsuj, idsuj FROM sujet;");// execution de la requete
-			return rs;
+			retour = ResultatSelect.convertirResultatSet(rs, colonne);
 		}
 		catch (Exception e)
 		{
 			throw new DBException("Erreur lors de la recuperation des sujets: " + e.getMessage(), 3);
 		}
+		finally
+		{
+			closeRessource(null, stat, rs);
+		}
+		return retour;
 	}
 
 	/**

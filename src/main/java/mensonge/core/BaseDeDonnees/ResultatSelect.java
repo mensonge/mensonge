@@ -70,6 +70,10 @@ public class ResultatSelect
 			{
 				ligne.setNomSuj(rs.getString(colonne));
 			}
+			else if(colonne.equals("taille"))
+			{
+				ligne.setTaille(rs.getInt(colonne));
+			}
 		}
 		catch (SQLException e)
 		{

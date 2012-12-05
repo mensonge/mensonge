@@ -9,6 +9,7 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Formatter;
+import java.util.LinkedList;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
@@ -93,14 +94,7 @@ public class TestBase
 			}
 			// AFFICHAGE ENREGISTREMENT
 			rs = null;
-			try
-			{
-				rs = db.getListeEnregistrement();
-			}
-			catch (DBException e)
-			{
-				System.out.println("[-] " + e.getMessage());
-			}
+			
 			System.out.println("[i] Affichage.");
 			try
 			{
@@ -119,7 +113,7 @@ public class TestBase
 			ResultSet l = null;
 			try
 			{
-				l = db.getListeCategorie();
+				//l = db.getListeCategorie();
 				System.out.println("[i] Affichage categorie.");
 				while (l.next())
 				{
@@ -127,10 +121,6 @@ public class TestBase
 				}
 			}
 			catch (SQLException e)
-			{
-				System.out.println("[-] " + e.getMessage());
-			}
-			catch (DBException e)
 			{
 				System.out.println("[-] " + e.getMessage());
 			}
@@ -337,12 +327,8 @@ public class TestBase
 		db.ajouterCategorie("Flamment");
 		db.ajouterCategorie("Pegase");
 
-		ResultSet rs = db.getListeCategorie();
-		while (rs.next())
-		{
-			i++;
-		}
-		rs.close();
+		LinkedList<LigneEnregistrement> liste = db.getListeCategorie();
+		i = liste.size();
 		assertTrue(i == 3);
 	}
 
@@ -353,16 +339,15 @@ public class TestBase
 		String nom = null;
 		db.modifierCategorie(2, "Licorne");
 
-		ResultSet rs = db.getListeCategorie();
-		while (rs.next())
+		LinkedList<LigneEnregistrement> liste = db.getListeCategorie();
+		for(LigneEnregistrement ligne : liste)
 		{
 			i++;
 			if (i == 2)
 			{
-				nom = rs.getString(1);
+				nom = ligne.getNomCat();
 			}
 		}
-		rs.close();
 		assertTrue(i == 3 && nom.equals("Licorne"));
 	}
 
@@ -370,12 +355,11 @@ public class TestBase
 	public void testAfficherCategorie() throws DBException, SQLException, NoSuchAlgorithmException
 	{
 		String nom = new String();
-		ResultSet rs = db.getListeCategorie();
-		while (rs.next())
+		LinkedList<LigneEnregistrement> liste = db.getListeCategorie();
+		for(LigneEnregistrement ligne : liste)
 		{
-			nom += rs.getString(1);
+			nom += ligne.getNomCat();
 		}
-		rs.close();
 		assertTrue(sha1("PoneyLicornePegase".getBytes()).equals(sha1(nom.getBytes())));
 	}
 
@@ -391,12 +375,8 @@ public class TestBase
 		int i = 0;
 		db.supprimerCategorie(1);
 
-		ResultSet rs = db.getListeCategorie();
-		while (rs.next())
-		{
-			i++;
-		}
-		rs.close();
+		LinkedList<LigneEnregistrement> liste = db.getListeCategorie();
+		i = liste.size();
 		assertTrue(i == 2);
 	}
 
@@ -408,12 +388,8 @@ public class TestBase
 		db.ajouterSujet("Ronald");
 		db.ajouterSujet("Gwen");
 
-		ResultSet rs = db.getListeSujet();
-		while (rs.next())
-		{
-			i++;
-		}
-		rs.close();
+		LinkedList<LigneEnregistrement> liste = db.getListeSujet();
+		i = liste.size();
 		assertTrue(i == 3);
 	}
 
@@ -424,16 +400,15 @@ public class TestBase
 		String nom = null;
 		db.modifierSujet(2, "Toshiro");
 
-		ResultSet rs = db.getListeSujet();
-		while (rs.next())
+		LinkedList<LigneEnregistrement> liste = db.getListeSujet();
+		for(LigneEnregistrement ligne : liste)
 		{
 			i++;
 			if (i == 2)
 			{
-				nom = rs.getString(1);
+				nom = ligne.getNomSuj();
 			}
 		}
-		rs.close();
 		assertTrue(i == 3 && nom.equals("Toshiro"));
 	}
 
@@ -441,12 +416,11 @@ public class TestBase
 	public void testAfficherSujet() throws DBException, SQLException, NoSuchAlgorithmException
 	{
 		String nom = new String();
-		ResultSet rs = db.getListeSujet();
-		while (rs.next())
+		LinkedList<LigneEnregistrement> liste = db.getListeSujet();
+		for(LigneEnregistrement ligne : liste)
 		{
-			nom += rs.getString(1);
+			nom += ligne.getNom();
 		}
-		rs.close();
 		assertTrue(sha1("ArtemisToshiroGwen".getBytes()).equals(sha1(nom.getBytes())));
 	}
 
@@ -462,12 +436,8 @@ public class TestBase
 		int i = 0;
 		db.supprimerSujet(1);
 
-		ResultSet rs = db.getListeSujet();
-		while (rs.next())
-		{
-			i++;
-		}
-		rs.close();
+		LinkedList<LigneEnregistrement> liste = db.getListeSujet();
+		i = liste.size();
 		assertTrue(i == 2);
 	}
 
@@ -484,12 +454,8 @@ public class TestBase
 		db.ajouterEnregistrement("Knight", 18, 3, "IUT".getBytes(), 3);
 		db.ajouterEnregistrement("Ermes", 18, 3, "Olympe".getBytes(), 3);
 		int i = 0;
-		ResultSet rs = db.getListeEnregistrement();
-		while (rs.next())
-		{
-			i++;
-		}
-		rs.close();
+		LinkedList<LigneEnregistrement> liste = db.getListeEnregistrement();
+		i = liste.size();
 		assertTrue(i == 7);
 	}
 
@@ -518,32 +484,36 @@ public class TestBase
 		int i = 0;
 		int taille = 0;
 		String nom1 = null, nom2 = null, categorie3 = null, nom4 = null;
-		ResultSet rs = db.getListeEnregistrement();
-		while (rs.next())
+		LinkedList<LigneEnregistrement> liste = db.getListeEnregistrement();
+		i = liste.size();
+		for(LigneEnregistrement ligne : liste)
 		{
-			i++;
-			switch (rs.getInt("id"))
+			switch (ligne.getId())
 			{
 				case 1:
-					nom1 = rs.getString("nom");
+					nom1 = ligne.getNom();
 					break;
 				case 2:
-					nom2 = rs.getString("nom");
+					nom2 = ligne.getNom();
 					break;
 				case 3:
-					categorie3 = rs.getString("nomcat");
+					categorie3 = ligne.getNomCat();
 					break;
 				case 4:
-					nom4 = rs.getString("nom");
+					nom4 = ligne.getNom();
 					break;
 				case 5:
-					taille = rs.getInt("taille");
+					taille = ligne.getTaille();
 					break;
 			}
 		}
-		rs.close();
-		assertTrue(i == 7 && taille == 250 && nom1.equals("Zeus") && nom2.equals("Taylor")
-				&& categorie3.equals("Licorne") && nom4.equals("Norris"));
+		
+		assertTrue(i == 7);
+		assertTrue(taille == 250);
+		assertTrue(nom1.equals("Zeus"));
+		assertTrue(nom2.equals("Taylor"));
+		assertTrue(categorie3.equals("Licorne")); 
+		assertTrue(nom4.equals("Norris"));
 	}
 
 	@Test
@@ -552,17 +522,16 @@ public class TestBase
 		db.supprimerEnregistrement(5);
 		int i = 0;
 		boolean tmp = true;
-		ResultSet rs = db.getListeEnregistrement();
-		while (rs.next())
+		LinkedList<LigneEnregistrement> liste = db.getListeEnregistrement();
+		for(LigneEnregistrement ligne : liste)
 		{
 			i++;
-			if (rs.getInt("id") == 5)
+			if (ligne.getId() == 5)
 			{
 				tmp = false;
 			}
 
 		}
-		rs.close();
 		assertTrue(i == 6 && tmp == true);
 	}
 
@@ -592,12 +561,8 @@ public class TestBase
 		int nb = db.getNombreEnregistrement();
 		int i = 0;
 
-		ResultSet rs = db.getListeEnregistrement();
-		while (rs.next())
-		{
-			i++;
-		}
-		rs.close();
+		LinkedList<LigneEnregistrement> liste = db.getListeEnregistrement();
+		i = liste.size();
 		assertTrue(i == 6 && nb == 6);
 	}
 

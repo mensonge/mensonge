@@ -40,7 +40,6 @@ import mensonge.core.Utils;
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
 import mensonge.core.BaseDeDonnees.DBException;
 import mensonge.core.BaseDeDonnees.LigneEnregistrement;
-import mensonge.core.BaseDeDonnees.ResultatSelect;
 
 public class PanneauArbre extends JPanel implements DataBaseObserver
 {
@@ -171,34 +170,28 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 
 	public void remplirArbreEnregistrementCategorie()
 	{
-		ResultSet rsCat = null, rsEnr = null;
+		LinkedList<LigneEnregistrement> rsCat = null;
+		LinkedList<LigneEnregistrement> rsEnr = null;
 
 		try
 		{
 			rsCat = this.bdd.getListeCategorie();
-			while (rsCat.next())
+			for(LigneEnregistrement ligneCat : rsCat)
 			{
-				Branche node = new Branche(rsCat.getString("nomcat"));
-				rsEnr = this.bdd.getListeEnregistrementCategorie(rsCat.getInt("idcat"));
-				while (rsEnr.next())
+				Branche node = new Branche(ligneCat.getNomCat());
+				rsEnr = this.bdd.getListeEnregistrementCategorie(ligneCat.getIdCat());
+				for(LigneEnregistrement ligne : rsEnr)
 				{
-					Feuille f = new Feuille(rsEnr.getInt("id"), rsEnr.getString("nom"), rsEnr.getInt("duree"),
-							rsEnr.getLong("taille"), rsEnr.getString("nomCat"), rsEnr.getString("nomsuj"));
+					Feuille f = new Feuille(ligne.getId(), ligne.getNom(), ligne.getDuree(),
+							ligne.getTaille(), ligne.getNomCat(), ligne.getNomSuj());
 					node.add(f);
 				}
-				rsEnr.close();
 				this.racine.add(node);
 
 			}
-			rsCat.close();
 			this.racine.setUserObject("Catégorie");
 		}
 		catch (DBException e)
-		{
-			GraphicalUserInterface.popupErreur(
-					"Erreur lors du chargement des enregistrements : " + e.getLocalizedMessage(), "Erreur");
-		}
-		catch (SQLException e)
 		{
 			GraphicalUserInterface.popupErreur(
 					"Erreur lors du chargement des enregistrements : " + e.getLocalizedMessage(), "Erreur");
@@ -207,26 +200,25 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 
 	public void remplirArbreEnregistrementSujet()
 	{
-		ResultSet rsCat = null, rsEnr = null;
+		LinkedList<LigneEnregistrement> rsSuj = null;
+		LinkedList<LigneEnregistrement> rsEnr = null;
 
 		
 		try
 		{
-			rsCat = this.bdd.getListeSujet();
-			while (rsCat.next())
+			rsSuj = this.bdd.getListeSujet();
+			for(LigneEnregistrement ligneSuj : rsSuj)
 			{
-				Branche node = new Branche(rsCat.getString("nomsuj"));
-				rsEnr = this.bdd.getListeEnregistrementSujet(rsCat.getInt("idsuj"));
-				while (rsEnr.next())
+				Branche node = new Branche(ligneSuj.getNomSuj());
+				rsEnr = this.bdd.getListeEnregistrementSujet(ligneSuj.getIdSuj());
+				for(LigneEnregistrement ligne : rsEnr)
 				{
-					Feuille f = new Feuille(rsEnr.getInt("id"), rsEnr.getString("nom"), rsEnr.getInt("duree"),
-							rsEnr.getLong("taille"), rsEnr.getString("nomCat"), rsEnr.getString("nomsuj"));
+					Feuille f = new Feuille(ligne.getId(), ligne.getNom(), ligne.getDuree(),
+							ligne.getTaille(), ligne.getNomCat(), ligne.getNomSuj());
 					node.add(f);
 				}
-				rsEnr.close();
 				this.racine.add(node);
 			}
-			rsCat.close();
 			this.racine.setUserObject("Sujet");
 		}
 		catch (DBException e)
@@ -234,12 +226,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 			GraphicalUserInterface.popupErreur(
 					"Erreur lors du chargement des enregistrements : " + e.getLocalizedMessage(), "Erreur");
 		}
-		catch (SQLException e)
-		{
-			GraphicalUserInterface.popupErreur(
-					"Erreur lors du chargement des enregistrements : " + e.getLocalizedMessage(), "Erreur");
-		}
-
 	}
 
 	public void viderNoeud(DefaultMutableTreeNode selectednode)
@@ -657,9 +643,9 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 					{
 						if (!(treePath.getLastPathComponent() instanceof Feuille))
 						{
-							ResultSet rs = bdd.getListeEnregistrementCategorie(bdd.getCategorie(treePath
-									.getLastPathComponent().toString()));
-							if (rs.next())
+							String nomCategorie = treePath.getLastPathComponent().toString();
+							LinkedList<LigneEnregistrement> liste = bdd.getListeEnregistrementCategorie(bdd.getCategorie(nomCategorie));
+							if (liste.size() != 0)
 							{
 								GraphicalUserInterface.popupErreur(
 										"Une catégorie peut être supprimée quand elle n'a plus d'enregistrements.",
@@ -667,9 +653,8 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 							}
 							else
 							{
-								bdd.supprimerCategorie(bdd.getCategorie(treePath.getLastPathComponent().toString()));
+								bdd.supprimerCategorie(bdd.getCategorie(nomCategorie));
 							}
-							rs.close();
 						}
 					}
 					catch (Exception e1)
@@ -731,18 +716,17 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 					{
 						if (!(treePath.getLastPathComponent() instanceof Feuille))
 						{
-							ResultSet rs = bdd.getListeEnregistrementSujet(bdd.getSujet(treePath.getLastPathComponent()
-									.toString()));
-							if (rs.next())
+							String nomSujet = treePath.getLastPathComponent().toString();
+							LinkedList<LigneEnregistrement> liste = bdd.getListeEnregistrementSujet(bdd.getSujet(nomSujet));
+							if (liste.size() != 0)
 							{
 								GraphicalUserInterface.popupErreur(
 										"Un sujet peut être supprimé quand il n'a plus d'enregistrements.", "Erreur");
 							}
 							else
 							{
-								bdd.supprimerSujet(bdd.getSujet(treePath.getLastPathComponent().toString()));
+								bdd.supprimerSujet(bdd.getSujet(nomSujet));
 							}
-							rs.close();
 						}
 					}
 					catch (Exception e1)
