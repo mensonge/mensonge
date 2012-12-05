@@ -3,6 +3,7 @@ package mensonge.userinterface;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -31,6 +32,7 @@ import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -554,7 +556,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			Map<String, Plugin> mapPlugins = pluginManager.getPlugins();
 			for (Entry<String, Plugin> entry : mapPlugins.entrySet())
 			{
-				if(entry.getValue().isActive())
+				if (entry.getValue().isActive())
 				{
 					popupErreur("Vous avez au moins 1 plugin en cours d'éxecution. La purge du cache est donc désactivée.");
 					return;
@@ -571,15 +573,25 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
-			try
+			SwingUtilities.invokeLater(new Runnable()
 			{
-				bdd.compacter();
-			}
-			catch (DBException e1)
-			{
-				logger.log(Level.WARNING, e1.getLocalizedMessage());
-				GraphicalUserInterface.popupErreur(e1.getLocalizedMessage());
-			}
+				@Override
+				public void run()
+				{
+					try
+					{
+						setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+						bdd.compacter();
+						popupInfo("La base de données a été compactée.", "Compactage de la base de données");
+					}
+					catch (DBException e1)
+					{
+						logger.log(Level.WARNING, e1.getLocalizedMessage());
+						GraphicalUserInterface.popupErreur(e1.getLocalizedMessage());
+					}
+					setCursor(Cursor.getDefaultCursor());
+				}
+			});
 		}
 	}
 

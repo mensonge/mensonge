@@ -220,7 +220,7 @@ public class BaseDeDonnees extends BetterObservable
 			List<LigneEnregistrement> liste = this.getListeEnregistrement();
 			try
 			{
-				for(LigneEnregistrement ligne : liste)
+				for (LigneEnregistrement ligne : liste)
 				{
 					if (ligne.getId() == id)
 					{
@@ -277,17 +277,20 @@ public class BaseDeDonnees extends BetterObservable
 		try
 		{
 			stat = connexion.createStatement(); // Creation du Statement
-			
+
 			rs = stat
-					.executeQuery("SELECT duree, taille, nom, nomcat, id, nomsuj, en.idcat, en.idsuj FROM enregistrements en, categorie ca, sujet su WHERE en.idcat = ca.idcat AND en.idsuj = su.idsuj ORDER BY nomcat, nom;"); // Execution																																																			// de																																																	// requete
+					.executeQuery("SELECT duree, taille, nom, nomcat, id, nomsuj, en.idcat, en.idsuj FROM enregistrements en, categorie ca, sujet su WHERE en.idcat = ca.idcat AND en.idsuj = su.idsuj ORDER BY nomcat, nom;"); // Execution
+																																																								// //
+																																																								// de
+																																																								// //
+																																																								// requete
 			retour = ResultatSelect.convertirResultatSet(rs, colonne);
 
 		}
 		catch (Exception e)
 		{
 			throw new DBException("Erreur lors de la recuperation de la liste des enregistrement: " + e.getMessage(), 1);
-		}
-		finally
+		} finally
 		{
 			closeRessource(null, stat, rs);
 		}
@@ -332,8 +335,7 @@ public class BaseDeDonnees extends BetterObservable
 		{
 			throw new DBException("Erreur lors de la recuperation de la liste des enregistrements: " + e.getMessage(),
 					1);
-		}
-		finally
+		} finally
 		{
 			closeRessource(ps, null, rs);
 		}
@@ -377,8 +379,7 @@ public class BaseDeDonnees extends BetterObservable
 		catch (Exception e)
 		{
 			throw new DBException("Erreur lors de la recuperation de la liste des enregistrement: " + e.getMessage(), 1);
-		}
-		finally
+		} finally
 		{
 			closeRessource(ps, null, rs);
 		}
@@ -432,10 +433,8 @@ public class BaseDeDonnees extends BetterObservable
 		{
 			Statement stat = connexion.createStatement();
 			// Pour l'automatique ça serait : "PRAGMA auto_vacuum = 1"
-			if(stat.execute("VACUUM"))
-			{
-				notifyUpdateDataBase();
-			}
+			stat.execute("VACUUM");
+			notifyUpdateDataBase();
 			stat.close();
 		}
 		catch (SQLException e)
@@ -1058,8 +1057,7 @@ public class BaseDeDonnees extends BetterObservable
 		catch (Exception e)
 		{
 			throw new DBException("Erreur lors de la recuperation des categories: " + e.getMessage(), 3);
-		}
-		finally
+		} finally
 		{
 			closeRessource(null, stat, rs);
 		}
@@ -1319,8 +1317,7 @@ public class BaseDeDonnees extends BetterObservable
 		catch (Exception e)
 		{
 			throw new DBException("Erreur lors de la recuperation des sujets: " + e.getMessage(), 3);
-		}
-		finally
+		} finally
 		{
 			closeRessource(null, stat, rs);
 		}
@@ -1773,6 +1770,7 @@ public class BaseDeDonnees extends BetterObservable
 	// GETTER et SETTER
 	/**
 	 * getter de la connexion
+	 * 
 	 * @return la connexion
 	 */
 	public Connection getConnexion()
@@ -1782,6 +1780,7 @@ public class BaseDeDonnees extends BetterObservable
 
 	/**
 	 * Renvoie le chemin du fichier de base de donnée
+	 * 
 	 * @return le chemin du fichier
 	 */
 	public String getFileName()
