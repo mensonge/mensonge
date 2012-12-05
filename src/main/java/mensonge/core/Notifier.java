@@ -27,7 +27,7 @@ public final class Notifier
 			Method[] ms = i.getDeclaredMethods();
 			for (Method m : ms)
 			{
-				methods.put(m.getName(), m);
+				METHODS.put(m.getName(), m);
 			}
 		}
 	}
@@ -35,7 +35,7 @@ public final class Notifier
 	public static void call(Set<IObserver> observers, String name, Object... args) throws IllegalAccessException,
 			InvocationTargetException
 	{
-		Method method = methods.get(name);
+		Method method = METHODS.get(name);
 		callMethodOnObservers(observers, method, args);
 	}
 
