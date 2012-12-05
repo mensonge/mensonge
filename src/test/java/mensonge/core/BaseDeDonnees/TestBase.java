@@ -480,6 +480,9 @@ public class TestBase
 		db.ajouterEnregistrement("Gracia", 22, 3, "mort".getBytes(), 3);
 		db.ajouterEnregistrement("Chuck", 21, 3, "naissance".getBytes(), 2);
 		db.ajouterEnregistrement("Jilano", 18, 3, "erreur".getBytes(), 3);
+		db.ajouterEnregistrement("Ellana", 18, 3, "anti".getBytes(), 3);
+		db.ajouterEnregistrement("Knight", 18, 3, "IUT".getBytes(), 3);
+		db.ajouterEnregistrement("Ermes", 18, 3, "Olympe".getBytes(), 3);
 		int i = 0;
 		ResultSet rs = db.getListeEnregistrement();
 		while (rs.next())
@@ -572,7 +575,8 @@ public class TestBase
 		enr1 = new String(tab);
 		tab = db.recupererEnregistrement(6);
 		enr2 = new String(tab);
-		assertTrue(enr1.equals("naissance") && enr2.equals("???"));
+		assertTrue(enr1.equals("erreur"));
+		assertTrue(enr2.equals("IUT"));
 	}
 
 	@Test(expected = DBException.class)

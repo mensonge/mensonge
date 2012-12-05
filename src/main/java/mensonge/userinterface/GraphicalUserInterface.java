@@ -70,6 +70,8 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 	private JMenu menuOutils;
 
+	private JMenuItem baseCompacter;
+
 	/**
 	 * Constructeur de base
 	 */
@@ -152,13 +154,17 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 		this.aideAPropos = new JMenuItem("À propos");
 		this.aideAPropos.addActionListener(this);
+		
+		this.baseCompacter = new JMenuItem("Compacter la base de données");
+		this.baseCompacter.addActionListener(new CompacterBaseListener());
 
 		JMenu menuAide = new JMenu("Aide");
 		menuAide.add(aideAPropos);
 
-		JMenu menuBase = new JMenu("Base");
+		JMenu menuBase = new JMenu("Base de données");
 		menuBase.add(baseAjouterCategorie);
 		menuBase.add(baseAjouterSujet);
+		menuBase.add(baseCompacter);
 
 		this.fichierFermer.setAccelerator(KeyStroke.getKeyStroke('Q', KeyEvent.CTRL_DOWN_MASK));
 		this.fichierOuvrir.setAccelerator(KeyStroke.getKeyStroke('O', KeyEvent.CTRL_DOWN_MASK));
@@ -552,6 +558,21 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				popupInfo("Le cache a été purgé.\nVous avez gagné " + Utils.humanReadableByteCount(length, false)
 						+ " d'espace disque.", "Purge du cache");
 				panneauArbre.updateCacheSizeInfo();
+			}
+		}
+	}
+	private class CompacterBaseListener implements ActionListener
+	{
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{
+			try
+			{
+				bdd.compacter();
+			}
+			catch (DBException e1)
+			{
+				GraphicalUserInterface.popupErreur(e1.getLocalizedMessage());
 			}
 		}
 	}

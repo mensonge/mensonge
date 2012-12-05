@@ -4,8 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
 
 import java.awt.GridLayout;
 import java.awt.event.MouseAdapter;
@@ -122,7 +120,8 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 
 		this.labelCacheSize = new JLabel("Taille du cache : "
 				+ Utils.humanReadableByteCount(Utils.getCacheSize(), false));
-		this.labelDBSize = new JLabel("Taille de la base de données : " + Utils.humanReadableByteCount(Utils.getDBSize(), false));
+		this.labelDBSize = new JLabel("Taille de la base de données : "
+				+ Utils.humanReadableByteCount(Utils.getDBSize(), false));
 
 		JPanel panelInfo = new JPanel(new GridLayout(0, 1));
 		panelInfo.add(labelCacheSize);
@@ -183,6 +182,7 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 					Feuille f = new Feuille(rsEnr.getInt("id"), rsEnr.getString("nom"), rsEnr.getInt("duree"),
 							rsEnr.getLong("taille"), rsEnr.getString("nomCat"), rsEnr.getString("nomsuj"));
 					node.add(f);
+					//System.out.println(rsEnr.getInt("idCat"));
 				}
 				rsEnr.close();
 				this.racine.add(node);
@@ -311,24 +311,11 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		this.menuClicDroit = menuClicDroit;
 	}
 
-	/**
-	 * Efface le menu contextuel dû à un clic droit
-	 */
-	public void effacerMenuContextuel()
-	{
-		if (this.menuClicDroit != null)
-		{
-			this.menuClicDroit.setEnabled(false);// On efface le menu contextuel
-			this.menuClicDroit.setVisible(false);
-		}
-	}
-
 	class ClicDroit extends MouseAdapter
 	{
 		@Override
 		public void mousePressed(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			if ((e.getModifiers() & MouseEvent.BUTTON3_MASK) != 0)
 			{
 				if (arbre.getSelectionCount() <= 1)
@@ -349,30 +336,7 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 					changerTri.setText("Grouper par sujet");
 				}
 
-				if (arbre.getSelectionCount() == 0)
-				{
-					JMenuItem collapseAll = new JMenuItem("Replier tout");
-					JMenuItem expandAll = new JMenuItem("Développer tout");
-					collapseAll.addMouseListener(new CollapseClicDroit());
-					expandAll.addMouseListener(new ExpandClicDroit());
-					menuClicDroit.add(expandAll);
-					menuClicDroit.add(collapseAll);
-					if (typeTrie == PanneauArbre.TYPE_TRIE_SUJET)
-					{
-						JMenuItem ajouterSujet = new JMenuItem("Ajouter sujet");
-						ajouterSujet.addMouseListener(new AjouterSujetClicDroit(menuClicDroit, bdd));
-						menuClicDroit.add(ajouterSujet);
-					}
-					else if (typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)
-					{
-						JMenuItem ajouterCategorie = new JMenuItem("Ajouter catégorie");
-						ajouterCategorie.addMouseListener(new AjouterCategorieEnregistrementClicDroit(menuClicDroit,
-								bdd));
-						menuClicDroit.add(ajouterCategorie);
-					}
-
-				}
-				else if (onlySelectFeuille())
+				if (onlySelectFeuille())
 				{
 					if (arbre.getSelectionCount() >= 1)
 					{
@@ -432,6 +396,28 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 						menuClicDroit.add(supprimerSujet);
 					}
 				}
+				else if (arbre.getSelectionCount() == 0 || arbre.getSelectionCount() == 1)
+				{
+					JMenuItem collapseAll = new JMenuItem("Replier tout");
+					JMenuItem expandAll = new JMenuItem("Développer tout");
+					collapseAll.addMouseListener(new CollapseClicDroit());
+					expandAll.addMouseListener(new ExpandClicDroit());
+					menuClicDroit.add(expandAll);
+					menuClicDroit.add(collapseAll);
+					if (typeTrie == PanneauArbre.TYPE_TRIE_SUJET)
+					{
+						JMenuItem ajouterSujet = new JMenuItem("Ajouter sujet");
+						ajouterSujet.addMouseListener(new AjouterSujetClicDroit(menuClicDroit, bdd));
+						menuClicDroit.add(ajouterSujet);
+					}
+					else if (typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)
+					{
+						JMenuItem ajouterCategorie = new JMenuItem("Ajouter catégorie");
+						ajouterCategorie.addMouseListener(new AjouterCategorieEnregistrementClicDroit(menuClicDroit,
+								bdd));
+						menuClicDroit.add(ajouterCategorie);
+					}
+				}
 
 				menuClicDroit.add(changerTri);
 
@@ -448,7 +434,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			int option = JOptionPane.showConfirmDialog(null,
 					"Voulez-vous supprimer les enregistrements ?\n(Notez que les catégories seront conservées)",
 					"Suppression", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
@@ -482,7 +467,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			JFileChooser fileChooser = new JFileChooser();
 			fileChooser.showOpenDialog(null);
 			String fichier;
@@ -509,7 +493,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			String nom = JOptionPane.showInputDialog(null, "Entrez le nouveau nom", "Renommer",
 					JOptionPane.QUESTION_MESSAGE);
 			if (nom != null && !nom.equals(""))
@@ -546,7 +529,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			String nom = JOptionPane.showInputDialog(null, "Entrez le nouveau nom", "Renommer",
 					JOptionPane.QUESTION_MESSAGE);
 			if (nom != null && !nom.equals(""))
@@ -573,7 +555,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			String nom = JOptionPane.showInputDialog(null, "Entrez le nouveau nom", "Renommer",
 					JOptionPane.QUESTION_MESSAGE);
 			if (nom != null && !nom.equals(""))
@@ -636,7 +617,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			DialogueNouvelleCategorie pop = new DialogueNouvelleCategorie(null, null, true, bdd);
 			String nom = ((String) pop.activer()[0]);
 			if (!nom.equals("Ne rien changer"))
@@ -665,19 +645,18 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			int option = JOptionPane.showConfirmDialog(null, "Voulez-vous supprimer les catégories ?\n", "Suppression",
 					JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if (option == JOptionPane.OK_OPTION)
 			{
-				for (int i = 0; i < arbre.getSelectionPaths().length; i++)
+				for (TreePath treePath : arbre.getSelectionPaths())
 				{
 					try
 					{
-						if (!(arbre.getSelectionPaths()[i].getLastPathComponent() instanceof Feuille))
+						if (!(treePath.getLastPathComponent() instanceof Feuille))
 						{
-							ResultSet rs = bdd.getListeEnregistrementCategorie(bdd.getCategorie(arbre
-									.getSelectionPaths()[i].getLastPathComponent().toString()));
+							ResultSet rs = bdd.getListeEnregistrementCategorie(bdd.getCategorie(treePath
+									.getLastPathComponent().toString()));
 							if (rs.next())
 							{
 								GraphicalUserInterface.popupErreur(
@@ -686,8 +665,7 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 							}
 							else
 							{
-								bdd.supprimerCategorie(bdd.getCategorie(arbre.getSelectionPaths()[i]
-										.getLastPathComponent().toString()));
+								bdd.supprimerCategorie(bdd.getCategorie(treePath.getLastPathComponent().toString()));
 							}
 							rs.close();
 						}
@@ -727,7 +705,7 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 				{
 					this.bdd.ajouterSujet(option);
 				}
-				catch (Exception e1)
+				catch (DBException e1)
 				{
 					GraphicalUserInterface.popupErreur(
 							"Erreur lors de l'ajout du sujet " + option + " " + e1.getMessage(), "Erreur");
@@ -741,19 +719,18 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			int option = JOptionPane.showConfirmDialog(null, "Voulez-vous supprimer les sujets ?\n", "Suppression",
 					JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 			if (option == JOptionPane.OK_OPTION)
 			{
-				for (int i = 0; i < arbre.getSelectionPaths().length; i++)
+				for (TreePath treePath : arbre.getSelectionPaths())
 				{
 					try
 					{
-						if (!(arbre.getSelectionPaths()[i].getLastPathComponent() instanceof Feuille))
+						if (!(treePath.getLastPathComponent() instanceof Feuille))
 						{
-							ResultSet rs = bdd.getListeEnregistrementSujet(bdd.getSujet(arbre.getSelectionPaths()[i]
-									.getLastPathComponent().toString()));
+							ResultSet rs = bdd.getListeEnregistrementSujet(bdd.getSujet(treePath.getLastPathComponent()
+									.toString()));
 							if (rs.next())
 							{
 								GraphicalUserInterface.popupErreur(
@@ -761,8 +738,7 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 							}
 							else
 							{
-								bdd.supprimerSujet(bdd.getSujet(arbre.getSelectionPaths()[i].getLastPathComponent()
-										.toString()));
+								bdd.supprimerSujet(bdd.getSujet(treePath.getLastPathComponent().toString()));
 							}
 							rs.close();
 						}
@@ -781,19 +757,17 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			DialogueNouveauSujet pop = new DialogueNouveauSujet(null, null, true, bdd);
 			String nom = ((String) pop.activer()[0]);
 			if (!nom.equals("Ne rien changer"))
 			{
-				for (int i = 0; i < arbre.getSelectionPaths().length; i++)
+				for (TreePath treePath : arbre.getSelectionPaths())
 				{
-					if (arbre.getSelectionPaths()[i].getLastPathComponent() instanceof Feuille)
+					if (treePath.getLastPathComponent() instanceof Feuille)
 					{
 						try
 						{
-							bdd.modifierEnregistrementSujet(
-									((Feuille) arbre.getSelectionPaths()[i].getLastPathComponent()).getId(), nom);
+							bdd.modifierEnregistrementSujet(((Feuille) treePath.getLastPathComponent()).getId(), nom);
 						}
 						catch (DBException e1)
 						{
@@ -810,7 +784,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			if (typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)
 			{
 				typeTrie = PanneauArbre.TYPE_TRIE_SUJET;
@@ -819,6 +792,7 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 			{
 				typeTrie = PanneauArbre.TYPE_TRIE_CATEGORIE;
 			}
+			updateArbre();
 		}
 	}
 
@@ -827,7 +801,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mouseReleased(MouseEvent event)
 		{
-			effacerMenuContextuel();
 			lecteurAudio.play();
 		}
 	}
@@ -870,7 +843,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mousePressed(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			Enumeration children = racine.children();
 			Object tmp, tab[] = new Object[2];
 			tab[0] = racine;
@@ -894,7 +866,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mousePressed(MouseEvent e)
 		{
-			effacerMenuContextuel();
 			Enumeration children = racine.children();
 			Object tmp, tab[] = new Object[2];
 			tab[0] = racine;
@@ -956,7 +927,8 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 	{
 		if (this.labelCacheSize != null)
 		{
-			this.labelDBSize.setText("Taille de la base de données : " + Utils.humanReadableByteCount(Utils.getDBSize(), false));
+			this.labelDBSize.setText("Taille de la base de données : "
+					+ Utils.humanReadableByteCount(Utils.getDBSize(), false));
 		}
 		this.updateArbre();
 	}
