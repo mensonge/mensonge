@@ -5,25 +5,7 @@ import java.awt.Graphics;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import javax.swing.JMenuItem;
-import javax.swing.JPopupMenu;
 import javax.swing.JSlider;
-
-import mensonge.userinterface.PanneauArbre.AjouterCategorieEnregistrementClicDroit;
-import mensonge.userinterface.PanneauArbre.AjouterSujetClicDroit;
-import mensonge.userinterface.PanneauArbre.CollapseClicDroit;
-import mensonge.userinterface.PanneauArbre.ExpandClicDroit;
-import mensonge.userinterface.PanneauArbre.ExporterEnregistrementClicDroit;
-import mensonge.userinterface.PanneauArbre.ModifierCategorieEnregistrementClicDroit;
-import mensonge.userinterface.PanneauArbre.ModifierSujetEnregistrementClicDroit;
-import mensonge.userinterface.PanneauArbre.ModifierTri;
-import mensonge.userinterface.PanneauArbre.PlayEcouteArbre;
-import mensonge.userinterface.PanneauArbre.RenommerCategorieClicDroit;
-import mensonge.userinterface.PanneauArbre.RenommerEnregistrementClicDroit;
-import mensonge.userinterface.PanneauArbre.RenommerSujetClicDroit;
-import mensonge.userinterface.PanneauArbre.SupprimerCategorieEnregistrementClicDroit;
-import mensonge.userinterface.PanneauArbre.SupprimerEnregistrementClicDroit;
-import mensonge.userinterface.PanneauArbre.SupprimerSujetClicDroit;
 
 public class SliderWithMarkers extends JSlider
 {

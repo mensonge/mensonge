@@ -24,7 +24,7 @@ import mensonge.core.BaseDeDonnees.DBException;
 import mensonge.core.BaseDeDonnees.LigneEnregistrement;
 
 
-public class DialogueAjouterEnregistrement extends JDialog implements ActionListener
+public final class DialogueAjouterEnregistrement extends JDialog implements ActionListener
 {
 
 	/**

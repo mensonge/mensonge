@@ -18,7 +18,7 @@ import mensonge.core.BaseDeDonnees.BaseDeDonnees;
 import mensonge.core.BaseDeDonnees.LigneEnregistrement;
 
 
-public class DialogueNouvelleCategorie extends JDialog
+public final class DialogueNouvelleCategorie extends JDialog
 {
 	/**
 	 * 
@@ -38,8 +38,8 @@ public class DialogueNouvelleCategorie extends JDialog
 		JPanel pan = new JPanel(), j1 = new JPanel(), bouton = new JPanel();
 		try
 		{
-			combo.addItem("Ne rien changer");
 			retour[0] = new String("Ne rien changer");
+			combo.addItem(retour[0]);
 			LinkedList<LigneEnregistrement> liste = bdd.getListeCategorie();
 			for(LigneEnregistrement ligne : liste)
 			{

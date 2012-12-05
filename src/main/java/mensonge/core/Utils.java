@@ -4,6 +4,11 @@ import java.io.File;
 
 public class Utils
 {
+	private Utils()
+	{
+		// Permet d'empêcher l'instanciation de cette classe Utilitaire
+	}
+	
 	public static String humanReadableByteCount(long bytes, boolean si)
 	{
 		int unit = si ? 1000 : 1024;

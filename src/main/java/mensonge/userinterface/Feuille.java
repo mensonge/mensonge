@@ -13,12 +13,12 @@ public class Feuille extends DefaultMutableTreeNode
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	int id;
-	String nom;
-	int duree;
-	long taille;
-	String categorie;
-	String sujet;
+	private int id;
+	private String nom;
+	private int duree;
+	private long taille;
+	private String categorie;
+	private String sujet;
 
 	public Feuille(int id, String nom, int duree, long taille, String categorie, String sujet)
 	{
