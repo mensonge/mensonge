@@ -44,7 +44,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 	private JButton boutonStop;
 	private JLabel labelDureeActuelle;
 	private JLabel labelDureeMax;
-	private JSlider slider;
+	private SliderWithMarkers slider;
 	private JSlider sliderVolume;
 
 	private EmbeddedMediaPlayerComponent vidComp;
@@ -55,7 +55,6 @@ public class LecteurVideo extends JPanel implements ActionListener
 	private long timeMarqueur1 = 0;
 	private long timeMarqueur2 = 1;
 	private BaseDeDonnees bdd;
-	private Marqueur t1;
 	private MediaPlayer mediaPlayer;
 	private String pathVideo = "";
 	private JFrame parent;
@@ -138,15 +137,9 @@ public class LecteurVideo extends JPanel implements ActionListener
 			}
 		});
 
-		this.slider = new JSlider(JSlider.HORIZONTAL);
-		this.slider.setPaintTicks(false);
-		this.slider.setPaintLabels(false);
-		this.slider.setMinimum(0);
-		this.slider.setValue(0);
-		this.slider.setMaximum((int) SliderPositionEventListener.SLIDER_POSITION_MAX);
-
+		this.slider = new SliderWithMarkers(JSlider.HORIZONTAL);
 		SliderPositionEventListener sliderListener = new SliderPositionEventListener(this.slider,
-				this.labelDureeActuelle, this.mediaPlayer);
+			this.labelDureeActuelle, this.mediaPlayer);
 		this.slider.addMouseListener(sliderListener);
 		this.slider.addMouseMotionListener(sliderListener);
 
@@ -237,10 +230,12 @@ public class LecteurVideo extends JPanel implements ActionListener
 		else if (event.getSource() == boutonMarqueur1)
 		{
 			timeMarqueur1 = mediaPlayer.getTime();
+			slider.setMarkerOneAt(((float)mediaPlayer.getTime()/(float)mediaPlayer.getLength()));
 		}
 		else if (event.getSource() == boutonMarqueur2)
 		{
 			timeMarqueur2 = mediaPlayer.getTime();
+			slider.setMarkerTwoAt(((float)mediaPlayer.getTime()/(float)mediaPlayer.getLength()));
 		}
 		else if (event.getSource() == boutonExtract)
 		{
