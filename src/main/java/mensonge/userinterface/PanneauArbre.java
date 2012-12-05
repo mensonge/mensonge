@@ -12,10 +12,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.Enumeration;
-import java.util.LinkedList;
+import java.util.List;
 
 import javax.swing.JFileChooser;
 
@@ -171,20 +169,20 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 
 	public void remplirArbreEnregistrementCategorie()
 	{
-		LinkedList<LigneEnregistrement> rsCat = null;
-		LinkedList<LigneEnregistrement> rsEnr = null;
+		List<LigneEnregistrement> rsCat = null;
+		List<LigneEnregistrement> rsEnr = null;
 
 		try
 		{
 			rsCat = this.bdd.getListeCategorie();
-			for(LigneEnregistrement ligneCat : rsCat)
+			for (LigneEnregistrement ligneCat : rsCat)
 			{
 				Branche node = new Branche(ligneCat.getNomCat());
 				rsEnr = this.bdd.getListeEnregistrementCategorie(ligneCat.getIdCat());
-				for(LigneEnregistrement ligne : rsEnr)
+				for (LigneEnregistrement ligne : rsEnr)
 				{
-					Feuille f = new Feuille(ligne.getId(), ligne.getNom(), ligne.getDuree(),
-							ligne.getTaille(), ligne.getNomCat(), ligne.getNomSuj());
+					Feuille f = new Feuille(ligne.getId(), ligne.getNom(), ligne.getDuree(), ligne.getTaille(),
+							ligne.getNomCat(), ligne.getNomSuj());
 					node.add(f);
 				}
 				this.racine.add(node);
@@ -201,20 +199,20 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 
 	public void remplirArbreEnregistrementSujet()
 	{
-		LinkedList<LigneEnregistrement> rsSuj = null;
-		LinkedList<LigneEnregistrement> rsEnr = null;
+		List<LigneEnregistrement> rsSuj = null;
+		List<LigneEnregistrement> rsEnr = null;
 
 		try
 		{
 			rsSuj = this.bdd.getListeSujet();
-			for(LigneEnregistrement ligneSuj : rsSuj)
+			for (LigneEnregistrement ligneSuj : rsSuj)
 			{
 				Branche node = new Branche(ligneSuj.getNomSuj());
 				rsEnr = this.bdd.getListeEnregistrementSujet(ligneSuj.getIdSuj());
-				for(LigneEnregistrement ligne : rsEnr)
+				for (LigneEnregistrement ligne : rsEnr)
 				{
-					Feuille f = new Feuille(ligne.getId(), ligne.getNom(), ligne.getDuree(),
-							ligne.getTaille(), ligne.getNomCat(), ligne.getNomSuj());
+					Feuille f = new Feuille(ligne.getId(), ligne.getNom(), ligne.getDuree(), ligne.getTaille(),
+							ligne.getNomCat(), ligne.getNomSuj());
 					node.add(f);
 				}
 				this.racine.add(node);
@@ -607,7 +605,8 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 						if (!(treePath.getLastPathComponent() instanceof Feuille))
 						{
 							String nomCategorie = treePath.getLastPathComponent().toString();
-							LinkedList<LigneEnregistrement> liste = bdd.getListeEnregistrementCategorie(bdd.getCategorie(nomCategorie));
+							List<LigneEnregistrement> liste = bdd.getListeEnregistrementCategorie(bdd
+									.getCategorie(nomCategorie));
 							if (liste.size() != 0)
 							{
 								GraphicalUserInterface.popupErreur(
@@ -645,7 +644,8 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 						if (!(treePath.getLastPathComponent() instanceof Feuille))
 						{
 							String nomSujet = treePath.getLastPathComponent().toString();
-							LinkedList<LigneEnregistrement> liste = bdd.getListeEnregistrementSujet(bdd.getSujet(nomSujet));
+							List<LigneEnregistrement> liste = bdd.getListeEnregistrementSujet(bdd
+									.getSujet(nomSujet));
 							if (liste.size() != 0)
 							{
 								GraphicalUserInterface.popupErreur(
