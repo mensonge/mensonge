@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Enumeration;
+import java.util.LinkedList;
 
 import javax.swing.JFileChooser;
 
@@ -40,6 +41,8 @@ import mensonge.core.DataBaseObserver;
 import mensonge.core.Utils;
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
 import mensonge.core.BaseDeDonnees.DBException;
+import mensonge.core.BaseDeDonnees.LigneEnregistrement;
+import mensonge.core.BaseDeDonnees.ResultatSelect;
 
 public class PanneauArbre extends JPanel implements DataBaseObserver
 {
@@ -183,7 +186,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 					Feuille f = new Feuille(rsEnr.getInt("id"), rsEnr.getString("nom"), rsEnr.getInt("duree"),
 							rsEnr.getLong("taille"), rsEnr.getString("nomCat"), rsEnr.getString("nomsuj"));
 					node.add(f);
-					//System.out.println(rsEnr.getInt("idCat"));
 				}
 				rsEnr.close();
 				this.racine.add(node);
@@ -208,6 +210,7 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 	{
 		ResultSet rsCat = null, rsEnr = null;
 
+		
 		try
 		{
 			rsCat = this.bdd.getListeSujet();
@@ -223,7 +226,6 @@ public class PanneauArbre extends JPanel implements DataBaseObserver
 				}
 				rsEnr.close();
 				this.racine.add(node);
-
 			}
 			rsCat.close();
 			this.racine.setUserObject("Sujet");
