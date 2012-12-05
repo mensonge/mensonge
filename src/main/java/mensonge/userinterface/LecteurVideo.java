@@ -83,7 +83,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 				try
 				{
 					mediaPlayer.startMedia(fichierVideo.getCanonicalPath());
-					mediaPlayer.stop();
+					mediaPlayer.pause();
 					mediaPlayer.setVolume(sliderVolume.getValue());
 				}
 				catch (IOException e)

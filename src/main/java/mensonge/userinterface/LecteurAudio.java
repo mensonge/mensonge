@@ -181,7 +181,7 @@ public class LecteurAudio extends JPanel implements ActionListener
 			public void run()
 			{
 				mediaPlayer.startMedia(filePath);
-				mediaPlayer.stop();
+				mediaPlayer.pause();
 			}
 		});
 	}
