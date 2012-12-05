@@ -11,6 +11,8 @@ import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.management.Query;
+
 import mensonge.core.BetterObservable;
 import mensonge.core.BaseDeDonnees.DBException;
 
@@ -40,7 +42,7 @@ public class BaseDeDonnees extends BetterObservable
 	 * Constructeur de base.
 	 * 
 	 * @param baseDeDonnees
-	 *            Chaine de caract�re indiquant le nom du fichier de la base de donnee.
+	 *            Chaine de caractére indiquant le nom du fichier de la base de donnee.
 	 * @throws DBException
 	 */
 	public BaseDeDonnees(final String baseDeDonnees) throws DBException
@@ -262,16 +264,13 @@ public class BaseDeDonnees extends BetterObservable
 		try
 		{
 			Statement stat = connexion.createStatement(); // Creation du Statement
+			
 			ResultSet rs = stat
-					.executeQuery("SELECT duree, taille, nom, nomcat, id, nomsuj, en.idcat, en.idsuj FROM enregistrements en, categorie ca, sujet su WHERE en.idcat = ca.idcat AND en.idsuj = su.idsuj ORDER BY nomcat, nom;"); // Execution
-																																																								// de
-																																																								// la
-																																																								// requete
+					.executeQuery("SELECT duree, taille, nom, nomcat, id, nomsuj, en.idcat, en.idsuj FROM enregistrements en, categorie ca, sujet su WHERE en.idcat = ca.idcat AND en.idsuj = su.idsuj ORDER BY nomcat, nom;"); // Execution																																																			// de																																																	// requete
 			return rs;
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
 			throw new DBException("Erreur lors de la recuperation de la liste des enregistrement: " + e.getMessage(), 1);
 		}
 	}
