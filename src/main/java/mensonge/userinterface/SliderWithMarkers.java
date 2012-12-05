@@ -28,10 +28,10 @@ import mensonge.userinterface.PanneauArbre.SupprimerSujetClicDroit;
 public class SliderWithMarkers extends JSlider
 {
 
-	float position1=0.0f;
-	float position2=0.0f;
-	boolean pos1=false;
-	boolean pos2=false;
+	float position1 = 0.0f;
+	float position2 = 0.0f;
+	boolean pos1 = false;
+	boolean pos2 = false;
 	/**
 	 *
 	 */
@@ -51,34 +51,52 @@ public class SliderWithMarkers extends JSlider
 
 	public void setMarkerOneAt(float position)
 	{
-		position1= position;
-		pos1=true;
+		position1 = position;
+		pos1 = true;
 		this.repaint();
 
 	}
 
 	public void setMarkerTwoAt(float position)
 	{
-		position2= position;
-		pos2=true;
+		position2 = position;
+		pos2 = true;
 		this.repaint();
 	}
 
-	protected void paintComponent(Graphics g) {
-		   int h = getHeight();
-		   int w = getWidth();
-
-		   g.setColor(Color.RED);
-		   if(pos1)
-		   {
-			   g.fillRect(Math.round(position1*w), 0, 1, h);
-		   }
-		   g.setColor(Color.BLUE);
-		   if(pos2)
-		   {
-			   g.fillRect(Math.round(position2*w), 0, 1, h);
-		   }
-		   super.paintComponent(g);
+	protected void paintComponent(Graphics g)
+	{
+		int h = getHeight();
+		int w = getWidth();
+		int[] polygoneX1 = new int[3];
+		int[] polygoneY1 = new int[3];
+		int[] polygoneX2 = new int[3];
+		int[] polygoneY2 = new int[3];
+		g.setColor(Color.RED);
+		if (pos1)
+		{
+			polygoneX1[0] = (Math.round(position1 * w)) + 5;
+			polygoneX1[1] = (Math.round(position1 * w));
+			polygoneX1[2] = (Math.round(position1 * w)) - 5;
+			polygoneY1[0] = h;
+			polygoneY1[1] = h - 6;
+			polygoneY1[2] = h;
+			g.fillPolygon(polygoneX1, polygoneY1, polygoneX1.length);
+			g.fillRect(Math.round(position1 * w), 0, 1, h + 5);
+		}
+		g.setColor(Color.BLUE);
+		if (pos2)
+		{
+			polygoneX2[0] = (Math.round(position2 * w)) + 5;
+			polygoneX2[1] = (Math.round(position2 * w));
+			polygoneX2[2] = (Math.round(position2 * w)) - 4;
+			polygoneY2[0] = 0;
+			polygoneY2[1] = h - 16;
+			polygoneY2[2] = 0;
+			g.fillPolygon(polygoneX2, polygoneY2, polygoneY2.length);
+			g.fillRect(Math.round(position2 * w), 0, 1, h);
+		}
+		super.paintComponent(g);
 	}
 
 	private class ClicDroit extends MouseAdapter
@@ -86,21 +104,18 @@ public class SliderWithMarkers extends JSlider
 		@Override
 		public void mousePressed(MouseEvent e)
 		{
-			int w  = getWidth();
+			int w = getWidth();
 			if ((e.getModifiers() & MouseEvent.BUTTON3_MASK) != 0)
 			{
-				if(e.getX()>Math.round(position1*w))
+				if (e.getX() > Math.round(position1 * w))
 				{
-					setMarkerOneAt((float)e.getX()/(float)w);
+					setMarkerOneAt((float) e.getX() / (float) w);
 				}
 				else
 				{
-					setMarkerTwoAt((float)e.getX()/(float)w);
+					setMarkerTwoAt((float) e.getX() / (float) w);
 				}
 			}
 		}
 	}
 }
-
-
-

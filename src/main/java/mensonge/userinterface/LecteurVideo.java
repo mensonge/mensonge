@@ -142,7 +142,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 
 		this.slider = new SliderWithMarkers(JSlider.HORIZONTAL);
 		SliderPositionEventListener sliderListener = new SliderPositionEventListener(this.slider,
-			this.labelDureeActuelle, this.mediaPlayer);
+				this.labelDureeActuelle, this.mediaPlayer);
 		this.slider.addMouseListener(sliderListener);
 		this.slider.addMouseMotionListener(sliderListener);
 
@@ -233,12 +233,12 @@ public class LecteurVideo extends JPanel implements ActionListener
 		else if (event.getSource() == boutonMarqueur1)
 		{
 			timeMarqueur1 = mediaPlayer.getTime();
-			slider.setMarkerOneAt(((float)mediaPlayer.getTime()/(float)mediaPlayer.getLength()));
+			slider.setMarkerOneAt(((float) mediaPlayer.getTime() / (float) mediaPlayer.getLength()));
 		}
 		else if (event.getSource() == boutonMarqueur2)
 		{
 			timeMarqueur2 = mediaPlayer.getTime();
-			slider.setMarkerTwoAt(((float)mediaPlayer.getTime()/(float)mediaPlayer.getLength()));
+			slider.setMarkerTwoAt(((float) mediaPlayer.getTime() / (float) mediaPlayer.getLength()));
 		}
 		else if (event.getSource() == boutonExtract)
 		{
@@ -251,7 +251,14 @@ public class LecteurVideo extends JPanel implements ActionListener
 				Extraction extract = new Extraction();
 				byte[] tabOfByte = null;
 				this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-				tabOfByte = extract.extraireIntervalle(pathVideo, timeMarqueur1, timeMarqueur2);
+				if (timeMarqueur1 < timeMarqueur2)
+				{
+					tabOfByte = extract.extraireIntervalle(pathVideo, timeMarqueur1, timeMarqueur2);
+				}
+				else
+				{
+					tabOfByte = extract.extraireIntervalle(pathVideo, timeMarqueur2, timeMarqueur1);
+				}
 				this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 				new DialogueAjouterEnregistrement(parent, "Ajout d'un enregistrement", true, this.bdd, tabOfByte);
 			}
