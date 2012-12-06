@@ -2,7 +2,7 @@
 <project basedir="." name="LieLab" default="run">
 	<property name="src.dir" value="src"/>
 	<property name="bin.dir" value="target/classes/"/>
-	<property name="lib.dir" value="lib"/>
+	<property name="lib.dir" value="../lib"/>
 	<property name="jar.dir" value="."/>
 	<property name="main-class"  value="coeffCepstraux.core.CoefficientsCepstraux"/>
 
@@ -12,7 +12,7 @@
 	</target>
 
 	<path id="dep.runtime">
-    		<fileset dir="./lib">
+    		<fileset dir="../lib">
         		<include name="**/*.jar" />
     		</fileset>
 	</path>

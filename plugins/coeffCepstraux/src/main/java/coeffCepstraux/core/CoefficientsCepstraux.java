@@ -1,50 +1,65 @@
 package coeffCepstraux.core;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.SwingUtilities;
 
 import mensonge.core.IExtraction;
 import mensonge.core.plugins.Plugin;
 
-import org.jfree.data.time.Millisecond;
-import org.jfree.data.time.TimeSeries;
-import org.jfree.data.time.TimeSeriesCollection;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
 import coeffCepstraux.userinterface.DrawTimeGraph;
 import coeffCepstraux.userinterface.DrawXYGraph;
+import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
 
 public class CoefficientsCepstraux implements Plugin
 {
 	private static Logger logger = Logger.getLogger("coeffCepstraux");
 	private boolean isActive = false;
 	private DrawXYGraph graph;
-	private DrawTimeGraph timeGraph;
+	private static final int NB_SAMPLES = 60000;
+	private static final int NB_CYCLES = 5;
 
-	private void drawGraph(final double[][] echantillons)
+	private void drawGraph(final double[][] echantillons, final float sampleRate)
 	{
-		/*
-		 * XYSeries series = new XYSeries("Canard !"); final double phaseMultiplier = 2 * Math.PI * 5 / 500;
-		 * 
-		 * for (int i = 0; i < 500; i++) { final double cycleX = i * phaseMultiplier; final double sineResult =
-		 * Math.sin(cycleX); series.add(cycleX, sineResult); }
-		 */
 
+		// 1/NB_SAMPLES = frequence
+		final double[] samples = new double[echantillons.length];
+		final double[] samplesFFT = new double[echantillons.length];
+
+		/*
+		 * final double phaseMultiplier = 2 * Math.PI * NB_CYCLES / NB_SAMPLES; for (int i = 0; i < NB_SAMPLES; i++) {
+		 * final double cycleX = i * phaseMultiplier; final double sineResult = Math.sin(cycleX); samples[i] =
+		 * sineResult; samplesFFT[i] = sineResult; }
+		 */
+		for (int i = 0; i < echantillons.length; i++)
+		{
+			samples[i] = echantillons[i][0];
+			samplesFFT[i] = echantillons[i][0];
+		}
+
+		DoubleFFT_1D fft = new DoubleFFT_1D(samplesFFT.length);
+		fft.realForward(samplesFFT);
 		SwingUtilities.invokeLater(new Runnable()
 		{
 			@Override
 			public void run()
 			{
-				graph = new DrawXYGraph("Canard ?", "Variation d'amplitudes", "Secondes", "Amplitudes");
-				timeGraph = new DrawTimeGraph("Canard ?", "Variation d'amplitudes", "Temps", "Amplitudes");
+				graph = new DrawXYGraph("Variation d'amplitudes", "Variation d'amplitudes", "Temps (Secondes)",
+						"Amplitudes");
+				final DrawXYGraph graphFFT = new DrawXYGraph("FFT", "FFT", "Fréquence (Hz)", "Amplitudes");
 
 				Thread t1 = new Thread(new Runnable()
 				{
@@ -53,10 +68,9 @@ public class CoefficientsCepstraux implements Plugin
 					public void run()
 					{
 						XYSeries series = new XYSeries("Canal 0");
-						for (int j = 0; j < echantillons.length; j++)
+						for (int j = 0; j < samples.length; j++)
 						{
-							series.add(j / 44100.0, echantillons[j][0]);
-
+							series.add(j / sampleRate, samples[j]);
 						}
 						XYDataset xyDataset = new XYSeriesCollection(series);
 						graph.addDataset(xyDataset);
@@ -70,25 +84,25 @@ public class CoefficientsCepstraux implements Plugin
 					@Override
 					public void run()
 					{
-						TimeSeries timeSeries = new TimeSeries("Canal 1");
-						for (int j = 0; j < echantillons.length; j++)
+						XYSeries series2 = new XYSeries("FFT");
+						for (int j = 0; j < samples.length; j++)
 						{
-
-							timeSeries.addOrUpdate(new Millisecond((int) (j / 44.1), 0, 0, 0, 2, 12, 2012),
-									echantillons[j][1]);
+							series2.add(sampleRate * (j / 2 - 1) / samples.length, Math.abs(samplesFFT[j]));
 
 						}
-						TimeSeriesCollection timeDataset = new TimeSeriesCollection(timeSeries);
-						timeGraph.addDataset(timeDataset);
-						timeGraph.display();
+						XYDataset xyDataset2 = new XYSeriesCollection(series2);
+						graphFFT.addDataset(xyDataset2);
+						graphFFT.display();
+
 					}
 				});
-				 t1.run();
-				//t2.run();
+				t1.run();
+				t2.run();
 				try
 				{
-					 t1.join();
-					//t2.join();
+					t1.join();
+					t2.join();
+
 				}
 				catch (InterruptedException e)
 				{
@@ -105,10 +119,13 @@ public class CoefficientsCepstraux implements Plugin
 		if (!listeFichiersSelectionnes.isEmpty())
 		{
 			File test = listeFichiersSelectionnes.get(0);
+
 			try
 			{
+				AudioInputStream inputAIS = AudioSystem.getAudioInputStream(test);
+				AudioFormat audioFormat = inputAIS.getFormat();
 				double[][] echantillons = extraction.extraireEchantillons(test.getCanonicalPath());
-				this.drawGraph(echantillons);
+				this.drawGraph(echantillons, audioFormat.getSampleRate());
 			}
 			catch (IOException e)
 			{
