@@ -176,9 +176,9 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 		{
 			remplirArbreEnregistrementSujet();
 		}
-		this.arbre.updateUI();
 		this.arbre.setExpandsSelectedPaths(true);
 		this.arbre.expandPath(new TreePath(this.racine));
+		this.arbre.updateUI();
 	}
 
 	public void remplirArbreEnregistrementCategorie()

@@ -417,6 +417,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				{
 					setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 					previousPath = fileChooser.getSelectedFile().getCanonicalPath();
+					setCursor(Cursor.getDefaultCursor());
 					this.ajouterOnglet(new OngletLecteur(new File(previousPath), this.bdd, this));
 				}
 				catch (IOException e)
