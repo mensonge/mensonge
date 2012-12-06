@@ -52,9 +52,9 @@ import mensonge.core.plugins.Plugin;
 import mensonge.core.plugins.PluginManager;
 
 /**
- *
+ * 
  * Classe Interface graphique contenant tous les composants graphiques
- *
+ * 
  */
 public class GraphicalUserInterface extends JFrame implements ActionListener
 {
@@ -217,7 +217,8 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				for (Entry<String, Plugin> entry : mapPlugins.entrySet())
 				{
 					JMenuItem item = new JMenuItem(entry.getKey());
-					item.addActionListener(new ItemPluginListener(mapPlugins.get(entry.getKey()), this.panneauArbre));
+					item.addActionListener(new ItemPluginListener(mapPlugins.get(entry.getKey()), this.panneauArbre,
+							this));
 					menuOutils.add(item);
 				}
 			}
@@ -252,7 +253,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 	/**
 	 * Ajoute un nouvel onglet à l'interface graphique
-	 *
+	 * 
 	 * @param onglet
 	 *            Onglet à ajouter
 	 */
@@ -359,7 +360,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 	/**
 	 * Affiche une popup qui signale une erreur
-	 *
+	 * 
 	 * @param message
 	 *            Le message d'erreur à afficher
 	 * @param title
@@ -372,7 +373,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 	/**
 	 * Affiche une popup qui signale une erreur avec en titre Erreur
-	 *
+	 * 
 	 * @param message
 	 *            Le message d'erreur à afficher
 	 */
@@ -383,7 +384,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 	/**
 	 * Affiche une popup d'information
-	 *
+	 * 
 	 * @param message
 	 *            L'information à afficher
 	 * @param title
@@ -529,9 +530,11 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		private static final Extraction EXTRACTION = new Extraction();
 		private Plugin plugin;
 		private PanneauArbre panneauArbre;
+		private GraphicalUserInterface gui;
 
-		public ItemPluginListener(Plugin plugin, PanneauArbre panneauArbre)
+		public ItemPluginListener(Plugin plugin, PanneauArbre panneauArbre, GraphicalUserInterface gui)
 		{
+			this.gui = gui;
 			this.plugin = plugin;
 			this.panneauArbre = panneauArbre;
 		}
@@ -541,7 +544,9 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		{
 			// TODO Ajouter la liste des fichiers selectionnés
 			// Peut être voir pour aussi donner en plus l'instance de la BDD ça pourrait être utile au final ? :D
+			gui.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			this.plugin.lancer(EXTRACTION, panneauArbre.getListSelectedRecords());
+			gui.setCursor(Cursor.getDefaultCursor());
 		}
 	}
 
