@@ -1,6 +1,5 @@
 package coeffCepstraux.core;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -20,8 +19,8 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
-import coeffCepstraux.userinterface.DrawTimeGraph;
 import coeffCepstraux.userinterface.DrawXYGraph;
+
 import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
 
 public class CoefficientsCepstraux implements Plugin
@@ -62,8 +61,8 @@ public class CoefficientsCepstraux implements Plugin
 					@Override
 					public void run()
 					{
-						final DrawXYGraph graph = new DrawXYGraph("Variation d'amplitudes", "Variation d'amplitudes", "Temps (Seconde)",
-								"Amplitude");
+						final DrawXYGraph graph = new DrawXYGraph("Variation d'amplitudes", "Variation d'amplitudes",
+								"Temps (Seconde)", "Amplitude");
 						XYSeries series = new XYSeries("Canal 0");
 						XYSeries series2 = new XYSeries("Canal 1");
 						for (int j = 0; j < samples.length; j++)
@@ -79,36 +78,20 @@ public class CoefficientsCepstraux implements Plugin
 
 					}
 				});
-				Thread t2 = new Thread(new Runnable()
-				{
-					@Override
-					public void run()
-					{
-						fft.realForward(samplesFFT);
-						final DrawXYGraph graphFFT = new DrawXYGraph("Spectre", "Spectre", "Fréquence (Hz)", "Amplitude");
-						XYSeries series2 = new XYSeries("Spectre");
-						for (int j = 0; j < samplesFFT.length; j++)
-						{
-							series2.add(sampleRate * (j / 2 - 1) / samplesFFT.length, Math.abs(samplesFFT[j]));
 
-						}
-						XYDataset xyDataset2 = new XYSeriesCollection(series2);
-						graphFFT.addDataset(xyDataset2);
-						graphFFT.display();
-
-					}
-				});
 				Thread t3 = new Thread(new Runnable()
 				{
 					@Override
 					public void run()
 					{
+						fft.realForward(samplesFFT);
 						for (int i = 0; i < samplesFFT.length; i++)
 						{
 							samplesCepstre[i] = Math.log(Math.abs(samplesFFT[i]));
-						}	
-						fft.realInverse(samplesCepstre,false);
-						final DrawXYGraph graphCepstre = new DrawXYGraph("Coefficients cepstraux", "Coefficients cepstraux", "Quéfrence (Hz)", "Amplitude");
+						}
+						fft.realInverse(samplesCepstre, false);
+						final DrawXYGraph graphCepstre = new DrawXYGraph("Coefficients cepstraux",
+								"Coefficients cepstraux", "Quéfrence (Hz)", "Amplitude");
 						XYSeries series2 = new XYSeries("Cepstre");
 						for (int j = 0; j < samplesCepstre.length; j++)
 						{
@@ -121,12 +104,10 @@ public class CoefficientsCepstraux implements Plugin
 					}
 				});
 				t1.run();
-				t2.run();
 				t3.run();
 				try
 				{
 					t1.join();
-					t2.join();
 					t3.join();
 				}
 				catch (InterruptedException e)
