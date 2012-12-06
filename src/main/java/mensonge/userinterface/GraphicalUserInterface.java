@@ -415,6 +415,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			{
 				try
 				{
+					setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 					previousPath = fileChooser.getSelectedFile().getCanonicalPath();
 					this.ajouterOnglet(new OngletLecteur(new File(previousPath), this.bdd, this));
 				}
@@ -423,7 +424,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 					logger.log(Level.WARNING, e.getLocalizedMessage());
 					popupErreur(e.getMessage());
 				}
-
+				setCursor(Cursor.getDefaultCursor());
 			}
 		}
 	}
@@ -470,6 +471,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			{
 				try
 				{
+					setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 					previousPathBase = fileChooser.getSelectedFile().getCanonicalPath();
 					bdd.exporter(previousPathBase, -1, 1);
 				}
@@ -483,6 +485,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 					logger.log(Level.WARNING, e1.getLocalizedMessage());
 					popupErreur(e1.getMessage());
 				}
+				setCursor(Cursor.getDefaultCursor());
 			}
 		}
 	}
@@ -507,9 +510,9 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			{
 				try
 				{
+					setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 					previousPathBase = fileChooser.getSelectedFile().getCanonicalPath();
 					bdd.importer(previousPathBase);
-
 				}
 				catch (IOException e1)
 				{
@@ -521,6 +524,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 					logger.log(Level.WARNING, e2.getLocalizedMessage());
 					popupErreur(e2.getMessage());
 				}
+				setCursor(Cursor.getDefaultCursor());
 			}
 		}
 	}
@@ -542,8 +546,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
-			// TODO Ajouter la liste des fichiers selectionnés
-			// Peut être voir pour aussi donner en plus l'instance de la BDD ça pourrait être utile au final ? :D
+			// TODO Peut être voir pour aussi donner en plus l'instance de la BDD ça pourrait être utile au final ? :D
 			gui.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			this.plugin.lancer(EXTRACTION, panneauArbre.getListSelectedRecords());
 			gui.setCursor(Cursor.getDefaultCursor());
@@ -564,15 +567,17 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
+			setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			Map<String, Plugin> mapPlugins = pluginManager.getPlugins();
 			for (Entry<String, Plugin> entry : mapPlugins.entrySet())
 			{
 				if (entry.getValue().isActive())
 				{
-					popupErreur("Vous avez au moins 1 plugin en cours d'éxecution. La purge du cache est donc désactivée.");
+					popupErreur("Vous avez au moins 1 plugin en cours d'éxecution. La purge du cache est donc désactivé.");
 					return;
 				}
 			}
+			setCursor(Cursor.getDefaultCursor());
 			popupInfo("Le cache a été purgé.\nVous avez gagné " + Utils.humanReadableByteCount(Cache.purge(), false)
 					+ " d'espace disque.", "Purge du cache");
 			panneauArbre.updateCacheSizeInfo();
@@ -593,6 +598,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 					{
 						setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 						bdd.compacter();
+						setCursor(Cursor.getDefaultCursor());
 						popupInfo("La base de données a été compactée.", "Compactage de la base de données");
 					}
 					catch (DBException e1)
