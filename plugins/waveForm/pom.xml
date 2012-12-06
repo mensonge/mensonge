@@ -2,12 +2,12 @@
   	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   	<modelVersion>4.0.0</modelVersion>
 
-  	<groupId>spectralAnalysis</groupId>
-  	<artifactId>spectralAnalysis</artifactId>
+  	<groupId>waveForm</groupId>
+  	<artifactId>waveForm</artifactId>
   	<version>1.0</version>
   	<packaging>jar</packaging>
 
-  	<name>Analyse spectrale</name>
+  	<name>Waveform</name>
   	<url>http://maven.apache.org</url>
 
   	<properties>
@@ -95,7 +95,7 @@
 				<version>1.2.1</version>
 				<configuration>
 					<!--<mainClass>mensonge.userinterface.GraphicalUserInterface</mainClass>-->
-					<mainClass>spectralAnalysis.core.CoefficientsCepstraux</mainClass>
+					<mainClass>waveForm.core.CoefficientsCepstraux</mainClass>
 				</configuration>
 			</plugin>
 			<plugin>
