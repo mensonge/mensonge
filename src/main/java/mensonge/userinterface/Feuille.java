@@ -6,11 +6,12 @@ import java.util.Map;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import mensonge.core.Utils;
+import mensonge.core.BaseDeDonnees.LigneEnregistrement;
 
 public class Feuille extends DefaultMutableTreeNode
 {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	private int id;
@@ -19,6 +20,8 @@ public class Feuille extends DefaultMutableTreeNode
 	private long taille;
 	private String categorie;
 	private String sujet;
+	private int idCategorie;
+	private int idSujet;
 
 	public Feuille(int id, String nom, int duree, long taille, String categorie, String sujet)
 	{
@@ -31,14 +34,28 @@ public class Feuille extends DefaultMutableTreeNode
 		this.sujet = sujet;
 	}
 
+
+	public Feuille(LigneEnregistrement ligne)
+	{
+		super(ligne.getNom());
+		this.id = ligne.getId();
+		this.duree = ligne.getDuree();
+		this.taille = ligne.getTaille();
+		this.nom = ligne.getNom();
+		this.categorie = ligne.getNomCat();
+		this.sujet = ligne.getNomSuj();
+		this.idCategorie = ligne.getIdCat();
+		this.idSujet = ligne.getIdSuj();
+	}
+
 	public Map<String, String> getInfo()
 	{
 		Map<String, String> retour = new HashMap<String, String>();
 		retour.put("Nom", nom);
 		retour.put("Durée", Utils.getFormattedTime(duree));
 		retour.put("Taille", Utils.humanReadableByteCount(taille, false));
-		retour.put("Catégorie", categorie);
-		retour.put("Sujet", sujet);
+		retour.put("Catégorie "+ idCategorie, categorie);
+		retour.put("Sujet "+ idSujet, sujet);
 		return retour;
 	}
 
