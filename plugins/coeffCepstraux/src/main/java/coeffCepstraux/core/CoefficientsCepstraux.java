@@ -61,7 +61,7 @@ public class CoefficientsCepstraux implements Plugin
 				{
 					samplesCepstre[i] = Math.log(Math.abs(samplesFFT[i]));
 				}
-				fft.realInverse(samplesCepstre, false);
+				fft.realInverse(samplesCepstre, true);
 				final DrawXYGraph graphCepstre = new DrawXYGraph("Cepstre", "Cepstre",
 						"Quéfrence (Hz)", "Amplitude");
 				XYSeries series2 = new XYSeries("Cepstre");
