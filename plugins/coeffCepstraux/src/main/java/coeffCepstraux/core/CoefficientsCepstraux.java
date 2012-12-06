@@ -62,8 +62,7 @@ public class CoefficientsCepstraux implements Plugin
 					samplesCepstre[i] = Math.log(Math.abs(samplesFFT[i]));
 				}
 				fft.realInverse(samplesCepstre, true);
-				final DrawXYGraph graphCepstre = new DrawXYGraph("Cepstre", "Cepstre",
-						"Quéfrence (Hz)", "Amplitude");
+				final DrawXYGraph graphCepstre = new DrawXYGraph("Cepstre", "Cepstre", "Quéfrence (Hz)", "Amplitude");
 				XYSeries series2 = new XYSeries("Cepstre");
 				for (int j = 0; j < samplesCepstre.length; j++)
 				{
@@ -77,27 +76,29 @@ public class CoefficientsCepstraux implements Plugin
 	}
 
 	@Override
-	public void lancer(IExtraction extraction, List<File> listeFichiersSelectionnes)
+	public void lancer(IExtraction extraction, List<File> listSelectedFiles)
 	{
 		this.isActive = true;
-		if (!listeFichiersSelectionnes.isEmpty())
+		if (!listSelectedFiles.isEmpty())
 		{
-			File test = listeFichiersSelectionnes.get(0);
-
-			try
+			for (File file : listSelectedFiles)
 			{
-				AudioInputStream inputAIS = AudioSystem.getAudioInputStream(test);
-				AudioFormat audioFormat = inputAIS.getFormat();
-				double[][] echantillons = extraction.extraireEchantillons(test.getCanonicalPath());
-				this.drawGraph(echantillons, audioFormat.getSampleRate());
-			}
-			catch (IOException e)
-			{
-				logger.log(Level.WARNING, e.getMessage());
-			}
-			catch (UnsupportedAudioFileException e)
-			{
-				logger.log(Level.WARNING, e.getMessage());
+				try
+				{
+					AudioInputStream inputAIS = AudioSystem.getAudioInputStream(file);
+					AudioFormat audioFormat = inputAIS.getFormat();
+					double[][] echantillons = extraction.extraireEchantillons(file.getCanonicalPath());
+					this.drawGraph(echantillons, audioFormat.getSampleRate());
+					echantillons = null;
+				}
+				catch (IOException e)
+				{
+					logger.log(Level.WARNING, e.getLocalizedMessage());
+				}
+				catch (UnsupportedAudioFileException e)
+				{
+					logger.log(Level.WARNING, e.getLocalizedMessage());
+				}
 			}
 		}
 		this.isActive = false;
