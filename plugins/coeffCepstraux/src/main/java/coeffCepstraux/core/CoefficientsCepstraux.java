@@ -28,7 +28,6 @@ public class CoefficientsCepstraux implements Plugin
 {
 	private static Logger logger = Logger.getLogger("coeffCepstraux");
 	private boolean isActive = false;
-	private DrawXYGraph graph;
 	private static final int NB_SAMPLES = 60000;
 	private static final int NB_CYCLES = 5;
 
@@ -38,6 +37,7 @@ public class CoefficientsCepstraux implements Plugin
 		// 1/NB_SAMPLES = frequence
 		final double[] samples = new double[echantillons.length];
 		final double[] samplesFFT = new double[echantillons.length];
+		final double[] samplesCepstre = new double[echantillons.length];
 
 		/*
 		 * final double phaseMultiplier = 2 * Math.PI * NB_CYCLES / NB_SAMPLES; for (int i = 0; i < NB_SAMPLES; i++) {
@@ -50,44 +50,46 @@ public class CoefficientsCepstraux implements Plugin
 			samplesFFT[i] = echantillons[i][0];
 		}
 
-		DoubleFFT_1D fft = new DoubleFFT_1D(samplesFFT.length);
-		fft.realForward(samplesFFT);
+		final DoubleFFT_1D fft = new DoubleFFT_1D(samplesFFT.length);
+
 		SwingUtilities.invokeLater(new Runnable()
 		{
 			@Override
 			public void run()
 			{
-				graph = new DrawXYGraph("Variation d'amplitudes", "Variation d'amplitudes", "Temps (Secondes)",
-						"Amplitudes");
-				final DrawXYGraph graphFFT = new DrawXYGraph("FFT", "FFT", "Fréquence (Hz)", "Amplitudes");
-
 				Thread t1 = new Thread(new Runnable()
 				{
-					// Juste en affichant les millisecondes
 					@Override
 					public void run()
 					{
+						final DrawXYGraph graph = new DrawXYGraph("Variation d'amplitudes", "Variation d'amplitudes", "Temps (Seconde)",
+								"Amplitude");
 						XYSeries series = new XYSeries("Canal 0");
+						XYSeries series2 = new XYSeries("Canal 1");
 						for (int j = 0; j < samples.length; j++)
 						{
-							series.add(j / sampleRate, samples[j]);
+							series.add(j / sampleRate, echantillons[j][0]);
+							series2.add(j / sampleRate, echantillons[j][1]);
 						}
 						XYDataset xyDataset = new XYSeriesCollection(series);
+						XYDataset xyDataset2 = new XYSeriesCollection(series2);
 						graph.addDataset(xyDataset);
+						graph.addDataset(xyDataset2);
 						graph.display();
 
 					}
 				});
 				Thread t2 = new Thread(new Runnable()
 				{
-					// Avec une échelle de temps
 					@Override
 					public void run()
 					{
-						XYSeries series2 = new XYSeries("FFT");
-						for (int j = 0; j < samples.length; j++)
+						fft.realForward(samplesFFT);
+						final DrawXYGraph graphFFT = new DrawXYGraph("Spectre", "Spectre", "Fréquence (Hz)", "Amplitude");
+						XYSeries series2 = new XYSeries("Spectre");
+						for (int j = 0; j < samplesFFT.length; j++)
 						{
-							series2.add(sampleRate * (j / 2 - 1) / samples.length, Math.abs(samplesFFT[j]));
+							series2.add(sampleRate * (j / 2 - 1) / samplesFFT.length, Math.abs(samplesFFT[j]));
 
 						}
 						XYDataset xyDataset2 = new XYSeriesCollection(series2);
@@ -96,13 +98,36 @@ public class CoefficientsCepstraux implements Plugin
 
 					}
 				});
+				Thread t3 = new Thread(new Runnable()
+				{
+					@Override
+					public void run()
+					{
+						for (int i = 0; i < samplesFFT.length; i++)
+						{
+							samplesCepstre[i] = Math.log(Math.abs(samplesFFT[i]));
+						}	
+						fft.realInverse(samplesCepstre,false);
+						final DrawXYGraph graphCepstre = new DrawXYGraph("Coefficients cepstraux", "Coefficients cepstraux", "Quéfrence (Hz)", "Amplitude");
+						XYSeries series2 = new XYSeries("Cepstre");
+						for (int j = 0; j < samplesCepstre.length; j++)
+						{
+							series2.add(sampleRate * (j / 2 - 1) / samplesCepstre.length, samplesCepstre[j]);
+						}
+						XYDataset xyDataset2 = new XYSeriesCollection(series2);
+						graphCepstre.addDataset(xyDataset2);
+						graphCepstre.display();
+
+					}
+				});
 				t1.run();
 				t2.run();
+				t3.run();
 				try
 				{
 					t1.join();
 					t2.join();
-
+					t3.join();
 				}
 				catch (InterruptedException e)
 				{
@@ -143,10 +168,6 @@ public class CoefficientsCepstraux implements Plugin
 	public void stopper()
 	{
 		this.isActive = false;
-		if (graph != null)
-		{
-			graph.dispose();
-		}
 	}
 
 	@Override
