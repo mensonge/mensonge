@@ -6,6 +6,8 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.List;
@@ -23,7 +25,7 @@ import mensonge.core.BaseDeDonnees.BaseDeDonnees;
 import mensonge.core.BaseDeDonnees.DBException;
 import mensonge.core.BaseDeDonnees.LigneEnregistrement;
 
-public final class DialogueAjouterEnregistrement extends JDialog implements ActionListener
+public final class DialogueAjouterEnregistrement extends JDialog implements ActionListener, KeyListener
 {
 
 	/**
@@ -111,6 +113,7 @@ public final class DialogueAjouterEnregistrement extends JDialog implements Acti
 		c.gridx = 1;
 		pan.add(annuler, c);
 
+		this.champsNom.addKeyListener(this);
 		this.setContentPane(pan);
 		this.setLocationRelativeTo(null);
 		this.setTitle("Ajouter un enregistrement");
@@ -127,6 +130,7 @@ public final class DialogueAjouterEnregistrement extends JDialog implements Acti
 	{
 		if (!champsNom.getText().isEmpty())
 		{
+			this.setVisible(false);
 			ByteBuffer bb = ByteBuffer.allocate(8);
 			bb.put(enregistrement, 28, 4);
 			bb.put(enregistrement, 40, 4);
@@ -151,7 +155,6 @@ public final class DialogueAjouterEnregistrement extends JDialog implements Acti
 			}
 			this.getParent().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-			this.setVisible(false);
 		}
 		else
 		{
@@ -218,5 +221,28 @@ public final class DialogueAjouterEnregistrement extends JDialog implements Acti
 		{
 			this.setVisible(false);
 		}
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e)
+	{
+		if(e.getKeyCode() == KeyEvent.VK_ENTER)
+		{
+			this.valider();
+		}
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e)
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }
