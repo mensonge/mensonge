@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -51,9 +52,9 @@ import mensonge.core.plugins.Plugin;
 import mensonge.core.plugins.PluginManager;
 
 /**
- * 
+ *
  * Classe Interface graphique contenant tous les composants graphiques
- * 
+ *
  */
 public class GraphicalUserInterface extends JFrame implements ActionListener
 {
@@ -83,12 +84,12 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		/*
 		 * Connexion à la base
 		 */
+		System.setProperty("vlcj.accept.gplv3", "yes");
 		connexionBase("LieLab.db");
 		this.previousPath = null;
 		this.panneauArbre = new PanneauArbre(bdd);
 		this.bdd.addObserver(panneauArbre);
 		this.ajoutBarMenu();
-
 		/*
 		 * Conteneur
 		 */
@@ -251,7 +252,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 	/**
 	 * Ajoute un nouvel onglet à l'interface graphique
-	 * 
+	 *
 	 * @param onglet
 	 *            Onglet à ajouter
 	 */
@@ -358,7 +359,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 	/**
 	 * Affiche une popup qui signale une erreur
-	 * 
+	 *
 	 * @param message
 	 *            Le message d'erreur à afficher
 	 * @param title
@@ -371,7 +372,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 	/**
 	 * Affiche une popup qui signale une erreur avec en titre Erreur
-	 * 
+	 *
 	 * @param message
 	 *            Le message d'erreur à afficher
 	 */
@@ -382,7 +383,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 	/**
 	 * Affiche une popup d'information
-	 * 
+	 *
 	 * @param message
 	 *            L'information à afficher
 	 * @param title

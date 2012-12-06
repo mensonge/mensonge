@@ -42,7 +42,7 @@ import mensonge.core.BaseDeDonnees.LigneEnregistrement;
 public final class PanneauArbre extends JPanel implements DataBaseObserver
 {
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 	private static final int TYPE_TRIE_CATEGORIE = 1;
@@ -195,8 +195,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 				rsEnr = this.bdd.getListeEnregistrementCategorie(ligneCat.getIdCat());
 				for (LigneEnregistrement ligne : rsEnr)
 				{
-					Feuille f = new Feuille(ligne.getId(), ligne.getNom(), ligne.getDuree(), ligne.getTaille(),
-							ligne.getNomCat(), ligne.getNomSuj());
+					Feuille f =  new Feuille(ligne);
 					node.add(f);
 				}
 				this.racine.add(node);
@@ -225,8 +224,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 				rsEnr = this.bdd.getListeEnregistrementSujet(ligneSuj.getIdSuj());
 				for (LigneEnregistrement ligne : rsEnr)
 				{
-					Feuille f = new Feuille(ligne.getId(), ligne.getNom(), ligne.getDuree(), ligne.getTaille(),
-							ligne.getNomCat(), ligne.getNomSuj());
+					Feuille f =  new Feuille(ligne);
 					node.add(f);
 				}
 				this.racine.add(node);
@@ -779,7 +777,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 
 	/**
 	 * Charge un fichier enregistrement.
-	 * 
+	 *
 	 */
 	private class ClicGauche extends MouseAdapter
 	{
@@ -806,9 +804,9 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 
 	/**
 	 * Permet replier l'arbre
-	 * 
+	 *
 	 * @author Azazel
-	 * 
+	 *
 	 */
 	class CollapseClicDroit extends MouseAdapter
 	{
@@ -829,9 +827,9 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 
 	/**
 	 * Permet deplier l'arbre
-	 * 
+	 *
 	 * @author Azazel
-	 * 
+	 *
 	 */
 	class ExpandClicDroit extends MouseAdapter
 	{
