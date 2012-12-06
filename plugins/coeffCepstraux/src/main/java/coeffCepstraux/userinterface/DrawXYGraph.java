@@ -33,6 +33,7 @@ public class DrawXYGraph extends JFrame
 	public DrawXYGraph(String applicationTitle, String chartTitle, String xLabel, String yLabel)
 	{
 		super(applicationTitle);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		JFreeChart chart = ChartFactory.createXYLineChart(chartTitle, xLabel, yLabel, null,
 				PlotOrientation.VERTICAL, true, false, false);
 		this.plot = chart.getXYPlot();
