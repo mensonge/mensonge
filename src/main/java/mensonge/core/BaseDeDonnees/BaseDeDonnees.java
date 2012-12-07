@@ -624,11 +624,11 @@ public class BaseDeDonnees extends BetterObservable
 		}
 		if (!this.categorieExiste(idCat))// On test si la categorie existe
 		{
-			throw new DBException("Categorie inexistante.", 3);
+			throw new DBException("Catégorie inexistante.", 3);
 		}
 		if (!this.sujetExiste(idSuj))// test l'existance de la categorie
 		{
-			throw new DBException("sujet inexistante.", 3);
+			throw new DBException("Sujet inexistante.", 3);
 		}
 		if (this.enregistrementExist(nom))
 		{
@@ -698,7 +698,7 @@ public class BaseDeDonnees extends BetterObservable
 		}
 		catch (Exception e)
 		{
-			throw new DBException("Erreur lors de la modification du nom: " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la modification du nom : " + e.getMessage(), 3);
 		}
 	}
 
@@ -733,7 +733,7 @@ public class BaseDeDonnees extends BetterObservable
 		}
 		catch (Exception e)
 		{
-			throw new DBException("Erreur lors de la modification de la duree: " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la modification de la durée : " + e.getMessage(), 3);
 		} finally
 		{
 			closeRessource(ps, null, null);
@@ -774,7 +774,7 @@ public class BaseDeDonnees extends BetterObservable
 		}
 		catch (Exception e)
 		{
-			throw new DBException("Erreur lors de la modification de la taille: " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la modification de la taille : " + e.getMessage(), 3);
 		} finally
 		{
 			closeRessource(ps, null, null);
@@ -798,7 +798,7 @@ public class BaseDeDonnees extends BetterObservable
 		}
 		if (!this.categorieExiste(idCat))// test l'existance de la categorie
 		{
-			throw new DBException("Categorie inexistante.", 3);
+			throw new DBException("Catégorie inexistante.", 3);
 		}
 		PreparedStatement ps = null;
 		try
@@ -816,7 +816,7 @@ public class BaseDeDonnees extends BetterObservable
 		}
 		catch (Exception e)
 		{
-			throw new DBException("Erreur lors de la modification de la categorie: " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la modification de la catégorie : " + e.getMessage(), 3);
 		} finally
 		{
 			closeRessource(ps, null, null);
@@ -840,7 +840,7 @@ public class BaseDeDonnees extends BetterObservable
 		}
 		if (!this.categorieExiste(nomCat))// test l'existance de la categorie
 		{
-			throw new DBException("Categorie inexistante.", 3);
+			throw new DBException("Catégorie inexistante.", 3);
 		}
 		PreparedStatement ps = null;
 		try
@@ -861,7 +861,7 @@ public class BaseDeDonnees extends BetterObservable
 		}
 		catch (Exception e)
 		{
-			throw new DBException("Erreur lors de la modification de la categorie: " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la modification de la catégorie : " + e.getMessage(), 3);
 		} finally
 		{
 			closeRessource(ps, null, null);
@@ -885,7 +885,7 @@ public class BaseDeDonnees extends BetterObservable
 		}
 		if (!this.sujetExiste(idSuj))// test l'existance de la categorie
 		{
-			throw new DBException("Sujet inexistante.", 3);
+			throw new DBException("Sujet inexistant.", 3);
 		}
 		PreparedStatement ps = null;
 		try
@@ -903,7 +903,7 @@ public class BaseDeDonnees extends BetterObservable
 		}
 		catch (Exception e)
 		{
-			throw new DBException("Erreur lors de la modification du sujet: " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la modification du sujet : " + e.getMessage(), 3);
 		} finally
 		{
 			closeRessource(ps, null, null);
@@ -927,7 +927,7 @@ public class BaseDeDonnees extends BetterObservable
 		}
 		if (!this.sujetExiste(nomSuj))// test l'existance de la categorie
 		{
-			throw new DBException("sujet inexistante.", 3);
+			throw new DBException("Sujet inexistant.", 3);
 		}
 		PreparedStatement ps = null;
 		try
@@ -948,7 +948,7 @@ public class BaseDeDonnees extends BetterObservable
 		}
 		catch (Exception e)
 		{
-			throw new DBException("Erreur lors de la modification du sujet: " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la modification du sujet : " + e.getMessage(), 3);
 		} finally
 		{
 			closeRessource(ps, null, null);
@@ -989,7 +989,7 @@ public class BaseDeDonnees extends BetterObservable
 		}
 		catch (Exception e)
 		{
-			throw new DBException("Erreur lors de la recuperation de l'enregistrement : " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la récuperation de l'enregistrement : " + e.getMessage(), 3);
 		} finally
 		{
 			closeRessource(ps, null, rs);
@@ -1027,7 +1027,7 @@ public class BaseDeDonnees extends BetterObservable
 		}
 		catch (Exception e)
 		{
-			throw new DBException("Erreur lors de l'ajout de la categorie : " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de l'ajout de la catégorie : " + e.getMessage(), 3);
 		} finally
 		{
 			closeRessource(ps, null, null);
@@ -1060,7 +1060,7 @@ public class BaseDeDonnees extends BetterObservable
 		}
 		catch (Exception e)
 		{
-			throw new DBException("Erreur lors de la recuperation des catégories: " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la récuperation des catégories : " + e.getMessage(), 3);
 		} finally
 		{
 			closeRessource(null, stat, rs);
@@ -1095,7 +1095,7 @@ public class BaseDeDonnees extends BetterObservable
 		}
 		catch (Exception e)
 		{
-			throw new DBException("Erreur lors de la suppression de la categorie: " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la suppression de la catégorie : " + e.getMessage(), 3);
 		} finally
 		{
 			closeRessource(ps, null, null);
@@ -1160,7 +1160,7 @@ public class BaseDeDonnees extends BetterObservable
 		}
 		if (!this.categorieExiste(idCat))// test l'existance de la categorie
 		{
-			throw new DBException("Categorie inexistante.", 3);
+			throw new DBException("Catégorie inexistante.", 3);
 		}
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -1320,7 +1320,7 @@ public class BaseDeDonnees extends BetterObservable
 		}
 		catch (Exception e)
 		{
-			throw new DBException("Erreur lors de la recuperation des sujets : " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la récuperation des sujets : " + e.getMessage(), 3);
 		} finally
 		{
 			closeRessource(null, stat, rs);
@@ -1388,7 +1388,7 @@ public class BaseDeDonnees extends BetterObservable
 		}
 		if (!this.categorieExiste(idSuj))// test l'existance de la categorie
 		{
-			throw new DBException("Sujet inexistante.", 3);
+			throw new DBException("Sujet inexistant.", 3);
 		}
 		try
 		{
@@ -1463,17 +1463,17 @@ public class BaseDeDonnees extends BetterObservable
 			// Creation des table et verification de la bonne execution des requetes
 			if (stat.executeUpdate("CREATE TABLE categorie (idcat  INTEGER PRIMARY KEY AUTOINCREMENT, nomcat VARCHAR2(128) UNIQUE);") != 0)
 			{
-				throw new Exception("Erreur de creation de la table categorie.");
+				throw new Exception("Erreur de création de la table categorie.");
 			}
 			// FIXME ajouter la reference pour le champ idcat
 			if (stat.executeUpdate("CREATE TABLE enregistrements (id  INTEGER PRIMARY KEY AUTOINCREMENT, enregistrement BLOB, duree INTEGER, taille INTEGER, nom VARCHAR2(128) UNIQUE, idcat INTEGER, idsuj INTEGER);") != 0)
 			{
-				throw new Exception("Erreur de creation de la table enregistrement.");
+				throw new Exception("Erreur de création de la table enregistrement.");
 			}
 			// FIXME ajouter la reference pour le champ idcat
 			if (stat.executeUpdate("CREATE TABLE sujet (idsuj  INTEGER PRIMARY KEY AUTOINCREMENT, nomsuj VARCHAR2(128) UNIQUE);") != 0)
 			{
-				throw new Exception("Erreur de creation de la table enregistrement.");
+				throw new Exception("Erreur de création de la table enregistrement.");
 			}
 		}
 		catch (Exception e)
