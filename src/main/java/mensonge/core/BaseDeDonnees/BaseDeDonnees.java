@@ -1060,7 +1060,7 @@ public class BaseDeDonnees extends BetterObservable
 		}
 		catch (Exception e)
 		{
-			throw new DBException("Erreur lors de la recuperation des categories: " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la recuperation des catégories: " + e.getMessage(), 3);
 		} finally
 		{
 			closeRessource(null, stat, rs);
@@ -1178,7 +1178,7 @@ public class BaseDeDonnees extends BetterObservable
 		}
 		catch (Exception e)
 		{
-			throw new DBException("Erreur lors de la recuperation de la categories: " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la recuperation de la catégorie : " + e.getMessage(), 3);
 		} finally
 		{
 			closeRessource(ps, null, rs);
@@ -1214,7 +1214,7 @@ public class BaseDeDonnees extends BetterObservable
 		}
 		catch (Exception e)
 		{
-			throw new DBException("Erreur lors de la recuperation de la categories: " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la recuperation de la catégorie : " + e.getMessage(), 3);
 		} finally
 		{
 			closeRessource(ps, null, rs);
@@ -1286,7 +1286,7 @@ public class BaseDeDonnees extends BetterObservable
 		}
 		catch (Exception e)
 		{
-			throw new DBException("Erreur lors de la suppression du sujet: " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la suppression du sujet : " + e.getMessage(), 3);
 		} finally
 		{
 			closeRessource(ps, null, null);
@@ -1320,7 +1320,7 @@ public class BaseDeDonnees extends BetterObservable
 		}
 		catch (Exception e)
 		{
-			throw new DBException("Erreur lors de la recuperation des sujets: " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la recuperation des sujets : " + e.getMessage(), 3);
 		} finally
 		{
 			closeRessource(null, stat, rs);
@@ -1362,7 +1362,7 @@ public class BaseDeDonnees extends BetterObservable
 		}
 		catch (Exception e)
 		{
-			throw new DBException("Erreur lors de la modification du sujet: " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la modification du sujet : " + e.getMessage(), 3);
 		} finally
 		{
 			closeRessource(ps, null, null);
@@ -1402,7 +1402,7 @@ public class BaseDeDonnees extends BetterObservable
 		}
 		catch (Exception e)
 		{
-			throw new DBException("Erreur lors de la recuperation du sujet: " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la récupération du sujet : " + e.getMessage(), 3);
 		} finally
 		{
 			closeRessource(ps, null, rs);
