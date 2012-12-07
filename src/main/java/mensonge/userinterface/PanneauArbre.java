@@ -6,6 +6,8 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 
 import java.awt.GridLayout;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -74,7 +76,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 		this.arbre = new JTree(racine);
 		this.arbre.addMouseListener(new ClicDroit());
 		this.arbre.addMouseListener(new ClicGauche());
-
+		this.arbre.addKeyListener(new KeyListenerTree());
 		this.arbre.addTreeSelectionListener(new TreeSelectionListener()
 		{
 			@Override
@@ -195,7 +197,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 				rsEnr = this.bdd.getListeEnregistrementCategorie(ligneCat.getIdCat());
 				for (LigneEnregistrement ligne : rsEnr)
 				{
-					Feuille f =  new Feuille(ligne);
+					Feuille f = new Feuille(ligne);
 					node.add(f);
 				}
 				this.racine.add(node);
@@ -224,7 +226,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 				rsEnr = this.bdd.getListeEnregistrementSujet(ligneSuj.getIdSuj());
 				for (LigneEnregistrement ligne : rsEnr)
 				{
-					Feuille f =  new Feuille(ligne);
+					Feuille f = new Feuille(ligne);
 					node.add(f);
 				}
 				this.racine.add(node);
@@ -307,6 +309,120 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 	public void setMenuClicDroit(JPopupMenu menuClicDroit)
 	{
 		this.menuClicDroit = menuClicDroit;
+	}
+
+	private void removeSelectedRecords()
+	{
+		if (onlySelectFeuille() && arbre.getSelectionCount() >= 1)
+		{
+			int option = -1;
+			if (arbre.getSelectionCount() == 1)
+			{
+				option = JOptionPane.showConfirmDialog(null,
+						"Voulez-vous supprimer cet enregistrement ?\n(Notez que la catégorie sera conservée)",
+						"Suppression", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+			}
+			else
+			{
+				option = JOptionPane.showConfirmDialog(null,
+						"Êtes-vous sûr de vouloir ces enregistrements ?\n(Notez que les catégories seront conservées)",
+						"Suppression", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+			}
+			if (option == JOptionPane.OK_OPTION)
+			{
+				setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+				for (int i = 0; i < arbre.getSelectionPaths().length; i++)
+				{
+					if (arbre.getSelectionPaths()[i].getLastPathComponent() instanceof Feuille)
+					{
+						try
+						{
+							bdd.supprimerEnregistrement(((Feuille) arbre.getSelectionPaths()[i].getLastPathComponent())
+									.getId());
+						}
+						catch (DBException exception)
+						{
+							GraphicalUserInterface.popupErreur("Impossible de supprimer l'enregistrement : "
+									+ exception.getMessage());
+						}
+					}
+				}
+				setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			}
+		}
+	}
+
+	private void removeSelectedCategories()
+	{
+		if (arbre.getSelectionCount() >= 1 && onlySelectBranche())
+		{
+			int option = -1;
+
+			if (arbre.getSelectionCount() == 1)
+			{
+				option = JOptionPane.showConfirmDialog(null, "Êtes-vous sûr de vouloir supprimer cette catégorie ?\n",
+						"Suppression", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+			}
+			else
+			{
+				option = JOptionPane.showConfirmDialog(null, "Êtes-vous sûr de vouloir supprimer ces catégories ?\n",
+						"Suppression", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+			}
+			if (option == JOptionPane.OK_OPTION)
+			{
+				for (TreePath treePath : arbre.getSelectionPaths())
+				{
+					try
+					{
+						if (!(treePath.getLastPathComponent() instanceof Feuille))
+						{
+							String nomCategorie = treePath.getLastPathComponent().toString();
+							List<LigneEnregistrement> liste = bdd.getListeEnregistrementCategorie(bdd
+									.getCategorie(nomCategorie));
+							if (liste.size() != 0)
+							{
+								GraphicalUserInterface
+										.popupErreur(
+												"Une catégorie ne peut être supprimée que quand elle n'a plus d'enregistrements.",
+												"Erreur");
+							}
+							else
+							{
+								bdd.supprimerCategorie(bdd.getCategorie(nomCategorie));
+							}
+						}
+					}
+					catch (Exception e1)
+					{
+						GraphicalUserInterface.popupErreur(e1.getMessage(), "Erreur");
+					}
+				}
+			}
+		}
+	}
+
+	private class KeyListenerTree implements KeyListener
+	{
+
+		@Override
+		public void keyPressed(KeyEvent e)
+		{
+			if (e.getKeyCode() == KeyEvent.VK_DELETE)
+			{
+				removeSelectedCategories();
+				removeSelectedRecords();
+			}
+		}
+
+		@Override
+		public void keyReleased(KeyEvent arg0)
+		{
+		}
+
+		@Override
+		public void keyTyped(KeyEvent arg0)
+		{
+		}
 	}
 
 	class ClicDroit extends MouseAdapter
@@ -443,42 +559,8 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
-			int option = -1;
-			if (arbre.getSelectionCount() == 1)
-			{
-				option = JOptionPane.showConfirmDialog(null,
-						"Voulez-vous supprimer cet enregistrement ?\n(Notez que la catégorie sera conservée)",
-						"Suppression", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-			}
-			else
-			{
-				option = JOptionPane.showConfirmDialog(null,
-						"Êtes-vous sûr de vouloir ces enregistrements ?\n(Notez que les catégories seront conservées)",
-						"Suppression", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-			}
-			if (option == JOptionPane.OK_OPTION)
-			{
-				setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-				for (int i = 0; i < arbre.getSelectionPaths().length; i++)
-				{
-					if (arbre.getSelectionPaths()[i].getLastPathComponent() instanceof Feuille)
-					{
-						try
-						{
-							bdd.supprimerEnregistrement(((Feuille) arbre.getSelectionPaths()[i].getLastPathComponent())
-									.getId());
-						}
-						catch (DBException exception)
-						{
-							GraphicalUserInterface.popupErreur("Impossible de supprimer l'enregistrement : "
-									+ exception.getMessage());
-						}
-					}
-				}
-				setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-			}
+			removeSelectedRecords();
 		}
-
 	}
 
 	class ExporterEnregistrementClicDroit extends MouseAdapter
@@ -628,48 +710,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
-			int option = -1;
-
-			if (arbre.getSelectionCount() == 1)
-			{
-				option = JOptionPane.showConfirmDialog(null, "Êtes-vous sûr de vouloir supprimer cette catégorie ?\n",
-						"Suppression", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-			}
-			else
-			{
-				option = JOptionPane.showConfirmDialog(null, "Êtes-vous sûr de vouloir supprimer ces catégories ?\n",
-						"Suppression", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-			}
-			if (option == JOptionPane.OK_OPTION)
-			{
-				for (TreePath treePath : arbre.getSelectionPaths())
-				{
-					try
-					{
-						if (!(treePath.getLastPathComponent() instanceof Feuille))
-						{
-							String nomCategorie = treePath.getLastPathComponent().toString();
-							List<LigneEnregistrement> liste = bdd.getListeEnregistrementCategorie(bdd
-									.getCategorie(nomCategorie));
-							if (liste.size() != 0)
-							{
-								GraphicalUserInterface
-										.popupErreur(
-												"Une catégorie ne peut être supprimée que quand elle n'a plus d'enregistrements.",
-												"Erreur");
-							}
-							else
-							{
-								bdd.supprimerCategorie(bdd.getCategorie(nomCategorie));
-							}
-						}
-					}
-					catch (Exception e1)
-					{
-						GraphicalUserInterface.popupErreur(e1.getMessage(), "Erreur");
-					}
-				}
-			}
+			removeSelectedCategories();
 		}
 	}
 
@@ -777,7 +818,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 
 	/**
 	 * Charge un fichier enregistrement.
-	 *
+	 * 
 	 */
 	private class ClicGauche extends MouseAdapter
 	{
@@ -804,9 +845,9 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 
 	/**
 	 * Permet replier l'arbre
-	 *
+	 * 
 	 * @author Azazel
-	 *
+	 * 
 	 */
 	class CollapseClicDroit extends MouseAdapter
 	{
@@ -827,9 +868,9 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 
 	/**
 	 * Permet deplier l'arbre
-	 *
+	 * 
 	 * @author Azazel
-	 *
+	 * 
 	 */
 	class ExpandClicDroit extends MouseAdapter
 	{
