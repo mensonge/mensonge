@@ -680,7 +680,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			}
 			else
 			{
-				menu.setText("Désactiver l'évènnement");
+				menu.setText("Désactiver l'évènement");
 			}
 
 		}

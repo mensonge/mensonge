@@ -143,11 +143,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 	public void setEvent(boolean event)
 	{
 		this.event = event;
-		if (event == false)
-		{
-			this.arbre.setCellRenderer(null);
-		}
-		else
+		if (event)
 		{
 			// on crée l'objet en passant en paramétre une chaîne representant le format
 			SimpleDateFormat formatter = new SimpleDateFormat("MM");
@@ -164,6 +160,10 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 			{
 				this.event = false;
 			}
+		}
+		else
+		{
+			this.arbre.setCellRenderer(null);
 		}
 	}
 

@@ -39,7 +39,6 @@ public class LecteurAudio extends JPanel implements ActionListener
 
 	private JLabel labelDureeMax;
 	private JSlider slider;
-	private JSlider sliderVolume;
 
 	private MediaPlayer mediaPlayer;
 
@@ -93,17 +92,17 @@ public class LecteurAudio extends JPanel implements ActionListener
 		this.slider.setValue(0);
 		this.slider.setMaximum(100);
 
-		this.sliderVolume = new JSlider(JSlider.HORIZONTAL);
-		this.sliderVolume.setPaintTicks(false);
-		this.sliderVolume.setPaintLabels(false);
-		this.sliderVolume.setMinimum(0);
-		this.sliderVolume.setMaximum(100);
-		this.sliderVolume.setValue(100);
-		this.sliderVolume.setToolTipText("Volume");
-		this.sliderVolume.setMinimumSize(new Dimension(100, 30));
-		this.sliderVolume.setMaximumSize(new Dimension(100, 30));
-		this.sliderVolume.setPreferredSize(new Dimension(100, 30));
-		this.sliderVolume.addMouseListener(new SliderVolumeListener(this.sliderVolume, this.mediaPlayer));	
+		JSlider sliderVolume = new JSlider(JSlider.HORIZONTAL);
+		sliderVolume.setPaintTicks(false);
+		sliderVolume.setPaintLabels(false);
+		sliderVolume.setMinimum(0);
+		sliderVolume.setMaximum(100);
+		sliderVolume.setValue(100);
+		sliderVolume.setToolTipText("Volume");
+		sliderVolume.setMinimumSize(new Dimension(100, 30));
+		sliderVolume.setMaximumSize(new Dimension(100, 30));
+		sliderVolume.setPreferredSize(new Dimension(100, 30));
+		sliderVolume.addMouseListener(new SliderVolumeListener(sliderVolume, this.mediaPlayer));	
 
 
 		SliderPositionEventListener sliderListener = new SliderPositionEventListener(this.slider,
