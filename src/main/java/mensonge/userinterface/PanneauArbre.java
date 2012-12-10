@@ -2,7 +2,6 @@ package mensonge.userinterface;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Dimension;
 
@@ -35,7 +34,6 @@ import javax.swing.JTree;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 
 import mensonge.core.Cache;
@@ -129,7 +127,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 		panelConteneur.add(panelArbreInfo, BorderLayout.NORTH);
 		panelConteneur.add(this.infoArbre, BorderLayout.SOUTH);
 		
-		this.setEvent(true);
+		//this.setEvent(true);
 		this.lecteurAudio = new LecteurAudio();
 		this.lecteurAudio.setVisible(false);
 		
