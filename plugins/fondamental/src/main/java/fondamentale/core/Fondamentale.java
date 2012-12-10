@@ -39,7 +39,7 @@ public class Fondamentale implements Plugin
 		final double[] samples = new double[echantillons.length];
 		final double[] samplesFFT = new double[echantillons.length];
 
-		
+		/*
 		 final double phaseMultiplier = 2 * Math.PI * NB_CYCLES / NB_SAMPLES;
 		 for (int i = 0; i < NB_SAMPLES; i++)
 		 {
@@ -48,7 +48,7 @@ public class Fondamentale implements Plugin
 			 samples[i] = sineResult;
 			 samplesFFT[i] = sineResult; 
 		 }
-		 
+		 */
 
 		SwingUtilities.invokeLater(new Runnable()
 		{
@@ -57,8 +57,8 @@ public class Fondamentale implements Plugin
 			{
 				for (int i = 0; i < echantillons.length; i++)
 				{
-					//samples[i] = echantillons[i][0];
-					//samplesFFT[i] = echantillons[i][0];
+					samples[i] = echantillons[i][0];
+					samplesFFT[i] = echantillons[i][0];
 				}
 
 				final DoubleFFT_1D fft = new DoubleFFT_1D(samplesFFT.length);
