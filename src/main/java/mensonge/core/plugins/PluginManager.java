@@ -7,7 +7,6 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,8 +14,6 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import mensonge.core.Extraction;
 
 /**
  * Gestionnaire des plugins
@@ -26,11 +23,11 @@ public class PluginManager
 	private static final String PLUGINS_PATH = "plugins";
 	private static final String CLASS_EXTENSION = ".class";
 
-	private static Logger logger = Logger.getLogger("logger");
+	private static Logger logger = Logger.getLogger("pluginManager");
 	private Map<String, Plugin> listePlugins;
 
 	/**
-	 * Initialise une liste de plugins
+	 * Initialise une liste de plugins vide
 	 */
 	public PluginManager()
 	{
@@ -113,13 +110,13 @@ public class PluginManager
 			logger.log(Level.WARNING, dossierPlugins.getName() + " n'est pas un dossier.");
 		}
 	}
-	
+
 	/**
 	 * Stop tous les plugins
 	 */
 	public void unloadPlugins()
 	{
-		for(Plugin plugin : listePlugins.values())
+		for (Plugin plugin : listePlugins.values())
 		{
 			plugin.stopper();
 		}
@@ -135,45 +132,6 @@ public class PluginManager
 		return listePlugins;
 	}
 
-	public static void main(String args[])
-	{
-		ArrayList<File> fichiers = new ArrayList<File>();
-		fichiers.add(new File("sons/test.wav"));
-		PluginManager p = new PluginManager();
-		try
-		{
-			p.loadPlugins();
-		}
-		catch (IOException e)
-		{
-			logger.log(Level.WARNING, e.getMessage());
-		}
-		catch (ClassNotFoundException e)
-		{
-			logger.log(Level.WARNING, e.getMessage());
-		}
-		catch (InstantiationException e)
-		{
-			logger.log(Level.WARNING, e.getMessage());
-		}
-		catch (IllegalAccessException e)
-		{
-			logger.log(Level.WARNING, e.getMessage());
-		}
-		Map<String, Plugin> h = p.getPlugins();
-		if (h.containsKey("Coefficients cepstraux"))
-		{
-			logger.log(Level.INFO, "[i] Lançement du plugin CoefficientsCepstraux");
-			h.get("Coefficients cepstraux").lancer(new Extraction(), fichiers);
-			logger.log(Level.INFO, "[i] Fin du plugin CoefficientsCepstraux");
-		}
-		else
-		{
-			logger.log(Level.WARNING, "[E] Pas de plugin CoefficientsCepstraux");
-
-		}
-	}
-
 	/**
 	 * Classe interne permettant de filter les noms des fichiers
 	 * 
@@ -186,8 +144,10 @@ public class PluginManager
 		/**
 		 * Initialise le filtre
 		 * 
-		 * @param start Ce par quoi doit commencer le nom du fichier
-		 * @param end Ce par quoi doit terminer le nom du fichier
+		 * @param start
+		 *            Ce par quoi doit commencer le nom du fichier
+		 * @param end
+		 *            Ce par quoi doit terminer le nom du fichier
 		 */
 		public FileListFilter(String start, String end)
 		{

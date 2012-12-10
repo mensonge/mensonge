@@ -77,7 +77,8 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	private JMenu menuOutils;
 
 	/**
-	 * Constructeur de base
+	 * Créé une nouvelle fenêtre avec les différents panneaux (onglets et arbre), défini les propriétés de la fenêtre et
+	 * lance la connxion à la BDD
 	 */
 	public GraphicalUserInterface()
 	{
@@ -276,6 +277,9 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		onglet.requestFocus();
 	}
 
+	/**
+	 * Permet de fermer proprement tous les onglets ouverts de l'application
+	 */
 	private void closeAllTabs()
 	{
 		// On ferme proprement tous les onglets avant de quitter
@@ -297,7 +301,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	}
 
 	/**
-	 * Quitte le programme
+	 * Quitte le programme en fermant proprement ce qui est nécessaire
 	 */
 	private void quitter()
 	{
@@ -410,7 +414,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		{
 			JFileChooser fileChooser = new JFileChooser(previousPath);
 			fileChooser.setFileFilter(SwingFileFilterFactory.newVideoFileFilter());
-			fileChooser.addChoosableFileFilter(SwingFileFilterFactory.newAudioFileFilter());			
+			fileChooser.addChoosableFileFilter(SwingFileFilterFactory.newAudioFileFilter());
 			fileChooser.setMultiSelectionEnabled(true);
 			int option = fileChooser.showOpenDialog(this);
 			if (option == JFileChooser.APPROVE_OPTION && fileChooser.getSelectedFiles() != null)
@@ -456,6 +460,10 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		}
 	}
 
+	/**
+	 * Listener pour le bouton d'exportation dans le menu
+	 * 
+	 */
 	private class ExporterBaseListener implements ActionListener
 	{
 		private GraphicalUserInterface fenetre;
@@ -495,6 +503,10 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		}
 	}
 
+	/**
+	 * Listener pour le bouton d'importation dans le menu
+	 * 
+	 */
 	private class ImporterBaseListener implements ActionListener
 	{
 		private GraphicalUserInterface fenetre;
@@ -534,6 +546,11 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		}
 	}
 
+	/**
+	 * Listener pour les items des différents plugins dans le menu. Un item = un listener spécifique pour lancer le bon
+	 * plugin au clic
+	 * 
+	 */
 	private static class ItemPluginListener implements ActionListener
 	{
 		private static final Extraction EXTRACTION = new Extraction();
@@ -541,6 +558,16 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		private PanneauArbre panneauArbre;
 		private GraphicalUserInterface gui;
 
+		/**
+		 * Nouveau listener pour un item de plugin
+		 * 
+		 * @param plugin
+		 *            Plugin associé à l'item dans le menu
+		 * @param panneauArbre
+		 *            PanneauArbre servant à récupérer la liste des enregistrements selectionnés
+		 * @param gui
+		 *            Instance de la gui pour définir le cursor wait/default pour montrer le chargement du plugin
+		 */
 		public ItemPluginListener(Plugin plugin, PanneauArbre panneauArbre, GraphicalUserInterface gui)
 		{
 			this.gui = gui;
@@ -558,6 +585,10 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		}
 	}
 
+	/**
+	 * Listener pour le bouton de rechargement de la liste des plugins dans le menu
+	 * 
+	 */
 	private class ReloadPluginsListener implements ActionListener
 	{
 		@Override
@@ -567,6 +598,10 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		}
 	}
 
+	/**
+	 * Listener pour le bouton de purge du cache dans le menu
+	 * 
+	 */
 	private class PurgerCacheListener implements ActionListener
 	{
 		@Override
@@ -589,6 +624,10 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		}
 	}
 
+	/**
+	 * Listener pour le bouton de compactage de la bdd dans le menu
+	 * 
+	 */
 	private class CompacterBaseListener implements ActionListener
 	{
 		@Override
@@ -617,12 +656,20 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		}
 	}
 
+	/**
+	 * Main de l'application défini les constantes pour l'anti-aliasing, tente de charger le thème nimbus, charge les
+	 * libs de VLC et lance la fenêtre de l'application
+	 * 
+	 * @param args
+	 *            Arguments du main, ne sont pas pris en compte
+	 */
 	public static void main(String args[])
 	{
 		// On active l'anti-aliasing
 		System.setProperty("awt.useSystemAAFontSettings", "on");
 		System.setProperty("swing.aatext", "true");
 
+		// Tente de changer le thème avec le thème nimbus
 		try
 		{
 			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
@@ -644,6 +691,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			logger.log(Level.WARNING, e1.getLocalizedMessage());
 		}
 
+		// Chargement des bibliothèques pour VLCJ
 		try
 		{
 			NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(),
@@ -653,8 +701,9 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		{
 			logger.log(Level.SEVERE, e.getLocalizedMessage());
 		}
-
 		Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
+		
+		// Lancement de la fenêtre
 		javax.swing.SwingUtilities.invokeLater(new Runnable()
 		{
 			@Override

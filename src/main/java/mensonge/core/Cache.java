@@ -6,6 +6,10 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Classe gérant le dossier de cache
+ * 
+ */
 public final class Cache
 {
 	private static final String CACHE_DIRECTORY_NAME = "cache";
@@ -32,25 +36,48 @@ public final class Cache
 		}
 	}
 
+	/**
+	 * Récupère un fichier du cache
+	 * 
+	 * @param fileName
+	 *            Nom du fichier à récupérer
+	 * @return Fichier du cache ou null s'il n'existe pas
+	 */
 	public static File get(String fileName)
 	{
 		File cacheFile = new File(CACHE_DIRECTORY, fileName);
-		if(cacheFile.exists())
+		if (cacheFile.exists())
 		{
 			return cacheFile;
 		}
 		return null;
 	}
 
+	/**
+	 * Check si le fichier existe dans le cache
+	 * 
+	 * @param fileName
+	 *            Nom du fichier
+	 * @return Vrai s'il existe faux sinon
+	 */
 	public static boolean exists(String fileName)
 	{
 		return new File(CACHE_DIRECTORY, fileName).exists();
 	}
-	
+
+	/**
+	 * Créé un fichier dans le cache
+	 * 
+	 * @param fileName
+	 *            Nom du fichier
+	 * @param content
+	 *            Contenu du fichier
+	 * @throws IOException
+	 */
 	public static void createFile(String fileName, byte[] content) throws IOException
 	{
 		File newFile = new File(CACHE_DIRECTORY, fileName);
-		if(!newFile.exists())
+		if (!newFile.exists())
 		{
 			newFile.createNewFile();
 		}
@@ -59,7 +86,12 @@ public final class Cache
 		fos.flush();
 		fos.close();
 	}
-	
+
+	/**
+	 * Purge le cache
+	 * 
+	 * @return La taille totale des fichiers supprimés
+	 */
 	public static long purge()
 	{
 		long length = 0;
@@ -77,6 +109,11 @@ public final class Cache
 		return length;
 	}
 
+	/**
+	 * Récupère la taille du dossier de cache (Somme de la taille des fichiers)
+	 * 
+	 * @return La taille du dossier de cache
+	 */
 	public static long getSize()
 	{
 		long length = 0;

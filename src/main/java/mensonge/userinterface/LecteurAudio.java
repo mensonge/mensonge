@@ -24,6 +24,10 @@ import javax.swing.KeyStroke;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 
+/**
+ * Classe gérant un lecteur audio
+ *
+ */
 public class LecteurAudio extends JPanel implements ActionListener
 {
 	private static final long serialVersionUID = 5373991180139317820L;
@@ -41,6 +45,9 @@ public class LecteurAudio extends JPanel implements ActionListener
 
 	private MediaPlayerFactory factory;
 
+	/**
+	 * Créé un nouveau lecteur audio avec une barre de controle
+	 */
 	public LecteurAudio()
 	{
 		factory = new MediaPlayerFactory();
@@ -61,6 +68,9 @@ public class LecteurAudio extends JPanel implements ActionListener
 		this.factory.release();
 	}
 
+	/**
+	 * Ajoute la barre de controle du lecteur audio
+	 */
 	private void addControls()
 	{
 		this.labelDureeActuelle = new JLabel("00:00:00");
@@ -149,11 +159,18 @@ public class LecteurAudio extends JPanel implements ActionListener
 		});
 	}
 
+	/**
+	 * Lance la lecture du fichier actuellement chargé
+	 */
 	public void play()
 	{
 		this.mediaPlayer.play();
 	}
 
+	/**
+	 * Lance la lecture d'un fichier audio
+	 * @param filePath Chemin du fichier à lire
+	 */
 	public void play(final String filePath)
 	{
 		javax.swing.SwingUtilities.invokeLater(new Runnable()
@@ -165,6 +182,10 @@ public class LecteurAudio extends JPanel implements ActionListener
 		});
 	}
 
+	/**
+	 * Charge un fichier audio
+	 * @param filePath Chemin du fichier audio
+	 */
 	public void load(final String filePath)
 	{
 		javax.swing.SwingUtilities.invokeLater(new Runnable()
@@ -177,6 +198,9 @@ public class LecteurAudio extends JPanel implements ActionListener
 		});
 	}
 
+	/**
+	 * Stop la lecture du fichier audio
+	 */
 	public void stop()
 	{
 		this.mediaPlayer.stop();

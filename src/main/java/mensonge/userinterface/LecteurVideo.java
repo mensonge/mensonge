@@ -30,6 +30,7 @@ import javax.swing.JSlider;
 import javax.swing.ImageIcon;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
+import javax.swing.SwingUtilities;
 
 import mensonge.core.Extraction;
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
@@ -37,6 +38,10 @@ import mensonge.core.BaseDeDonnees.BaseDeDonnees;
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 
+/**
+ * Classe gérant le lecteur vidéo
+ * 
+ */
 public class LecteurVideo extends JPanel implements ActionListener
 {
 	private static final long serialVersionUID = 5373991180139317820L;
@@ -61,7 +66,16 @@ public class LecteurVideo extends JPanel implements ActionListener
 	private String pathVideo = "";
 	private JFrame parent;
 
-	public LecteurVideo(final File fichierVideo, final String nom, BaseDeDonnees bdd, JFrame parent)
+	/**
+	 * Créé un lecteur vidéo avec une barre de controle
+	 * 
+	 * @param fichierVideo
+	 *            Fichier vidéo à lire
+	 * @param bdd
+	 *            Base de données de l'application
+	 * @param parent
+	 */
+	public LecteurVideo(final File fichierVideo, BaseDeDonnees bdd, JFrame parent)
 	{
 		this.parent = parent;
 		this.bdd = bdd;
@@ -73,25 +87,28 @@ public class LecteurVideo extends JPanel implements ActionListener
 		this.mediaPlayer.addMediaPlayerEventListener(new PlayerEventListener(slider, boutonLecture, labelDureeMax,
 				labelDureeActuelle));
 
-		javax.swing.SwingUtilities.invokeLater(new Runnable()
+		SwingUtilities.invokeLater(new Runnable()
 		{
 			public void run()
 			{
 				try
 				{
+					pathVideo = fichierVideo.getCanonicalPath();
 					mediaPlayer.startMedia(fichierVideo.getCanonicalPath());
 					mediaPlayer.pause();
 					mediaPlayer.setVolume(sliderVolume.getValue());
 				}
 				catch (IOException e)
 				{
-					GraphicalUserInterface.popupErreur(e.getMessage(), "Erreur");
+					GraphicalUserInterface.popupErreur(e.getMessage());
 				}
 			}
 		});
-		pathVideo = nom;
 	}
 
+	/**
+	 * Créé une barre de controle avec les boutons des marqueurs, barre de progression,...
+	 */
 	private void initialiserComposants()
 	{
 		this.labelDureeActuelle = new JLabel("00:00:00");
@@ -129,7 +146,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 		this.sliderVolume.setMinimumSize(new Dimension(150, 30));
 		this.sliderVolume.setMaximumSize(new Dimension(150, 30));
 		this.sliderVolume.setPreferredSize(new Dimension(150, 30));
-		this.sliderVolume.addMouseListener(new SliderVolumeListener(this.sliderVolume, this.mediaPlayer));	
+		this.sliderVolume.addMouseListener(new SliderVolumeListener(this.sliderVolume, this.mediaPlayer));
 
 		this.slider = new SliderWithMarkers(JSlider.HORIZONTAL);
 		SliderPositionEventListener sliderListener = new SliderPositionEventListener(this.slider,
@@ -276,6 +293,10 @@ public class LecteurVideo extends JPanel implements ActionListener
 		}
 	}
 
+	/**
+	 * Listener du slider avec les marqueurs
+	 *
+	 */
 	private class SliderWithMarkersListener extends MouseAdapter
 	{
 		@Override

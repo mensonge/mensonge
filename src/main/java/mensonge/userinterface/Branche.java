@@ -8,6 +8,7 @@ public class Branche extends DefaultMutableTreeNode
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+
 	/**
 	 * Constructeur par défaut
 	 */
@@ -15,10 +16,12 @@ public class Branche extends DefaultMutableTreeNode
 	{
 		super();
 	}
-	
+
 	/**
 	 * Constructeur avec nom
-	 * @param nom nom de l'objet
+	 * 
+	 * @param nom
+	 *            nom de l'objet
 	 */
 	public Branche(String nom)
 	{

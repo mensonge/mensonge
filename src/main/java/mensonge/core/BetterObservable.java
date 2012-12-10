@@ -24,11 +24,13 @@ public class BetterObservable implements Observable
 		this.objectWhichNotify = o;
 	}
 
+	@Override
 	public void addObserver(IObserver o)
 	{
 		this.observers.add(o);
 	}
 
+	@Override
 	public void removeObserver(IObserver o)
 	{
 		this.observers.remove(o);
@@ -38,7 +40,7 @@ public class BetterObservable implements Observable
 	{
 		callWithObservers("onUpdateDataBase");
 	}
-	
+
 	private void callWithObservers(String name, Object... args)
 	{
 		try
