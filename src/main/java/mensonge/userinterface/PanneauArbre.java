@@ -169,6 +169,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 
 	public void updateArbre()
 	{
+		Enumeration<TreePath> pathExpand = this.arbre.getExpandedDescendants(new TreePath(racine));
 		viderNoeud(this.racine);
 		if (this.typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)
 		{
@@ -179,10 +180,44 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 			remplirArbreEnregistrementSujet();
 		}
 		this.arbre.setExpandsSelectedPaths(true);
-		this.arbre.expandPath(new TreePath(this.racine));
+		//this.redeployerArbre(pathExpand);
 		this.arbre.updateUI();
 	}
 
+	public void redeployerArbre(Enumeration<TreePath> pathExpand)
+	{
+		String userObject;
+		DefaultMutableTreeNode node;
+		TreePath element;
+		Object path[] = new Object[2];
+		path[0] = racine;
+		while(pathExpand.hasMoreElements())
+		{
+			element = pathExpand.nextElement();
+			userObject = (String)((DefaultMutableTreeNode) element.getPath()[1]).getUserObject();
+			node = trouverNoeud(racine, userObject);
+			if(node != null)
+			{
+				path[1] = node;
+				this.arbre.expandPath(new TreePath(path));
+			}
+		}
+	}
+	public static DefaultMutableTreeNode trouverNoeud(DefaultMutableTreeNode noeud, String userObject)
+	{
+		Enumeration children = noeud.children();
+		DefaultMutableTreeNode tmp;
+		while(children.hasMoreElements())
+		{
+			tmp = (DefaultMutableTreeNode) children.nextElement();
+			if(tmp.getUserObject().equals(userObject))
+			{
+				return tmp;
+			}
+		}
+		return null;
+	}
+	
 	public void remplirArbreEnregistrementCategorie()
 	{
 		List<LigneEnregistrement> rsCat = null;
@@ -937,6 +972,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 	@Override
 	public void onUpdateDataBase()
 	{
+		
 		if (this.labelCacheSize != null)
 		{
 			this.labelDBSize.setText("Taille de la base de données : "
