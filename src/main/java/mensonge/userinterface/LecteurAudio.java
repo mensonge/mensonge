@@ -20,8 +20,6 @@ import javax.swing.JPanel;
 import javax.swing.JSlider;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.MediaPlayerFactory;

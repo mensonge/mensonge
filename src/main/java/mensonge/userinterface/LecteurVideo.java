@@ -15,8 +15,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicSliderUI;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;

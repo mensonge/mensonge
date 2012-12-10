@@ -40,6 +40,7 @@ import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
 
 import uk.co.caprica.vlcj.binding.LibVlc;
+import uk.co.caprica.vlcj.filter.swing.SwingFileFilterFactory;
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
 import mensonge.core.Cache;
@@ -83,7 +84,6 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		/*
 		 * Connexion à la base
 		 */
-		System.setProperty("vlcj.accept.gplv3", "yes");
 		connexionBase("LieLab.db");
 		this.previousPath = null;
 		this.panneauArbre = new PanneauArbre(bdd);
@@ -409,6 +409,8 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		else if (event.getSource() == fichierOuvrir)
 		{
 			JFileChooser fileChooser = new JFileChooser(previousPath);
+			fileChooser.setFileFilter(SwingFileFilterFactory.newVideoFileFilter());
+			fileChooser.addChoosableFileFilter(SwingFileFilterFactory.newAudioFileFilter());			
 			fileChooser.setMultiSelectionEnabled(true);
 			int option = fileChooser.showOpenDialog(this);
 			if (option == JFileChooser.APPROVE_OPTION && fileChooser.getSelectedFiles() != null)
