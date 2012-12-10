@@ -12,6 +12,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
@@ -122,10 +125,20 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 		JPanel panelConteneur = new JPanel(new BorderLayout());
 		panelConteneur.add(panelArbreInfo, BorderLayout.NORTH);
 		panelConteneur.add(this.infoArbre, BorderLayout.SOUTH);
-
+		
+		// on crée l'objet en passant en paramétre une chaîne representant le format 
+		SimpleDateFormat formatter = new SimpleDateFormat ("MM" ); 
+		//récupération de la date courante 
+		Date currentTime_1 = new Date(); 
+		//on crée la chaîne à partir de la date  
+		String dateString = formatter.format(currentTime_1);
+		if(dateString.equals("12"))
+		{
+			this.arbre.setCellRenderer(new PanneauArbreRenderer());
+		}
 		this.lecteurAudio = new LecteurAudio();
 		this.lecteurAudio.setVisible(false);
-
+		
 		this.add(panelConteneur, BorderLayout.NORTH);
 		this.add(lecteurAudio, BorderLayout.SOUTH);
 	}
