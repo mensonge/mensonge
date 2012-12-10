@@ -14,7 +14,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -412,7 +411,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			JFileChooser fileChooser = new JFileChooser(previousPath);
 			fileChooser.setMultiSelectionEnabled(true);
 			int option = fileChooser.showOpenDialog(this);
-			if (option == JFileChooser.APPROVE_OPTION)
+			if (option == JFileChooser.APPROVE_OPTION && fileChooser.getSelectedFiles() != null)
 			{
 				try
 				{
