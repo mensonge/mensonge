@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src/main/java"/>
+	<classpathentry kind="src" path="src/test/java"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="../lib/it/sauronsoftware/jave/jave/1.0.2/jave-1.0.2.jar"/>
+	<classpathentry kind="lib" path="../lib/jcommon-1.0.17.jar"/>
+	<classpathentry kind="lib" path="../lib/jfreechart-1.0.14.jar"/>
+	<classpathentry kind="lib" path="../lib/jtransforms-2.4.jar"/>
+	<classpathentry kind="lib" path="../lib/PluginInterfaces.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>
