@@ -180,7 +180,14 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 		}
 		this.arbre.setExpandsSelectedPaths(true);
 		this.arbre.expandPath(new TreePath(this.racine));
-		this.arbre.updateUI();
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				arbre.updateUI();
+			}
+		});
 	}
 
 	public void remplirArbreEnregistrementCategorie()
