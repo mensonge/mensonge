@@ -173,12 +173,22 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		this.fichierOuvrir.setAccelerator(KeyStroke.getKeyStroke('O', KeyEvent.CTRL_DOWN_MASK));
 		baseImporter.setAccelerator(KeyStroke.getKeyStroke('I', KeyEvent.CTRL_DOWN_MASK));
 		baseExporter.setAccelerator(KeyStroke.getKeyStroke('E', KeyEvent.CTRL_DOWN_MASK));
-
+		
 		this.menuBar = new JMenuBar();
+		
 		this.menuBar.add(menuFichier);
 		this.ajoutMenuPlugins();
 		this.menuBar.add(menuBase);
 		this.menuBar.add(menuAide);
+	
+		if(this.panneauArbre.isEvent())
+		{
+			JMenu menuAffichage = new JMenu("Affichage");
+			JMenuItem affichageDisableEvent = new JMenuItem("Desactiver l'evennement");
+			affichageDisableEvent.addActionListener(new DesactiverEvent());
+			menuAffichage.add(affichageDisableEvent);
+			this.menuBar.add(menuAffichage);
+		}
 		this.setJMenuBar(this.menuBar);
 	}
 
@@ -615,6 +625,26 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		}
 	}
 
+	private class DesactiverEvent implements ActionListener
+	{
+	
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{
+			panneauArbre.setEvent(!panneauArbre.isEvent());
+			JMenuItem  menu = (JMenuItem) e.getSource();
+			if(!panneauArbre.isEvent())
+			{
+				menu.setText("Activer l'evennement");
+			}
+			else
+			{
+				menu.setText("Desactiver l'evennement");
+			}
+			
+		}
+	}
+	
 	public static void main(String args[])
 	{
 		// On active l'anti-aliasing
