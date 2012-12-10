@@ -181,7 +181,15 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 		}
 		this.arbre.setExpandsSelectedPaths(true);
 		//this.redeployerArbre(pathExpand);
-		this.arbre.updateUI();
+		this.arbre.expandPath(new TreePath(this.racine));
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				arbre.updateUI();
+			}
+		});
 	}
 
 	public void redeployerArbre(Enumeration<TreePath> pathExpand)
@@ -348,7 +356,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 
 	private void removeSelectedRecords()
 	{
-		if (onlySelectFeuille() && arbre.getSelectionCount() >= 1)
+		if (arbre.getSelectionCount() >= 1 && onlySelectFeuille())
 		{
 			int option = -1;
 			if (arbre.getSelectionCount() == 1)
@@ -389,7 +397,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 
 	private void removeSelectedCategories()
 	{
-		if (arbre.getSelectionCount() >= 1 && onlySelectBranche())
+		if (typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE && arbre.getSelectionCount() >= 1 && onlySelectBranche())
 		{
 			int option = -1;
 
@@ -436,6 +444,54 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 		}
 	}
 
+	private void removeSelectedSubjects()
+	{
+		if (typeTrie == PanneauArbre.TYPE_TRIE_SUJET && arbre.getSelectionCount() >= 1 && onlySelectBranche())
+		{
+			int option = -1;
+
+			if (arbre.getSelectionCount() == 1)
+			{
+				option = JOptionPane.showConfirmDialog(null, "Êtes-vous sûr de vouloir supprimer ce sujet ?\n",
+						"Suppression", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+			}
+			else
+			{
+				option = JOptionPane.showConfirmDialog(null, "Êtes-vous sûr de vouloir supprimer ces sujets ?\n",
+						"Suppression", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+			}
+
+			if (option == JOptionPane.OK_OPTION)
+			{
+				for (TreePath treePath : arbre.getSelectionPaths())
+				{
+					try
+					{
+						if (!(treePath.getLastPathComponent() instanceof Feuille))
+						{
+							String nomSujet = treePath.getLastPathComponent().toString();
+							List<LigneEnregistrement> liste = bdd.getListeEnregistrementSujet(bdd.getSujet(nomSujet));
+							if (liste.size() != 0)
+							{
+								GraphicalUserInterface.popupErreur(
+										"Un sujet ne peut être supprimé que quand il n'a plus d'enregistrements.",
+										"Erreur");
+							}
+							else
+							{
+								bdd.supprimerSujet(bdd.getSujet(nomSujet));
+							}
+						}
+					}
+					catch (DBException e1)
+					{
+						GraphicalUserInterface.popupErreur(e1.getMessage());
+					}
+				}
+			}
+		}
+	}
+
 	private class KeyListenerTree implements KeyListener
 	{
 
@@ -446,6 +502,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 			{
 				removeSelectedCategories();
 				removeSelectedRecords();
+				removeSelectedSubjects();
 			}
 		}
 
@@ -754,47 +811,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
-			int option = -1;
-
-			if (arbre.getSelectionCount() == 1)
-			{
-				option = JOptionPane.showConfirmDialog(null, "Êtes-vous sûr de vouloir supprimer ce sujet ?\n",
-						"Suppression", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-			}
-			else
-			{
-				option = JOptionPane.showConfirmDialog(null, "Êtes-vous sûr de vouloir supprimer ces sujets ?\n",
-						"Suppression", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-			}
-
-			if (option == JOptionPane.OK_OPTION)
-			{
-				for (TreePath treePath : arbre.getSelectionPaths())
-				{
-					try
-					{
-						if (!(treePath.getLastPathComponent() instanceof Feuille))
-						{
-							String nomSujet = treePath.getLastPathComponent().toString();
-							List<LigneEnregistrement> liste = bdd.getListeEnregistrementSujet(bdd.getSujet(nomSujet));
-							if (liste.size() != 0)
-							{
-								GraphicalUserInterface.popupErreur(
-										"Un sujet ne peut être supprimé que quand il n'a plus d'enregistrements.",
-										"Erreur");
-							}
-							else
-							{
-								bdd.supprimerSujet(bdd.getSujet(nomSujet));
-							}
-						}
-					}
-					catch (Exception e1)
-					{
-						GraphicalUserInterface.popupErreur(e1.getMessage(), "Erreur");
-					}
-				}
-			}
+			removeSelectedSubjects();
 		}
 	}
 
