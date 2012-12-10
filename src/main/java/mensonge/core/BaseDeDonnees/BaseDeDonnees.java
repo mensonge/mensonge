@@ -20,12 +20,17 @@ import mensonge.core.BaseDeDonnees.DBException;
 
 /**
  * Classe permettant les interraction avec la base de donnees
- *
+ * 
  * @author Azazel
- *
+ * 
  */
 public class BaseDeDonnees extends BetterObservable
 {
+
+	/**
+	 * Le logger
+	 */
+	private static Logger logger = Logger.getLogger("BDD");
 	/**
 	 * Permet d'instancier des objet qui permettrons de faire des requetes.
 	 */
@@ -36,13 +41,8 @@ public class BaseDeDonnees extends BetterObservable
 	private String fileName = null;
 
 	/**
-	 * Le logger
-	 */
-	private static Logger logger = Logger.getLogger("BDD");
-
-	/**
 	 * Constructeur de base.
-	 *
+	 * 
 	 * @param baseDeDonnees
 	 *            Chaine de caractére indiquant le nom du fichier de la base de donnee.
 	 * @throws DBException
@@ -55,7 +55,7 @@ public class BaseDeDonnees extends BetterObservable
 	/**
 	 * Fonction permettant de se connecter au fichier de la base de donnee fourni au constructeur. De plus, cette
 	 * fonction verifie la structure de la base.
-	 *
+	 * 
 	 * @throws DBException
 	 *             Envoie des exceptions dans le cas d'une erreur de connexion ou d'une mauvaise structure.
 	 */
@@ -102,7 +102,7 @@ public class BaseDeDonnees extends BetterObservable
 
 	/**
 	 * Deconnecte de la base
-	 *
+	 * 
 	 * @throws DBException
 	 *             En cas d'erreur de deconnexion, l'etat de la connexion devient alors inconnu
 	 */
@@ -125,7 +125,7 @@ public class BaseDeDonnees extends BetterObservable
 	/**
 	 * Importe un fichier de BaseDeDonnees sqlite dans la base donnee a laquelle l'objet est connecte. Les categories
 	 * existantes (de meme nom) sont fusionnees. Les autres sont ajoutees.
-	 *
+	 * 
 	 * @param cheminFichier
 	 *            le fichier contenant la base a importer
 	 * @throws DBException
@@ -137,7 +137,7 @@ public class BaseDeDonnees extends BetterObservable
 		/*
 		 * if(connexion == null) { return; } //etablir une connexion BaseDeDonnees in = new
 		 * BaseDeDonnees(cheminFichier); in.connexion();
-		 *
+		 * 
 		 * //regarder les categories qui change et ajouter d'eventuelle nouvelle ResultSet rs = in.getListeCategorie();
 		 * LinkedList<String> listeN = new LinkedList<String>(); LinkedList<Integer> listeI = new LinkedList<Integer>();
 		 * try { while(rs != null && rs.next())//On stock dans des listes chainees le resultat {
@@ -158,7 +158,7 @@ public class BaseDeDonnees extends BetterObservable
 	/**
 	 * exporte les enregistrement selon deux methodes. soit au format sqlite soit en wav. (ajoute à la fin du fichier
 	 * wav le sujet et la categorie
-	 *
+	 * 
 	 * @param cheminFichier
 	 *            fichier dans lequel sera exporte la base.
 	 * @param id
@@ -252,7 +252,7 @@ public class BaseDeDonnees extends BetterObservable
 	/**
 	 * Permet de recuperer toutes les information de tout les enregistrements avec les colonne suivante dans cette
 	 * ordre: duree, taille, nom, nomcat, id
-	 *
+	 * 
 	 * @return Le resultat sous forme d'objet ResultSet qui n'est parcourable qu'une fois.
 	 * @throws DBException
 	 */
@@ -300,7 +300,7 @@ public class BaseDeDonnees extends BetterObservable
 	/**
 	 * Permet de recuperer toutes les informations de tout les enregistrements d'une categorie avec les colonnes
 	 * suivante: duree, taille, nom, nomcat, id
-	 *
+	 * 
 	 * @return Le resultat sous forme d'objet ResultSet qui n'est parcourable qu'une fois.
 	 * @throws DBException
 	 */
@@ -326,9 +326,9 @@ public class BaseDeDonnees extends BetterObservable
 		{
 			ps = connexion
 					.prepareStatement("SELECT duree, taille, nom, nomcat, id, nomsuj, en.idsuj, en.idcat FROM enregistrements en, categorie ca, sujet su WHERE en.idcat = ca.idcat AND en.idsuj = su.idsuj AND en.idcat=? ORDER BY nom");// Preparation
-																																																						// de
-																																																						// la
-																																																						// requete
+			// de
+			// la
+			// requete
 			ps.setInt(1, idCat);// on rempli les trous
 			rs = ps.executeQuery();// On execute
 			retour = ResultatSelect.convertirResultatSet(rs, colonne);
@@ -347,7 +347,7 @@ public class BaseDeDonnees extends BetterObservable
 	/**
 	 * Permet de recuperer toutes les informations de tout les enregistrements d'une categorie avec les colonnes
 	 * suivante: duree, taille, nom, nomcat, id
-	 *
+	 * 
 	 * @return Le resultat sous forme d'objet ResultSet qui n'est parcourable qu'une fois.
 	 * @throws DBException
 	 */
@@ -373,9 +373,9 @@ public class BaseDeDonnees extends BetterObservable
 		{
 			ps = connexion
 					.prepareStatement("SELECT duree, taille, nom, nomcat, id, nomsuj, en.idsuj, en.idcat FROM enregistrements en, categorie ca, sujet su WHERE en.idcat = ca.idcat AND en.idsuj = su.idsuj AND en.idsuj=? ORDER BY nom");// Preparation
-																																																						// de
-																																																						// la
-																																																						// requete
+			// de
+			// la
+			// requete
 			ps.setInt(1, idSuj);// on rempli les trous
 			rs = ps.executeQuery();// On execute
 			retour = ResultatSelect.convertirResultatSet(rs, colonne);
@@ -392,7 +392,7 @@ public class BaseDeDonnees extends BetterObservable
 
 	/**
 	 * Permet de recuperer le nombre d'enregistrement
-	 *
+	 * 
 	 * @return le nombre d'enregistrement
 	 * @throws DBException
 	 */
@@ -424,7 +424,7 @@ public class BaseDeDonnees extends BetterObservable
 
 	/**
 	 * Compacte la base de données en effectuant un VACUUM
-	 *
+	 * 
 	 * @throws DBException
 	 */
 	public void compacter() throws DBException
@@ -449,7 +449,7 @@ public class BaseDeDonnees extends BetterObservable
 
 	/**
 	 * Permet d'ajouter un enregistrement a la base
-	 *
+	 * 
 	 * @param nom
 	 *            le nom sous lequel il apparaitra
 	 * @param duree
@@ -507,7 +507,7 @@ public class BaseDeDonnees extends BetterObservable
 
 	/**
 	 * Permet de supprimer un enregistrement
-	 *
+	 * 
 	 * @param id
 	 *            id de l'enregistrement a supprimer.
 	 * @throws DBException
@@ -540,7 +540,7 @@ public class BaseDeDonnees extends BetterObservable
 
 	/**
 	 * Permet de modifier un enregistrement dans son ensemble
-	 *
+	 * 
 	 * @param id
 	 *            le numero identifiant l'enregistrement
 	 * @param nom
@@ -602,7 +602,7 @@ public class BaseDeDonnees extends BetterObservable
 
 	/**
 	 * Permet de modifier un enregistrement sans modifier son contenu
-	 *
+	 * 
 	 * @param id
 	 *            le numero identifiant l'enregistrement
 	 * @param nom
@@ -665,7 +665,7 @@ public class BaseDeDonnees extends BetterObservable
 
 	/**
 	 * Permet de modifier le nom de l'enregistrement
-	 *
+	 * 
 	 * @param id
 	 *            id de l'enregistrement a modifier
 	 * @param nom
@@ -704,7 +704,7 @@ public class BaseDeDonnees extends BetterObservable
 
 	/**
 	 * Permet de modier le champ duree d'un enregistrement dans la base. (Pas la duree du veritable enregistrement)
-	 *
+	 * 
 	 * @param id
 	 *            l'id de l'enregistrement a modifier
 	 * @param duree
@@ -743,7 +743,7 @@ public class BaseDeDonnees extends BetterObservable
 	/**
 	 * Permet de de modifier le champ taille d'un enregistrement dans la base. (Pas la taille du veritable
 	 * enregistrement)
-	 *
+	 * 
 	 * @param id
 	 *            l'id de l'enregistrement a modifier
 	 * @param taille
@@ -783,7 +783,7 @@ public class BaseDeDonnees extends BetterObservable
 
 	/**
 	 * Permet de modifier la categorie d'un enregistrement
-	 *
+	 * 
 	 * @param id
 	 *            id de l'enregistrement a modifier
 	 * @param idCat
@@ -825,7 +825,7 @@ public class BaseDeDonnees extends BetterObservable
 
 	/**
 	 * Permet de modifier la categorie d'un enregistrement a partir du nom de la categorie
-	 *
+	 * 
 	 * @param id
 	 *            id de l'enregistrement a modifier
 	 * @param nomCat
@@ -870,7 +870,7 @@ public class BaseDeDonnees extends BetterObservable
 
 	/**
 	 * Permet de modifier la categorie d'un enregistrement
-	 *
+	 * 
 	 * @param id
 	 *            id de l'enregistrement a modifier
 	 * @param idCat
@@ -912,7 +912,7 @@ public class BaseDeDonnees extends BetterObservable
 
 	/**
 	 * Permet de modifier la categorie d'un enregistrement a partir du nom de la categorie
-	 *
+	 * 
 	 * @param id
 	 *            id de l'enregistrement a modifier
 	 * @param nomCat
@@ -957,7 +957,7 @@ public class BaseDeDonnees extends BetterObservable
 
 	/**
 	 * Permet de recuperer l'enregistrement lui-meme et non ses informations
-	 *
+	 * 
 	 * @param id
 	 *            id de l'enregistrement a recuperer
 	 * @return retourne l'enregistrement sous forme de tableau de byte
@@ -998,7 +998,7 @@ public class BaseDeDonnees extends BetterObservable
 
 	/**
 	 * Permet d'ajouter une categorie
-	 *
+	 * 
 	 * @param nom
 	 *            le nom de la nouvelle categorie
 	 * @throws DBException
@@ -1036,7 +1036,7 @@ public class BaseDeDonnees extends BetterObservable
 
 	/**
 	 * Permet de recuperer la liste des categories avec les colonnes dans cette ordre: nomCat, idCat
-	 *
+	 * 
 	 * @return Le resultat sous la forme d'un tableau parcourable dans un sens
 	 * @throws DBException
 	 */
@@ -1070,7 +1070,7 @@ public class BaseDeDonnees extends BetterObservable
 
 	/**
 	 * Supprime une categorie existante (ou non)
-	 *
+	 * 
 	 * @param id
 	 *            l'id de la categorie a supprimer
 	 * @throws DBException
@@ -1104,7 +1104,7 @@ public class BaseDeDonnees extends BetterObservable
 
 	/**
 	 * Permet de changer le nom d'une categorie
-	 *
+	 * 
 	 * @param id
 	 *            l'id de la categorie a modifier
 	 * @param nom
@@ -1145,7 +1145,7 @@ public class BaseDeDonnees extends BetterObservable
 
 	/**
 	 * Recupere le nom de la categorie correspondant a cette id
-	 *
+	 * 
 	 * @param idCat
 	 *            id de la categorie
 	 * @return le nom de la categorie
@@ -1188,7 +1188,7 @@ public class BaseDeDonnees extends BetterObservable
 
 	/**
 	 * Recupere l'id d'une categorie a partir du nom. S'il y a plusieur categorie du meme nom, il renvera le premier id
-	 *
+	 * 
 	 * @param nomCat
 	 *            le nom de la categorie
 	 * @return l'id de la categorie
@@ -1224,7 +1224,7 @@ public class BaseDeDonnees extends BetterObservable
 
 	/**
 	 * Permet d'ajouter une categorie
-	 *
+	 * 
 	 * @param nom
 	 *            le nom de la nouvelle categorie
 	 * @throws DBException
@@ -1261,7 +1261,7 @@ public class BaseDeDonnees extends BetterObservable
 
 	/**
 	 * Supprime une categorie existante (ou non)
-	 *
+	 * 
 	 * @param id
 	 *            l'id de la categorie a supprimer
 	 * @throws DBException
@@ -1296,7 +1296,7 @@ public class BaseDeDonnees extends BetterObservable
 
 	/**
 	 * Permet de recuperer la liste des categories avec les colonnes dans cette ordre: nomCat, idCat
-	 *
+	 * 
 	 * @return Le resultat sous la forme d'un tableau parcourable dans un sens
 	 * @throws DBException
 	 */
@@ -1330,7 +1330,7 @@ public class BaseDeDonnees extends BetterObservable
 
 	/**
 	 * Permet de changer le nom d'une categorie
-	 *
+	 * 
 	 * @param id
 	 *            l'id de la categorie a modifier
 	 * @param nom
@@ -1371,7 +1371,7 @@ public class BaseDeDonnees extends BetterObservable
 
 	/**
 	 * Recupere le nom de la categorie correspondant a cette id
-	 *
+	 * 
 	 * @param idSuj
 	 *            id de la categorie
 	 * @return le nom de la categorie
@@ -1412,7 +1412,7 @@ public class BaseDeDonnees extends BetterObservable
 
 	/**
 	 * Recupere l'id d'une categorie a partir du nom. S'il y a plusieur categorie du meme nom, il renvera le premier id
-	 *
+	 * 
 	 * @param nomSuj
 	 *            le nom de la categorie
 	 * @return l'id de la categorie
@@ -1448,7 +1448,7 @@ public class BaseDeDonnees extends BetterObservable
 
 	/**
 	 * Cette fonction creer la structure de la base de donne.
-	 *
+	 * 
 	 * @throws DBException
 	 */
 	public void createDatabase() throws DBException
@@ -1487,7 +1487,7 @@ public class BaseDeDonnees extends BetterObservable
 
 	/**
 	 * Verifie si une categorie existe
-	 *
+	 * 
 	 * @param idCat
 	 *            id de la categorie a verifier
 	 * @return true si la categorie existe et false sinon
@@ -1526,7 +1526,7 @@ public class BaseDeDonnees extends BetterObservable
 
 	/**
 	 * Verifie si une categorie existe
-	 *
+	 * 
 	 * @param nomCat
 	 *            nom de la categorie a verifier
 	 * @return true si la categorie existe et false sinon
@@ -1565,7 +1565,7 @@ public class BaseDeDonnees extends BetterObservable
 
 	/**
 	 * Verifie si une categorie existe
-	 *
+	 * 
 	 * @param idSuj
 	 *            id de la categorie a verifier
 	 * @return true si la categorie existe et false sinon
@@ -1603,7 +1603,7 @@ public class BaseDeDonnees extends BetterObservable
 
 	/**
 	 * Verifie si une categorie existe
-	 *
+	 * 
 	 * @param nomSuj
 	 *            nom de la categorie a verifier
 	 * @return true si la categorie existe et false sinon
@@ -1641,7 +1641,7 @@ public class BaseDeDonnees extends BetterObservable
 
 	/**
 	 * Verifie l'existance d'un sujet par son nom
-	 *
+	 * 
 	 * @param nom
 	 *            le nom a verifier
 	 * @return true si le nom existe
@@ -1729,7 +1729,7 @@ public class BaseDeDonnees extends BetterObservable
 
 	/**
 	 * Ferme les differente ressources
-	 *
+	 * 
 	 * @param ps
 	 * @param st
 	 * @param rs
@@ -1774,7 +1774,7 @@ public class BaseDeDonnees extends BetterObservable
 	// GETTER et SETTER
 	/**
 	 * getter de la connexion
-	 *
+	 * 
 	 * @return la connexion
 	 */
 	public Connection getConnexion()
@@ -1784,7 +1784,7 @@ public class BaseDeDonnees extends BetterObservable
 
 	/**
 	 * Renvoie le chemin du fichier de base de donnée
-	 *
+	 * 
 	 * @return le chemin du fichier
 	 */
 	public String getFileName()

@@ -2,8 +2,8 @@ package mensonge.userinterface;
 
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -14,16 +14,17 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
+import mensonge.core.BaseDeDonnees.DBException;
 import mensonge.core.BaseDeDonnees.LigneEnregistrement;
 
 public final class DialogueNouveauSujet extends JDialog
 {
 	private static final long serialVersionUID = 1L;
 
-	private JComboBox combo = new JComboBox();
+	private JComboBox comboBox = new JComboBox();
 	private JLabel label = new JLabel("Liste des catégories");
 
-	private JButton envoyer = new JButton("Valider");
+	private JButton buttonValidate = new JButton("Valider");
 
 	private Object[] retour = new Object[1];
 
@@ -33,28 +34,28 @@ public final class DialogueNouveauSujet extends JDialog
 		JPanel pan = new JPanel(), j1 = new JPanel(), bouton = new JPanel();
 		try
 		{
-			retour[0] = new String("Ne rien changer");
-			combo.addItem(retour[0]);
+			retour[0] = "Ne rien changer";
+			comboBox.addItem(retour[0]);
 			List<LigneEnregistrement> liste = bdd.getListeSujet();
 			for (LigneEnregistrement ligne : liste)
 			{
-				combo.addItem(ligne.getNomSuj());
+				comboBox.addItem(ligne.getNomSuj());
 			}
 		}
-		catch (Exception e)
+		catch (DBException e)
 		{
-
+			GraphicalUserInterface.popupErreur(e.getLocalizedMessage());
 		}
-		envoyer.addMouseListener(new Envoyer());
-		combo.addItemListener(new comboListner());
+		buttonValidate.addMouseListener(new ValiderListener());
+		comboBox.addItemListener(new ComboBoxListener());
 
 		j1.add(label);
-		j1.add(combo);
+		j1.add(comboBox);
 
-		bouton.add(envoyer);
+		bouton.add(buttonValidate);
 
 		pan.add(j1);
-		pan.add(envoyer);
+		pan.add(buttonValidate);
 
 		this.setContentPane(pan);
 		this.setLocationRelativeTo(null);
@@ -68,7 +69,7 @@ public final class DialogueNouveauSujet extends JDialog
 		return retour;
 	}
 
-	class comboListner implements ItemListener
+	private class ComboBoxListener implements ItemListener
 	{
 		@Override
 		public void itemStateChanged(ItemEvent e)
@@ -77,33 +78,12 @@ public final class DialogueNouveauSujet extends JDialog
 		}
 	}
 
-	class Envoyer implements MouseListener
+	private class ValiderListener extends MouseAdapter
 	{
-		@Override
-		public void mouseClicked(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e)
-		{
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e)
-		{
-		}
-
 		@Override
 		public void mouseReleased(MouseEvent e)
 		{
 			setVisible(false);
 		}
-
 	}
 }

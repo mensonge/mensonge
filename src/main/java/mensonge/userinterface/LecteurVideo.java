@@ -51,7 +51,6 @@ public class LecteurVideo extends JPanel implements ActionListener
 	private JSlider sliderVolume;
 
 	private EmbeddedMediaPlayerComponent vidComp;
-	private JPanel panelDuree;
 	private JButton boutonMarqueur1;
 	private JButton boutonMarqueur2;
 	private JButton boutonExtract;
@@ -141,7 +140,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 		this.slider.addMouseListener(sliderWithMarkersSlider);
 		this.slider.addMouseMotionListener(sliderWithMarkersSlider);
 
-		this.panelDuree = new JPanel();
+		JPanel panelDuree = new JPanel();
 		panelDuree.setLayout(new BoxLayout(panelDuree, BoxLayout.X_AXIS));
 		panelDuree.add(Box.createHorizontalStrut(5));
 		panelDuree.add(labelDureeActuelle, BorderLayout.WEST);

@@ -17,7 +17,7 @@ public class PanneauInformationFeuille extends JPanel
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	Map<String, String> listeInfo = null;
+	private Map<String, String> listeInfo = null;
 
 	@Override
 	public void paint(Graphics g)

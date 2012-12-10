@@ -79,9 +79,9 @@ public final class DialogueAjouterEnregistrement extends JDialog implements Acti
 				comboSujet.addItem(ligne.getNomSuj());
 			}
 		}
-		catch (Exception e)
+		catch (DBException e)
 		{
-			GraphicalUserInterface.popupErreur("Absence de sujet ou de categorie dans la base");
+			GraphicalUserInterface.popupErreur(e.getLocalizedMessage());
 		}
 
 		comboCategorie.addItem(CREER_CAT);
@@ -149,9 +149,9 @@ public final class DialogueAjouterEnregistrement extends JDialog implements Acti
 				int idSuj = this.bdd.getSujet(nomSuj);
 				this.bdd.ajouterEnregistrement(champsNom.getText(), duree, idCat, enregistrement, idSuj);
 			}
-			catch (Exception e1)
+			catch (DBException e)
 			{
-				e1.printStackTrace();
+				GraphicalUserInterface.popupErreur(e.getLocalizedMessage());
 			}
 			this.getParent().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -179,7 +179,7 @@ public final class DialogueAjouterEnregistrement extends JDialog implements Acti
 			}
 			catch (DBException e1)
 			{
-				GraphicalUserInterface.popupErreur(e1.getMessage(), "Erreur");
+				GraphicalUserInterface.popupErreur(e1.getMessage());
 			}
 			nom = name;
 		}
@@ -203,7 +203,7 @@ public final class DialogueAjouterEnregistrement extends JDialog implements Acti
 			}
 			catch (DBException e1)
 			{
-				GraphicalUserInterface.popupErreur(e1.getMessage(), "Erreur");
+				GraphicalUserInterface.popupErreur(e1.getMessage());
 			}
 			nom = name;
 		}
@@ -226,7 +226,7 @@ public final class DialogueAjouterEnregistrement extends JDialog implements Acti
 	@Override
 	public void keyPressed(KeyEvent e)
 	{
-		if(e.getKeyCode() == KeyEvent.VK_ENTER)
+		if (e.getKeyCode() == KeyEvent.VK_ENTER)
 		{
 			this.valider();
 		}
@@ -235,14 +235,10 @@ public final class DialogueAjouterEnregistrement extends JDialog implements Acti
 	@Override
 	public void keyReleased(KeyEvent e)
 	{
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void keyTyped(KeyEvent e)
 	{
-		// TODO Auto-generated method stub
-		
 	}
 }

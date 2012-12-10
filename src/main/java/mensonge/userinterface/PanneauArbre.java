@@ -180,7 +180,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 			remplirArbreEnregistrementSujet();
 		}
 		this.arbre.setExpandsSelectedPaths(true);
-		//this.redeployerArbre(pathExpand);
+		// this.redeployerArbre(pathExpand);
 		this.arbre.expandPath(new TreePath(this.racine));
 		SwingUtilities.invokeLater(new Runnable()
 		{
@@ -199,33 +199,34 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 		TreePath element;
 		Object path[] = new Object[2];
 		path[0] = racine;
-		while(pathExpand.hasMoreElements())
+		while (pathExpand.hasMoreElements())
 		{
 			element = pathExpand.nextElement();
-			userObject = (String)((DefaultMutableTreeNode) element.getPath()[1]).getUserObject();
+			userObject = (String) ((DefaultMutableTreeNode) element.getPath()[1]).getUserObject();
 			node = trouverNoeud(racine, userObject);
-			if(node != null)
+			if (node != null)
 			{
 				path[1] = node;
 				this.arbre.expandPath(new TreePath(path));
 			}
 		}
 	}
+
 	public static DefaultMutableTreeNode trouverNoeud(DefaultMutableTreeNode noeud, String userObject)
 	{
 		Enumeration children = noeud.children();
 		DefaultMutableTreeNode tmp;
-		while(children.hasMoreElements())
+		while (children.hasMoreElements())
 		{
 			tmp = (DefaultMutableTreeNode) children.nextElement();
-			if(tmp.getUserObject().equals(userObject))
+			if (tmp.getUserObject().equals(userObject))
 			{
 				return tmp;
 			}
 		}
 		return null;
 	}
-	
+
 	public void remplirArbreEnregistrementCategorie()
 	{
 		List<LigneEnregistrement> rsCat = null;
@@ -422,7 +423,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 							String nomCategorie = treePath.getLastPathComponent().toString();
 							List<LigneEnregistrement> liste = bdd.getListeEnregistrementCategorie(bdd
 									.getCategorie(nomCategorie));
-							if (liste.size() != 0)
+							if (!liste.isEmpty())
 							{
 								GraphicalUserInterface
 										.popupErreur(
@@ -471,7 +472,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 						{
 							String nomSujet = treePath.getLastPathComponent().toString();
 							List<LigneEnregistrement> liste = bdd.getListeEnregistrementSujet(bdd.getSujet(nomSujet));
-							if (liste.size() != 0)
+							if (!liste.isEmpty())
 							{
 								GraphicalUserInterface.popupErreur(
 										"Un sujet ne peut être supprimé que quand il n'a plus d'enregistrements.",
@@ -646,7 +647,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 		}
 	}
 
-	class SupprimerEnregistrementClicDroit extends MouseAdapter
+	private class SupprimerEnregistrementClicDroit extends MouseAdapter
 	{
 		@Override
 		public void mouseReleased(MouseEvent e)
@@ -655,10 +656,10 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 		}
 	}
 
-	class ExporterEnregistrementClicDroit extends MouseAdapter
+	private class ExporterEnregistrementClicDroit extends MouseAdapter
 	{
 		@Override
-		public void mouseReleased(MouseEvent e)
+		public void mouseReleased(MouseEvent event)
 		{
 			JFileChooser fileChooser = new JFileChooser();
 			fileChooser.showOpenDialog(null);
@@ -672,16 +673,19 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 					// afficher gif
 					bdd.exporter(fichier, id, 2);
 				}
-				catch (Exception e1)
+				catch (IOException e1)
 				{
-					GraphicalUserInterface.popupErreur(e1.getMessage(), "Erreur");
-					return;
+					GraphicalUserInterface.popupErreur(e1.getMessage());
+				}
+				catch (DBException e2)
+				{
+					GraphicalUserInterface.popupErreur(e2.getMessage());
 				}
 			}
 		}
 	}
 
-	class RenommerEnregistrementClicDroit extends MouseAdapter
+	private class RenommerEnregistrementClicDroit extends MouseAdapter
 	{
 		@Override
 		public void mouseReleased(MouseEvent e)
@@ -717,7 +721,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 		}
 	}
 
-	class RenommerCategorieClicDroit extends MouseAdapter
+	private class RenommerCategorieClicDroit extends MouseAdapter
 	{
 		@Override
 		public void mouseReleased(MouseEvent e)
@@ -743,7 +747,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 		}
 	}
 
-	class RenommerSujetClicDroit extends MouseAdapter
+	private class RenommerSujetClicDroit extends MouseAdapter
 	{
 		@Override
 		public void mouseReleased(MouseEvent e)
@@ -769,7 +773,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 		}
 	}
 
-	class ModifierCategorieEnregistrementClicDroit extends MouseAdapter
+	private class ModifierCategorieEnregistrementClicDroit extends MouseAdapter
 	{
 		@Override
 		public void mouseReleased(MouseEvent e)
@@ -797,7 +801,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 		}
 	}
 
-	class SupprimerCategorieEnregistrementClicDroit extends MouseAdapter
+	private class SupprimerCategorieEnregistrementClicDroit extends MouseAdapter
 	{
 		@Override
 		public void mouseReleased(MouseEvent e)
@@ -806,7 +810,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 		}
 	}
 
-	class SupprimerSujetClicDroit extends MouseAdapter
+	private class SupprimerSujetClicDroit extends MouseAdapter
 	{
 		@Override
 		public void mouseReleased(MouseEvent e)
@@ -815,7 +819,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 		}
 	}
 
-	class ModifierSujetEnregistrementClicDroit extends MouseAdapter
+	private class ModifierSujetEnregistrementClicDroit extends MouseAdapter
 	{
 		@Override
 		public void mouseReleased(MouseEvent e)
@@ -842,7 +846,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 		}
 	}
 
-	class ModifierTri extends MouseAdapter
+	private class ModifierTri extends MouseAdapter
 	{
 		@Override
 		public void mouseReleased(MouseEvent e)
@@ -859,7 +863,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 		}
 	}
 
-	class PlayEcouteArbre extends MouseAdapter
+	private class PlayEcouteArbre extends MouseAdapter
 	{
 		@Override
 		public void mouseReleased(MouseEvent event)
@@ -877,21 +881,20 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 		@Override
 		public void mouseClicked(MouseEvent e)
 		{
-			if ((e.getModifiers() & MouseEvent.BUTTON1_MASK) != 0)
+			if ((e.getModifiers() & MouseEvent.BUTTON1_MASK) != 0 && arbre.getSelectionCount() == 1
+					&& onlySelectFeuille())
 			{
-				if (arbre.getSelectionCount() == 1 && onlySelectFeuille())
+				if (idLu != ((Feuille) arbre.getLastSelectedPathComponent()).getId())
 				{
-					if (idLu != ((Feuille) arbre.getLastSelectedPathComponent()).getId())
-					{
-						idLu = ((Feuille) arbre.getLastSelectedPathComponent()).getId();
-						loadAudioFile(idLu);
-					}
-					if (e.getClickCount() > 1)
-					{
-						lecteurAudio.play();
-					}
+					idLu = ((Feuille) arbre.getLastSelectedPathComponent()).getId();
+					loadAudioFile(idLu);
+				}
+				if (e.getClickCount() > 1)
+				{
+					lecteurAudio.play();
 				}
 			}
+
 		}
 	}
 
@@ -901,7 +904,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 	 * @author Azazel
 	 * 
 	 */
-	class CollapseClicDroit extends MouseAdapter
+	private class CollapseClicDroit extends MouseAdapter
 	{
 		@Override
 		public void mousePressed(MouseEvent e)
@@ -924,7 +927,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 	 * @author Azazel
 	 * 
 	 */
-	class ExpandClicDroit extends MouseAdapter
+	private class ExpandClicDroit extends MouseAdapter
 	{
 		@Override
 		public void mousePressed(MouseEvent e)
@@ -989,7 +992,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 	@Override
 	public void onUpdateDataBase()
 	{
-		
+
 		if (this.labelCacheSize != null)
 		{
 			this.labelDBSize.setText("Taille de la base de données : "

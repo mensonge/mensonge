@@ -8,12 +8,12 @@ import javax.swing.JSlider;
 public class SliderWithMarkers extends JSlider
 {
 
-	float position1 = -1.0f;
-	float position2 = -1.0f;
 	/**
 	 *
 	 */
 	private static final long serialVersionUID = 1L;
+	private float position1 = -1.0f;
+	private float position2 = -1.0f;
 
 	public SliderWithMarkers(int orientation)
 	{
@@ -35,7 +35,7 @@ public class SliderWithMarkers extends JSlider
 		this.repaint();
 
 	}
-	
+
 	public void setMarkerTwoAt(float position)
 	{
 		position2 = position;
