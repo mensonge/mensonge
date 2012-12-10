@@ -12,6 +12,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.LinkedList;
 import java.util.List;
@@ -64,6 +66,8 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 	private int typeTrie = PanneauArbre.TYPE_TRIE_SUJET;
 	private JLabel labelCacheSize;
 	private JLabel labelDBSize;
+
+	private boolean event = false;
 
 	public PanneauArbre(BaseDeDonnees bdd)
 	{
@@ -123,11 +127,44 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 		panelConteneur.add(panelArbreInfo, BorderLayout.NORTH);
 		panelConteneur.add(this.infoArbre, BorderLayout.SOUTH);
 
+		// this.setEvent(true);
 		this.lecteurAudio = new LecteurAudio();
 		this.lecteurAudio.setVisible(false);
 
 		this.add(panelConteneur, BorderLayout.NORTH);
 		this.add(lecteurAudio, BorderLayout.SOUTH);
+	}
+
+	public boolean isEvent()
+	{
+		return event;
+	}
+
+	public void setEvent(boolean event)
+	{
+		this.event = event;
+		if (event == false)
+		{
+			this.arbre.setCellRenderer(null);
+		}
+		else
+		{
+			// on crée l'objet en passant en paramétre une chaîne representant le format
+			SimpleDateFormat formatter = new SimpleDateFormat("MM");
+			// récupération de la date courante
+			Date currentTime = new Date();
+			// on crée la chaîne à partir de la date
+			String dateString = formatter.format(currentTime);
+			if (dateString.equals("12"))
+			{
+				//this.arbre.setCellRenderer(new PanneauArbreRenderer());
+				this.event = true;
+			}
+			else
+			{
+				this.event = false;
+			}
+		}
 	}
 
 	/**

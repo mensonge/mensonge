@@ -176,10 +176,20 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		baseExporter.setAccelerator(KeyStroke.getKeyStroke('E', KeyEvent.CTRL_DOWN_MASK));
 
 		this.menuBar = new JMenuBar();
+
 		this.menuBar.add(menuFichier);
 		this.ajoutMenuPlugins();
 		this.menuBar.add(menuBase);
 		this.menuBar.add(menuAide);
+
+		if (this.panneauArbre.isEvent())
+		{
+			JMenu menuAffichage = new JMenu("Affichage");
+			JMenuItem affichageDisableEvent = new JMenuItem("Desactiver l'evennement");
+			affichageDisableEvent.addActionListener(new DesactiverEvent());
+			menuAffichage.add(affichageDisableEvent);
+			this.menuBar.add(menuAffichage);
+		}
 		this.setJMenuBar(this.menuBar);
 	}
 
@@ -656,6 +666,26 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		}
 	}
 
+	private class DesactiverEvent implements ActionListener
+	{
+
+		@Override
+		public void actionPerformed(ActionEvent e)
+		{
+			panneauArbre.setEvent(!panneauArbre.isEvent());
+			JMenuItem menu = (JMenuItem) e.getSource();
+			if (!panneauArbre.isEvent())
+			{
+				menu.setText("Activer l'évènement");
+			}
+			else
+			{
+				menu.setText("Désactiver l'évènnement");
+			}
+
+		}
+	}
+
 	/**
 	 * Main de l'application défini les constantes pour l'anti-aliasing, tente de charger le thème nimbus, charge les
 	 * libs de VLC et lance la fenêtre de l'application
@@ -702,7 +732,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			logger.log(Level.SEVERE, e.getLocalizedMessage());
 		}
 		Native.loadLibrary(RuntimeUtil.getLibVlcLibraryName(), LibVlc.class);
-		
+
 		// Lancement de la fenêtre
 		javax.swing.SwingUtilities.invokeLater(new Runnable()
 		{
