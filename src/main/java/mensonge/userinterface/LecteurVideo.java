@@ -132,13 +132,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 		this.sliderVolume.setMinimumSize(new Dimension(150, 30));
 		this.sliderVolume.setMaximumSize(new Dimension(150, 30));
 		this.sliderVolume.setPreferredSize(new Dimension(150, 30));
-		this.sliderVolume.addChangeListener(new ChangeListener()
-		{
-			public void stateChanged(ChangeEvent e)
-			{
-				mediaPlayer.setVolume(sliderVolume.getValue());
-			}
-		});
+		this.sliderVolume.addMouseListener(new SliderVolumeListener(this.sliderVolume, this.mediaPlayer));	
 
 		this.slider = new SliderWithMarkers(JSlider.HORIZONTAL);
 		SliderPositionEventListener sliderListener = new SliderPositionEventListener(this.slider,
