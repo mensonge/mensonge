@@ -181,7 +181,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		this.ajoutMenuPlugins();
 		this.menuBar.add(menuBase);
 		this.menuBar.add(menuAide);
-
+		this.panneauArbre.setEvent(true);
 		if (this.panneauArbre.isEvent())
 		{
 			JMenu menuAffichage = new JMenu("Affichage");

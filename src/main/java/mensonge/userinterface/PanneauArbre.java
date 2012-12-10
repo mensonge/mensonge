@@ -157,7 +157,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 			String dateString = formatter.format(currentTime);
 			if (dateString.equals("12"))
 			{
-				//this.arbre.setCellRenderer(new PanneauArbreRenderer());
+				this.arbre.setCellRenderer(new PanneauArbreRenderer());
 				this.event = true;
 			}
 			else
