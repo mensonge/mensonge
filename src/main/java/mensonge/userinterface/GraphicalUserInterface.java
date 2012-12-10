@@ -410,15 +410,18 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		else if (event.getSource() == fichierOuvrir)
 		{
 			JFileChooser fileChooser = new JFileChooser(previousPath);
-			fileChooser.showOpenDialog(this);
-			if (fileChooser.getSelectedFile() != null)
+			fileChooser.setMultiSelectionEnabled(true);
+			int option = fileChooser.showOpenDialog(this);
+			if (option == JFileChooser.APPROVE_OPTION)
 			{
 				try
 				{
 					setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-					previousPath = fileChooser.getSelectedFile().getCanonicalPath();
-					setCursor(Cursor.getDefaultCursor());
-					this.ajouterOnglet(new OngletLecteur(new File(previousPath), this.bdd, this));
+					for (File file : fileChooser.getSelectedFiles())
+					{
+						previousPath = file.getCanonicalPath();
+						this.ajouterOnglet(new OngletLecteur(file, this.bdd, this));
+					}
 				}
 				catch (IOException e)
 				{
