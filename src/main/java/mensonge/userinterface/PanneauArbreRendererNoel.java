@@ -12,7 +12,7 @@ import javax.swing.tree.DefaultTreeCellRenderer;
  * @author Azazel
  * 
  */
-public class PanneauArbreRenderer extends DefaultTreeCellRenderer
+public class PanneauArbreRendererNoel extends DefaultTreeCellRenderer
 {
 
 	/**
@@ -58,7 +58,7 @@ public class PanneauArbreRenderer extends DefaultTreeCellRenderer
 	/**
 	 * Constructeur par défaut faisant des verifications pour pallier à l'absence des fichiers
 	 */
-	public PanneauArbreRenderer()
+	public PanneauArbreRendererNoel()
 	{
 
 		this.openRacine = new ImageIcon("images/tree.png");

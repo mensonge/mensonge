@@ -127,7 +127,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 		panelConteneur.add(panelArbreInfo, BorderLayout.NORTH);
 		panelConteneur.add(this.infoArbre, BorderLayout.SOUTH);
 
-		// this.setEvent(true);
+		 this.setEvent(true);
 		this.lecteurAudio = new LecteurAudio();
 		this.lecteurAudio.setVisible(false);
 
@@ -153,7 +153,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 			String dateString = formatter.format(currentTime);
 			if (dateString.equals("12"))
 			{
-				this.arbre.setCellRenderer(new PanneauArbreRenderer());
+				this.arbre.setCellRenderer(new PanneauArbreRendererNoel());
 				this.event = true;
 			}
 			else
