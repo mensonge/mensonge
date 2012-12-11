@@ -360,7 +360,7 @@ public class TestBase
 		{
 			nom += ligne.getNomCat();
 		}
-		assertTrue(sha1("PoneyLicornePegase".getBytes()).equals(sha1(nom.getBytes())));
+		assertTrue(nom.equals("PoneyLicornePegase"));
 	}
 
 	@Test
@@ -419,9 +419,9 @@ public class TestBase
 		List<LigneEnregistrement> liste = db.getListeSujet();
 		for(LigneEnregistrement ligne : liste)
 		{
-			nom += ligne.getNom();
+			nom += ligne.getNomSuj();
 		}
-		assertTrue(sha1("ArtemisToshiroGwen".getBytes()).equals(sha1(nom.getBytes())));
+		assertTrue(nom.equals("ArtemisToshiroGwen"));
 	}
 
 	@Test
