@@ -39,16 +39,6 @@ public class Fondamentale implements Plugin
 		final double[] samples = new double[echantillons.length];
 		final double[] samplesFFT = new double[echantillons.length];
 
-		/*
-		 final double phaseMultiplier = 2 * Math.PI * NB_CYCLES / NB_SAMPLES;
-		 for (int i = 0; i < NB_SAMPLES; i++)
-		 {
-			 final double cycleX = i * phaseMultiplier;
-			 final double sineResult = Math.sin(cycleX);
-			 samples[i] = sineResult;
-			 samplesFFT[i] = sineResult; 
-		 }
-		 */
 
 		SwingUtilities.invokeLater(new Runnable()
 		{
@@ -150,8 +140,12 @@ public class Fondamentale implements Plugin
 		{
 			
 			tmp = 0;
-			for(int j = 0; j < tailleBloc; j++)
+			for(int j = 0; j < tailleBloc && i+j < samples.length; j++)
 			{
+				if(i+j >= samples.length)
+				{
+					break;
+				}
 				tmp += samples[i+j];
 			}
 			if(tmp > max)
@@ -160,7 +154,6 @@ public class Fondamentale implements Plugin
 				retour = i;
 			}
 		}
-		System.out.println(retour);
 		return retour;
 	}
 	
