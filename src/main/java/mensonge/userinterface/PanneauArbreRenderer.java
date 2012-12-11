@@ -28,12 +28,12 @@ public class PanneauArbreRenderer extends DefaultTreeCellRenderer
 	/**
 	 * Image associée aux caseArbre
 	 */
-	private ImageIcon openBranche1 = null;
+	private ImageIcon openBranche = null;
 
 	/**
 	 * Image associée aux caseArbre
 	 */
-	private ImageIcon openBranche2 = null;
+	private ImageIcon closeBranche = null;
 
 	/**
 	 * Image associée au feuille contenant des murs
@@ -63,9 +63,9 @@ public class PanneauArbreRenderer extends DefaultTreeCellRenderer
 
 		this.openRacine = new ImageIcon("images/tree.png");
 
-		this.openBranche1 = new ImageIcon("images/star_pink.png");
+		this.openBranche = new ImageIcon("images/star_pink.png");
 
-		this.openBranche2 = new ImageIcon("images/star_blue.png");
+		this.closeBranche = new ImageIcon("images/star_blue.png");
 
 		this.openFeuille2 = new ImageIcon("images/dec1.png");
 
@@ -85,30 +85,30 @@ public class PanneauArbreRenderer extends DefaultTreeCellRenderer
 		int nb = (int) Math.floor(Math.random() * 100);
 		if (value instanceof Branche)
 		{
-			if (nb % 2 == 0)
+			if (expanded)
 			{
-				this.setIcon(this.openBranche1);
+				this.setIcon(this.openBranche);
 			}
 			else
 			{
-				this.setIcon(this.openBranche2);
+				this.setIcon(this.closeBranche);
 			}
 		}
 		else if (value instanceof Feuille)
 		{
-			if (nb % 4 == 0)
+			if (nb % 3 == 0)
 			{
 				this.setIcon(this.openFeuille1);
 			}
-			else if (nb % 4 == 1)
+			else if (nb % 3 == 1)
 			{
 				this.setIcon(this.openFeuille2);
 			}
-			else if (nb % 4 == 2)
+			else if (nb % 3 == 2)
 			{
 				this.setIcon(this.openFeuille3);
 			}
-			else if (nb % 4 == 3)
+			if (selected)
 			{
 				this.setIcon(this.openFeuille4);
 			}
