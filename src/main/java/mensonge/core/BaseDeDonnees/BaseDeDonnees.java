@@ -149,17 +149,13 @@ public class BaseDeDonnees extends BetterObservable
 		liste = baseImporte.getListeSujet();
 		for(LigneEnregistrement sujet : liste)
 		{
-			if(this.sujetExiste(sujet.getNomSuj()))
+			while(this.sujetExiste(sujet.getNomSuj()))
 			{
-				//demande si on fusionne ou on créer un nouveau sujet
-				//Si necessaire, modifier sujet.getNomSuj() pour qu'il pointe vers le nom dans la base courante
+				sujet.setNomSuj(sujet.getNomSuj() + ".new");
 			}
-			else
-			{
-				this.ajouterSujet(sujet.getNomSuj());
-			}
+			this.ajouterSujet(sujet.getNomSuj());
 			Integer idImport = new Integer(sujet.getIdSuj());
-			Integer idCourant = new Integer(this.getCategorie(sujet.getNomSuj()));
+			Integer idCourant = new Integer(this.getSujet(sujet.getNomSuj()));
 			bijectionSujet.put(idImport, idCourant);
 			//ajouter au a la bijection des sujets
 		}
@@ -167,15 +163,11 @@ public class BaseDeDonnees extends BetterObservable
 		liste = baseImporte.getListeCategorie();
 		for(LigneEnregistrement categorie : liste)
 		{
-			if(this.categorieExiste(categorie.getNomCat()))
+			while(this.categorieExiste(categorie.getNomCat()))
 			{
-				//demande si on fusionne ou on créer un nouveau sujet
-				//Si necessaire, modifier sujet.getNomSuj() pour qu'il pointe vers le nom dans la base courante
+				categorie.setNomCat(categorie.getNomCat() + ".new");
 			}
-			else
-			{
-				this.ajouterCategorie(categorie.getNomCat());
-			}
+			this.ajouterCategorie(categorie.getNomCat());
 			Integer idImport = new Integer(categorie.getIdCat());
 			Integer idCourant = new Integer(this.getCategorie(categorie.getNomCat()));
 			bijectionCategorie.put(idImport, idCourant);
@@ -186,7 +178,11 @@ public class BaseDeDonnees extends BetterObservable
 		//Pour tous les enregistrements, on effectue la bijection des categories et des sujets
 		for(LigneEnregistrement enregistrement : liste)
 		{
-			String nom = enregistrement.getNom() + ".new";
+			String nom = enregistrement.getNom();
+			while(this.enregistrementExist(nom))
+			{
+				nom += ".new";
+			}
 			byte sample[] = baseImporte.recupererEnregistrement(enregistrement.getId());
 			int idCat = enregistrement.getIdCat();
 			int  idSuj = enregistrement.getIdSuj();

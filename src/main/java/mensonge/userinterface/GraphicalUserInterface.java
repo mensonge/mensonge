@@ -45,6 +45,7 @@ import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
 import mensonge.core.Cache;
 import mensonge.core.Extraction;
+import mensonge.core.Locker;
 import mensonge.core.Utils;
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
 import mensonge.core.BaseDeDonnees.DBException;
@@ -74,6 +75,8 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 	private PluginManager pluginManager;
 
+	private Locker locker;
+	
 	private JMenu menuOutils;
 
 	/**
@@ -82,6 +85,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	 */
 	public GraphicalUserInterface()
 	{
+		this.locker = new Locker();
 		/*
 		 * Connexion à la base
 		 */
@@ -89,6 +93,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		this.previousPath = null;
 		this.panneauArbre = new PanneauArbre(bdd);
 		this.bdd.addObserver(panneauArbre);
+		this.locker.addTarget(panneauArbre);
 		this.ajoutBarMenu();
 		/*
 		 * Conteneur
@@ -535,6 +540,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			fileChooser.showOpenDialog(fenetre);
 			if (fileChooser.getSelectedFile() != null)
 			{
+				locker.lockUpdate();
 				try
 				{
 					setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
@@ -551,6 +557,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 					logger.log(Level.WARNING, e2.getLocalizedMessage());
 					popupErreur(e2.getMessage());
 				}
+				locker.unlockUpdate();
 				setCursor(Cursor.getDefaultCursor());
 			}
 		}

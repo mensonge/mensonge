@@ -38,12 +38,13 @@ import javax.swing.tree.TreePath;
 
 import mensonge.core.Cache;
 import mensonge.core.DataBaseObserver;
+import mensonge.core.Lockable;
 import mensonge.core.Utils;
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
 import mensonge.core.BaseDeDonnees.DBException;
 import mensonge.core.BaseDeDonnees.LigneEnregistrement;
 
-public final class PanneauArbre extends JPanel implements DataBaseObserver
+public final class PanneauArbre extends JPanel implements DataBaseObserver, Lockable
 {
 	/**
 	 *
@@ -67,6 +68,8 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 	private JLabel labelCacheSize;
 	private JLabel labelDBSize;
 
+	private boolean lock = false;
+	
 	private boolean event = false;
 
 	public PanneauArbre(BaseDeDonnees bdd)
@@ -159,12 +162,12 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 			else
 			{
 				this.event = false;
-				this.arbre.setCellRenderer(new PanneauArbreRenderDefault());
+				//this.arbre.setCellRenderer(new PanneauArbreRenderDefault());
 			}
 		}
 		else
 		{
-			this.arbre.setCellRenderer(new PanneauArbreRenderDefault());
+			//this.arbre.setCellRenderer(new PanneauArbreRenderDefault());
 		}
 	}
 
@@ -207,27 +210,30 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 
 	public void updateArbre()
 	{
-		Enumeration<TreePath> pathExpand = this.arbre.getExpandedDescendants(new TreePath(racine));
-		viderNoeud(this.racine);
-		if (this.typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)
+		if (!lock)
 		{
-			remplirArbreEnregistrementCategorie();
-		}
-		else if (this.typeTrie == PanneauArbre.TYPE_TRIE_SUJET)
-		{
-			remplirArbreEnregistrementSujet();
-		}
-		this.arbre.setExpandsSelectedPaths(true);
-		// this.redeployerArbre(pathExpand);
-		this.arbre.expandPath(new TreePath(this.racine));
-		SwingUtilities.invokeLater(new Runnable()
-		{
-			@Override
-			public void run()
+			Enumeration<TreePath> pathExpand = this.arbre.getExpandedDescendants(new TreePath(racine));
+			viderNoeud(this.racine);
+			if (this.typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)
 			{
-				arbre.updateUI();
+				remplirArbreEnregistrementCategorie();
 			}
-		});
+			else if (this.typeTrie == PanneauArbre.TYPE_TRIE_SUJET)
+			{
+				remplirArbreEnregistrementSujet();
+			}
+			this.arbre.setExpandsSelectedPaths(true);
+			// this.redeployerArbre(pathExpand);
+			this.arbre.expandPath(new TreePath(this.racine));
+			SwingUtilities.invokeLater(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					arbre.updateUI();
+				}
+			});
+		}
 	}
 
 	public void redeployerArbre(Enumeration<TreePath> pathExpand)
@@ -1036,6 +1042,19 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 			this.labelDBSize.setText("Taille de la base de données : "
 					+ Utils.humanReadableByteCount(Utils.getDBSize(), false));
 		}
+		this.updateArbre();
+	}
+
+	@Override
+	public void lockUpdate()
+	{
+		this.lock = true;
+	}
+
+	@Override
+	public void unlockUpdate()
+	{
+		this.lock = false;
 		this.updateArbre();
 	}
 }
