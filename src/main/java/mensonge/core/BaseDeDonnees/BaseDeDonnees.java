@@ -10,8 +10,10 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,6 +28,9 @@ import mensonge.core.BaseDeDonnees.DBException;
  */
 public class BaseDeDonnees extends BetterObservable
 {
+	
+	public static final int EXPORTER_ENREGISTREMENT = 2;
+	public static final int EXPORTER_BASE = 1;
 
 	/**
 	 * Le logger
@@ -132,27 +137,67 @@ public class BaseDeDonnees extends BetterObservable
 	 */
 	public void importer(final String cheminFichier) throws DBException
 	{
-		notifyUpdateDataBase();
-		throw new DBException("Importation non disponible dans cette version.", 3);
-		/*
-		 * if(connexion == null) { return; } //etablir une connexion BaseDeDonnees in = new
-		 * BaseDeDonnees(cheminFichier); in.connexion();
-		 * 
-		 * //regarder les categories qui change et ajouter d'eventuelle nouvelle ResultSet rs = in.getListeCategorie();
-		 * LinkedList<String> listeN = new LinkedList<String>(); LinkedList<Integer> listeI = new LinkedList<Integer>();
-		 * try { while(rs != null && rs.next())//On stock dans des listes chainees le resultat {
-		 * listeN.add(rs.getString(1)); listeI.add(new Integer(rs.getInt(2))); } rs.close();//on ferme le resultat set
-		 * String nomCat; for(int i = 0; i < listeN.size(); i++)//on parcour la liste des categories { nomCat =
-		 * listeN.get(i); if(!this.categorieExiste(nomCat))//On verifie si la categorie existe et si non, on l'ajoute {
-		 * this.ajouterCategorie(nomCat); } rs = in.getListeEnregistrementCategorie(listeI.get(i).intValue());//On
-		 * recupere tous les enregistrement de la categorie dans la base a importer int categorie =
-		 * this.getCategorie(nomCat);//on recupere la categorie dans cette base la. while(rs != null && rs.next())//on
-		 * ajoute tous les enregistrements dans la base { this.ajouterEnregistrement(rs.getString(3), rs.getInt(1),
-		 * categorie, in.recupererEnregistrement(rs.getInt(5)), 0);//FIXME modifier l'idSuj pour qu'il soit réel }
-		 * rs.close();//On ferme la ressource } } catch (Exception e) { throw new
-		 * DBException("Erreur lors du parcour des categories en important un fichier: " + e.getMessage(), 3); }
-		 */
-		// ajouter les enregistrement avec leurs categorie (modifiee) (ceux qu'il n'existe pas)
+		//notifyUpdateDataBase();
+		//throw new DBException("Importation non disponible dans cette version.", 3);
+		List<LigneEnregistrement> liste;
+		Map<Integer, Integer> bijectionCategorie = new HashMap<Integer, Integer>();
+		Map<Integer, Integer> bijectionSujet = new HashMap<Integer, Integer>();
+		BaseDeDonnees baseImporte = new BaseDeDonnees(cheminFichier);
+		
+		baseImporte.connexion();
+		
+		liste = baseImporte.getListeSujet();
+		for(LigneEnregistrement sujet : liste)
+		{
+			if(this.sujetExiste(sujet.getNomSuj()))
+			{
+				//demande si on fusionne ou on créer un nouveau sujet
+				//Si necessaire, modifier sujet.getNomSuj() pour qu'il pointe vers le nom dans la base courante
+			}
+			else
+			{
+				this.ajouterSujet(sujet.getNomSuj());
+			}
+			Integer idImport = new Integer(sujet.getIdSuj());
+			Integer idCourant = new Integer(this.getCategorie(sujet.getNomSuj()));
+			bijectionSujet.put(idImport, idCourant);
+			//ajouter au a la bijection des sujets
+		}
+		
+		liste = baseImporte.getListeCategorie();
+		for(LigneEnregistrement categorie : liste)
+		{
+			if(this.categorieExiste(categorie.getNomCat()))
+			{
+				//demande si on fusionne ou on créer un nouveau sujet
+				//Si necessaire, modifier sujet.getNomSuj() pour qu'il pointe vers le nom dans la base courante
+			}
+			else
+			{
+				this.ajouterCategorie(categorie.getNomCat());
+			}
+			Integer idImport = new Integer(categorie.getIdCat());
+			Integer idCourant = new Integer(this.getCategorie(categorie.getNomCat()));
+			bijectionCategorie.put(idImport, idCourant);
+			//ajouter au a la bijection des sujets
+		}
+		
+		liste = baseImporte.getListeEnregistrement();
+		//Pour tous les enregistrements, on effectue la bijection des categories et des sujets
+		for(LigneEnregistrement enregistrement : liste)
+		{
+			String nom = enregistrement.getNom() + ".new";
+			byte sample[] = baseImporte.recupererEnregistrement(enregistrement.getId());
+			int idCat = enregistrement.getIdCat();
+			int  idSuj = enregistrement.getIdSuj();
+			idCat = bijectionCategorie.get(new Integer(idCat)).intValue();
+			idSuj = bijectionSujet.get(new Integer(idSuj)).intValue();
+			enregistrement.setIdCat(idCat);
+			enregistrement.setIdSuj(idSuj);
+			
+			this.ajouterEnregistrement(nom , enregistrement.getDuree(),enregistrement.getIdCat(), sample, enregistrement.getIdSuj());
+		}
+	
 	}
 
 	/**
@@ -172,7 +217,7 @@ public class BaseDeDonnees extends BetterObservable
 		{
 			return;
 		}
-		if (type == 1)// Exporter la base vers un nouveau fichier
+		if (type == EXPORTER_BASE)// Exporter la base vers un nouveau fichier
 		{
 			File src = new File(fileName);
 			File dest = new File(cheminFichier);
@@ -197,7 +242,7 @@ public class BaseDeDonnees extends BetterObservable
 				throw new DBException("Impossible de copier le fichier de la base", 3);
 			}
 		}
-		else if (type == 2)// exporter un echantillon
+		else if (type == EXPORTER_ENREGISTREMENT)// exporter un echantillon
 		{
 			File dest = new File(cheminFichier);
 			if (dest.exists())// verifie que la destination n'existe pas, auquel cas, on la supprime
