@@ -1,6 +1,6 @@
 package mensonge.core.tools;
 
-public interface CacheObserver extends IObserver
+public interface CacheObserver extends ActionMessageObserver
 {
 	void onUpdateCache(long newCacheSize);
 }
