@@ -1,4 +1,4 @@
-package mensonge.userinterface;
+package mensonge.userinterface.tree;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 

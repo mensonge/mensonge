@@ -50,6 +50,7 @@ import mensonge.core.plugins.Plugin;
 import mensonge.core.plugins.PluginManager;
 import mensonge.core.tools.Cache;
 import mensonge.core.tools.Locker;
+import mensonge.userinterface.tree.PanneauArbre;
 
 /**
  * 

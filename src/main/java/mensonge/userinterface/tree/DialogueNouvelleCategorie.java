@@ -1,4 +1,4 @@
-package mensonge.userinterface;
+package mensonge.userinterface.tree;
 
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
@@ -16,6 +16,7 @@ import javax.swing.JPanel;
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
 import mensonge.core.BaseDeDonnees.DBException;
 import mensonge.core.BaseDeDonnees.LigneEnregistrement;
+import mensonge.userinterface.GraphicalUserInterface;
 
 public final class DialogueNouvelleCategorie extends JDialog
 {

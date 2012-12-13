@@ -1,10 +1,12 @@
-package mensonge.userinterface;
+package mensonge.userinterface.tree;
 
 import java.awt.Component;
 
 import javax.swing.ImageIcon;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
+
+import mensonge.userinterface.Feuille;
 
 /**
  * Classe affichant des image dans l'arbre

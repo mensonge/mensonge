@@ -1,4 +1,4 @@
-package mensonge.userinterface;
+package mensonge.userinterface.tree;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
@@ -13,6 +13,7 @@ import javax.swing.tree.TreePath;
 
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
 import mensonge.core.BaseDeDonnees.DBException;
+import mensonge.userinterface.Feuille;
 
 /**
  * Classe permettant d'effectuer le drag and drop sur l'arbre

@@ -9,7 +9,7 @@ import javax.swing.JPopupMenu;
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
 import mensonge.core.BaseDeDonnees.DBException;
 
-class AjouterSujetListener extends MouseAdapter
+public class AjouterSujetListener extends MouseAdapter
 {
 	private JPopupMenu menuClicDroit;
 	private BaseDeDonnees bdd;

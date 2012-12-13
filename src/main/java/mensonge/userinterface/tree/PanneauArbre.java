@@ -1,4 +1,4 @@
-package mensonge.userinterface;
+package mensonge.userinterface.tree;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -46,6 +46,11 @@ import mensonge.core.tools.Cache;
 import mensonge.core.tools.DataBaseObserver;
 import mensonge.core.tools.Lockable;
 import mensonge.core.tools.Utils;
+import mensonge.userinterface.AjouterCategorieListener;
+import mensonge.userinterface.AjouterSujetListener;
+import mensonge.userinterface.Feuille;
+import mensonge.userinterface.GraphicalUserInterface;
+import mensonge.userinterface.LecteurAudio;
 
 public final class PanneauArbre extends JPanel implements DataBaseObserver, Lockable, ActionMessageObserver
 {

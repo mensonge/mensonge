@@ -1,4 +1,4 @@
-package mensonge.userinterface;
+package mensonge.userinterface.tree;
 
 import java.awt.Color;
 import java.awt.Font;
