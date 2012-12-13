@@ -57,7 +57,7 @@ public class PluginManager
 			Enumeration<JarEntry> enumeration;
 			JarFile jar = null;
 			URLClassLoader loader = null;
-			Class tmpClass = null;
+			Class<?> tmpClass = null;
 
 			for (File fichier : listeFichiers)
 			{
@@ -89,7 +89,7 @@ public class PluginManager
 
 						tmpClass = Class.forName(tmp, true, loader);
 
-						for (Class inter : tmpClass.getInterfaces())
+						for (Class<?> inter : tmpClass.getInterfaces())
 						{
 							// Si la classe implémente l'interface Plugin on l'instance et on l'ajoute
 							if (inter.getName().toString().equals("mensonge.core.plugins.Plugin"))
