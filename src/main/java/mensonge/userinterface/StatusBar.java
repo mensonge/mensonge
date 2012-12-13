@@ -10,8 +10,8 @@ import javax.swing.BorderFactory;
 import javax.swing.JLabel;
 import javax.swing.Timer;
 
-import mensonge.core.ActionMessageObserver;
-import mensonge.core.DataBaseObserver;
+import mensonge.core.tools.ActionMessageObserver;
+import mensonge.core.tools.DataBaseObserver;
 
 public class StatusBar extends JLabel implements ActionListener, ActionMessageObserver, DataBaseObserver
 {

@@ -1,4 +1,4 @@
-package mensonge.core;
+package mensonge.core.tools;
 
 import java.io.File;
 import java.io.FileOutputStream;

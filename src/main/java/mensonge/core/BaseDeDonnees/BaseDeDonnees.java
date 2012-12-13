@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import mensonge.core.DataBaseObservable;
+import mensonge.core.tools.DataBaseObservable;
 
 /**
  * Classe permettant les interraction avec la base de donnees

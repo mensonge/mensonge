@@ -1,4 +1,4 @@
-package mensonge.core;
+package mensonge.core.tools;
 
 public interface ActionMessageObserver extends IObserver
 {

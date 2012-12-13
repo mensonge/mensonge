@@ -1,4 +1,4 @@
-package mensonge.core;
+package mensonge.core.tools;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

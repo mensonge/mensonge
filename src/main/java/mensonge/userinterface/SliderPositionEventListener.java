@@ -7,7 +7,7 @@ import javax.swing.JLabel;
 import javax.swing.JSlider;
 import javax.swing.plaf.basic.BasicSliderUI;
 
-import mensonge.core.Utils;
+import mensonge.core.tools.Utils;
 
 import uk.co.caprica.vlcj.player.MediaPlayer;
 

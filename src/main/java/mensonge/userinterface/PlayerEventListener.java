@@ -5,7 +5,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JSlider;
 
-import mensonge.core.Utils;
+import mensonge.core.tools.Utils;
 
 import uk.co.caprica.vlcj.binding.internal.libvlc_media_t;
 import uk.co.caprica.vlcj.player.MediaPlayer;

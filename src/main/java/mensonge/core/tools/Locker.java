@@ -1,4 +1,4 @@
-package mensonge.core;
+package mensonge.core.tools;
 
 import java.util.LinkedList;
 import java.util.List;

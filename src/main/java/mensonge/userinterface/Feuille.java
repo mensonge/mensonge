@@ -5,8 +5,8 @@ import java.util.Map;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
-import mensonge.core.Utils;
 import mensonge.core.BaseDeDonnees.LigneEnregistrement;
+import mensonge.core.tools.Utils;
 
 public class Feuille extends DefaultMutableTreeNode
 {

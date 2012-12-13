@@ -38,14 +38,14 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
-import mensonge.core.ActionMessageObserver;
-import mensonge.core.Cache;
-import mensonge.core.DataBaseObserver;
-import mensonge.core.Lockable;
-import mensonge.core.Utils;
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
 import mensonge.core.BaseDeDonnees.DBException;
 import mensonge.core.BaseDeDonnees.LigneEnregistrement;
+import mensonge.core.tools.ActionMessageObserver;
+import mensonge.core.tools.Cache;
+import mensonge.core.tools.DataBaseObserver;
+import mensonge.core.tools.Lockable;
+import mensonge.core.tools.Utils;
 
 public final class PanneauArbre extends JPanel implements DataBaseObserver, Lockable, ActionMessageObserver
 {

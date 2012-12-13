@@ -1,4 +1,4 @@
-package mensonge.core;
+package mensonge.core.tools;
 
 /**
  * Interface pour observer la BDD des mises à jour

@@ -1,4 +1,4 @@
-package mensonge.core;
+package mensonge.core.tools;
 
 /**
  * Interface définissant un composant où le rafraichissement peut être bloqué à des fins d'optimisation

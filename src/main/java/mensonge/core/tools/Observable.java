@@ -1,4 +1,4 @@
-package mensonge.core;
+package mensonge.core.tools;
 
 /**
  * Interface permettant à une classe d'être observable et donc d'ajouter/supprimer des observers

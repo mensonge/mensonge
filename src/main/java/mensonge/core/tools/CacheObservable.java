@@ -1,12 +1,7 @@
-package mensonge.core;
+package mensonge.core.tools;
 
-public class DataBaseObservable extends BetterObservable
+public class CacheObservable extends BetterObservable
 {
-	public void notifyUpdateDataBase()
-	{
-		callWithObservers("onUpdateDataBase");
-	}
-
 	public void notifyInProgressAction(String message)
 	{
 		callWithObservers("onInProgressAction", message);
