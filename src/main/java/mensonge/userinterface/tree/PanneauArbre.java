@@ -6,6 +6,7 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 
 import java.awt.GridLayout;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
@@ -550,7 +551,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 		}
 	}
 
-	private class KeyListenerTree implements KeyListener
+	private class KeyListenerTree extends KeyAdapter
 	{
 
 		@Override
@@ -563,19 +564,9 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 				removeSelectedSubjects();
 			}
 		}
-
-		@Override
-		public void keyReleased(KeyEvent arg0)
-		{
-		}
-
-		@Override
-		public void keyTyped(KeyEvent arg0)
-		{
-		}
 	}
 
-	class ClicDroit extends MouseAdapter
+	private class ClicDroit extends MouseAdapter
 	{
 		@Override
 		public void mousePressed(MouseEvent e)
