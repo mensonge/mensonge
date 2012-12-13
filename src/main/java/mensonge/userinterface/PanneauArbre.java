@@ -76,13 +76,15 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 
 	private boolean event = false;
 	private StatusBar statusBar;
+	private Cache cache;
 
-	public PanneauArbre(BaseDeDonnees bdd, StatusBar statusBar)
+	public PanneauArbre(BaseDeDonnees bdd, StatusBar statusBar, Cache cache)
 	{
 		this.setLayout(new BorderLayout());
 		this.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.GRAY));
 		this.bdd = bdd;
 		this.statusBar = statusBar;
+		this.cache = cache;
 		
 		this.racine = new DefaultMutableTreeNode("Sujet");
 		this.remplirArbreEnregistrementSujet();
@@ -99,7 +101,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 
 		this.infoArbre.setPreferredSize(new Dimension(336, 100));
 
-		this.labelCacheSize = new JLabel("Taille du cache : " + Utils.humanReadableByteCount(Cache.getSize(), false));
+		this.labelCacheSize = new JLabel("Taille du cache : " + Utils.humanReadableByteCount(cache.getSize(), false));
 		this.labelDBSize = new JLabel("Taille de la base de données : "
 				+ Utils.humanReadableByteCount(Utils.getDBSize(), false));
 
@@ -1085,18 +1087,18 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 	public File getRecordCacheFile(int id) throws IOException, DBException
 	{
 		final String fileName = id + ".wav";
-		if (!Cache.exists(fileName))
+		if (!cache.exists(fileName))
 		{
 			byte[] contenu = bdd.recupererEnregistrement(id);
-			Cache.createFile(fileName, contenu);
+			cache.createFile(fileName, contenu);
 			updateCacheSizeInfo();
 		}
-		return Cache.get(fileName);
+		return cache.get(fileName);
 	}
 
 	public void updateCacheSizeInfo()
 	{
-		labelCacheSize.setText("Taille du cache : " + Utils.humanReadableByteCount(Cache.getSize(), false));
+		labelCacheSize.setText("Taille du cache : " + Utils.humanReadableByteCount(cache.getSize(), false));
 	}
 
 	@Override

@@ -80,6 +80,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 	private JMenu menuOutils;
 	private StatusBar statusBar;
+	private Cache cache;
 
 	/**
 	 * Créé une nouvelle fenêtre avec les différents panneaux (onglets et arbre), défini les propriétés de la fenêtre et
@@ -88,6 +89,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	public GraphicalUserInterface()
 	{
 		this.locker = new Locker();
+		this.cache = new Cache();
 		/*
 		 * Connexion à la base
 		 */
@@ -96,7 +98,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		this.previousPath = null;
 		this.statusBar = new StatusBar();
 		this.add(statusBar, BorderLayout.SOUTH);
-		this.panneauArbre = new PanneauArbre(bdd, statusBar);
+		this.panneauArbre = new PanneauArbre(bdd, statusBar, cache);
 		this.bdd.addObserver(panneauArbre);
 		this.locker.addTarget(panneauArbre);
 		this.ajoutBarMenu();
@@ -652,7 +654,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			}
 			setCursor(Cursor.getDefaultCursor());
 			statusBar.setMessage("Le cache a été purgé.\nVous avez gagné "
-					+ Utils.humanReadableByteCount(Cache.purge(), false) + " d'espace disque.");
+					+ Utils.humanReadableByteCount(cache.purge(), false) + " d'espace disque.");
 			panneauArbre.updateCacheSizeInfo();
 			statusBar.done();
 		}
