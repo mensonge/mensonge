@@ -17,7 +17,7 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import mensonge.core.BetterObservable;
+import mensonge.core.DataBaseObservable;
 import mensonge.core.BaseDeDonnees.DBException;
 
 /**
@@ -26,9 +26,9 @@ import mensonge.core.BaseDeDonnees.DBException;
  * @author Azazel
  * 
  */
-public class BaseDeDonnees extends BetterObservable
+public class BaseDeDonnees extends DataBaseObservable
 {
-	
+
 	public static final int EXPORTER_ENREGISTREMENT = 2;
 	public static final int EXPORTER_BASE = 1;
 
@@ -137,19 +137,18 @@ public class BaseDeDonnees extends BetterObservable
 	 */
 	public void importer(final String cheminFichier) throws DBException
 	{
-		//notifyUpdateDataBase();
-		//throw new DBException("Importation non disponible dans cette version.", 3);
+		notifyInProgressAction("Importation de la base de données...");
 		List<LigneEnregistrement> liste;
 		Map<Integer, Integer> bijectionCategorie = new HashMap<Integer, Integer>();
 		Map<Integer, Integer> bijectionSujet = new HashMap<Integer, Integer>();
 		BaseDeDonnees baseImporte = new BaseDeDonnees(cheminFichier);
-		
+
 		baseImporte.connexion();
-		
+
 		liste = baseImporte.getListeSujet();
-		for(LigneEnregistrement sujet : liste)
+		for (LigneEnregistrement sujet : liste)
 		{
-			while(this.sujetExiste(sujet.getNomSuj()))
+			while (this.sujetExiste(sujet.getNomSuj()))
 			{
 				sujet.setNomSuj(sujet.getNomSuj() + ".new");
 			}
@@ -157,13 +156,13 @@ public class BaseDeDonnees extends BetterObservable
 			Integer idImport = new Integer(sujet.getIdSuj());
 			Integer idCourant = new Integer(this.getSujet(sujet.getNomSuj()));
 			bijectionSujet.put(idImport, idCourant);
-			//ajouter au a la bijection des sujets
+			// ajouter au a la bijection des sujets
 		}
-		
+
 		liste = baseImporte.getListeCategorie();
-		for(LigneEnregistrement categorie : liste)
+		for (LigneEnregistrement categorie : liste)
 		{
-			while(this.categorieExiste(categorie.getNomCat()))
+			while (this.categorieExiste(categorie.getNomCat()))
 			{
 				categorie.setNomCat(categorie.getNomCat() + ".new");
 			}
@@ -171,29 +170,30 @@ public class BaseDeDonnees extends BetterObservable
 			Integer idImport = new Integer(categorie.getIdCat());
 			Integer idCourant = new Integer(this.getCategorie(categorie.getNomCat()));
 			bijectionCategorie.put(idImport, idCourant);
-			//ajouter au a la bijection des sujets
+			// ajouter au a la bijection des sujets
 		}
-		
+
 		liste = baseImporte.getListeEnregistrement();
-		//Pour tous les enregistrements, on effectue la bijection des categories et des sujets
-		for(LigneEnregistrement enregistrement : liste)
+		// Pour tous les enregistrements, on effectue la bijection des categories et des sujets
+		for (LigneEnregistrement enregistrement : liste)
 		{
 			String nom = enregistrement.getNom();
-			while(this.enregistrementExist(nom))
+			while (this.enregistrementExist(nom))
 			{
 				nom += ".new";
 			}
 			byte sample[] = baseImporte.recupererEnregistrement(enregistrement.getId());
 			int idCat = enregistrement.getIdCat();
-			int  idSuj = enregistrement.getIdSuj();
+			int idSuj = enregistrement.getIdSuj();
 			idCat = bijectionCategorie.get(new Integer(idCat)).intValue();
 			idSuj = bijectionSujet.get(new Integer(idSuj)).intValue();
 			enregistrement.setIdCat(idCat);
 			enregistrement.setIdSuj(idSuj);
-			
-			this.ajouterEnregistrement(nom , enregistrement.getDuree(),enregistrement.getIdCat(), sample, enregistrement.getIdSuj());
+
+			this.ajouterEnregistrement(nom, enregistrement.getDuree(), enregistrement.getIdCat(), sample,
+					enregistrement.getIdSuj());
 		}
-	
+		notifyCompletedAction("La base de données a été importée");
 	}
 
 	/**
@@ -474,18 +474,26 @@ public class BaseDeDonnees extends BetterObservable
 		{
 			return;
 		}
-		try
+
+		notifyInProgressAction("Compactage de la base de données...");
+		// hack foireux pour poouvoir recevoir l'event de l'action qui n'est pas recu sinon la méthode est bloquante...
+		new Thread()
 		{
-			Statement stat = connexion.createStatement();
-			// Pour l'automatique ça serait : "PRAGMA auto_vacuum = 1"
-			stat.execute("VACUUM");
-			notifyUpdateDataBase();
-			stat.close();
-		}
-		catch (SQLException e)
-		{
-			throw new DBException("Impossible de compacter la base de données : " + e.getLocalizedMessage(), 5);
-		}
+			public void run()
+			{
+				try
+				{
+					Statement stat = connexion.createStatement();
+					// Pour l'automatique ça serait : "PRAGMA auto_vacuum = 1"
+					stat.execute("VACUUM");
+					stat.close();
+				}
+				catch (SQLException e)
+				{
+					notifyFailedAction("Une erreur est survenue pendant le compactage de la base de données");
+				}
+			}
+		}.start();
 	}
 
 	/**

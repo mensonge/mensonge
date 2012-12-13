@@ -38,6 +38,7 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
+import mensonge.core.ActionMessageObserver;
 import mensonge.core.Cache;
 import mensonge.core.DataBaseObserver;
 import mensonge.core.Lockable;
@@ -46,7 +47,7 @@ import mensonge.core.BaseDeDonnees.BaseDeDonnees;
 import mensonge.core.BaseDeDonnees.DBException;
 import mensonge.core.BaseDeDonnees.LigneEnregistrement;
 
-public final class PanneauArbre extends JPanel implements DataBaseObserver, Lockable
+public final class PanneauArbre extends JPanel implements DataBaseObserver, Lockable, ActionMessageObserver
 {
 	/**
 	 *
@@ -74,13 +75,15 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 	private boolean lock = false;
 
 	private boolean event = false;
+	private StatusBar statusBar;
 
-	public PanneauArbre(BaseDeDonnees bdd)
+	public PanneauArbre(BaseDeDonnees bdd, StatusBar statusBar)
 	{
 		this.setLayout(new BorderLayout());
 		this.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.GRAY));
 		this.bdd = bdd;
-
+		this.statusBar = statusBar;
+		
 		this.racine = new DefaultMutableTreeNode("Sujet");
 		this.remplirArbreEnregistrementSujet();
 		this.arbre = new JTree(racine);
@@ -1119,5 +1122,22 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 	{
 		this.lock = false;
 		this.updateArbre();
+	}
+
+	@Override
+	public void onInProgressAction(String message)
+	{
+		this.statusBar.setMessage(message);
+		this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+		this.getParent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+	}
+
+	@Override
+	public void onCompletedAction(String message)
+	{
+		this.statusBar.setMessage(message);	
+		this.statusBar.done();
+		this.setCursor(Cursor.getDefaultCursor());
+		this.getParent().setCursor(Cursor.getDefaultCursor());
 	}
 }

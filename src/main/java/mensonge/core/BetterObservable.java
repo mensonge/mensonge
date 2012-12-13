@@ -12,18 +12,6 @@ public class BetterObservable implements Observable
 	private static Logger logger = Logger.getLogger("Notifier");
 	private Set<IObserver> observers = Collections.newSetFromMap(new WeakHashMap<IObserver, Boolean>());
 
-	private Object objectWhichNotify;
-
-	public BetterObservable()
-	{
-		this.objectWhichNotify = this;
-	}
-
-	public BetterObservable(Object o)
-	{
-		this.objectWhichNotify = o;
-	}
-
 	@Override
 	public void addObserver(IObserver o)
 	{
@@ -36,12 +24,7 @@ public class BetterObservable implements Observable
 		this.observers.remove(o);
 	}
 
-	public void notifyUpdateDataBase()
-	{
-		callWithObservers("onUpdateDataBase");
-	}
-
-	private void callWithObservers(String name, Object... args)
+	protected void callWithObservers(String name, Object... args)
 	{
 		try
 		{

@@ -12,6 +12,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -76,7 +77,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	private PluginManager pluginManager;
 
 	private Locker locker;
-	
+
 	private JMenu menuOutils;
 	private StatusBar statusBar;
 
@@ -93,11 +94,12 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		connexionBase("LieLab.db");
 		this.setLayout(new BorderLayout());
 		this.previousPath = null;
-		this.panneauArbre = new PanneauArbre(bdd);
+		this.statusBar = new StatusBar();
+		this.add(statusBar, BorderLayout.SOUTH);
+		this.panneauArbre = new PanneauArbre(bdd, statusBar);
 		this.bdd.addObserver(panneauArbre);
 		this.locker.addTarget(panneauArbre);
 		this.ajoutBarMenu();
-		this.addStatusBar();
 		/*
 		 * Conteneur
 		 */
@@ -120,9 +122,9 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			logger.log(Level.WARNING, e.getLocalizedMessage());
 			popupErreur(e.getMessage());
 		}
-		
+
 		this.setTransferHandler(new HandlerDragLecteur(this, this.bdd));
-		
+
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setResizable(true);
 		this.setTitle("LieLab");
@@ -133,12 +135,6 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		this.setEnabled(true);
 	}
 
-	private void addStatusBar()
-	{
-		statusBar = new StatusBar();
-		this.add(statusBar, BorderLayout.SOUTH);
-	}
-	
 	/**
 	 * Ajoute une bar de menu
 	 */
@@ -644,7 +640,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		public void actionPerformed(ActionEvent e)
 		{
 			statusBar.setMessage("Purge du cache en cours...");
-			setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));	
+			setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			Map<String, Plugin> mapPlugins = pluginManager.getPlugins();
 			for (Entry<String, Plugin> entry : mapPlugins.entrySet())
 			{
@@ -655,8 +651,8 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				}
 			}
 			setCursor(Cursor.getDefaultCursor());
-			statusBar.setMessage("Le cache a été purgé.\nVous avez gagné " + Utils.humanReadableByteCount(Cache.purge(), false)
-					+ " d'espace disque.");
+			statusBar.setMessage("Le cache a été purgé.\nVous avez gagné "
+					+ Utils.humanReadableByteCount(Cache.purge(), false) + " d'espace disque.");
 			panneauArbre.updateCacheSizeInfo();
 			statusBar.done();
 		}
@@ -671,8 +667,6 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
-			statusBar.setMessage("Compactage de la base de données...");
-			setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			SwingUtilities.invokeLater(new Runnable()
 			{
 				@Override
@@ -681,21 +675,15 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 					try
 					{
 						bdd.compacter();
-						setCursor(Cursor.getDefaultCursor());
-						statusBar.setMessage("La base de données a été compactée");
 					}
 					catch (DBException e1)
 					{
 						logger.log(Level.WARNING, e1.getLocalizedMessage());
 						GraphicalUserInterface.popupErreur(e1.getLocalizedMessage());
-						statusBar.setMessage("Erreur pendant le compactage de la base de données");
 					}
-					setCursor(Cursor.getDefaultCursor());
-					statusBar.done();
 				}
 
 			});
-
 		}
 	}
 
