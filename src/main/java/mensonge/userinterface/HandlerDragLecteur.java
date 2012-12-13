@@ -1,10 +1,13 @@
 package mensonge.userinterface;
 
-
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.swing.JComponent;
 import javax.swing.TransferHandler;
@@ -15,6 +18,7 @@ import mensonge.core.BaseDeDonnees.BaseDeDonnees;
 public class HandlerDragLecteur extends TransferHandler
 {
 	private static final long serialVersionUID = 1L;
+	private static final Logger LOGGER = Logger.getLogger("dragLecteur");
 	private GraphicalUserInterface fenetre;
 	private BaseDeDonnees bdd;
 	private Extraction extraction;
@@ -26,6 +30,7 @@ public class HandlerDragLecteur extends TransferHandler
 		this.fenetre = fenetre;
 	}
 
+	@Override
 	public boolean canImport(TransferHandler.TransferSupport info)
 	{
 		if (!info.isDataFlavorSupported(DataFlavor.javaFileListFlavor))
@@ -35,20 +40,27 @@ public class HandlerDragLecteur extends TransferHandler
 		return true;
 	}
 
+	@Override
 	public boolean importData(TransferHandler.TransferSupport support)
 	{
 
 		Transferable data = support.getTransferable();
 		List<File> liste = null;
+
 		try
 		{
-			liste  = (List<File>) data.getTransferData(DataFlavor.javaFileListFlavor);
+			liste = (List<File>) data.getTransferData(DataFlavor.javaFileListFlavor);
 		}
-		catch (Exception e)
+		catch (UnsupportedFlavorException e)
 		{
-			e.printStackTrace();
+			LOGGER.log(Level.WARNING, e.getLocalizedMessage());
 		}
-		for(File fichier : liste)
+		catch (IOException e)
+		{
+			LOGGER.log(Level.WARNING, e.getLocalizedMessage());
+		}
+
+		for (File fichier : liste)
 		{
 			if (fichier.canRead() && fichier.exists())
 			{
@@ -58,6 +70,7 @@ public class HandlerDragLecteur extends TransferHandler
 		return false;
 	}
 
+	@Override
 	public int getSourceActions(JComponent c)
 	{
 		return MOVE;

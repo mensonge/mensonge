@@ -5,10 +5,8 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 
-import java.awt.GridLayout;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
