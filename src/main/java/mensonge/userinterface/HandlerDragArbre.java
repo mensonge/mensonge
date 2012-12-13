@@ -3,7 +3,6 @@ package mensonge.userinterface;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
-import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -96,12 +95,15 @@ public class HandlerDragArbre extends TransferHandler
 		{
 			return false;
 		}
-		int[] listeId = this.convertirListeId(str.split(";"));
+		int[] listeId = HandlerDragArbre.convertirListeId(str.split(";"));
 
 		for (int id : listeId)
 		{
 			// On modifie les categories ou le sujet
-			effectuerMaj(id, nom);
+			if (id != -1)
+			{
+				effectuerMaj(id, nom);
+			}
 		}
 		return true;
 	}
@@ -133,6 +135,12 @@ public class HandlerDragArbre extends TransferHandler
 		return retour;
 	}
 
+	/**
+	 * Effectue la mise a jour en fonction du trii pour un id vers son nouveau groupe (categorie ou sujet)
+	 * 
+	 * @param id
+	 * @param nom
+	 */
 	private void effectuerMaj(int id, String nom)
 	{
 		try
@@ -178,6 +186,13 @@ public class HandlerDragArbre extends TransferHandler
 		return new StringSelection(chaine);
 	}
 
+	/**
+	 * Cette méthode est utilisée afin de déterminer le comportement du composant vis-à-vis du drag'n drop : nous
+	 * retrouverons nos variables statiques COPY, MOVE, COPY_OR_MOVE, LINK ou NONE
+	 * 
+	 * @param c
+	 * @return int
+	 */
 	public int getSourceActions(JComponent c)
 	{
 		return MOVE;
