@@ -987,7 +987,43 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 			}
 		}
 	}
+	
+	/**
+	 * Permet dupliquer des enregistrements
+	 * 
+	 * @author Azazel
+	 * 
+	 */
+	private class DupliquerClicDroit extends MouseAdapter
+	{
+		@Override
+		public void mousePressed(MouseEvent e)
+		{
+			TreePath[] liste = arbre.getSelectionPaths();
+			String nom;
+			for(TreePath path : liste)
+			{
+				if(path.getLastPathComponent() instanceof Feuille)
+				{
+					Feuille feuille = (Feuille) path.getLastPathComponent();
+					nom = feuille.getNom() + ".copie";
+					try
+					{
+						bdd.ajouterEnregistrement(feuille.getNom() + ".copie", feuille.getDuree(), feuille.getIdCategorie(), bdd.recupererEnregistrement(feuille.getId()), feuille.getIdSujet());
+					}
+					catch (DBException e1)
+					{
+						GraphicalUserInterface.popupErreur(e1.getMessage());
+					}
+				}
+			}
+		}
+	}
 
+	/**
+	 * Charge un fichier audio
+	 * @param id
+	 */
 	private void loadAudioFile(final int id)
 	{
 		SwingUtilities.invokeLater(new Runnable()
