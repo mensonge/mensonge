@@ -589,8 +589,17 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 
 				if (onlySelectFeuille())
 				{
+					
 					if (arbre.getSelectionCount() >= 1)
 					{
+						JMenuItem dupliquer = new JMenuItem("Dupliquer les enregistrements");
+						if (arbre.getSelectionCount() == 1)
+						{
+							dupliquer.setText("Dupliquer l'enregistrement");
+						}
+						dupliquer.addMouseListener(new DupliquerClicDroit());
+						menuClicDroit.add(dupliquer);
+						
 						JMenuItem supprimer = new JMenuItem("Supprimer les enregistrements");
 						if (arbre.getSelectionCount() == 1)
 						{
@@ -598,6 +607,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 						}
 						supprimer.addMouseListener(new SupprimerEnregistrementClicDroit());
 						menuClicDroit.add(supprimer);
+						
 						if (typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)
 						{
 							JMenuItem modifierCategorie = new JMenuItem("Changer catégorie");
@@ -628,7 +638,6 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 							loadAudioFile(idLu);
 						}
 					}
-
 				}
 				else if (arbre.getSelectionCount() >= 1 && onlySelectBranche())
 				{
@@ -1009,7 +1018,11 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 					nom = feuille.getNom() + ".copie";
 					try
 					{
-						bdd.ajouterEnregistrement(feuille.getNom() + ".copie", feuille.getDuree(), feuille.getIdCategorie(), bdd.recupererEnregistrement(feuille.getId()), feuille.getIdSujet());
+						while(bdd.enregistrementExist(nom))
+						{
+							nom += ".copie";
+						}
+						bdd.ajouterEnregistrement(nom, feuille.getDuree(), feuille.getIdCategorie(), bdd.recupererEnregistrement(feuille.getId()), feuille.getIdSujet());
 					}
 					catch (DBException e1)
 					{
