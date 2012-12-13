@@ -121,7 +121,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			popupErreur(e.getMessage());
 		}
 		
-		conteneur.setTransferHandler(new HandlerDragLecteur(this, this.bdd));
+		this.setTransferHandler(new HandlerDragLecteur(this, this.bdd));
 		
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setResizable(true);
