@@ -57,6 +57,7 @@ public final class DialogueAjouterEnregistrement extends JDialog implements Acti
 			byte[] enregistrement)
 	{
 		super(parent, title, modal);
+		this.getParent().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		this.enregistrement = enregistrement;
 		this.bdd = bdd;
 		JPanel pan = new JPanel();
@@ -131,30 +132,37 @@ public final class DialogueAjouterEnregistrement extends JDialog implements Acti
 		if (!champsNom.getText().isEmpty())
 		{
 			this.setVisible(false);
-			ByteBuffer bb = ByteBuffer.allocate(8);
-			bb.put(enregistrement, 28, 4);
-			bb.put(enregistrement, 40, 4);
-			bb.rewind();
-			bb.order(ByteOrder.LITTLE_ENDIAN);
-			int octetParSeconde = bb.getInt();
-			int dataSize = bb.getInt();
-			int duree = (int) (dataSize / octetParSeconde);
-			String nomCat = nomCategorie();
-			String nomSuj = nomSujet();
-			try
+			new Thread(new Runnable()
 			{
-				this.getParent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-				this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-				int idCat = this.bdd.getCategorie(nomCat);
-				int idSuj = this.bdd.getSujet(nomSuj);
-				this.bdd.ajouterEnregistrement(champsNom.getText(), duree, idCat, enregistrement, idSuj);
-			}
-			catch (DBException e)
-			{
-				GraphicalUserInterface.popupErreur(e.getLocalizedMessage());
-			}
-			this.getParent().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-			this.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+				@Override
+				public void run()
+				{
+					ByteBuffer bb = ByteBuffer.allocate(8);
+					bb.put(enregistrement, 28, 4);
+					bb.put(enregistrement, 40, 4);
+					bb.rewind();
+					bb.order(ByteOrder.LITTLE_ENDIAN);
+					int octetParSeconde = bb.getInt();
+					int dataSize = bb.getInt();
+					int duree = (int) (dataSize / octetParSeconde);
+					String nomCat = nomCategorie();
+					String nomSuj = nomSujet();
+					try
+					{
+						setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+						getParent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+						int idCat = bdd.getCategorie(nomCat);
+						int idSuj = bdd.getSujet(nomSuj);
+						bdd.ajouterEnregistrement(champsNom.getText(), duree, idCat, enregistrement, idSuj);
+					}
+					catch (DBException e)
+					{
+						GraphicalUserInterface.popupErreur(e.getLocalizedMessage());
+					}
+					setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+					getParent().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+				}
+			}).run();
 		}
 		else
 		{

@@ -54,7 +54,6 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 	private static final int TYPE_TRIE_SUJET = 2;
 
 	private BaseDeDonnees bdd = null;
-	private int idLu = -1;
 
 	private LecteurAudio lecteurAudio;
 
@@ -69,7 +68,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 	private JLabel labelDBSize;
 
 	private boolean lock = false;
-	
+
 	private boolean event = false;
 
 	public PanneauArbre(BaseDeDonnees bdd)
@@ -81,30 +80,18 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 		this.racine = new DefaultMutableTreeNode("Sujet");
 		this.remplirArbreEnregistrementSujet();
 		this.arbre = new JTree(racine);
+		ClicGauche clicGauche = new ClicGauche();
 		this.arbre.addMouseListener(new ClicDroit());
-		this.arbre.addMouseListener(new ClicGauche());
+		this.arbre.addMouseListener(clicGauche);
 		this.arbre.addKeyListener(new KeyListenerTree());
+		this.arbre.addTreeSelectionListener(clicGauche);
+
 		this.arbre.addTreeSelectionListener(new TreeSelectionListener()
 		{
 			@Override
 			public void valueChanged(TreeSelectionEvent event)
 			{
 
-				if (arbre.getLastSelectedPathComponent() != null
-						&& arbre.getLastSelectedPathComponent() instanceof Feuille)
-				{
-					infoArbre.setListeInfo(((Feuille) arbre.getLastSelectedPathComponent()).getInfo());// On informe le
-																										// panneau
-																										// d'information
-					infoArbre.repaint();// on le repaint
-					lecteurAudio.setVisible(true);
-				}
-				else
-				{
-					infoArbre.setListeInfo(null);
-					infoArbre.repaint();// on le repaint
-					lecteurAudio.setVisible(false);
-				}
 			}
 		});
 
@@ -112,7 +99,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 		scrollPane.setPreferredSize(new Dimension(332, 450));
 		scrollPane.setAutoscrolls(true);
 
-		this.infoArbre.setPreferredSize(new Dimension(332, 100));
+		this.infoArbre.setPreferredSize(new Dimension(336, 100));
 
 		this.labelCacheSize = new JLabel("Taille du cache : " + Utils.humanReadableByteCount(Cache.getSize(), false));
 		this.labelDBSize = new JLabel("Taille de la base de données : "
@@ -130,7 +117,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 		panelConteneur.add(panelArbreInfo, BorderLayout.NORTH);
 		panelConteneur.add(this.infoArbre, BorderLayout.SOUTH);
 
-		 this.setEvent(true);
+		this.setEvent(true);
 		this.lecteurAudio = new LecteurAudio();
 		this.lecteurAudio.setVisible(false);
 
@@ -162,12 +149,13 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 			else
 			{
 				this.event = false;
-				//this.arbre.setCellRenderer(new PanneauArbreRenderDefault());
+				// this.arbre.setCellRenderer(new PanneauArbreRenderDefault());
+
 			}
 		}
 		else
 		{
-			//this.arbre.setCellRenderer(new PanneauArbreRenderDefault());
+			// this.arbre.setCellRenderer(new PanneauArbreRenderDefault());
 		}
 	}
 
@@ -589,7 +577,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 
 				if (onlySelectFeuille())
 				{
-					
+
 					if (arbre.getSelectionCount() >= 1)
 					{
 						JMenuItem dupliquer = new JMenuItem("Dupliquer les enregistrements");
@@ -599,7 +587,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 						}
 						dupliquer.addMouseListener(new DupliquerClicDroit());
 						menuClicDroit.add(dupliquer);
-						
+
 						JMenuItem supprimer = new JMenuItem("Supprimer les enregistrements");
 						if (arbre.getSelectionCount() == 1)
 						{
@@ -607,7 +595,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 						}
 						supprimer.addMouseListener(new SupprimerEnregistrementClicDroit());
 						menuClicDroit.add(supprimer);
-						
+
 						if (typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)
 						{
 							JMenuItem modifierCategorie = new JMenuItem("Changer catégorie");
@@ -632,11 +620,6 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 						menuClicDroit.add(renommer);
 						menuClicDroit.add(ecouter);
 						menuClicDroit.add(exporter);
-						if (idLu != ((Feuille) arbre.getLastSelectedPathComponent()).getId())
-						{
-							idLu = ((Feuille) arbre.getLastSelectedPathComponent()).getId();
-							loadAudioFile(idLu);
-						}
 					}
 				}
 				else if (arbre.getSelectionCount() >= 1 && onlySelectBranche())
@@ -926,28 +909,46 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 	}
 
 	/**
-	 * Charge un fichier enregistrement.
+	 * Quand on change l'élement selectionné on change le panneau info et s'il y en a que un on charge le fichier audio
 	 * 
 	 */
-	private class ClicGauche extends MouseAdapter
+	private class ClicGauche extends MouseAdapter implements TreeSelectionListener
 	{
 		@Override
-		public void mouseClicked(MouseEvent e)
+		public void mouseClicked(final MouseEvent event)
 		{
-			if ((e.getModifiers() & MouseEvent.BUTTON1_MASK) != 0 && arbre.getSelectionCount() == 1
-					&& onlySelectFeuille())
+			if ((event.getModifiers() & MouseEvent.BUTTON1_MASK) != 0 && arbre.getSelectionCount() == 1
+					&& onlySelectFeuille() && event.getClickCount() > 1)
 			{
-				if (idLu != ((Feuille) arbre.getLastSelectedPathComponent()).getId())
-				{
-					idLu = ((Feuille) arbre.getLastSelectedPathComponent()).getId();
-					loadAudioFile(idLu);
-				}
-				if (e.getClickCount() > 1)
-				{
-					lecteurAudio.play();
-				}
+				lecteurAudio.play();
 			}
+		}
 
+		@Override
+		public void valueChanged(TreeSelectionEvent e)
+		{
+			new Thread(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					if (arbre.getLastSelectedPathComponent() != null
+							&& arbre.getLastSelectedPathComponent() instanceof Feuille)
+					{
+						getParent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+						loadAudioFile(((Feuille) arbre.getLastSelectedPathComponent()).getId());
+						infoArbre.setListeInfo(((Feuille) arbre.getLastSelectedPathComponent()).getInfo());
+						lecteurAudio.setVisible(true);
+						getParent().setCursor(Cursor.getDefaultCursor());
+					}
+					else
+					{
+						lecteurAudio.setVisible(false);
+						infoArbre.setListeInfo(null);
+					}
+					infoArbre.repaint();
+				}
+			}).run();
 		}
 	}
 
@@ -996,7 +997,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 			}
 		}
 	}
-	
+
 	/**
 	 * Permet dupliquer des enregistrements
 	 * 
@@ -1010,19 +1011,20 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 		{
 			TreePath[] liste = arbre.getSelectionPaths();
 			String nom;
-			for(TreePath path : liste)
+			for (TreePath path : liste)
 			{
-				if(path.getLastPathComponent() instanceof Feuille)
+				if (path.getLastPathComponent() instanceof Feuille)
 				{
 					Feuille feuille = (Feuille) path.getLastPathComponent();
 					nom = feuille.getNom() + ".copie";
 					try
 					{
-						while(bdd.enregistrementExist(nom))
+						while (bdd.enregistrementExist(nom))
 						{
 							nom += ".copie";
 						}
-						bdd.ajouterEnregistrement(nom, feuille.getDuree(), feuille.getIdCategorie(), bdd.recupererEnregistrement(feuille.getId()), feuille.getIdSujet());
+						bdd.ajouterEnregistrement(nom, feuille.getDuree(), feuille.getIdCategorie(),
+								bdd.recupererEnregistrement(feuille.getId()), feuille.getIdSujet());
 					}
 					catch (DBException e1)
 					{
@@ -1035,34 +1037,29 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 
 	/**
 	 * Charge un fichier audio
+	 * 
 	 * @param id
 	 */
 	private void loadAudioFile(final int id)
 	{
-		SwingUtilities.invokeLater(new Runnable()
+		try
 		{
-			@Override
-			public void run()
+			lecteurAudio.stop();
+			File idAudioFile = getRecordCacheFile(id);
+			if (idAudioFile != null)
 			{
-				try
-				{
-					lecteurAudio.stop();
-					File idAudioFile = getRecordCacheFile(id);
-					if (idAudioFile != null)
-					{
-						lecteurAudio.load(idAudioFile.getCanonicalPath());
-					}
-				}
-				catch (IOException e)
-				{
-					GraphicalUserInterface.popupErreur("Création du fichier audio temporaire : " + e.getMessage());
-				}
-				catch (DBException e)
-				{
-					GraphicalUserInterface.popupErreur("Création du fichier audio temporaire : " + e.getMessage());
-				}
+				lecteurAudio.load(idAudioFile.getCanonicalPath());
 			}
-		});
+		}
+		catch (IOException e)
+		{
+			GraphicalUserInterface.popupErreur("Création du fichier audio temporaire : " + e.getMessage());
+		}
+		catch (DBException e)
+		{
+			GraphicalUserInterface.popupErreur("Création du fichier audio temporaire : " + e.getMessage());
+		}
+
 	}
 
 	public File getRecordCacheFile(int id) throws IOException, DBException

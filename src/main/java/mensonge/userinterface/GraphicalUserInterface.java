@@ -78,6 +78,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	private Locker locker;
 	
 	private JMenu menuOutils;
+	private StatusBar statusBar;
 
 	/**
 	 * Créé une nouvelle fenêtre avec les différents panneaux (onglets et arbre), défini les propriétés de la fenêtre et
@@ -90,11 +91,13 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		 * Connexion à la base
 		 */
 		connexionBase("LieLab.db");
+		this.setLayout(new BorderLayout());
 		this.previousPath = null;
 		this.panneauArbre = new PanneauArbre(bdd);
 		this.bdd.addObserver(panneauArbre);
 		this.locker.addTarget(panneauArbre);
 		this.ajoutBarMenu();
+		this.addStatusBar();
 		/*
 		 * Conteneur
 		 */
@@ -102,9 +105,8 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		PanelWithBackground panel = new PanelWithBackground(new BorderLayout());
 		panel.add(onglets, BorderLayout.CENTER);
 
-		JPanel conteneur = new JPanel(new BorderLayout());
-		conteneur.add(panel, BorderLayout.CENTER);
-		conteneur.add(panneauArbre, BorderLayout.EAST);
+		this.add(panel, BorderLayout.CENTER);
+		this.add(panneauArbre, BorderLayout.EAST);
 
 		/*
 		 * Fenêtre
@@ -126,12 +128,17 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		this.setTitle("LieLab");
 		this.setLocationRelativeTo(null);
 		this.setSize(Toolkit.getDefaultToolkit().getScreenSize());
-		this.setContentPane(conteneur);
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		this.setVisible(true);
 		this.setEnabled(true);
 	}
 
+	private void addStatusBar()
+	{
+		statusBar = new StatusBar();
+		this.add(statusBar, BorderLayout.SOUTH);
+	}
+	
 	/**
 	 * Ajoute une bar de menu
 	 */
@@ -502,21 +509,25 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			{
 				try
 				{
+					statusBar.setMessage("Exportation en cours...");
 					setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 					previousPathBase = fileChooser.getSelectedFile().getCanonicalPath();
 					bdd.exporter(previousPathBase, -1, 1);
 				}
 				catch (DBException e1)
 				{
+					statusBar.setMessage("Erreur durant l'exportation");
 					logger.log(Level.WARNING, e1.getLocalizedMessage());
 					popupErreur(e1.getMessage());
 				}
 				catch (IOException e1)
 				{
+					statusBar.setMessage("Erreur durant l'exportation");
 					logger.log(Level.WARNING, e1.getLocalizedMessage());
 					popupErreur(e1.getMessage());
 				}
 				setCursor(Cursor.getDefaultCursor());
+				statusBar.done();
 			}
 		}
 	}
@@ -546,22 +557,27 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				locker.lockUpdate();
 				try
 				{
+					statusBar.setMessage("Importation en cours...");
 					setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 					previousPathBase = fileChooser.getSelectedFile().getCanonicalPath();
 					bdd.importer(previousPathBase);
+					statusBar.setMessage("Importation terminée");
 				}
 				catch (IOException e1)
 				{
+					statusBar.setMessage("Erreur durant l'importation");
 					logger.log(Level.WARNING, e1.getLocalizedMessage());
 					popupErreur(e1.getMessage());
 				}
 				catch (DBException e2)
 				{
+					statusBar.setMessage("Erreur durant l'importation");
 					logger.log(Level.WARNING, e2.getLocalizedMessage());
 					popupErreur(e2.getMessage());
 				}
 				locker.unlockUpdate();
 				setCursor(Cursor.getDefaultCursor());
+				statusBar.done();
 			}
 		}
 	}
@@ -627,7 +643,8 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
-			setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+			statusBar.setMessage("Purge du cache en cours...");
+			setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));	
 			Map<String, Plugin> mapPlugins = pluginManager.getPlugins();
 			for (Entry<String, Plugin> entry : mapPlugins.entrySet())
 			{
@@ -638,9 +655,10 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				}
 			}
 			setCursor(Cursor.getDefaultCursor());
-			popupInfo("Le cache a été purgé.\nVous avez gagné " + Utils.humanReadableByteCount(Cache.purge(), false)
-					+ " d'espace disque.", "Purge du cache");
+			statusBar.setMessage("Le cache a été purgé.\nVous avez gagné " + Utils.humanReadableByteCount(Cache.purge(), false)
+					+ " d'espace disque.");
 			panneauArbre.updateCacheSizeInfo();
+			statusBar.done();
 		}
 	}
 
@@ -653,6 +671,8 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
+			statusBar.setMessage("Compactage de la base de données...");
+			setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			SwingUtilities.invokeLater(new Runnable()
 			{
 				@Override
@@ -660,19 +680,22 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				{
 					try
 					{
-						setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 						bdd.compacter();
 						setCursor(Cursor.getDefaultCursor());
-						popupInfo("La base de données a été compactée.", "Compactage de la base de données");
+						statusBar.setMessage("La base de données a été compactée");
 					}
 					catch (DBException e1)
 					{
 						logger.log(Level.WARNING, e1.getLocalizedMessage());
 						GraphicalUserInterface.popupErreur(e1.getLocalizedMessage());
+						statusBar.setMessage("Erreur pendant le compactage de la base de données");
 					}
 					setCursor(Cursor.getDefaultCursor());
+					statusBar.done();
 				}
+
 			});
+
 		}
 	}
 
