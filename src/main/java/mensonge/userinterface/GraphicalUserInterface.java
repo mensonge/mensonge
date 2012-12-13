@@ -118,6 +118,9 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			logger.log(Level.WARNING, e.getLocalizedMessage());
 			popupErreur(e.getMessage());
 		}
+		
+		conteneur.setTransferHandler(new HandlerDragLecteur(this, this.bdd));
+		
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setResizable(true);
 		this.setTitle("LieLab");
@@ -272,7 +275,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	 * @param onglet
 	 *            Onglet à ajouter
 	 */
-	private void ajouterOnglet(OngletLecteur onglet)
+	public void ajouterOnglet(OngletLecteur onglet)
 	{
 		JButton boutonFermeture = new JButton(new ImageIcon("images/CloseTab.png"));
 		boutonFermeture.setToolTipText("Fermer cet onglet");
