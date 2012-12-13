@@ -25,12 +25,12 @@
 
 	<target name="jar" depends="compile">
 		<pathconvert property="libs.project" pathsep=" ">
-    			<mapper>
-      				<chainedmapper>
-        				<flattenmapper />
-        				<globmapper from="*" to="lib/**" />
-      				</chainedmapper>
-    			</mapper>
+                            <!--<mapper>-->
+                                      <!--<chainedmapper>-->
+                                        <!--<flattenmapper />-->
+                                        <!--<globmapper from="*" to="lib/*" />-->
+                                      <!--</chainedmapper>-->
+                            <!--</mapper>-->
     			<path>
       				<fileset dir="${lib.dir}">
         				<include name="**/*.jar" />
