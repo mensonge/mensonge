@@ -21,6 +21,7 @@ import java.util.List;
 import javax.swing.JFileChooser;
 
 import javax.swing.BorderFactory;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
@@ -28,6 +29,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
+import javax.swing.TransferHandler;
 
 import javax.swing.JTree;
 
@@ -49,9 +51,11 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 	/**
 	 *
 	 */
+	public static final int TYPE_TRIE_CATEGORIE = 1;
+	public static final int TYPE_TRIE_SUJET = 2;
+	
 	private static final long serialVersionUID = 1L;
-	private static final int TYPE_TRIE_CATEGORIE = 1;
-	private static final int TYPE_TRIE_SUJET = 2;
+	
 
 	private BaseDeDonnees bdd = null;
 
@@ -85,16 +89,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 		this.arbre.addMouseListener(clicGauche);
 		this.arbre.addKeyListener(new KeyListenerTree());
 		this.arbre.addTreeSelectionListener(clicGauche);
-
-		this.arbre.addTreeSelectionListener(new TreeSelectionListener()
-		{
-			@Override
-			public void valueChanged(TreeSelectionEvent event)
-			{
-
-			}
-		});
-
+		
 		JScrollPane scrollPane = new JScrollPane(arbre);
 		scrollPane.setPreferredSize(new Dimension(332, 450));
 		scrollPane.setAutoscrolls(true);
@@ -123,6 +118,28 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 
 		this.add(panelConteneur, BorderLayout.NORTH);
 		this.add(lecteurAudio, BorderLayout.SOUTH);
+		this.arbre.setDragEnabled(true);
+		this.arbre.setTransferHandler(new HandlerDragArbre(this, bdd));
+		
+		this.arbre.addMouseListener(new MouseAdapter(){
+	         
+		      public void mousePressed(MouseEvent e)
+		      {
+		        JComponent lab = (JComponent)e.getSource();
+		        TransferHandler handle = lab.getTransferHandler();
+		        handle.exportAsDrag(lab, e, TransferHandler.COPY);
+		      }
+		    });
+	}
+
+	public int getTypeTrie()
+	{
+		return typeTrie;
+	}
+
+	public void setTypeTrie(int typeTrie)
+	{
+		this.typeTrie = typeTrie;
 	}
 
 	public boolean isEvent()
