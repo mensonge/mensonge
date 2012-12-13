@@ -1,8 +1,10 @@
 package mensonge.userinterface;
 
+
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.io.File;
+import java.util.List;
 
 import javax.swing.JComponent;
 import javax.swing.TransferHandler;
@@ -23,7 +25,7 @@ public class HandlerDragLecteur extends TransferHandler
 
 	public boolean canImport(TransferHandler.TransferSupport info)
 	{
-		if (!info.isDataFlavorSupported(DataFlavor.stringFlavor))
+		if (!info.isDataFlavorSupported(DataFlavor.javaFileListFlavor))
 		{
 			return false;
 		}
@@ -34,30 +36,22 @@ public class HandlerDragLecteur extends TransferHandler
 	{
 
 		Transferable data = support.getTransferable();
-		String str = "";
+		List<File> liste = null;
 		try
 		{
-			str = (String) data.getTransferData(DataFlavor.stringFlavor);
+			liste  = (List<File>) data.getTransferData(DataFlavor.javaFileListFlavor);
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
-		String[] tab = str.split("file://");
-		for (int i = 0; i < tab.length; i++)
+		for(File fichier : liste)
 		{
-			tab[i] = tab[i].trim();
-			if (!tab[i].equals(""))
+			if (fichier.canRead() && fichier.exists())
 			{
-				tab[i] = tab[i].replaceAll("\\%20", " ");
-				File f = new File(tab[i]);
-				if (f.canRead() && f.exists())
-				{
-					this.fenetre.ajouterOnglet(new OngletLecteur(f, this.bdd, this.fenetre));
-				}
+				this.fenetre.ajouterOnglet(new OngletLecteur(fichier, this.bdd, this.fenetre));
 			}
 		}
-
 		return false;
 	}
 
