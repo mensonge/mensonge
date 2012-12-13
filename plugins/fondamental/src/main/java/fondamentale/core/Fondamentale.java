@@ -58,24 +58,7 @@ public class Fondamentale implements Plugin
 				double tableauTmp[] = new double[SIZE_BLOC];
 				System.arraycopy(samplesFFT, index, tableauTmp, 0, SIZE_BLOC);
 				index += indexMax(tableauTmp);
-
-				final DrawXYGraph graphCepstre = new DrawXYGraph("Fondamentale", "Fondamentale", "Quéfrence (Hz)", "Amplitude");
-				XYSeries series2 = new XYSeries("Fondamentale");
-				for (int j = 0; j < samplesFFT.length; j++)
-				{
-					if(j != index)
-					{
-						series2.add(sampleRate * (j / 2 - 1) / samplesFFT.length, 0);
-					}
-					else
-					{
-						series2.add(sampleRate * (j / 2 - 1) / samplesFFT.length, samplesFFT[j]);
-					}
-						
-				}
-				XYDataset xyDataset2 = new XYSeriesCollection(series2);
-				graphCepstre.addDataset(xyDataset2);
-				graphCepstre.display();
+				double fondamentale = sampleRate * (index / 2 - 1) / samplesFFT.length;
 			}
 		});
 	}
@@ -93,6 +76,7 @@ public class Fondamentale implements Plugin
 					AudioInputStream inputAIS = AudioSystem.getAudioInputStream(file);
 					AudioFormat audioFormat = inputAIS.getFormat();
 					double[][] echantillons = extraction.extraireEchantillons(file.getCanonicalPath());
+					System.out.println(echantillons[0].length);
 					this.drawGraph(echantillons, audioFormat.getSampleRate());
 					echantillons = null;
 				}
