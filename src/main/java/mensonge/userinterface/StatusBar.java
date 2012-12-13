@@ -1,16 +1,19 @@
 package mensonge.userinterface;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.Timer;
 
-public class StatusBar extends JLabel implements ActionListener
+import mensonge.core.ActionMessageObserver;
+import mensonge.core.DataBaseObserver;
+
+public class StatusBar extends JLabel implements ActionListener, ActionMessageObserver, DataBaseObserver
 {
 	private static final long serialVersionUID = 8573623540967463794L;
 	private static final int STATUS_BAR_HEIGHT = 16;
@@ -35,7 +38,6 @@ public class StatusBar extends JLabel implements ActionListener
 		this.timer.stop();
 	}
 
-	
 	public void done()
 	{
 		this.timer.restart();
@@ -47,6 +49,28 @@ public class StatusBar extends JLabel implements ActionListener
 		setText("");
 		this.timer.stop();
 	}
-	
-	
+
+	@Override
+	public void onInProgressAction(String message)
+	{
+		this.setMessage(message);
+		this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+		this.getParent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+	}
+
+	@Override
+	public void onCompletedAction(String message)
+	{
+		this.setMessage(message);
+		this.done();
+		this.setCursor(Cursor.getDefaultCursor());
+		this.getParent().setCursor(Cursor.getDefaultCursor());
+	}
+
+	@Override
+	public void onUpdateDataBase()
+	{
+		
+	}
+
 }

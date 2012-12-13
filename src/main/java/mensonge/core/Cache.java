@@ -10,7 +10,7 @@ import java.util.logging.Logger;
  * Classe gérant le dossier de cache
  * 
  */
-public final class Cache
+public final class Cache extends CacheObservable
 {
 	private static final String CACHE_DIRECTORY_NAME = "cache";
 	private static final Logger LOGGER = Logger.getLogger("cacheUtils");
@@ -41,7 +41,7 @@ public final class Cache
 	 *            Nom du fichier à récupérer
 	 * @return Fichier du cache ou null s'il n'existe pas
 	 */
-	public File get(String fileName)
+	public File getFile(String fileName)
 	{
 		File cacheFile = new File(cacheDirectory, fileName);
 		if (cacheFile.exists())
@@ -58,7 +58,7 @@ public final class Cache
 	 *            Nom du fichier
 	 * @return Vrai s'il existe faux sinon
 	 */
-	public boolean exists(String fileName)
+	public boolean fileExists(String fileName)
 	{
 		return new File(cacheDirectory, fileName).exists();
 	}
@@ -74,6 +74,7 @@ public final class Cache
 	 */
 	public void createFile(String fileName, byte[] content) throws IOException
 	{
+		notifyInProgressAction("Mise en cache de l'enregistrement...");
 		File newFile = new File(cacheDirectory, fileName);
 		if (!newFile.exists())
 		{
@@ -83,6 +84,7 @@ public final class Cache
 		fos.write(content);
 		fos.flush();
 		fos.close();
+		notifyCompletedAction("L'enregistrement a été mis en cache");
 	}
 
 	/**
@@ -90,8 +92,9 @@ public final class Cache
 	 * 
 	 * @return La taille totale des fichiers supprimés
 	 */
-	public long purge()
+	public void purge()
 	{
+		notifyInProgressAction("Purge du cache...");
 		long length = 0;
 		if (cacheDirectory.exists() && cacheDirectory.isDirectory())
 		{
@@ -104,7 +107,8 @@ public final class Cache
 				}
 			}
 		}
-		return length;
+		notifyCompletedAction("Le cache a été purgé. Vous avez gagné " + Utils.humanReadableByteCount(length, false)
+				+ " d'espace disque.");
 	}
 
 	/**

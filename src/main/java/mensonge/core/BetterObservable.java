@@ -12,6 +12,7 @@ public class BetterObservable implements Observable
 	private static Logger logger = Logger.getLogger("Notifier");
 	private Set<IObserver> observers = Collections.newSetFromMap(new WeakHashMap<IObserver, Boolean>());
 
+	
 	@Override
 	public void addObserver(IObserver o)
 	{

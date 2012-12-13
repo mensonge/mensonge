@@ -75,15 +75,13 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 	private boolean lock = false;
 
 	private boolean event = false;
-	private StatusBar statusBar;
 	private Cache cache;
 
-	public PanneauArbre(BaseDeDonnees bdd, StatusBar statusBar, Cache cache)
+	public PanneauArbre(BaseDeDonnees bdd, Cache cache)
 	{
 		this.setLayout(new BorderLayout());
 		this.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.GRAY));
 		this.bdd = bdd;
-		this.statusBar = statusBar;
 		this.cache = cache;
 		
 		this.racine = new DefaultMutableTreeNode("Sujet");
@@ -1087,13 +1085,13 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 	public File getRecordCacheFile(int id) throws IOException, DBException
 	{
 		final String fileName = id + ".wav";
-		if (!cache.exists(fileName))
+		if (!cache.fileExists(fileName))
 		{
 			byte[] contenu = bdd.recupererEnregistrement(id);
 			cache.createFile(fileName, contenu);
 			updateCacheSizeInfo();
 		}
-		return cache.get(fileName);
+		return cache.getFile(fileName);
 	}
 
 	public void updateCacheSizeInfo()
@@ -1129,17 +1127,12 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 	@Override
 	public void onInProgressAction(String message)
 	{
-		this.statusBar.setMessage(message);
 		this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-		this.getParent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 	}
 
 	@Override
 	public void onCompletedAction(String message)
 	{
-		this.statusBar.setMessage(message);	
-		this.statusBar.done();
 		this.setCursor(Cursor.getDefaultCursor());
-		this.getParent().setCursor(Cursor.getDefaultCursor());
 	}
 }

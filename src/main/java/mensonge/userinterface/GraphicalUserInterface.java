@@ -12,7 +12,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -47,7 +46,6 @@ import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 import mensonge.core.Cache;
 import mensonge.core.Extraction;
 import mensonge.core.Locker;
-import mensonge.core.Utils;
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
 import mensonge.core.BaseDeDonnees.DBException;
 import mensonge.core.plugins.Plugin;
@@ -89,7 +87,6 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	public GraphicalUserInterface()
 	{
 		this.locker = new Locker();
-		this.cache = new Cache();
 		/*
 		 * Connexion à la base
 		 */
@@ -97,9 +94,12 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		this.setLayout(new BorderLayout());
 		this.previousPath = null;
 		this.statusBar = new StatusBar();
+		this.cache = new Cache();
+		this.cache.addObserver(statusBar);
 		this.add(statusBar, BorderLayout.SOUTH);
-		this.panneauArbre = new PanneauArbre(bdd, statusBar, cache);
+		this.panneauArbre = new PanneauArbre(bdd, cache);
 		this.bdd.addObserver(panneauArbre);
+		this.bdd.addObserver(statusBar);
 		this.locker.addTarget(panneauArbre);
 		this.ajoutBarMenu();
 		/*
@@ -641,8 +641,6 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
-			statusBar.setMessage("Purge du cache en cours...");
-			setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			Map<String, Plugin> mapPlugins = pluginManager.getPlugins();
 			for (Entry<String, Plugin> entry : mapPlugins.entrySet())
 			{
@@ -652,11 +650,8 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 					return;
 				}
 			}
-			setCursor(Cursor.getDefaultCursor());
-			statusBar.setMessage("Le cache a été purgé.\nVous avez gagné "
-					+ Utils.humanReadableByteCount(cache.purge(), false) + " d'espace disque.");
+			cache.purge();
 			panneauArbre.updateCacheSizeInfo();
-			statusBar.done();
 		}
 	}
 
