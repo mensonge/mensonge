@@ -282,7 +282,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	 * @param onglet
 	 *            Onglet à ajouter
 	 */
-	public void ajouterOnglet(OngletLecteur onglet)
+	protected void ajouterOnglet(OngletLecteur onglet)
 	{
 		JButton boutonFermeture = new JButton(new ImageIcon("images/CloseTab.png"));
 		boutonFermeture.setToolTipText("Fermer cet onglet");
