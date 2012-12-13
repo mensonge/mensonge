@@ -58,6 +58,42 @@ public class Feuille extends DefaultMutableTreeNode
 		retour.put("Sujet "+ idSujet, sujet);
 		return retour;
 	}
+	
+	public String getSujet()
+	{
+		return sujet;
+	}
+
+
+	public void setSujet(String sujet)
+	{
+		this.sujet = sujet;
+	}
+
+
+	public int getIdCategorie()
+	{
+		return idCategorie;
+	}
+
+
+	public void setIdCategorie(int idCategorie)
+	{
+		this.idCategorie = idCategorie;
+	}
+
+
+	public int getIdSujet()
+	{
+		return idSujet;
+	}
+
+
+	public void setIdSujet(int idSujet)
+	{
+		this.idSujet = idSujet;
+	}
+
 
 	public int getId()
 	{

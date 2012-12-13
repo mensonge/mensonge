@@ -38,12 +38,13 @@ import javax.swing.tree.TreePath;
 
 import mensonge.core.Cache;
 import mensonge.core.DataBaseObserver;
+import mensonge.core.Lockable;
 import mensonge.core.Utils;
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
 import mensonge.core.BaseDeDonnees.DBException;
 import mensonge.core.BaseDeDonnees.LigneEnregistrement;
 
-public final class PanneauArbre extends JPanel implements DataBaseObserver
+public final class PanneauArbre extends JPanel implements DataBaseObserver, Lockable
 {
 	/**
 	 *
@@ -65,6 +66,8 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 	private int typeTrie = PanneauArbre.TYPE_TRIE_SUJET;
 	private JLabel labelCacheSize;
 	private JLabel labelDBSize;
+
+	private boolean lock = false;
 
 	private boolean event = false;
 
@@ -147,6 +150,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 			{
 				this.event = false;
 				// this.arbre.setCellRenderer(new PanneauArbreRenderDefault());
+
 			}
 		}
 		else
@@ -194,27 +198,30 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 
 	public void updateArbre()
 	{
-		Enumeration<TreePath> pathExpand = this.arbre.getExpandedDescendants(new TreePath(racine));
-		viderNoeud(this.racine);
-		if (this.typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)
+		if (!lock)
 		{
-			remplirArbreEnregistrementCategorie();
-		}
-		else if (this.typeTrie == PanneauArbre.TYPE_TRIE_SUJET)
-		{
-			remplirArbreEnregistrementSujet();
-		}
-		this.arbre.setExpandsSelectedPaths(true);
-		// this.redeployerArbre(pathExpand);
-		this.arbre.expandPath(new TreePath(this.racine));
-		SwingUtilities.invokeLater(new Runnable()
-		{
-			@Override
-			public void run()
+			Enumeration<TreePath> pathExpand = this.arbre.getExpandedDescendants(new TreePath(racine));
+			viderNoeud(this.racine);
+			if (this.typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)
 			{
-				arbre.updateUI();
+				remplirArbreEnregistrementCategorie();
 			}
-		});
+			else if (this.typeTrie == PanneauArbre.TYPE_TRIE_SUJET)
+			{
+				remplirArbreEnregistrementSujet();
+			}
+			this.arbre.setExpandsSelectedPaths(true);
+			// this.redeployerArbre(pathExpand);
+			this.arbre.expandPath(new TreePath(this.racine));
+			SwingUtilities.invokeLater(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					arbre.updateUI();
+				}
+			});
+		}
 	}
 
 	public void redeployerArbre(Enumeration<TreePath> pathExpand)
@@ -570,8 +577,17 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 
 				if (onlySelectFeuille())
 				{
+
 					if (arbre.getSelectionCount() >= 1)
 					{
+						JMenuItem dupliquer = new JMenuItem("Dupliquer les enregistrements");
+						if (arbre.getSelectionCount() == 1)
+						{
+							dupliquer.setText("Dupliquer l'enregistrement");
+						}
+						dupliquer.addMouseListener(new DupliquerClicDroit());
+						menuClicDroit.add(dupliquer);
+
 						JMenuItem supprimer = new JMenuItem("Supprimer les enregistrements");
 						if (arbre.getSelectionCount() == 1)
 						{
@@ -579,6 +595,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 						}
 						supprimer.addMouseListener(new SupprimerEnregistrementClicDroit());
 						menuClicDroit.add(supprimer);
+
 						if (typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)
 						{
 							JMenuItem modifierCategorie = new JMenuItem("Changer catégorie");
@@ -604,7 +621,6 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 						menuClicDroit.add(ecouter);
 						menuClicDroit.add(exporter);
 					}
-
 				}
 				else if (arbre.getSelectionCount() >= 1 && onlySelectBranche())
 				{
@@ -982,6 +998,48 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 		}
 	}
 
+	/**
+	 * Permet dupliquer des enregistrements
+	 * 
+	 * @author Azazel
+	 * 
+	 */
+	private class DupliquerClicDroit extends MouseAdapter
+	{
+		@Override
+		public void mousePressed(MouseEvent e)
+		{
+			TreePath[] liste = arbre.getSelectionPaths();
+			String nom;
+			for (TreePath path : liste)
+			{
+				if (path.getLastPathComponent() instanceof Feuille)
+				{
+					Feuille feuille = (Feuille) path.getLastPathComponent();
+					nom = feuille.getNom() + ".copie";
+					try
+					{
+						while (bdd.enregistrementExist(nom))
+						{
+							nom += ".copie";
+						}
+						bdd.ajouterEnregistrement(nom, feuille.getDuree(), feuille.getIdCategorie(),
+								bdd.recupererEnregistrement(feuille.getId()), feuille.getIdSujet());
+					}
+					catch (DBException e1)
+					{
+						GraphicalUserInterface.popupErreur(e1.getMessage());
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * Charge un fichier audio
+	 * 
+	 * @param id
+	 */
 	private void loadAudioFile(final int id)
 	{
 		try
@@ -1030,6 +1088,19 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver
 			this.labelDBSize.setText("Taille de la base de données : "
 					+ Utils.humanReadableByteCount(Utils.getDBSize(), false));
 		}
+		this.updateArbre();
+	}
+
+	@Override
+	public void lockUpdate()
+	{
+		this.lock = true;
+	}
+
+	@Override
+	public void unlockUpdate()
+	{
+		this.lock = false;
 		this.updateArbre();
 	}
 }

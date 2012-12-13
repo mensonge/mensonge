@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
-import java.awt.Dimension;
 
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -20,7 +19,6 @@ import java.util.logging.Logger;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -33,12 +31,10 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
-import javax.swing.JWindow;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
-import javax.swing.border.BevelBorder;
 
 import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
@@ -49,6 +45,7 @@ import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
 import mensonge.core.Cache;
 import mensonge.core.Extraction;
+import mensonge.core.Locker;
 import mensonge.core.Utils;
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
 import mensonge.core.BaseDeDonnees.DBException;
@@ -78,6 +75,8 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 	private PluginManager pluginManager;
 
+	private Locker locker;
+	
 	private JMenu menuOutils;
 	private StatusBar statusBar;
 
@@ -87,6 +86,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	 */
 	public GraphicalUserInterface()
 	{
+		this.locker = new Locker();
 		/*
 		 * Connexion à la base
 		 */
@@ -95,6 +95,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		this.previousPath = null;
 		this.panneauArbre = new PanneauArbre(bdd);
 		this.bdd.addObserver(panneauArbre);
+		this.locker.addTarget(panneauArbre);
 		this.ajoutBarMenu();
 		this.addStatusBar();
 		/*
@@ -550,6 +551,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			fileChooser.showOpenDialog(fenetre);
 			if (fileChooser.getSelectedFile() != null)
 			{
+				locker.lockUpdate();
 				try
 				{
 					statusBar.setMessage("Importation en cours...");
@@ -570,6 +572,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 					logger.log(Level.WARNING, e2.getLocalizedMessage());
 					popupErreur(e2.getMessage());
 				}
+				locker.unlockUpdate();
 				setCursor(Cursor.getDefaultCursor());
 				statusBar.done();
 			}
