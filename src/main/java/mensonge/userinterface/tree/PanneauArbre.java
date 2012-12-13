@@ -941,7 +941,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 					}
 					infoArbre.repaint();
 				}
-			}).run();
+			}).start();
 		}
 	}
 

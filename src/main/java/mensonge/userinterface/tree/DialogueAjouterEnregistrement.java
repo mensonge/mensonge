@@ -158,7 +158,7 @@ public final class DialogueAjouterEnregistrement extends JDialog implements Acti
 						GraphicalUserInterface.popupErreur(e.getLocalizedMessage());
 					}
 				}
-			}).run();
+			}).start();
 		}
 		else
 		{
