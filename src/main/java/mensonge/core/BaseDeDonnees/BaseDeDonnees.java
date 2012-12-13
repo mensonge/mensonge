@@ -1,8 +1,8 @@
 package mensonge.core.BaseDeDonnees;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -18,7 +18,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import mensonge.core.DataBaseObservable;
-import mensonge.core.BaseDeDonnees.DBException;
 
 /**
  * Classe permettant les interraction avec la base de donnees
@@ -74,19 +73,20 @@ public class BaseDeDonnees extends DataBaseObservable
 			// desactive l'autocommit ce qui est plus securisant et augmente la vitesse
 			connexion.setAutoCommit(true);
 		}
-		catch (Exception e)
+		catch (SQLException e)
 		{
-			throw new DBException("Erreur lors de l'initialisation de la connexion: " + e.getMessage(), 1);
+			throw new DBException("Erreur lors de l'initialisation de la connexion : " + e.getMessage(), 1);
+		}
+		catch (ClassNotFoundException e)
+		{
+			throw new DBException("Impossible de trouver le pilote pour la base de données : " + e.getMessage(), 1);
 		}
 		Statement stat = null;
 		try
 		// test la structure de la base
 		{
 			stat = connexion.createStatement();// creation du Statement
-			stat.executeQuery("SELECT id, enregistrement, duree, taille, nom, idcat, idsuj FROM enregistrements;");// test
-																													// de
-																													// la
-																													// structure
+			stat.executeQuery("SELECT id, enregistrement, duree, taille, nom, idcat, idsuj FROM enregistrements;");
 			stat.executeQuery("SELECT idcat, nomcat FROM categorie;");
 			stat.executeQuery("SELECT idsuj, nomsuj FROM sujet;");
 			// fermeture du Statement
@@ -94,11 +94,7 @@ public class BaseDeDonnees extends DataBaseObservable
 		}
 		catch (SQLException e)
 		{
-			throw new DBException("Probleme dans la structure de la base : " + e.getMessage(), 2);
-		}
-		catch (Exception e)
-		{
-			throw new DBException("Erreur lors de la verification de la structure de la base : " + e.getMessage(), 3);
+			throw new DBException("Problème dans la structure de la base : " + e.getMessage(), 2);
 		} finally
 		{
 			closeRessource(null, stat, null);
@@ -215,11 +211,13 @@ public class BaseDeDonnees extends DataBaseObservable
 		}
 		if (type == EXPORTER_BASE)// Exporter la base vers un nouveau fichier
 		{
+			notifyInProgressAction("Exportation de la base de données...");
 			File src = new File(fileName);
 			File dest = new File(cheminFichier);
 			if (!src.exists())// Verifie si le fichier existe bien
 			{
-				throw new DBException("Le fichier " + fileName + " n'existe pas.", 3);
+				notifyFailedAction("Impossible d'exporter la base de données");
+				throw new DBException("Le fichier de base de données (" + fileName + ") n'existe pas.", 3);
 			}
 			if (dest.exists())// verifie que la destination n'existe pas, auquel cas, on la supprime
 			{
@@ -229,17 +227,21 @@ public class BaseDeDonnees extends DataBaseObservable
 			{
 				dest.createNewFile();// Création du nouveau fichier
 			}
-			catch (Exception e)
+			catch (IOException e)
 			{
+				notifyFailedAction("Impossible d'exporter la base de données");
 				throw new DBException("Impossible de créer le fichier de sortie: " + e.getMessage(), 3);
 			}
 			if (!copyFile(src, dest))
 			{
+				notifyFailedAction("Impossible d'exporter la base de données");
 				throw new DBException("Impossible de copier le fichier de la base", 3);
 			}
+			notifyCompletedAction("La base de données a été exportée");
 		}
 		else if (type == EXPORTER_ENREGISTREMENT)// exporter un echantillon
 		{
+			notifyInProgressAction("Exportation de l'enregistrement...");
 			File dest = new File(cheminFichier);
 			if (dest.exists())// verifie que la destination n'existe pas, auquel cas, on la supprime
 			{
@@ -249,9 +251,10 @@ public class BaseDeDonnees extends DataBaseObservable
 			{
 				dest.createNewFile();// Création du nouveau fichier
 			}
-			catch (Exception e)
+			catch (IOException e)
 			{
-				throw new DBException("Impossible de créer le fichier de sortie: " + e.getMessage(), 3);
+				notifyFailedAction("Impossible d'exporter l'enregistrement");
+				throw new DBException("Impossible de créer le fichier de sortie : " + e.getMessage(), 3);
 			}
 			// récupérer un enregistrement
 			byte[] echantillon = this.recupererEnregistrement(id);
@@ -259,21 +262,16 @@ public class BaseDeDonnees extends DataBaseObservable
 			// coller l'enregistrement dans un fichier
 			FileOutputStream destinationFile = null;
 			List<LigneEnregistrement> liste = this.getListeEnregistrement();
-			try
+
+			for (LigneEnregistrement ligne : liste)
 			{
-				for (LigneEnregistrement ligne : liste)
+				if (ligne.getId() == id)
 				{
-					if (ligne.getId() == id)
-					{
-						sujet = (byte) ligne.getIdCat();
-						categorie = (byte) ligne.getIdSuj();
-					}
+					sujet = (byte) ligne.getIdCat();
+					categorie = (byte) ligne.getIdSuj();
 				}
 			}
-			catch (Exception e1)
-			{
-				e1.printStackTrace();
-			}
+
 			try
 			{
 				destinationFile = new FileOutputStream(dest);
@@ -282,11 +280,12 @@ public class BaseDeDonnees extends DataBaseObservable
 				destinationFile.write(categorie);
 				destinationFile.close();
 			}
-			catch (Exception e)
+			catch (IOException e)
 			{
-				throw new DBException("Erreur lors de la copie de l'échantillon dans le fichier: " + e.getMessage(), 3);
+				notifyFailedAction("Impossible d'exporter l'enregistrement");
+				throw new DBException("Erreur lors de la copie de l'échantillon dans le fichier : " + e.getMessage(), 3);
 			}
-
+			notifyCompletedAction("La base de données a été exportée");
 		}
 	}
 
@@ -328,7 +327,7 @@ public class BaseDeDonnees extends DataBaseObservable
 			retour = ResultatSelect.convertirResultatSet(rs, colonne);
 
 		}
-		catch (Exception e)
+		catch (SQLException e)
 		{
 			throw new DBException("Erreur lors de la recuperation de la liste des enregistrement: " + e.getMessage(), 1);
 		} finally
@@ -366,15 +365,12 @@ public class BaseDeDonnees extends DataBaseObservable
 		try
 		{
 			ps = connexion
-					.prepareStatement("SELECT duree, taille, nom, nomcat, id, nomsuj, en.idsuj, en.idcat FROM enregistrements en, categorie ca, sujet su WHERE en.idcat = ca.idcat AND en.idsuj = su.idsuj AND en.idcat=? ORDER BY nom");// Preparation
-			// de
-			// la
-			// requete
+					.prepareStatement("SELECT duree, taille, nom, nomcat, id, nomsuj, en.idsuj, en.idcat FROM enregistrements en, categorie ca, sujet su WHERE en.idcat = ca.idcat AND en.idsuj = su.idsuj AND en.idcat=? ORDER BY nom");
 			ps.setInt(1, idCat);// on rempli les trous
 			rs = ps.executeQuery();// On execute
 			retour = ResultatSelect.convertirResultatSet(rs, colonne);
 		}
-		catch (Exception e)
+		catch (SQLException e)
 		{
 			throw new DBException("Erreur lors de la recuperation de la liste des enregistrements: " + e.getMessage(),
 					1);
@@ -421,7 +417,7 @@ public class BaseDeDonnees extends DataBaseObservable
 			rs = ps.executeQuery();// On execute
 			retour = ResultatSelect.convertirResultatSet(rs, colonne);
 		}
-		catch (Exception e)
+		catch (SQLException e)
 		{
 			throw new DBException("Erreur lors de la recuperation de la liste des enregistrement: " + e.getMessage(), 1);
 		} finally
@@ -454,7 +450,7 @@ public class BaseDeDonnees extends DataBaseObservable
 			stat.close();
 			return retour;
 		}
-		catch (Exception e)
+		catch (SQLException e)
 		{
 			throw new DBException("Erreur lors de la recuperation du nombre d'enregistrement: " + e.getMessage(), 1);
 		} finally
@@ -479,6 +475,7 @@ public class BaseDeDonnees extends DataBaseObservable
 		// hack foireux pour poouvoir recevoir l'event de l'action qui n'est pas recu sinon la méthode est bloquante...
 		new Thread()
 		{
+			@Override
 			public void run()
 			{
 				try
@@ -487,6 +484,7 @@ public class BaseDeDonnees extends DataBaseObservable
 					// Pour l'automatique ça serait : "PRAGMA auto_vacuum = 1"
 					stat.execute("VACUUM");
 					stat.close();
+					notifyCompletedAction("La base de données a été compactée");
 				}
 				catch (SQLException e)
 				{
@@ -518,16 +516,20 @@ public class BaseDeDonnees extends DataBaseObservable
 		}
 		if (!this.categorieExiste(idCat))// On verifie si la categorie existe
 		{
+			notifyFailedAction("Impossible d'ajouter l'enregistrement");
 			throw new DBException("Catégorie inexistante.", 3);
 		}
 		if (!this.sujetExiste(idSuj))// test l'existance de la categorie
 		{
+			notifyFailedAction("Impossible d'ajouter l'enregistrement");
 			throw new DBException("Sujet inexistant.", 3);
 		}
 		if (this.enregistrementExist(nom))
 		{
+			notifyFailedAction("Impossible d'ajouter l'enregistrement");
 			throw new DBException("Nom déjà utilisé.", 3);
 		}
+		notifyInProgressAction("Ajout de l'enregistrement dans la base de données...");
 		PreparedStatement ps = null;
 		try
 		{
@@ -543,10 +545,12 @@ public class BaseDeDonnees extends DataBaseObservable
 			if (ps.executeUpdate() > 0)
 			{
 				notifyUpdateDataBase();
+				notifyCompletedAction("L'enregistrement a été ajouté dans la base de données");
 			}
 		}
-		catch (Exception e)
+		catch (SQLException e)
 		{
+			notifyFailedAction("Impossible d'ajouter l'enregistrement");
 			throw new DBException("Erreur lors de l'ajout de l'enregistrement : " + e.getMessage(), 3);
 		} finally
 		{
@@ -567,6 +571,7 @@ public class BaseDeDonnees extends DataBaseObservable
 		{
 			return;
 		}
+		notifyInProgressAction("Suppresion de l'enregistrement...");
 		PreparedStatement ps = null;
 		try
 		{
@@ -576,10 +581,12 @@ public class BaseDeDonnees extends DataBaseObservable
 			if (ps.executeUpdate() > 0)// On execute la requete et on test la reussite de cette dernier
 			{
 				notifyUpdateDataBase();
+				notifyCompletedAction("L'enregistrement a été supprimé");
 			}
 		}
 		catch (SQLException e)
 		{
+			notifyFailedAction("Impossible de supprimer l'enregistrement");
 			throw new DBException(e.getLocalizedMessage(), 3);
 		} finally
 		{
@@ -611,16 +618,21 @@ public class BaseDeDonnees extends DataBaseObservable
 		}
 		if (!this.categorieExiste(idCat))// On test si la categorie est existante
 		{
+			notifyFailedAction("Impossible de mettre à jour l'enregistrement");
 			throw new DBException("Categorie inexistante.", 3);
 		}
 		if (!this.sujetExiste(idSuj))// test l'existance de la categorie
 		{
+			notifyFailedAction("Impossible de mettre à jour l'enregistrement");
 			throw new DBException("sujet inexistante.", 3);
 		}
 		if (this.enregistrementExist(nom))
 		{
+			notifyFailedAction("Impossible de mettre à jour l'enregistrement");
 			throw new DBException("Nom déjà utilisé.", 3);
 		}
+		notifyInProgressAction("Mise à jour de l'enregistrement...");
+
 		PreparedStatement ps = null;
 		try
 		{
@@ -637,11 +649,13 @@ public class BaseDeDonnees extends DataBaseObservable
 
 			if (ps.executeUpdate() > 0)// On execute et on test la reussite
 			{
+				notifyCompletedAction("L'enregistrement a été mis à jour");
 				notifyUpdateDataBase();
 			}
 		}
-		catch (Exception e)
+		catch (SQLException e)
 		{
+			notifyFailedAction("Impossible de mettre à jour l'enregistrement");
 			throw new DBException("Erreur lors de la modification de l'enregistrement : " + e.getMessage(), 3);
 		} finally
 		{
@@ -673,24 +687,25 @@ public class BaseDeDonnees extends DataBaseObservable
 		}
 		if (!this.categorieExiste(idCat))// On test si la categorie existe
 		{
+			notifyFailedAction("Impossible de mettre à jour l'enregistrement");
 			throw new DBException("Catégorie inexistante.", 3);
 		}
 		if (!this.sujetExiste(idSuj))// test l'existance de la categorie
 		{
+			notifyFailedAction("Impossible de mettre à jour l'enregistrement");
 			throw new DBException("Sujet inexistante.", 3);
 		}
 		if (this.enregistrementExist(nom))
 		{
+			notifyFailedAction("Impossible de mettre à jour l'enregistrement");
 			throw new DBException("Nom déjà utilisé.", 3);
 		}
+		notifyInProgressAction("Mise à jour de l'enregistrement...");
 		PreparedStatement ps = null;
 		try
 		{
 			ps = connexion
-					.prepareStatement("UPDATE enregistrements SET nom=?, duree=?, taille=?, idCat=?, idsuj=? WHERE id=?;");// Preparation
-																															// de
-																															// la
-																															// requete
+					.prepareStatement("UPDATE enregistrements SET nom=?, duree=?, taille=?, idCat=?, idsuj=? WHERE id=?;");
 			ps.setString(1, nom);// Remplissage de la requete
 			ps.setInt(2, duree);
 			ps.setInt(3, taille);
@@ -700,11 +715,13 @@ public class BaseDeDonnees extends DataBaseObservable
 
 			if (ps.executeUpdate() > 0)// Execution et test de reussite dans la foulee
 			{
+				notifyCompletedAction("L'enregistrement a été mis à jour");
 				notifyUpdateDataBase();
 			}
 		}
-		catch (Exception e)
+		catch (SQLException e)
 		{
+			notifyFailedAction("Impossible de mettre à jour l'enregistrement");
 			throw new DBException("Erreur lors de la modification de l'enregistrement : " + e.getMessage(), 3);
 		} finally
 		{
@@ -729,24 +746,26 @@ public class BaseDeDonnees extends DataBaseObservable
 		}
 		if (this.enregistrementExist(nom))
 		{
+			notifyFailedAction("Impossible de renommer l'enregistrement");
 			throw new DBException("Nom déjà utilisé.", 3);
 		}
+		notifyInProgressAction("Renommage de l'enregistrement...");
 		PreparedStatement ps = null;
 		try
 		{
-			ps = connexion.prepareStatement("UPDATE enregistrements SET nom=? WHERE id=?;");// preparation
-																							// de la
-																							// requete
+			ps = connexion.prepareStatement("UPDATE enregistrements SET nom=? WHERE id=?;");
 			ps.setString(1, nom);// Remplissage de la requete
 			ps.setInt(2, id);
 
 			if (ps.executeUpdate() > 0)// execution et test de la reussite de la requete
 			{
+				notifyCompletedAction("L'enregistrement a été renommé");
 				notifyUpdateDataBase();
 			}
 		}
-		catch (Exception e)
+		catch (SQLException e)
 		{
+			notifyFailedAction("Impossible de renommer l'enregistrement");
 			throw new DBException("Erreur lors de la modification du nom : " + e.getMessage(), 3);
 		}
 	}
@@ -766,22 +785,23 @@ public class BaseDeDonnees extends DataBaseObservable
 		{
 			return;
 		}
+		notifyInProgressAction("Changement de la durée de l'enregistrement...");
 		PreparedStatement ps = null;
 		try
 		{
-			ps = connexion.prepareStatement("UPDATE enregistrements SET duree=? WHERE id=?;");// preparation
-																								// de la
-																								// requete
+			ps = connexion.prepareStatement("UPDATE enregistrements SET duree=? WHERE id=?;");
 			ps.setInt(1, duree);// Remplissage de la requete
 			ps.setInt(2, id);
 
 			if (ps.executeUpdate() > 0)// execution et test de la reussite de la requete
 			{
+				notifyCompletedAction("La durée de l'enregistrement a été mise à jour");
 				notifyUpdateDataBase();
 			}
 		}
-		catch (Exception e)
+		catch (SQLException e)
 		{
+			notifyFailedAction("Impossible de changer la durée de l'enregistrement");
 			throw new DBException("Erreur lors de la modification de la durée : " + e.getMessage(), 3);
 		} finally
 		{
@@ -805,24 +825,24 @@ public class BaseDeDonnees extends DataBaseObservable
 		{
 			return;
 		}
+		notifyInProgressAction("Changement de la taille de l'enregistrement...");
 		PreparedStatement ps = null;
 		try
 		{
-			ps = connexion.prepareStatement("UPDATE enregistrements SET taille=? WHERE id=?;");// preparation
-																								// de
-																								// la
-																								// requete
+			ps = connexion.prepareStatement("UPDATE enregistrements SET taille=? WHERE id=?;");
 			ps.setInt(1, taille);// Remplissage de la requete
 			ps.setInt(2, id);
 
 			if (ps.executeUpdate() > 0)// execution et test de la reussite de la requete
 			{
+				notifyCompletedAction("La taille de l'enregistrement a été mise à jour");
 				notifyUpdateDataBase();
 			}
 
 		}
-		catch (Exception e)
+		catch (SQLException e)
 		{
+			notifyFailedAction("Impossible de changer la taille de l'enregistrement");
 			throw new DBException("Erreur lors de la modification de la taille : " + e.getMessage(), 3);
 		} finally
 		{
@@ -847,24 +867,26 @@ public class BaseDeDonnees extends DataBaseObservable
 		}
 		if (!this.categorieExiste(idCat))// test l'existance de la categorie
 		{
+			notifyFailedAction("Impossible de changer la catégorie de l'enregistrement");
 			throw new DBException("Catégorie inexistante.", 3);
 		}
+		notifyInProgressAction("Changement de la catégorie de l'enregistrement...");
 		PreparedStatement ps = null;
 		try
 		{
-			ps = connexion.prepareStatement("UPDATE enregistrements SET idCat=? WHERE id=?;");// preparation
-																								// de la
-																								// requete
+			ps = connexion.prepareStatement("UPDATE enregistrements SET idCat=? WHERE id=?;");
 			ps.setInt(1, idCat);// Remplissage de la requete
 			ps.setInt(2, id);
 
 			if (ps.executeUpdate() > 0)// execution et test de la reussite de la requete
 			{
+				notifyCompletedAction("La catégorie de l'enregistrement a été mise à jour");
 				notifyUpdateDataBase();
 			}
 		}
-		catch (Exception e)
+		catch (SQLException e)
 		{
+			notifyFailedAction("Impossible de changer la catégorie de l'enregistrement");
 			throw new DBException("Erreur lors de la modification de la catégorie : " + e.getMessage(), 3);
 		} finally
 		{
@@ -889,8 +911,10 @@ public class BaseDeDonnees extends DataBaseObservable
 		}
 		if (!this.categorieExiste(nomCat))// test l'existance de la categorie
 		{
+			notifyFailedAction("Impossible de changer la catégorie de l'enregistrement");
 			throw new DBException("Catégorie inexistante.", 3);
 		}
+		notifyInProgressAction("Changement de la catégorie de l'enregistrement...");
 		PreparedStatement ps = null;
 		try
 		{
@@ -904,12 +928,14 @@ public class BaseDeDonnees extends DataBaseObservable
 
 			if (ps.executeUpdate() > 0)// execution et test de la reussite de la requete
 			{
+				notifyCompletedAction("La catégorie de l'enregistrement a été mise à jour");
 				notifyUpdateDataBase();
 			}
 
 		}
-		catch (Exception e)
+		catch (SQLException e)
 		{
+			notifyFailedAction("Impossible de changer la catégorie de l'enregistrement");
 			throw new DBException("Erreur lors de la modification de la catégorie : " + e.getMessage(), 3);
 		} finally
 		{
@@ -934,24 +960,26 @@ public class BaseDeDonnees extends DataBaseObservable
 		}
 		if (!this.sujetExiste(idSuj))// test l'existance de la categorie
 		{
+			notifyFailedAction("Impossible de changer le sujet de l'enregistrement");
 			throw new DBException("Sujet inexistant.", 3);
 		}
+		notifyInProgressAction("Changement du sujet de l'enregistrement...");
 		PreparedStatement ps = null;
 		try
 		{
-			ps = connexion.prepareStatement("UPDATE enregistrements SET idSuj=? WHERE id=?;");// preparation
-																								// de la
-																								// requete
+			ps = connexion.prepareStatement("UPDATE enregistrements SET idSuj=? WHERE id=?;");
 			ps.setInt(1, idSuj);// Remplissage de la requete
 			ps.setInt(2, id);
 
 			if (ps.executeUpdate() > 0)// execution et test de la reussite de la requete
 			{
+				notifyCompletedAction("Le sujet de l'enregistrement a été mis à jour");
 				notifyUpdateDataBase();
 			}
 		}
-		catch (Exception e)
+		catch (SQLException e)
 		{
+			notifyFailedAction("Impossible de changer le sujet de l'enregistrement");
 			throw new DBException("Erreur lors de la modification du sujet : " + e.getMessage(), 3);
 		} finally
 		{
@@ -976,8 +1004,10 @@ public class BaseDeDonnees extends DataBaseObservable
 		}
 		if (!this.sujetExiste(nomSuj))// test l'existance de la categorie
 		{
+			notifyFailedAction("Impossible de changer le sujet de l'enregistrement");
 			throw new DBException("Sujet inexistant.", 3);
 		}
+		notifyInProgressAction("Changement du sujet de l'enregistrement...");
 		PreparedStatement ps = null;
 		try
 		{
@@ -991,12 +1021,14 @@ public class BaseDeDonnees extends DataBaseObservable
 
 			if (ps.executeUpdate() > 0)// execution et test de la reussite de la requete
 			{
+				notifyCompletedAction("Le sujet de l'enregistrement a été mis à jour");
 				notifyUpdateDataBase();
 			}
 
 		}
-		catch (Exception e)
+		catch (SQLException e)
 		{
+			notifyFailedAction("Impossible de changer le sujet de l'enregistrement");
 			throw new DBException("Erreur lors de la modification du sujet : " + e.getMessage(), 3);
 		} finally
 		{
@@ -1019,25 +1051,25 @@ public class BaseDeDonnees extends DataBaseObservable
 		{
 			return null;
 		}
+		notifyInProgressAction("Récupération de l'enregistrement depuis la base de données...");
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try
 		{
-			ps = connexion.prepareStatement("SELECT enregistrement FROM enregistrements WHERE id=?");// preparation
-																										// de
-																										// la
-																										// requete
+			ps = connexion.prepareStatement("SELECT enregistrement FROM enregistrements WHERE id=?");
 			ps.setInt(1, id);// Remplissage de la requete
 			rs = ps.executeQuery();// execute la requete
 			if (rs.next())// s'il y a un retour on renvoie le tableau de byte sinon une exception est levee
 			{
 				retour = rs.getBytes("enregistrement");
+				notifyCompletedAction("L'enregistrement a été récupéré");
 				return retour;
 			}
 			throw new DBException("Enregistrement inexistant.", 3);
 		}
 		catch (Exception e)
 		{
+			notifyFailedAction("Impossible de récupérer l'enregistrement");
 			throw new DBException("Erreur lors de la récuperation de l'enregistrement : " + e.getMessage(), 3);
 		} finally
 		{
@@ -1060,8 +1092,10 @@ public class BaseDeDonnees extends DataBaseObservable
 		}
 		if (this.categorieExiste(nom))
 		{
+			notifyFailedAction("Impossible d'ajouter la catégorie");
 			throw new DBException("Nom de catégorie déjà utilisé.", 3);
 		}
+		notifyInProgressAction("Ajout de la catégorie...");
 		PreparedStatement ps = null;
 		try
 		{
@@ -1071,11 +1105,13 @@ public class BaseDeDonnees extends DataBaseObservable
 			ps.setString(1, nom);// Remplissage de la requete
 			if (ps.executeUpdate() > 0)// execution et test de la reussite de la requete
 			{
+				notifyCompletedAction("La catégorie a été ajoutée");
 				notifyUpdateDataBase();
 			}
 		}
-		catch (Exception e)
+		catch (SQLException e)
 		{
+			notifyFailedAction("Impossible d'ajouter la catégorie");
 			throw new DBException("Erreur lors de l'ajout de la catégorie : " + e.getMessage(), 3);
 		} finally
 		{
@@ -1107,7 +1143,7 @@ public class BaseDeDonnees extends DataBaseObservable
 			rs = stat.executeQuery("SELECT nomcat, idcat FROM categorie;");// execution de la requete
 			retour = ResultatSelect.convertirResultatSet(rs, colonne);
 		}
-		catch (Exception e)
+		catch (SQLException e)
 		{
 			throw new DBException("Erreur lors de la récuperation des catégories : " + e.getMessage(), 3);
 		} finally
@@ -1131,6 +1167,7 @@ public class BaseDeDonnees extends DataBaseObservable
 		{
 			return;
 		}
+		notifyInProgressAction("Suppresion de la catégorie...");
 		PreparedStatement ps = null;
 		try
 		{
@@ -1139,11 +1176,13 @@ public class BaseDeDonnees extends DataBaseObservable
 			ps.setInt(1, id);// Remplissage de la requete
 			if (ps.executeUpdate() > 0)// execution et test de la reussite de la requete
 			{
+				notifyCompletedAction("La catégorie a été supprimée");
 				notifyUpdateDataBase();
 			}
 		}
-		catch (Exception e)
+		catch (SQLException e)
 		{
+			notifyFailedAction("Impossible de supprimer la catégorie");
 			throw new DBException("Erreur lors de la suppression de la catégorie : " + e.getMessage(), 3);
 		} finally
 		{
@@ -1168,8 +1207,10 @@ public class BaseDeDonnees extends DataBaseObservable
 		}
 		if (this.categorieExiste(nom))
 		{
+			notifyFailedAction("Impossible de renommer la catégorie");
 			throw new DBException("Nom de catégorie déjà utilisé.", 3);
 		}
+		notifyInProgressAction("Renommage de la catégorie...");
 		PreparedStatement ps = null;
 		try
 		{
@@ -1180,11 +1221,13 @@ public class BaseDeDonnees extends DataBaseObservable
 			ps.setInt(2, id);
 			if (ps.executeUpdate() > 0)// execution et test de la reussite de la requete
 			{
+				notifyCompletedAction("La catégorie a été renommée");
 				notifyUpdateDataBase();
 			}
 		}
-		catch (Exception e)
+		catch (SQLException e)
 		{
+			notifyFailedAction("Impossible de renommer la catégorie");
 			throw new DBException("Erreur lors de la modification de la categorie: " + e.getMessage(), 3);
 		} finally
 		{
@@ -1225,7 +1268,7 @@ public class BaseDeDonnees extends DataBaseObservable
 			rs.close();
 			ps.close();
 		}
-		catch (Exception e)
+		catch (SQLException e)
 		{
 			throw new DBException("Erreur lors de la recuperation de la catégorie : " + e.getMessage(), 3);
 		} finally
@@ -1261,7 +1304,7 @@ public class BaseDeDonnees extends DataBaseObservable
 			rs = ps.executeQuery();
 			retour = rs.getInt(1);
 		}
-		catch (Exception e)
+		catch (SQLException e)
 		{
 			throw new DBException("Erreur lors de la recuperation de la catégorie : " + e.getMessage(), 3);
 		} finally
@@ -1286,8 +1329,10 @@ public class BaseDeDonnees extends DataBaseObservable
 		}
 		if (this.sujetExiste(nom))
 		{
+			notifyFailedAction("Impossible d'ajouter le sujet");
 			throw new DBException("Nom de sujet déjà utilisé.", 3);
 		}
+		notifyInProgressAction("Ajout du sujet...");
 		PreparedStatement ps = null;
 		try
 		{
@@ -1296,11 +1341,13 @@ public class BaseDeDonnees extends DataBaseObservable
 			ps.setString(1, nom);// Remplissage de la requete
 			if (ps.executeUpdate() > 0)// execution et test de la reussite de la requete
 			{
+				notifyCompletedAction("Le sujet a été ajouté");
 				notifyUpdateDataBase();
 			}
 		}
-		catch (Exception e)
+		catch (SQLException e)
 		{
+			notifyFailedAction("Impossible d'ajouter le sujet");
 			throw new DBException("Erreur lors de l'ajout du sujet : " + e.getMessage(), 3);
 		} finally
 		{
@@ -1322,6 +1369,7 @@ public class BaseDeDonnees extends DataBaseObservable
 		{
 			return;
 		}
+		notifyInProgressAction("Suppression du sujet...");
 		PreparedStatement ps = null;
 		try
 		{
@@ -1330,11 +1378,13 @@ public class BaseDeDonnees extends DataBaseObservable
 			ps.setInt(1, id);// Remplissage de la requete
 			if (ps.executeUpdate() > 0)// execution et test de la reussite de la requete
 			{
+				notifyCompletedAction("Le sujet a été supprimé");
 				notifyUpdateDataBase();
 			}
 		}
-		catch (Exception e)
+		catch (SQLException e)
 		{
+			notifyFailedAction("Impossible de supprimer le sujet");
 			throw new DBException("Erreur lors de la suppression du sujet : " + e.getMessage(), 3);
 		} finally
 		{
@@ -1367,7 +1417,7 @@ public class BaseDeDonnees extends DataBaseObservable
 			rs = stat.executeQuery("SELECT nomsuj, idsuj FROM sujet;");// execution de la requete
 			retour = ResultatSelect.convertirResultatSet(rs, colonne);
 		}
-		catch (Exception e)
+		catch (SQLException e)
 		{
 			throw new DBException("Erreur lors de la récuperation des sujets : " + e.getMessage(), 3);
 		} finally
@@ -1394,8 +1444,10 @@ public class BaseDeDonnees extends DataBaseObservable
 		}
 		if (this.sujetExiste(nom))
 		{
+			notifyFailedAction("Impossible de renommer le sujet");
 			throw new DBException("Nom de sujet déjà utilisé.", 3);
 		}
+		notifyInProgressAction("Renommage du sujet...");
 		PreparedStatement ps = null;
 		try
 		{
@@ -1406,11 +1458,13 @@ public class BaseDeDonnees extends DataBaseObservable
 			ps.setInt(2, id);
 			if (ps.executeUpdate() > 0)// execution et test de la reussite de la requete
 			{
+				notifyCompletedAction("Le sujet a été renommé");
 				notifyUpdateDataBase();
 			}
 		}
-		catch (Exception e)
+		catch (SQLException e)
 		{
+			notifyFailedAction("Impossible de renommer le sujet");
 			throw new DBException("Erreur lors de la modification du sujet : " + e.getMessage(), 3);
 		} finally
 		{
@@ -1449,7 +1503,7 @@ public class BaseDeDonnees extends DataBaseObservable
 			rs = ps.executeQuery();// execution de la requete
 			retour = rs.getString(1);
 		}
-		catch (Exception e)
+		catch (SQLException e)
 		{
 			throw new DBException("Erreur lors de la récupération du sujet : " + e.getMessage(), 3);
 		} finally
@@ -1485,7 +1539,7 @@ public class BaseDeDonnees extends DataBaseObservable
 			rs = ps.executeQuery();
 			retour = rs.getInt(1);
 		}
-		catch (Exception e)
+		catch (SQLException e)
 		{
 			throw new DBException("Erreur lors de la récupération du sujet : " + e.getMessage(), 3);
 		} finally
@@ -1512,20 +1566,20 @@ public class BaseDeDonnees extends DataBaseObservable
 			// Creation des table et verification de la bonne execution des requetes
 			if (stat.executeUpdate("CREATE TABLE categorie (idcat  INTEGER PRIMARY KEY AUTOINCREMENT, nomcat VARCHAR2(128) UNIQUE);") != 0)
 			{
-				throw new Exception("Erreur de création de la table categorie.");
+				throw new DBException("Erreur de création de la table categorie.", 5);
 			}
 			// FIXME ajouter la reference pour le champ idcat
 			if (stat.executeUpdate("CREATE TABLE enregistrements (id  INTEGER PRIMARY KEY AUTOINCREMENT, enregistrement BLOB, duree INTEGER, taille INTEGER, nom VARCHAR2(128) UNIQUE, idcat INTEGER, idsuj INTEGER);") != 0)
 			{
-				throw new Exception("Erreur de création de la table enregistrement.");
+				throw new DBException("Erreur de création de la table enregistrement.", 5);
 			}
 			// FIXME ajouter la reference pour le champ idcat
 			if (stat.executeUpdate("CREATE TABLE sujet (idsuj  INTEGER PRIMARY KEY AUTOINCREMENT, nomsuj VARCHAR2(128) UNIQUE);") != 0)
 			{
-				throw new Exception("Erreur de création de la table enregistrement.");
+				throw new DBException("Erreur de création de la table enregistrement.", 5);
 			}
 		}
-		catch (Exception e)
+		catch (SQLException e)
 		{
 			throw new DBException("Erreur lors de la création de la base : " + e.getMessage(), 3);
 		} finally
@@ -1562,10 +1616,10 @@ public class BaseDeDonnees extends DataBaseObservable
 				retour = true;
 			}
 		}
-		catch (Exception e)
+		catch (SQLException e)
 		{
 			throw new DBException(
-					"Problème lors de la vérification de l'existance de la catégorie : " + e.getMessage(), 1);
+					"Problème lors de la vérification de l'existence de la catégorie : " + e.getMessage(), 1);
 		} finally
 		{
 			closeRessource(ps, null, rs);
@@ -1601,7 +1655,7 @@ public class BaseDeDonnees extends DataBaseObservable
 				retour = true;
 			}
 		}
-		catch (Exception e)
+		catch (SQLException e)
 		{
 			throw new DBException(
 					"Problème lors de la vérification de l'existance de la catégorie : " + e.getMessage(), 1);
@@ -1640,7 +1694,7 @@ public class BaseDeDonnees extends DataBaseObservable
 				retour = true;
 			}
 		}
-		catch (Exception e)
+		catch (SQLException e)
 		{
 			throw new DBException("Problème lors de la vérification de l'existence du sujet : " + e.getMessage(), 1);
 		} finally
@@ -1678,7 +1732,7 @@ public class BaseDeDonnees extends DataBaseObservable
 				retour = true;
 			}
 		}
-		catch (Exception e)
+		catch (SQLException e)
 		{
 			throw new DBException("Problème lors de la vérification de l'existence du sujet : " + e.getMessage(), 1);
 		} finally
