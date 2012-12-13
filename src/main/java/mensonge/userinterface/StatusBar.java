@@ -7,13 +7,19 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSeparator;
 import javax.swing.Timer;
 
 import mensonge.core.tools.ActionMessageObserver;
+import mensonge.core.tools.CacheObserver;
 import mensonge.core.tools.DataBaseObserver;
+import mensonge.core.tools.Utils;
 
-public class StatusBar extends JLabel implements ActionListener, ActionMessageObserver, DataBaseObserver
+public class StatusBar extends JPanel implements ActionListener, ActionMessageObserver, DataBaseObserver, CacheObserver
 {
 	private static final long serialVersionUID = 8573623540967463794L;
 	private static final int STATUS_BAR_HEIGHT = 16;
@@ -23,10 +29,24 @@ public class StatusBar extends JLabel implements ActionListener, ActionMessageOb
 	private static final int TIMER_DELAY = 10000;
 	private Timer timer;
 	private GraphicalUserInterface gui;
+	private JLabel status;
+	private JLabel dbSize;
+	private JLabel cacheSize;
 
 	public StatusBar(GraphicalUserInterface graphicalUserInterface)
 	{
 		super();
+		this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+		this.status = new JLabel();
+		this.add(status);
+
+		this.cacheSize = new JLabel();
+		this.dbSize = new JLabel("Taille de la base de données : " + Utils.humanReadableByteCount(Utils.getDBSize(), false));
+		this.add(Box.createHorizontalGlue());
+		this.add(cacheSize);
+		this.add(Box.createHorizontalStrut(10));
+		this.add(dbSize);
+		
 		this.gui = graphicalUserInterface;
 		setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
 		setPreferredSize(new Dimension(this.getWidth(), STATUS_BAR_HEIGHT));
@@ -35,7 +55,7 @@ public class StatusBar extends JLabel implements ActionListener, ActionMessageOb
 
 	public void setMessage(String message)
 	{
-		setText(" " + message);
+		this.status.setText(" " + message);
 		repaint();
 		this.timer.stop();
 	}
@@ -48,7 +68,7 @@ public class StatusBar extends JLabel implements ActionListener, ActionMessageOb
 	@Override
 	public void actionPerformed(ActionEvent arg0)
 	{
-		setText("");
+		this.status.setText("");
 		this.timer.stop();
 	}
 
@@ -72,9 +92,15 @@ public class StatusBar extends JLabel implements ActionListener, ActionMessageOb
 	}
 
 	@Override
+	public void onUpdateCache(long newCacheSize)
+	{
+		cacheSize.setText("Taille du cache : " + Utils.humanReadableByteCount(newCacheSize, false));
+	}
+
+	@Override
 	public void onUpdateDataBase()
 	{
-		
+		dbSize.setText("Taille de la base de données : " + Utils.humanReadableByteCount(Utils.getDBSize(), false));
 	}
 
 }

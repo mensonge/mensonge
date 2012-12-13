@@ -85,6 +85,7 @@ public final class Cache extends CacheObservable
 		fos.flush();
 		fos.close();
 		notifyCompletedAction("L'enregistrement a été mis en cache");
+		notifyUpdateCache(getSize());
 	}
 
 	/**
@@ -100,15 +101,19 @@ public final class Cache extends CacheObservable
 		{
 			for (File file : cacheDirectory.listFiles())
 			{
-				length += file.length();
 				if (!file.delete())
 				{
 					LOGGER.log(Level.WARNING, "Impossible de supprimer " + file.getName() + " du cache");
+				}
+				else
+				{
+					length += file.length();
 				}
 			}
 		}
 		notifyCompletedAction("Le cache a été purgé. Vous avez gagné " + Utils.humanReadableByteCount(length, false)
 				+ " d'espace disque.");
+		notifyUpdateCache(getSize());
 	}
 
 	/**
@@ -127,5 +132,10 @@ public final class Cache extends CacheObservable
 			}
 		}
 		return length;
+	}
+
+	public void fireUpdateCache()
+	{
+		notifyUpdateCache(getSize());
 	}
 }

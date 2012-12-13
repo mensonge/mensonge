@@ -23,6 +23,7 @@ public final class Notifier
 		List<Class<? extends IObserver>> interfaces = new ArrayList<Class<? extends IObserver>>();
 		interfaces.add(DataBaseObserver.class);
 		interfaces.add(ActionMessageObserver.class);
+		interfaces.add(CacheObserver.class);
 		for (Class<?> i : interfaces)
 		{
 			Method[] ms = i.getDeclaredMethods();

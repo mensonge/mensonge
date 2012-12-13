@@ -60,9 +60,8 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 	 */
 	public static final int TYPE_TRIE_CATEGORIE = 1;
 	public static final int TYPE_TRIE_SUJET = 2;
-	
+
 	private static final long serialVersionUID = 1L;
-	
 
 	private BaseDeDonnees bdd = null;
 
@@ -75,8 +74,6 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 	private JPopupMenu menuClicDroit = new JPopupMenu();// sers au clic droit
 
 	private int typeTrie = PanneauArbre.TYPE_TRIE_SUJET;
-	private JLabel labelCacheSize;
-	private JLabel labelDBSize;
 
 	private boolean lock = false;
 
@@ -89,7 +86,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 		this.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.GRAY));
 		this.bdd = bdd;
 		this.cache = cache;
-		
+
 		this.racine = new DefaultMutableTreeNode("Sujet");
 		this.remplirArbreEnregistrementSujet();
 		this.arbre = new JTree(racine);
@@ -98,27 +95,15 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 		this.arbre.addMouseListener(clicGauche);
 		this.arbre.addKeyListener(new KeyListenerTree());
 		this.arbre.addTreeSelectionListener(clicGauche);
-		
+
 		JScrollPane scrollPane = new JScrollPane(arbre);
 		scrollPane.setPreferredSize(new Dimension(332, 450));
 		scrollPane.setAutoscrolls(true);
 
 		this.infoArbre.setPreferredSize(new Dimension(336, 100));
 
-		this.labelCacheSize = new JLabel("Taille du cache : " + Utils.humanReadableByteCount(cache.getSize(), false));
-		this.labelDBSize = new JLabel("Taille de la base de données : "
-				+ Utils.humanReadableByteCount(Utils.getDBSize(), false));
-
-		JPanel panelInfo = new JPanel(new GridLayout(0, 1));
-		panelInfo.add(labelCacheSize);
-		panelInfo.add(labelDBSize);
-
-		JPanel panelArbreInfo = new JPanel(new BorderLayout());
-		panelArbreInfo.add(scrollPane, BorderLayout.CENTER);
-		panelArbreInfo.add(panelInfo, BorderLayout.SOUTH);
-
 		JPanel panelConteneur = new JPanel(new BorderLayout());
-		panelConteneur.add(panelArbreInfo, BorderLayout.NORTH);
+		panelConteneur.add(scrollPane, BorderLayout.NORTH);
 		panelConteneur.add(this.infoArbre, BorderLayout.SOUTH);
 
 		this.setEvent(true);
@@ -129,16 +114,17 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 		this.add(lecteurAudio, BorderLayout.SOUTH);
 		this.arbre.setDragEnabled(true);
 		this.arbre.setTransferHandler(new HandlerDragArbre(this, bdd));
-		
-		this.arbre.addMouseListener(new MouseAdapter(){
-	         
-		      public void mousePressed(MouseEvent e)
-		      {
-		        JComponent lab = (JComponent)e.getSource();
-		        TransferHandler handle = lab.getTransferHandler();
-		        handle.exportAsDrag(lab, e, TransferHandler.COPY);
-		      }
-		    });
+
+		this.arbre.addMouseListener(new MouseAdapter()
+		{
+
+			public void mousePressed(MouseEvent e)
+			{
+				JComponent lab = (JComponent) e.getSource();
+				TransferHandler handle = lab.getTransferHandler();
+				handle.exportAsDrag(lab, e, TransferHandler.COPY);
+			}
+		});
 	}
 
 	public int getTypeTrie()
@@ -1081,25 +1067,13 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 		{
 			byte[] contenu = bdd.recupererEnregistrement(id);
 			cache.createFile(fileName, contenu);
-			updateCacheSizeInfo();
 		}
 		return cache.getFile(fileName);
-	}
-
-	public void updateCacheSizeInfo()
-	{
-		labelCacheSize.setText("Taille du cache : " + Utils.humanReadableByteCount(cache.getSize(), false));
 	}
 
 	@Override
 	public void onUpdateDataBase()
 	{
-
-		if (this.labelCacheSize != null)
-		{
-			this.labelDBSize.setText("Taille de la base de données : "
-					+ Utils.humanReadableByteCount(Utils.getDBSize(), false));
-		}
 		this.updateArbre();
 	}
 

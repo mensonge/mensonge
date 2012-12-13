@@ -95,6 +95,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		this.previousPath = null;
 		this.statusBar = new StatusBar(this);
 		this.cache.addObserver(statusBar);
+		this.cache.fireUpdateCache();
 		this.extraction.addObserver(statusBar);
 		this.add(statusBar, BorderLayout.SOUTH);
 		this.panneauArbre = new PanneauArbre(bdd, cache);
@@ -648,7 +649,6 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				}
 			}
 			cache.purge();
-			panneauArbre.updateCacheSizeInfo();
 		}
 	}
 
