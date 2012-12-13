@@ -21,7 +21,6 @@ import javax.swing.JFileChooser;
 
 import javax.swing.BorderFactory;
 import javax.swing.JComponent;
-import javax.swing.JLabel;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -44,7 +43,6 @@ import mensonge.core.tools.ActionMessageObserver;
 import mensonge.core.tools.Cache;
 import mensonge.core.tools.DataBaseObserver;
 import mensonge.core.tools.Lockable;
-import mensonge.core.tools.Utils;
 import mensonge.userinterface.AjouterCategorieListener;
 import mensonge.userinterface.AjouterSujetListener;
 import mensonge.userinterface.Feuille;
@@ -210,7 +208,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 	{
 		if (!lock)
 		{
-			Enumeration<TreePath> pathExpand = this.arbre.getExpandedDescendants(new TreePath(racine));
+			// Enumeration<TreePath> pathExpand = this.arbre.getExpandedDescendants(new TreePath(racine));
 			viderNoeud(this.racine);
 			if (this.typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)
 			{
@@ -256,7 +254,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 
 	public static DefaultMutableTreeNode trouverNoeud(DefaultMutableTreeNode noeud, String userObject)
 	{
-		Enumeration children = noeud.children();
+		Enumeration<?> children = noeud.children();
 		DefaultMutableTreeNode tmp;
 		while (children.hasMoreElements())
 		{
@@ -959,7 +957,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 		@Override
 		public void mousePressed(MouseEvent e)
 		{
-			Enumeration children = racine.children();
+			Enumeration<?> children = racine.children();
 			Object tmp, tab[] = new Object[2];
 			tab[0] = racine;
 			while (children.hasMoreElements())
@@ -982,7 +980,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 		@Override
 		public void mousePressed(MouseEvent e)
 		{
-			Enumeration children = racine.children();
+			Enumeration<?> children = racine.children();
 			Object tmp, tab[] = new Object[2];
 			tab[0] = racine;
 			while (children.hasMoreElements())
