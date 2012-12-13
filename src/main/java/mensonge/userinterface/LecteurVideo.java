@@ -34,7 +34,6 @@ import javax.swing.SwingUtilities;
 
 import mensonge.core.Extraction;
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
-import mensonge.userinterface.tree.DialogueAjouterEnregistrement;
 
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
 import uk.co.caprica.vlcj.player.MediaPlayer;

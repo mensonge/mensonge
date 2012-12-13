@@ -1,4 +1,4 @@
-package mensonge.userinterface.tree;
+package mensonge.userinterface;
 
 import java.awt.Cursor;
 import java.awt.GridBagConstraints;
@@ -24,7 +24,6 @@ import javax.swing.JTextField;
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
 import mensonge.core.BaseDeDonnees.DBException;
 import mensonge.core.BaseDeDonnees.LigneEnregistrement;
-import mensonge.userinterface.GraphicalUserInterface;
 
 public final class DialogueAjouterEnregistrement extends JDialog implements ActionListener, KeyListener
 {
