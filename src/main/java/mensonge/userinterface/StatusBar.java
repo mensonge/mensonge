@@ -22,10 +22,12 @@ public class StatusBar extends JLabel implements ActionListener, ActionMessageOb
 	 */
 	private static final int TIMER_DELAY = 10000;
 	private Timer timer;
+	private GraphicalUserInterface gui;
 
-	public StatusBar()
+	public StatusBar(GraphicalUserInterface graphicalUserInterface)
 	{
 		super();
+		this.gui = graphicalUserInterface;
 		setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
 		setPreferredSize(new Dimension(this.getWidth(), STATUS_BAR_HEIGHT));
 		timer = new Timer(TIMER_DELAY, this);
@@ -56,6 +58,7 @@ public class StatusBar extends JLabel implements ActionListener, ActionMessageOb
 		this.setMessage(message);
 		this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 		this.getParent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+		gui.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 	}
 
 	@Override
@@ -65,6 +68,7 @@ public class StatusBar extends JLabel implements ActionListener, ActionMessageOb
 		this.done();
 		this.setCursor(Cursor.getDefaultCursor());
 		this.getParent().setCursor(Cursor.getDefaultCursor());
+		gui.setCursor(Cursor.getDefaultCursor());
 	}
 
 	@Override

@@ -9,6 +9,7 @@ import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.TransferHandler;
 
+import mensonge.core.Extraction;
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
 
 public class HandlerDragLecteur extends TransferHandler
@@ -16,9 +17,11 @@ public class HandlerDragLecteur extends TransferHandler
 	private static final long serialVersionUID = 1L;
 	private GraphicalUserInterface fenetre;
 	private BaseDeDonnees bdd;
+	private Extraction extraction;
 
-	public HandlerDragLecteur(GraphicalUserInterface fenetre, BaseDeDonnees bdd)
+	public HandlerDragLecteur(GraphicalUserInterface fenetre, BaseDeDonnees bdd, Extraction extraction)
 	{
+		this.extraction = extraction;
 		this.bdd = bdd;
 		this.fenetre = fenetre;
 	}
@@ -49,7 +52,7 @@ public class HandlerDragLecteur extends TransferHandler
 		{
 			if (fichier.canRead() && fichier.exists())
 			{
-				this.fenetre.ajouterOnglet(new OngletLecteur(fichier, this.bdd, this.fenetre));
+				this.fenetre.ajouterOnglet(new OngletLecteur(fichier, this.bdd, this.fenetre, this.extraction));
 			}
 		}
 		return false;

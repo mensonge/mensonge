@@ -432,7 +432,6 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 			}
 			if (option == JOptionPane.OK_OPTION)
 			{
-				setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 				for (int i = 0; i < arbre.getSelectionPaths().length; i++)
 				{
 					if (arbre.getSelectionPaths()[i].getLastPathComponent() instanceof Feuille)
@@ -449,7 +448,6 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 						}
 					}
 				}
-				setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 			}
 		}
 	}
@@ -951,11 +949,9 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 					if (arbre.getLastSelectedPathComponent() != null
 							&& arbre.getLastSelectedPathComponent() instanceof Feuille)
 					{
-						getParent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 						loadAudioFile(((Feuille) arbre.getLastSelectedPathComponent()).getId());
 						infoArbre.setListeInfo(((Feuille) arbre.getLastSelectedPathComponent()).getInfo());
 						lecteurAudio.setVisible(true);
-						getParent().setCursor(Cursor.getDefaultCursor());
 					}
 					else
 					{

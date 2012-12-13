@@ -66,6 +66,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 	private MediaPlayer mediaPlayer;
 	private String pathVideo = "";
 	private JFrame parent;
+	private Extraction extraction;
 
 	/**
 	 * Créé un lecteur vidéo avec une barre de controle
@@ -76,8 +77,9 @@ public class LecteurVideo extends JPanel implements ActionListener
 	 *            Base de données de l'application
 	 * @param parent
 	 */
-	public LecteurVideo(final File fichierVideo, BaseDeDonnees bdd, JFrame parent)
+	public LecteurVideo(final File fichierVideo, BaseDeDonnees bdd, JFrame parent, Extraction extraction)
 	{
+		this.extraction = extraction;
 		this.parent = parent;
 		this.bdd = bdd;
 		this.vidComp = new EmbeddedMediaPlayerComponent();
@@ -261,16 +263,14 @@ public class LecteurVideo extends JPanel implements ActionListener
 			}
 			try
 			{
-				Extraction extract = new Extraction();
 				byte[] tabOfByte = null;
-				this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 				if (timeMarqueur1 < timeMarqueur2)
 				{
-					tabOfByte = extract.extraireIntervalle(pathVideo, timeMarqueur1, timeMarqueur2);
+					tabOfByte = extraction.extraireIntervalle(pathVideo, timeMarqueur1, timeMarqueur2);
 				}
 				else
 				{
-					tabOfByte = extract.extraireIntervalle(pathVideo, timeMarqueur2, timeMarqueur1);
+					tabOfByte = extraction.extraireIntervalle(pathVideo, timeMarqueur2, timeMarqueur1);
 				}
 				new DialogueAjouterEnregistrement(parent, "Ajout d'un enregistrement", true, this.bdd, tabOfByte);
 			}
@@ -290,7 +290,6 @@ public class LecteurVideo extends JPanel implements ActionListener
 			{
 				GraphicalUserInterface.popupErreur(msgErreur + e.getMessage());
 			}
-			this.setCursor(Cursor.getDefaultCursor());
 		}
 	}
 

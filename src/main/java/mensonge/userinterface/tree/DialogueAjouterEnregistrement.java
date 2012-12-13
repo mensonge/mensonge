@@ -58,7 +58,6 @@ public final class DialogueAjouterEnregistrement extends JDialog implements Acti
 			byte[] enregistrement)
 	{
 		super(parent, title, modal);
-		this.getParent().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		this.enregistrement = enregistrement;
 		this.bdd = bdd;
 		JPanel pan = new JPanel();
@@ -150,8 +149,6 @@ public final class DialogueAjouterEnregistrement extends JDialog implements Acti
 					String nomSuj = nomSujet();
 					try
 					{
-						setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-						getParent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 						int idCat = bdd.getCategorie(nomCat);
 						int idSuj = bdd.getSujet(nomSuj);
 						bdd.ajouterEnregistrement(champsNom.getText(), duree, idCat, enregistrement, idSuj);
@@ -160,8 +157,6 @@ public final class DialogueAjouterEnregistrement extends JDialog implements Acti
 					{
 						GraphicalUserInterface.popupErreur(e.getLocalizedMessage());
 					}
-					setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-					getParent().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 				}
 			}).run();
 		}

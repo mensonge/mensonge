@@ -18,11 +18,13 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+import mensonge.core.tools.ExtractionObservable;
+
 /**
  * Classe gérant l'extraction d'échantillons ou intervalle d'un flux audio d'un fichier multimédia
  * 
  */
-public class Extraction implements IExtraction
+public class Extraction extends ExtractionObservable implements IExtraction
 {
 	private static final int BUFFER_LENGTH = 1024;
 	private static Logger logger = Logger.getLogger("extraction");
@@ -113,6 +115,7 @@ public class Extraction implements IExtraction
 	 */
 	public byte[] extraireIntervalle(String filePath, float debut, float fin) throws IOException, EncoderException
 	{
+		notifyInProgressAction("Extraction de l'enregistrement selon l'intervalle défini...");
 		File source = new File(filePath);
 		File target = File.createTempFile("tempFile", ".wav");
 		target.deleteOnExit();
@@ -132,7 +135,7 @@ public class Extraction implements IExtraction
 		FileInputStream fis = new FileInputStream(target);
 		fis.read(data);
 		fis.close();
-
+		notifyCompletedAction("Extraction terminée");
 		return data;
 	}
 }

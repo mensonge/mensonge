@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Cursor;
-
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -36,13 +35,6 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import com.sun.jna.Native;
-import com.sun.jna.NativeLibrary;
-
-import uk.co.caprica.vlcj.binding.LibVlc;
-import uk.co.caprica.vlcj.filter.swing.SwingFileFilterFactory;
-import uk.co.caprica.vlcj.runtime.RuntimeUtil;
-
 import mensonge.core.Extraction;
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
 import mensonge.core.BaseDeDonnees.DBException;
@@ -51,6 +43,12 @@ import mensonge.core.plugins.PluginManager;
 import mensonge.core.tools.Cache;
 import mensonge.core.tools.Locker;
 import mensonge.userinterface.tree.PanneauArbre;
+import uk.co.caprica.vlcj.binding.LibVlc;
+import uk.co.caprica.vlcj.filter.swing.SwingFileFilterFactory;
+import uk.co.caprica.vlcj.runtime.RuntimeUtil;
+
+import com.sun.jna.Native;
+import com.sun.jna.NativeLibrary;
 
 /**
  * 
@@ -80,6 +78,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	private JMenu menuOutils;
 	private StatusBar statusBar;
 	private Cache cache;
+	private Extraction extraction;
 
 	/**
 	 * Créé une nouvelle fenêtre avec les différents panneaux (onglets et arbre), défini les propriétés de la fenêtre et
@@ -88,21 +87,22 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	public GraphicalUserInterface()
 	{
 		this.locker = new Locker();
-		/*
-		 * Connexion à la base
-		 */
+		this.extraction = new Extraction();
+		this.cache = new Cache();
+
 		connexionBase("LieLab.db");
 		this.setLayout(new BorderLayout());
 		this.previousPath = null;
-		this.statusBar = new StatusBar();
-		this.cache = new Cache();
+		this.statusBar = new StatusBar(this);
 		this.cache.addObserver(statusBar);
+		this.extraction.addObserver(statusBar);
 		this.add(statusBar, BorderLayout.SOUTH);
 		this.panneauArbre = new PanneauArbre(bdd, cache);
 		this.bdd.addObserver(panneauArbre);
 		this.bdd.addObserver(statusBar);
 		this.locker.addTarget(panneauArbre);
 		this.ajoutBarMenu();
+
 		/*
 		 * Conteneur
 		 */
@@ -126,7 +126,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			popupErreur(e.getMessage());
 		}
 
-		this.setTransferHandler(new HandlerDragLecteur(this, this.bdd));
+		this.setTransferHandler(new HandlerDragLecteur(this, this.bdd, this.extraction));
 
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setResizable(true);
@@ -242,7 +242,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				{
 					JMenuItem item = new JMenuItem(entry.getKey());
 					item.addActionListener(new ItemPluginListener(mapPlugins.get(entry.getKey()), this.panneauArbre,
-							this));
+							this, extraction));
 					menuOutils.add(item);
 				}
 			}
@@ -445,11 +445,10 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			{
 				try
 				{
-					setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 					for (File file : fileChooser.getSelectedFiles())
 					{
 						previousPath = file.getCanonicalPath();
-						this.ajouterOnglet(new OngletLecteur(file, this.bdd, this));
+						this.ajouterOnglet(new OngletLecteur(file, this.bdd, this, extraction));
 					}
 				}
 				catch (IOException e)
@@ -457,7 +456,6 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 					logger.log(Level.WARNING, e.getLocalizedMessage());
 					popupErreur(e.getMessage());
 				}
-				setCursor(Cursor.getDefaultCursor());
 			}
 		}
 	}
@@ -509,7 +507,6 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				try
 				{
 					statusBar.setMessage("Exportation en cours...");
-					setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 					previousPathBase = fileChooser.getSelectedFile().getCanonicalPath();
 					bdd.exporter(previousPathBase, -1, 1);
 				}
@@ -525,7 +522,6 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 					logger.log(Level.WARNING, e1.getLocalizedMessage());
 					popupErreur(e1.getMessage());
 				}
-				setCursor(Cursor.getDefaultCursor());
 				statusBar.done();
 			}
 		}
@@ -557,7 +553,6 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				try
 				{
 					statusBar.setMessage("Importation en cours...");
-					setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 					previousPathBase = fileChooser.getSelectedFile().getCanonicalPath();
 					bdd.importer(previousPathBase);
 					statusBar.setMessage("Importation terminée");
@@ -575,7 +570,6 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 					popupErreur(e2.getMessage());
 				}
 				locker.unlockUpdate();
-				setCursor(Cursor.getDefaultCursor());
 				statusBar.done();
 			}
 		}
@@ -588,10 +582,10 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	 */
 	private static class ItemPluginListener implements ActionListener
 	{
-		private static final Extraction EXTRACTION = new Extraction();
 		private Plugin plugin;
 		private PanneauArbre panneauArbre;
 		private GraphicalUserInterface gui;
+		private Extraction extraction;
 
 		/**
 		 * Nouveau listener pour un item de plugin
@@ -603,8 +597,10 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		 * @param gui
 		 *            Instance de la gui pour définir le cursor wait/default pour montrer le chargement du plugin
 		 */
-		public ItemPluginListener(Plugin plugin, PanneauArbre panneauArbre, GraphicalUserInterface gui)
+		public ItemPluginListener(Plugin plugin, PanneauArbre panneauArbre, GraphicalUserInterface gui,
+				Extraction extraction)
 		{
+			this.extraction = extraction;
 			this.gui = gui;
 			this.plugin = plugin;
 			this.panneauArbre = panneauArbre;
@@ -615,7 +611,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		{
 			// TODO Peut être voir pour aussi donner en plus l'instance de la BDD ça pourrait être utile au final ? :D
 			gui.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-			this.plugin.lancer(EXTRACTION, panneauArbre.getListSelectedRecords());
+			this.plugin.lancer(extraction, panneauArbre.getListSelectedRecords());
 			gui.setCursor(Cursor.getDefaultCursor());
 		}
 	}
