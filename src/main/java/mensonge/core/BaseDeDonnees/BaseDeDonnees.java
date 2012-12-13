@@ -1688,7 +1688,7 @@ public class BaseDeDonnees extends BetterObservable
 	 * @return true si le nom existe
 	 * @throws DBException
 	 */
-	private boolean enregistrementExist(final String nom) throws DBException
+	public boolean enregistrementExist(final String nom) throws DBException
 	{
 		if (connexion == null)
 		{
