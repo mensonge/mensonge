@@ -13,7 +13,6 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.RootPaneContainer;
-import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import mensonge.core.tools.ActionMessageObserver;
@@ -35,12 +34,11 @@ public class StatusBar extends JPanel implements ActionListener, ActionMessageOb
 	 */
 	private static final int TIMER_DELAY = 10000;
 	private Timer timer;
-	private GraphicalUserInterface gui;
 	private JLabel status;
 	private JLabel dbSize;
 	private JLabel cacheSize;
 
-	public StatusBar(GraphicalUserInterface graphicalUserInterface)
+	public StatusBar()
 	{
 		super();
 		this.setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
@@ -55,7 +53,6 @@ public class StatusBar extends JPanel implements ActionListener, ActionMessageOb
 		this.add(Box.createHorizontalStrut(10));
 		this.add(dbSize);
 
-		this.gui = graphicalUserInterface;
 		setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
 		setPreferredSize(new Dimension(this.getWidth(), STATUS_BAR_HEIGHT));
 		timer = new Timer(TIMER_DELAY, this);
