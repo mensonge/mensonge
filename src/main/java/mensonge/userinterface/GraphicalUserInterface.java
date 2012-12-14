@@ -718,9 +718,9 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		// Tente de changer le thème avec le thème nimbus
 		try
 		{
-			for(LookAndFeelInfo look : UIManager.getInstalledLookAndFeels())
+			for (LookAndFeelInfo look : UIManager.getInstalledLookAndFeels())
 			{
-				if(look.getClassName().contains("nimbus"))
+				if (look.getClassName().contains("nimbus"))
 				{
 					UIManager.setLookAndFeel(look.getClassName());
 					break;

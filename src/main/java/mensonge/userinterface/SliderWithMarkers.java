@@ -54,12 +54,9 @@ public class SliderWithMarkers extends JSlider
 			int pos = Math.round(position1 * w);
 			if (pos + 10 > w)
 			{
-				pos = w  - 15;
+				pos = w  - 10;
 			}
-			else if(pos < 2)
-			{
-				pos = 3;
-			}
+
 			polygoneX1[0] = pos;
 			polygoneX1[1] = pos + 5;
 			polygoneX1[2] = pos + 10;
@@ -78,12 +75,9 @@ public class SliderWithMarkers extends JSlider
 			int pos = Math.round(position2 * w);
 			if (pos + 10 > w)
 			{
-				pos = w  - 15;
+				pos = w  - 10;
 			}
-			else if(pos < 2)
-			{
-				pos = 3;
-			}
+
 			polygoneX2[0] = pos;
 			polygoneX2[1] = pos + 5;
 			polygoneX2[2] = pos + 10;
@@ -92,7 +86,6 @@ public class SliderWithMarkers extends JSlider
 			polygoneY2[2] = 0;
 			g.fillPolygon(polygoneX2, polygoneY2, polygoneY2.length);
 			g.fillRect(pos + 5, 0, 1, h);
-
 		}
 		super.paintComponent(g);
 	}
