@@ -5,12 +5,15 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.RootPaneContainer;
+import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
 import mensonge.core.tools.ActionMessageObserver;
@@ -22,6 +25,11 @@ public class StatusBar extends JPanel implements ActionListener, ActionMessageOb
 {
 	private static final long serialVersionUID = 8573623540967463794L;
 	private static final int STATUS_BAR_HEIGHT = 16;
+	private static final Cursor WAIT_CURSOR = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
+	private static final Cursor DEFAULT_CURSOR = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR);
+	private final static MouseAdapter MOUSE_ADAPTER = new MouseAdapter()
+	{
+	};
 	/**
 	 * En millisecondes
 	 */
@@ -40,12 +48,13 @@ public class StatusBar extends JPanel implements ActionListener, ActionMessageOb
 		this.add(status);
 
 		this.cacheSize = new JLabel();
-		this.dbSize = new JLabel("Taille de la base de données : " + Utils.humanReadableByteCount(Utils.getDBSize(), false));
+		this.dbSize = new JLabel("Taille de la base de données : "
+				+ Utils.humanReadableByteCount(Utils.getDBSize(), false));
 		this.add(Box.createHorizontalGlue());
 		this.add(cacheSize);
 		this.add(Box.createHorizontalStrut(10));
 		this.add(dbSize);
-		
+
 		this.gui = graphicalUserInterface;
 		setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));
 		setPreferredSize(new Dimension(this.getWidth(), STATUS_BAR_HEIGHT));
@@ -75,9 +84,10 @@ public class StatusBar extends JPanel implements ActionListener, ActionMessageOb
 	public void onInProgressAction(String message)
 	{
 		this.setMessage(message);
-		this.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-		this.getParent().setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-		gui.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
+		RootPaneContainer root = ((RootPaneContainer) this.getTopLevelAncestor());
+		root.getGlassPane().setCursor(WAIT_CURSOR);
+		root.getGlassPane().addMouseListener(MOUSE_ADAPTER);
+		root.getGlassPane().setVisible(true);
 	}
 
 	@Override
@@ -85,9 +95,10 @@ public class StatusBar extends JPanel implements ActionListener, ActionMessageOb
 	{
 		this.setMessage(message);
 		this.done();
-		this.setCursor(Cursor.getDefaultCursor());
-		this.getParent().setCursor(Cursor.getDefaultCursor());
-		gui.setCursor(Cursor.getDefaultCursor());
+		RootPaneContainer root = ((RootPaneContainer) this.getTopLevelAncestor());
+		root.getGlassPane().addMouseListener(MOUSE_ADAPTER);
+		root.getGlassPane().setCursor(DEFAULT_CURSOR);
+		root.getGlassPane().setVisible(false);
 	}
 
 	@Override
@@ -101,5 +112,4 @@ public class StatusBar extends JPanel implements ActionListener, ActionMessageOb
 	{
 		dbSize.setText("Taille de la base de données : " + Utils.humanReadableByteCount(Utils.getDBSize(), false));
 	}
-
 }
