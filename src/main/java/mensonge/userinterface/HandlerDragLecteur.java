@@ -33,17 +33,30 @@ public class HandlerDragLecteur extends TransferHandler
 	@Override
 	public boolean canImport(TransferHandler.TransferSupport info)
 	{
-		if (!info.isDataFlavorSupported(DataFlavor.javaFileListFlavor))
+		if (info.isDataFlavorSupported(DataFlavor.javaFileListFlavor) || info.isDataFlavorSupported(DataFlavor.stringFlavor))
 		{
-			return false;
+			return true;
 		}
-		return true;
+		return false;
 	}
 
 	@Override
 	public boolean importData(TransferHandler.TransferSupport support)
 	{
-
+		if(support.isDataFlavorSupported(DataFlavor.javaFileListFlavor))
+		{
+			return importDataList(support);
+		}
+		else if(support.isDataFlavorSupported(DataFlavor.stringFlavor))
+		{
+			return importDataString(support);
+		}
+		return false;
+	}
+	
+	
+	public boolean importDataList(TransferHandler.TransferSupport support)
+	{
 		Transferable data = support.getTransferable();
 		List<File> liste = null;
 
@@ -70,6 +83,35 @@ public class HandlerDragLecteur extends TransferHandler
 		return false;
 	}
 
+	public boolean importDataString(TransferHandler.TransferSupport support)
+	{
+		Transferable data = support.getTransferable();
+		String str = "";
+		try
+		{
+			str = (String) data.getTransferData(DataFlavor.stringFlavor);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+		String[] tab = str.split("file://");
+		for (int i = 0; i < tab.length; i++)
+		{
+			tab[i] = tab[i].trim();
+			if (!tab[i].equals(""))
+			{
+				tab[i] = tab[i].replaceAll("\\%20", " ");
+				File fichier = new File(tab[i]);
+				if (fichier.canRead() && fichier.exists())
+				{
+					this.fenetre.ajouterOnglet(new OngletLecteur(fichier, this.bdd, this.fenetre, this.extraction));
+				}
+			}
+		}
+
+		return false;
+	}
 	@Override
 	public int getSourceActions(JComponent c)
 	{
