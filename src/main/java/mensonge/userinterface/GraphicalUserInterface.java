@@ -93,7 +93,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		connexionBase("LieLab.db");
 		this.setLayout(new BorderLayout());
 		this.previousPath = null;
-		this.statusBar = new StatusBar(this);
+		this.statusBar = new StatusBar();
 		this.cache.addObserver(statusBar);
 		this.cache.fireUpdateCache();
 		this.extraction.addObserver(statusBar);
