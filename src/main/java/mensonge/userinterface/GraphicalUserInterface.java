@@ -33,6 +33,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import mensonge.core.Extraction;
@@ -717,7 +718,14 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		// Tente de changer le thème avec le thème nimbus
 		try
 		{
-			UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+			for(LookAndFeelInfo look : UIManager.getInstalledLookAndFeels())
+			{
+				if(look.getClassName().contains("nimbus"))
+				{
+					UIManager.setLookAndFeel(look.getClassName());
+					break;
+				}
+			}
 		}
 		catch (ClassNotFoundException e1)
 		{
