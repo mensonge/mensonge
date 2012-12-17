@@ -723,7 +723,6 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				if (look.getClassName().contains("nimbus"))
 				{
 					UIManager.setLookAndFeel(look.getClassName());
-					break;
 				}
 			}
 		}
