@@ -149,9 +149,7 @@ public class BaseDeDonnees extends DataBaseObservable
 				sujet.setNomSuj(sujet.getNomSuj() + ".new");
 			}
 			this.ajouterSujet(sujet.getNomSuj());
-			Integer idImport = new Integer(sujet.getIdSuj());
-			Integer idCourant = new Integer(this.getSujet(sujet.getNomSuj()));
-			bijectionSujet.put(idImport, idCourant);
+			bijectionSujet.put(sujet.getIdSuj(), this.getSujet(sujet.getNomSuj()));
 			// ajouter au a la bijection des sujets
 		}
 
@@ -163,9 +161,7 @@ public class BaseDeDonnees extends DataBaseObservable
 				categorie.setNomCat(categorie.getNomCat() + ".new");
 			}
 			this.ajouterCategorie(categorie.getNomCat());
-			Integer idImport = new Integer(categorie.getIdCat());
-			Integer idCourant = new Integer(this.getCategorie(categorie.getNomCat()));
-			bijectionCategorie.put(idImport, idCourant);
+			bijectionCategorie.put(categorie.getIdCat(), this.getCategorie(categorie.getNomCat()));
 			// ajouter au a la bijection des sujets
 		}
 
@@ -173,20 +169,20 @@ public class BaseDeDonnees extends DataBaseObservable
 		// Pour tous les enregistrements, on effectue la bijection des categories et des sujets
 		for (LigneEnregistrement enregistrement : liste)
 		{
-			String nom = enregistrement.getNom();
-			while (this.enregistrementExist(nom))
+			StringBuffer buffer = new StringBuffer(enregistrement.getNom());
+			while (this.enregistrementExist(buffer.toString()))
 			{
-				nom += ".new";
+				buffer.append(".new");
 			}
 			byte sample[] = baseImporte.recupererEnregistrement(enregistrement.getId());
 			int idCat = enregistrement.getIdCat();
 			int idSuj = enregistrement.getIdSuj();
-			idCat = bijectionCategorie.get(new Integer(idCat)).intValue();
-			idSuj = bijectionSujet.get(new Integer(idSuj)).intValue();
+			idCat = bijectionCategorie.get(idCat);
+			idSuj = bijectionSujet.get(idSuj);
 			enregistrement.setIdCat(idCat);
 			enregistrement.setIdSuj(idSuj);
 
-			this.ajouterEnregistrement(nom, enregistrement.getDuree(), enregistrement.getIdCat(), sample,
+			this.ajouterEnregistrement(buffer.toString(), enregistrement.getDuree(), enregistrement.getIdCat(), sample,
 					enregistrement.getIdSuj());
 		}
 		notifyCompletedAction("La base de données a été importée");
@@ -470,7 +466,6 @@ public class BaseDeDonnees extends DataBaseObservable
 		{
 			return;
 		}
-
 		notifyInProgressAction("Compactage de la base de données...");
 		// hack foireux pour poouvoir recevoir l'event de l'action qui n'est pas recu sinon la méthode est bloquante...
 		new Thread()
@@ -478,9 +473,10 @@ public class BaseDeDonnees extends DataBaseObservable
 			@Override
 			public void run()
 			{
+				Statement stat = null;
 				try
 				{
-					Statement stat = connexion.createStatement();
+					stat = connexion.createStatement();
 					// Pour l'automatique ça serait : "PRAGMA auto_vacuum = 1"
 					stat.execute("VACUUM");
 					stat.close();
@@ -489,6 +485,9 @@ public class BaseDeDonnees extends DataBaseObservable
 				catch (SQLException e)
 				{
 					notifyFailedAction("Une erreur est survenue pendant le compactage de la base de données");
+				} finally
+				{
+					closeRessource(null, stat, null);
 				}
 			}
 		}.start();
@@ -767,6 +766,9 @@ public class BaseDeDonnees extends DataBaseObservable
 		{
 			notifyFailedAction("Impossible de renommer l'enregistrement");
 			throw new DBException("Erreur lors de la modification du nom : " + e.getMessage(), 3);
+		} finally
+		{
+			closeRessource(ps, null, null);
 		}
 	}
 
@@ -1803,7 +1805,8 @@ public class BaseDeDonnees extends DataBaseObservable
 			{
 				destinationFile.write(buffer, 0, nbLecture);
 			}
-
+			sourceFile.close();
+			destinationFile.close();
 		}
 		catch (IOException e)
 		{

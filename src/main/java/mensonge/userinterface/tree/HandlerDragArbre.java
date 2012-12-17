@@ -24,9 +24,9 @@ import mensonge.userinterface.Feuille;
 public class HandlerDragArbre extends TransferHandler
 {
 	private static final long serialVersionUID = 1L;
+	private static Logger logger = Logger.getLogger("drag Arbre");
 	private BaseDeDonnees bdd;
 	private PanneauArbre panneauArbre;
-	private static Logger logger = Logger.getLogger("drag Arbre");
 
 	/**
 	 * Constructeur par defaut
@@ -174,17 +174,18 @@ public class HandlerDragArbre extends TransferHandler
 		// StringSelection implémente cette interface, nous l'utilisons donc
 		JTree arbre = (JTree) c;// on convertie le compansant en JTree
 		Feuille feuille;
-		String chaine = "";
+		StringBuffer buffer = new StringBuffer();
 
 		for (TreePath path : arbre.getSelectionPaths())
 		{
 			if (path.getLastPathComponent() instanceof Feuille)// On recupére l'id de toutes les feuilles
 			{
 				feuille = (Feuille) path.getLastPathComponent();
-				chaine += feuille.getId() + ";";
+				buffer.append(feuille.getId());
+				buffer.append(";");
 			}
 		}
-		return new StringSelection(chaine);
+		return new StringSelection(buffer.toString());
 	}
 
 	/**

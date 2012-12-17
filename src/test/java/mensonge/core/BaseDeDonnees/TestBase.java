@@ -1,5 +1,6 @@
 package mensonge.core.BaseDeDonnees;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -94,7 +95,7 @@ public class TestBase
 			}
 			// AFFICHAGE ENREGISTREMENT
 			rs = null;
-			
+
 			System.out.println("[i] Affichage.");
 			try
 			{
@@ -113,7 +114,7 @@ public class TestBase
 			ResultSet l = null;
 			try
 			{
-				//l = db.getListeCategorie();
+				// l = db.getListeCategorie();
 				System.out.println("[i] Affichage categorie.");
 				while (l.next())
 				{
@@ -329,7 +330,7 @@ public class TestBase
 
 		List<LigneEnregistrement> liste = db.getListeCategorie();
 		i = liste.size();
-		assertTrue(i == 3);
+		assertEquals(3, i);
 	}
 
 	@Test
@@ -340,7 +341,7 @@ public class TestBase
 		db.modifierCategorie(2, "Licorne");
 
 		List<LigneEnregistrement> liste = db.getListeCategorie();
-		for(LigneEnregistrement ligne : liste)
+		for (LigneEnregistrement ligne : liste)
 		{
 			i++;
 			if (i == 2)
@@ -354,13 +355,13 @@ public class TestBase
 	@Test
 	public void testAfficherCategorie() throws DBException, SQLException, NoSuchAlgorithmException
 	{
-		String nom = new String();
+		String nom = "";
 		List<LigneEnregistrement> liste = db.getListeCategorie();
-		for(LigneEnregistrement ligne : liste)
+		for (LigneEnregistrement ligne : liste)
 		{
 			nom += ligne.getNomCat();
 		}
-		assertTrue(nom.equals("PoneyLicornePegase"));
+		assertEquals("PoneyLicornePegase", nom);
 	}
 
 	@Test
@@ -377,7 +378,7 @@ public class TestBase
 
 		List<LigneEnregistrement> liste = db.getListeCategorie();
 		i = liste.size();
-		assertTrue(i == 2);
+		assertEquals(2, i);
 	}
 
 	@Test
@@ -390,7 +391,7 @@ public class TestBase
 
 		List<LigneEnregistrement> liste = db.getListeSujet();
 		i = liste.size();
-		assertTrue(i == 3);
+		assertEquals(3, i);
 	}
 
 	@Test
@@ -401,7 +402,7 @@ public class TestBase
 		db.modifierSujet(2, "Toshiro");
 
 		List<LigneEnregistrement> liste = db.getListeSujet();
-		for(LigneEnregistrement ligne : liste)
+		for (LigneEnregistrement ligne : liste)
 		{
 			i++;
 			if (i == 2)
@@ -417,11 +418,11 @@ public class TestBase
 	{
 		String nom = new String();
 		List<LigneEnregistrement> liste = db.getListeSujet();
-		for(LigneEnregistrement ligne : liste)
+		for (LigneEnregistrement ligne : liste)
 		{
 			nom += ligne.getNomSuj();
 		}
-		assertTrue(nom.equals("ArtemisToshiroGwen"));
+		assertEquals("ArtemisToshiroGwen", nom);
 	}
 
 	@Test
@@ -438,7 +439,7 @@ public class TestBase
 
 		List<LigneEnregistrement> liste = db.getListeSujet();
 		i = liste.size();
-		assertTrue(i == 2);
+		assertEquals(2, i);
 	}
 
 	@Test
@@ -456,21 +457,19 @@ public class TestBase
 		int i = 0;
 		List<LigneEnregistrement> liste = db.getListeEnregistrement();
 		i = liste.size();
-		assertTrue(i == 7);
+		assertEquals(7, i);
 	}
 
 	@Test(expected = DBException.class)
 	public void testAjoutHorsCatEnregistrement() throws DBException, SQLException
 	{
 		db.ajouterEnregistrement("Exception", 24, 5, "abcdefg".getBytes(), 3);
-		assertTrue(false);
 	}
 
 	@Test(expected = DBException.class)
 	public void testAjoutHorsSujEnregistrement() throws DBException, SQLException
 	{
 		db.ajouterEnregistrement("Exception", 24, 2, "abcdefg".getBytes(), 1);
-		assertTrue(false);
 	}
 
 	@Test
@@ -486,7 +485,7 @@ public class TestBase
 		String nom1 = null, nom2 = null, categorie3 = null, nom4 = null;
 		List<LigneEnregistrement> liste = db.getListeEnregistrement();
 		i = liste.size();
-		for(LigneEnregistrement ligne : liste)
+		for (LigneEnregistrement ligne : liste)
 		{
 			switch (ligne.getId())
 			{
@@ -507,13 +506,13 @@ public class TestBase
 					break;
 			}
 		}
-		
-		assertTrue(i == 7);
-		assertTrue(taille == 250);
-		assertTrue(nom1.equals("Zeus"));
-		assertTrue(nom2.equals("Taylor"));
-		assertTrue(categorie3.equals("Licorne")); 
-		assertTrue(nom4.equals("Norris"));
+
+		assertEquals(7, i);
+		assertEquals(250, taille);
+		assertEquals("Zeus", nom1);
+		assertEquals("Taylor", nom2);
+		assertEquals("Licorne", categorie3);
+		assertEquals("Norris", nom4);
 	}
 
 	@Test
@@ -523,7 +522,7 @@ public class TestBase
 		int i = 0;
 		boolean tmp = true;
 		List<LigneEnregistrement> liste = db.getListeEnregistrement();
-		for(LigneEnregistrement ligne : liste)
+		for (LigneEnregistrement ligne : liste)
 		{
 			i++;
 			if (ligne.getId() == 5)
@@ -544,8 +543,8 @@ public class TestBase
 		enr1 = new String(tab);
 		tab = db.recupererEnregistrement(6);
 		enr2 = new String(tab);
-		assertTrue(enr1.equals("erreur"));
-		assertTrue(enr2.equals("IUT"));
+		assertEquals("erreur", enr1);
+		assertEquals("IUT", enr2);
 	}
 
 	@Test(expected = DBException.class)
