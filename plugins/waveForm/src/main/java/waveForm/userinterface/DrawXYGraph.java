@@ -21,25 +21,28 @@ public class DrawXYGraph extends JFrame
 	public DrawXYGraph(String applicationTitle, String chartTitle, XYDataset xyDataset, String xLabel, String yLabel)
 	{
 		super(applicationTitle);
+		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		JFreeChart chart = ChartFactory.createXYLineChart(chartTitle, xLabel, yLabel, xyDataset,
-				PlotOrientation.VERTICAL, true, true, true);
+				PlotOrientation.VERTICAL, true, false, false);
 		this.index = 1;
 		this.plot = (XYPlot) chart.getPlot();
 		ChartPanel chartPanel = new ChartPanel(chart);
 		chartPanel.setPreferredSize(new Dimension(500, 270));
+		chartPanel.getChartRenderingInfo().setEntityCollection(null);
 		this.setContentPane(chartPanel);
 	}
 
 	public DrawXYGraph(String applicationTitle, String chartTitle, String xLabel, String yLabel)
 	{
 		super(applicationTitle);
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		JFreeChart chart = ChartFactory.createXYLineChart(chartTitle, xLabel, yLabel, null,
 				PlotOrientation.VERTICAL, true, false, false);
 		this.plot = chart.getXYPlot();
 		this.index = 0;
 		ChartPanel chartPanel = new ChartPanel(chart);
 		chartPanel.setPreferredSize(new Dimension(500, 270));
+		chartPanel.getChartRenderingInfo().setEntityCollection(null);
 		this.setContentPane(chartPanel);
 	}
 
