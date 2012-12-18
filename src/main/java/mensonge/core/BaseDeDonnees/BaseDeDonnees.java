@@ -540,7 +540,7 @@ public class BaseDeDonnees extends DataBaseObservable
 			ps.setString(4, nom);
 			ps.setInt(5, idCat);
 			ps.setInt(6, idSuj);
-
+			
 			if (ps.executeUpdate() > 0)
 			{
 				notifyUpdateDataBase();
@@ -1566,20 +1566,23 @@ public class BaseDeDonnees extends DataBaseObservable
 			stat.executeUpdate("DROP TABLE if exists categorie;");
 			stat.executeUpdate("DROP TABLE if exists sujet;");
 			// Creation des table et verification de la bonne execution des requetes
-			if (stat.executeUpdate("CREATE TABLE categorie (idcat  INTEGER PRIMARY KEY AUTOINCREMENT, nomcat VARCHAR2(128) UNIQUE);") != 0)
-			{
-				throw new DBException("Erreur de création de la table categorie.", 5);
-			}
-			// FIXME ajouter la reference pour le champ idcat
-			if (stat.executeUpdate("CREATE TABLE enregistrements (id  INTEGER PRIMARY KEY AUTOINCREMENT, enregistrement BLOB, duree INTEGER, taille INTEGER, nom VARCHAR2(128) UNIQUE, idcat INTEGER, idsuj INTEGER);") != 0)
-			{
-				throw new DBException("Erreur de création de la table enregistrement.", 5);
-			}
+			
+		
 			// FIXME ajouter la reference pour le champ idcat
 			if (stat.executeUpdate("CREATE TABLE sujet (idsuj  INTEGER PRIMARY KEY AUTOINCREMENT, nomsuj VARCHAR2(128) UNIQUE);") != 0)
 			{
 				throw new DBException("Erreur de création de la table enregistrement.", 5);
 			}
+			if (stat.executeUpdate("CREATE TABLE categorie (idcat  INTEGER PRIMARY KEY AUTOINCREMENT, nomcat VARCHAR2(128) UNIQUE);") != 0)
+			{
+				throw new DBException("Erreur de création de la table categorie.", 5);
+			}
+			// FIXME ajouter la reference pour le champ idcat
+			if (stat.executeUpdate("CREATE TABLE enregistrements (id  INTEGER PRIMARY KEY AUTOINCREMENT, enregistrement BLOB, duree INTEGER, taille INTEGER, nom VARCHAR2(128) UNIQUE, idcat INTEGER, idsuj INTEGER, FOREIGN KEY (idSuj) REFERENCES sujet(idSuj), FOREIGN KEY (idCat) REFERENCES categorie(idCat));") != 0)
+			{
+				throw new DBException("Erreur de création de la table enregistrement.", 5);
+			}
+			
 		}
 		catch (SQLException e)
 		{

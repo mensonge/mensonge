@@ -469,7 +469,7 @@ public class TestBase
 	@Test(expected = DBException.class)
 	public void testAjoutHorsSujEnregistrement() throws DBException, SQLException
 	{
-		db.ajouterEnregistrement("Exception", 24, 2, "abcdefg".getBytes(), 1);
+		db.ajouterEnregistrement("Exception", 24, 2, "abcdefg".getBytes(), 33);
 	}
 
 	@Test
