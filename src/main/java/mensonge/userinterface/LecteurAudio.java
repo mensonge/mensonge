@@ -31,7 +31,13 @@ import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 public class LecteurAudio extends JPanel implements ActionListener
 {
 	private static final long serialVersionUID = 5373991180139317820L;
-
+	private static final int VOLUME_MAX = 100;
+	private static final int VOLUME_DEFAULT = 100;
+	private static final int SLIDER_VOLUME_WIDTH = 100;
+	private static final int SLIDER_VOLUME_HEIGHT = 30;
+	private static final Dimension SLIDER_VOLUME_DIMENSION = new Dimension(SLIDER_VOLUME_WIDTH, SLIDER_VOLUME_HEIGHT);
+	private static final int PANEL_MARGIN = 5;
+	
 	private JButton boutonStop;
 
 	private JButton boutonLecture;
@@ -90,18 +96,18 @@ public class LecteurAudio extends JPanel implements ActionListener
 		this.slider.setPaintLabels(false);
 		this.slider.setMinimum(0);
 		this.slider.setValue(0);
-		this.slider.setMaximum(100);
+		this.slider.setMaximum(1);
 
 		JSlider sliderVolume = new JSlider(JSlider.HORIZONTAL);
 		sliderVolume.setPaintTicks(false);
 		sliderVolume.setPaintLabels(false);
 		sliderVolume.setMinimum(0);
-		sliderVolume.setMaximum(100);
-		sliderVolume.setValue(100);
+		sliderVolume.setMaximum(VOLUME_MAX);
+		sliderVolume.setValue(VOLUME_DEFAULT);
 		sliderVolume.setToolTipText("Volume");
-		sliderVolume.setMinimumSize(new Dimension(100, 30));
-		sliderVolume.setMaximumSize(new Dimension(100, 30));
-		sliderVolume.setPreferredSize(new Dimension(100, 30));
+		sliderVolume.setMinimumSize(SLIDER_VOLUME_DIMENSION);
+		sliderVolume.setMaximumSize(SLIDER_VOLUME_DIMENSION);
+		sliderVolume.setPreferredSize(SLIDER_VOLUME_DIMENSION);
 		sliderVolume.addMouseListener(new SliderVolumeListener(sliderVolume, this.mediaPlayer));	
 
 
@@ -112,13 +118,13 @@ public class LecteurAudio extends JPanel implements ActionListener
 
 		JPanel panelDuree = new JPanel();
 		panelDuree.setLayout(new BoxLayout(panelDuree, BoxLayout.X_AXIS));
-		panelDuree.add(Box.createHorizontalStrut(5));
+		panelDuree.add(Box.createHorizontalStrut(PANEL_MARGIN));
 		panelDuree.add(labelDureeActuelle, BorderLayout.WEST);
-		panelDuree.add(Box.createHorizontalStrut(5));
+		panelDuree.add(Box.createHorizontalStrut(PANEL_MARGIN));
 		panelDuree.add(slider, BorderLayout.CENTER);
-		panelDuree.add(Box.createHorizontalStrut(5));
+		panelDuree.add(Box.createHorizontalStrut(PANEL_MARGIN));
 		panelDuree.add(labelDureeMax, BorderLayout.EAST);
-		panelDuree.add(Box.createHorizontalStrut(5));
+		panelDuree.add(Box.createHorizontalStrut(PANEL_MARGIN));
 
 		JToolBar toolBar = new JToolBar();
 		toolBar.setLayout(new BoxLayout(toolBar, BoxLayout.X_AXIS));
@@ -127,9 +133,9 @@ public class LecteurAudio extends JPanel implements ActionListener
 		toolBar.add(boutonStop);
 		toolBar.add(Box.createHorizontalGlue());
 		toolBar.add(new JLabel(new ImageIcon("images/Volume.png")));
-		toolBar.add(Box.createHorizontalStrut(5));
+		toolBar.add(Box.createHorizontalStrut(PANEL_MARGIN));
 		toolBar.add(sliderVolume);
-		toolBar.add(Box.createHorizontalStrut(5));
+		toolBar.add(Box.createHorizontalStrut(PANEL_MARGIN));
 
 		this.setLayout(new GridLayout(2, 1));
 		this.add(panelDuree);

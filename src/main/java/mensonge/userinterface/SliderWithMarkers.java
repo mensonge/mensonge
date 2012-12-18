@@ -26,7 +26,7 @@ public class SliderWithMarkers extends JSlider
 		this.setMinorTickSpacing(0);
 		this.setMinimum(0);
 		this.setValue(0);
-		this.setMaximum(1000);
+		this.setMaximum(1);
 	}
 
 	public void setMarkerOneAt(float position)

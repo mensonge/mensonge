@@ -101,13 +101,11 @@ public final class Cache extends CacheObservable
 		{
 			for (File file : cacheDirectory.listFiles())
 			{
+				length += file.length();
 				if (!file.delete())
 				{
+					length -= file.length();
 					LOGGER.log(Level.WARNING, "Impossible de supprimer " + file.getName() + " du cache");
-				}
-				else
-				{
-					length += file.length();
 				}
 			}
 		}

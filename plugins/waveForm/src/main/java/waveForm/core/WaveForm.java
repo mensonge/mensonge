@@ -1,7 +1,10 @@
 package waveForm.core;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -10,7 +13,6 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
-import javax.swing.SwingUtilities;
 
 import mensonge.core.IExtraction;
 import mensonge.core.plugins.Plugin;
@@ -25,43 +27,54 @@ public class WaveForm implements Plugin
 {
 	private static Logger logger = Logger.getLogger("waveForm");
 	private boolean isActive = false;
+	private List<DrawXYGraph> graphsList = new ArrayList<DrawXYGraph>();
+	private List<XYSeries> seriesList = new ArrayList<XYSeries>();
 
 	private void drawGraph(final double[][] echantillons, final float sampleRate)
 	{
-		SwingUtilities.invokeLater(new Runnable()
+		final DrawXYGraph graph = new DrawXYGraph("Variation d'amplitudes", "Variation d'amplitudes",
+				"Temps (Seconde)", "Amplitude");
+		graphsList.add(graph);
+		final XYSeries seriesChannelOne = new XYSeries("Canal 0");
+		seriesList.add(seriesChannelOne);
+		final XYSeries seriesChannelTwo = new XYSeries("Canal 1");
+		seriesList.add(seriesChannelTwo);
+		for (int j = 0; j < echantillons.length; j++)
+		{
+			seriesChannelOne.add(j / sampleRate, echantillons[j][0]);
+			seriesChannelTwo.add(j / sampleRate, echantillons[j][1]);
+		}
+		XYDataset xyDatasetChannelOne = new XYSeriesCollection(seriesChannelOne);
+		XYDataset xyDatasetChannelTwo = new XYSeriesCollection(seriesChannelTwo);
+		graph.addDataset(xyDatasetChannelOne);
+		graph.addDataset(xyDatasetChannelTwo);
+		graph.addWindowListener(new WindowAdapter()
 		{
 			@Override
-			public void run()
+			public void windowClosing(WindowEvent e)
 			{
-				final DrawXYGraph graph = new DrawXYGraph("Variation d'amplitudes", "Variation d'amplitudes",
-						"Temps (Seconde)", "Amplitude");
-				XYSeries seriesChannelOne = new XYSeries("Canal 0");
-				XYSeries seriesChannelTwo = new XYSeries("Canal 1");
-				for (int j = 0; j < echantillons.length; j++)
-				{
-					seriesChannelOne.add(j / sampleRate, echantillons[j][0]);
-					seriesChannelTwo.add(j / sampleRate, echantillons[j][1]);
-				}
-				XYDataset xyDatasetChannelOne = new XYSeriesCollection(seriesChannelOne);
-				XYDataset xyDatasetChannelTwo = new XYSeriesCollection(seriesChannelTwo);
-				graph.addDataset(xyDatasetChannelOne);
-				graph.addDataset(xyDatasetChannelTwo);
-				graph.display();
+				graph.removeAll();
+				graph.dispose();
+				seriesChannelOne.clear();
+				seriesChannelTwo.clear();
+				Runtime.getRuntime().gc();
 			}
 		});
+		graph.display();
 	}
 
 	@Override
 	public void lancer(IExtraction extraction, List<File> listSelectedFiles)
 	{
 		this.isActive = true;
+		AudioInputStream inputAIS = null;
 		if (!listSelectedFiles.isEmpty())
 		{
 			for (File file : listSelectedFiles)
 			{
 				try
 				{
-					AudioInputStream inputAIS = AudioSystem.getAudioInputStream(file);
+					inputAIS = AudioSystem.getAudioInputStream(file);
 					AudioFormat audioFormat = inputAIS.getFormat();
 					double[][] echantillons = extraction.extraireEchantillons(file.getCanonicalPath());
 					this.drawGraph(echantillons, audioFormat.getSampleRate());
@@ -78,11 +91,24 @@ public class WaveForm implements Plugin
 			}
 		}
 		this.isActive = false;
+		Runtime.getRuntime().gc();
 	}
 
 	@Override
 	public void stopper()
 	{
+		for (DrawXYGraph graph : graphsList)
+		{
+			graph.removeAll();
+			graph.dispose();
+		}
+		graphsList.clear();
+		for (XYSeries series : seriesList)
+		{
+			series.clear();
+		}
+		seriesList.clear();
+		Runtime.getRuntime().gc();
 		this.isActive = false;
 	}
 

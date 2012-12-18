@@ -1,7 +1,10 @@
 package coeffCepstraux.core;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -10,7 +13,6 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
-import javax.swing.SwingUtilities;
 
 import mensonge.core.IExtraction;
 import mensonge.core.plugins.Plugin;
@@ -27,65 +29,71 @@ public class CoefficientsCepstraux implements Plugin
 {
 	private static Logger logger = Logger.getLogger("coeffCepstraux");
 	private boolean isActive = false;
-	private static final int NB_SAMPLES = 60000;
-	private static final int NB_CYCLES = 5;
+	private List<DrawXYGraph> graphsList = new ArrayList<DrawXYGraph>();
+	private List<XYSeries> seriesList = new ArrayList<XYSeries>();
 
 	private void drawGraph(final double[][] echantillons, final float sampleRate)
 	{
+		double[] samples = new double[echantillons.length];
+		double[] samplesFFT = new double[echantillons.length];
+		double[] samplesCepstre = new double[echantillons.length];
 
-		// 1/NB_SAMPLES = frequence
-		final double[] samples = new double[echantillons.length];
-		final double[] samplesFFT = new double[echantillons.length];
-		final double[] samplesCepstre = new double[echantillons.length];
+		for (int i = 0; i < echantillons.length; i++)
+		{
+			samples[i] = echantillons[i][0];
+		}
+		System.arraycopy(samples, 0, samplesFFT, 0, samples.length);
 
-		/*
-		 * final double phaseMultiplier = 2 * Math.PI * NB_CYCLES / NB_SAMPLES; for (int i = 0; i < NB_SAMPLES; i++) {
-		 * final double cycleX = i * phaseMultiplier; final double sineResult = Math.sin(cycleX); samples[i] =
-		 * sineResult; samplesFFT[i] = sineResult; }
-		 */
+		DoubleFFT_1D fft = new DoubleFFT_1D(samplesFFT.length);
+		fft.realForward(samplesFFT);
+		for (int i = 0; i < samplesFFT.length; i++)
+		{
+			samplesCepstre[i] = Math.log(Math.abs(samplesFFT[i]));
+		}
+		samples = null;
+		samplesFFT = null;
+		fft.realInverse(samplesCepstre, true);
+		final DrawXYGraph graphCepstre = new DrawXYGraph("Cepstre", "Cepstre", "Quéfrence (Hz)", "Amplitude");
 
-		SwingUtilities.invokeLater(new Runnable()
+		graphsList.add(graphCepstre);
+		final XYSeries series = new XYSeries("Cepstre");
+		seriesList.add(series);
+		for (int j = 0; j < samplesCepstre.length; j++)
+		{
+			series.add(sampleRate * (j / 2 - 1) / samplesCepstre.length, samplesCepstre[j]);
+		}
+
+		XYDataset xyDataset2 = new XYSeriesCollection(series);
+		graphCepstre.addWindowListener(new WindowAdapter()
 		{
 			@Override
-			public void run()
+			public void windowClosing(WindowEvent e)
 			{
-				for (int i = 0; i < echantillons.length; i++)
-				{
-					samples[i] = echantillons[i][0];
-					samplesFFT[i] = echantillons[i][0];
-				}
-
-				final DoubleFFT_1D fft = new DoubleFFT_1D(samplesFFT.length);
-				fft.realForward(samplesFFT);
-				for (int i = 0; i < samplesFFT.length; i++)
-				{
-					samplesCepstre[i] = Math.log(Math.abs(samplesFFT[i]));
-				}
-				fft.realInverse(samplesCepstre, true);
-				final DrawXYGraph graphCepstre = new DrawXYGraph("Cepstre", "Cepstre", "Quéfrence (Hz)", "Amplitude");
-				XYSeries series2 = new XYSeries("Cepstre");
-				for (int j = 0; j < samplesCepstre.length; j++)
-				{
-					series2.add(sampleRate * (j / 2 - 1) / samplesCepstre.length, samplesCepstre[j]);
-				}
-				XYDataset xyDataset2 = new XYSeriesCollection(series2);
-				graphCepstre.addDataset(xyDataset2);
-				graphCepstre.display();
+				graphCepstre.removeAll();
+				graphCepstre.dispose();
+				series.clear();
+				Runtime.getRuntime().gc();
 			}
 		});
+		graphCepstre.addDataset(xyDataset2);
+		graphCepstre.display();
+		fft = null;
+		samplesCepstre = null;
+		xyDataset2 = null;
 	}
 
 	@Override
 	public void lancer(IExtraction extraction, List<File> listSelectedFiles)
 	{
 		this.isActive = true;
+		AudioInputStream inputAIS = null;
 		if (!listSelectedFiles.isEmpty())
 		{
 			for (File file : listSelectedFiles)
 			{
 				try
 				{
-					AudioInputStream inputAIS = AudioSystem.getAudioInputStream(file);
+					inputAIS = AudioSystem.getAudioInputStream(file);
 					AudioFormat audioFormat = inputAIS.getFormat();
 					double[][] echantillons = extraction.extraireEchantillons(file.getCanonicalPath());
 					this.drawGraph(echantillons, audioFormat.getSampleRate());
@@ -102,11 +110,25 @@ public class CoefficientsCepstraux implements Plugin
 			}
 		}
 		this.isActive = false;
+		Runtime.getRuntime().gc();
 	}
+	
 
 	@Override
 	public void stopper()
 	{
+		for(DrawXYGraph graph : graphsList)
+		{
+			graph.removeAll();
+			graph.dispose();
+		}
+		graphsList.clear();
+		for(XYSeries series : seriesList)
+		{
+			series.clear();
+		}
+		seriesList.clear();
+		Runtime.getRuntime().gc();
 		this.isActive = false;
 	}
 

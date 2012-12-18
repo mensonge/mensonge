@@ -26,7 +26,8 @@ public class StatusBar extends JPanel implements ActionListener, ActionMessageOb
 	private static final int STATUS_BAR_HEIGHT = 16;
 	private static final Cursor WAIT_CURSOR = Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR);
 	private static final Cursor DEFAULT_CURSOR = Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR);
-	private final static MouseAdapter MOUSE_ADAPTER = new MouseAdapter()
+	private static final int PANEL_MARGIN = 10;
+	private static final MouseAdapter MOUSE_ADAPTER = new MouseAdapter()
 	{
 	};
 	/**
@@ -50,7 +51,7 @@ public class StatusBar extends JPanel implements ActionListener, ActionMessageOb
 				+ Utils.humanReadableByteCount(Utils.getDBSize(), false));
 		this.add(Box.createHorizontalGlue());
 		this.add(cacheSize);
-		this.add(Box.createHorizontalStrut(10));
+		this.add(Box.createHorizontalStrut(PANEL_MARGIN));
 		this.add(dbSize);
 
 		setBorder(BorderFactory.createMatteBorder(1, 0, 0, 0, Color.GRAY));

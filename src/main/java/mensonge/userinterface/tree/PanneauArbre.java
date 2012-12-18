@@ -57,6 +57,12 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 	public static final int TYPE_TRIE_SUJET = 2;
 
 	private static final long serialVersionUID = 1L;
+	private static final int SCROLLPANE_WIDTH = 332;
+	private static final int SCROLLPANE_HEIGHT = 450;
+	private static final Dimension SCROLLPANE_DIMENSION = new Dimension(SCROLLPANE_WIDTH, SCROLLPANE_HEIGHT);
+	private static final int PANEL_INFO_WIDTH = 336;
+	private static final int PANEL_INFO_HEIGHT = 100;
+	private static final Dimension PANEL_INFO_DIMENSION = new Dimension(PANEL_INFO_WIDTH, PANEL_INFO_HEIGHT);
 
 	private BaseDeDonnees bdd = null;
 
@@ -92,10 +98,10 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 		this.arbre.addTreeSelectionListener(clicGauche);
 
 		JScrollPane scrollPane = new JScrollPane(arbre);
-		scrollPane.setPreferredSize(new Dimension(332, 450));
+		scrollPane.setPreferredSize(SCROLLPANE_DIMENSION);
 		scrollPane.setAutoscrolls(true);
 
-		this.infoArbre.setPreferredSize(new Dimension(336, 100));
+		this.infoArbre.setPreferredSize(PANEL_INFO_DIMENSION);
 
 		JPanel panelConteneur = new JPanel(new BorderLayout());
 		panelConteneur.add(scrollPane, BorderLayout.NORTH);
@@ -151,6 +157,16 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 			if (dateStringMois.equals("12"))
 			{
 				this.arbre.setCellRenderer(new PanneauArbreRendererNoel());
+				this.event = true;
+			}
+			else if (dateStringMois.equals("10"))
+			{
+				this.arbre.setCellRenderer(new PanneauArbreRendererHallo());
+				this.event = true;
+			}
+			else if (dateStringMois.equals("4"))
+			{
+				this.arbre.setCellRenderer(new PanneauArbreRendererEaster());
 				this.event = true;
 			}
 			else
@@ -338,7 +354,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 				viderNoeud((DefaultMutableTreeNode) selectednode.getChildAt(0));
 			}
 		}
-		if (selectednode.isRoot() == false)
+		if (!selectednode.isRoot())
 		{
 			selectednode.removeFromParent();
 		}
@@ -1003,25 +1019,24 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 		public void mousePressed(MouseEvent e)
 		{
 			TreePath[] liste = arbre.getSelectionPaths();
-			String nom;
 			for (TreePath path : liste)
 			{
 				if (path.getLastPathComponent() instanceof Feuille)
 				{
 					Feuille feuille = (Feuille) path.getLastPathComponent();
-					nom = feuille.getNom() + ".copie";
+					StringBuffer buffer = new StringBuffer(feuille.getNom());
 					try
 					{
-						while (bdd.enregistrementExist(nom))
+						while (bdd.enregistrementExist(buffer.toString()))
 						{
-							nom += ".copie";
+							buffer.append(".copie");
 						}
-						bdd.ajouterEnregistrement(nom, feuille.getDuree(), feuille.getIdCategorie(),
+						bdd.ajouterEnregistrement(buffer.toString(), feuille.getDuree(), feuille.getIdCategorie(),
 								bdd.recupererEnregistrement(feuille.getId()), feuille.getIdSujet());
 					}
 					catch (DBException e1)
 					{
-						GraphicalUserInterface.popupErreur(e1.getMessage());
+						GraphicalUserInterface.popupErreur(e1.getLocalizedMessage());
 					}
 				}
 			}

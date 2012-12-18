@@ -33,7 +33,8 @@ public class HandlerDragLecteur extends TransferHandler
 	@Override
 	public boolean canImport(TransferHandler.TransferSupport info)
 	{
-		if (info.isDataFlavorSupported(DataFlavor.javaFileListFlavor) || info.isDataFlavorSupported(DataFlavor.stringFlavor))
+		if (info.isDataFlavorSupported(DataFlavor.javaFileListFlavor)
+				|| info.isDataFlavorSupported(DataFlavor.stringFlavor))
 		{
 			return true;
 		}
@@ -43,18 +44,17 @@ public class HandlerDragLecteur extends TransferHandler
 	@Override
 	public boolean importData(TransferHandler.TransferSupport support)
 	{
-		if(support.isDataFlavorSupported(DataFlavor.javaFileListFlavor))
+		if (support.isDataFlavorSupported(DataFlavor.javaFileListFlavor))
 		{
 			return importDataList(support);
 		}
-		else if(support.isDataFlavorSupported(DataFlavor.stringFlavor))
+		else if (support.isDataFlavorSupported(DataFlavor.stringFlavor))
 		{
 			return importDataString(support);
 		}
 		return false;
 	}
-	
-	
+
 	public boolean importDataList(TransferHandler.TransferSupport support)
 	{
 		Transferable data = support.getTransferable();
@@ -93,7 +93,7 @@ public class HandlerDragLecteur extends TransferHandler
 		}
 		catch (Exception e)
 		{
-			e.printStackTrace();
+			LOGGER.log(Level.WARNING, e.getLocalizedMessage());
 		}
 		String[] tab = str.split("file://");
 		for (int i = 0; i < tab.length; i++)
@@ -112,6 +112,7 @@ public class HandlerDragLecteur extends TransferHandler
 
 		return false;
 	}
+
 	@Override
 	public int getSourceActions(JComponent c)
 	{

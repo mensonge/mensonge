@@ -47,6 +47,12 @@ public class LecteurVideo extends JPanel implements ActionListener
 	private static final long serialVersionUID = 5373991180139317820L;
 	private static final ImageIcon IMG_ICON_BLUE_MARKER = new ImageIcon("images/BlueMarker.png");
 	private static final ImageIcon IMG_ICON_RED_MARKER = new ImageIcon("images/RedMarker.png");
+	private static final int VOLUME_MAX = 100;
+	private static final int VOLUME_DEFAULT = 100;
+	private static final int SLIDER_VOLUME_WIDTH = 150;
+	private static final int SLIDER_VOLUME_HEIGHT = 30;
+	private static final Dimension SLIDER_VOLUME_DIMENSION = new Dimension(SLIDER_VOLUME_WIDTH, SLIDER_VOLUME_HEIGHT);
+	private static final int PANEL_MARGIN = 5;
 
 	private JButton boutonLecture;
 	private JButton boutonStop;
@@ -143,11 +149,11 @@ public class LecteurVideo extends JPanel implements ActionListener
 		this.sliderVolume.setPaintTicks(false);
 		this.sliderVolume.setPaintLabels(false);
 		this.sliderVolume.setMinimum(0);
-		this.sliderVolume.setMaximum(100);
-		this.sliderVolume.setValue(100);
-		this.sliderVolume.setMinimumSize(new Dimension(150, 30));
-		this.sliderVolume.setMaximumSize(new Dimension(150, 30));
-		this.sliderVolume.setPreferredSize(new Dimension(150, 30));
+		this.sliderVolume.setMaximum(VOLUME_MAX);
+		this.sliderVolume.setValue(VOLUME_DEFAULT);
+		this.sliderVolume.setMinimumSize(SLIDER_VOLUME_DIMENSION);
+		this.sliderVolume.setMaximumSize(SLIDER_VOLUME_DIMENSION);
+		this.sliderVolume.setPreferredSize(SLIDER_VOLUME_DIMENSION);
 		this.sliderVolume.addMouseListener(new SliderVolumeListener(this.sliderVolume, this.mediaPlayer));
 
 		this.slider = new SliderWithMarkers(JSlider.HORIZONTAL);
@@ -161,13 +167,13 @@ public class LecteurVideo extends JPanel implements ActionListener
 
 		JPanel panelDuree = new JPanel();
 		panelDuree.setLayout(new BoxLayout(panelDuree, BoxLayout.X_AXIS));
-		panelDuree.add(Box.createHorizontalStrut(5));
+		panelDuree.add(Box.createHorizontalStrut(PANEL_MARGIN));
 		panelDuree.add(labelDureeActuelle, BorderLayout.WEST);
-		panelDuree.add(Box.createHorizontalStrut(5));
+		panelDuree.add(Box.createHorizontalStrut(PANEL_MARGIN));
 		panelDuree.add(slider, BorderLayout.CENTER);
-		panelDuree.add(Box.createHorizontalStrut(5));
+		panelDuree.add(Box.createHorizontalStrut(PANEL_MARGIN));
 		panelDuree.add(labelDureeMax, BorderLayout.EAST);
-		panelDuree.add(Box.createHorizontalStrut(5));
+		panelDuree.add(Box.createHorizontalStrut(PANEL_MARGIN));
 
 		JToolBar toolBar = new JToolBar();
 		toolBar.setLayout(new BoxLayout(toolBar, BoxLayout.X_AXIS));
@@ -180,9 +186,9 @@ public class LecteurVideo extends JPanel implements ActionListener
 		toolBar.add(boutonExtract);
 		toolBar.add(Box.createHorizontalGlue());
 		toolBar.add(new JLabel(new ImageIcon("images/Volume.png")));
-		toolBar.add(Box.createHorizontalStrut(5));
+		toolBar.add(Box.createHorizontalStrut(PANEL_MARGIN));
 		toolBar.add(sliderVolume);
-		toolBar.add(Box.createHorizontalStrut(5));
+		toolBar.add(Box.createHorizontalStrut(PANEL_MARGIN));
 
 		JPanel panelControls = new JPanel(new GridLayout(2, 1));
 		panelControls.add(panelDuree);
@@ -294,7 +300,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 
 	/**
 	 * Listener du slider avec les marqueurs
-	 *
+	 * 
 	 */
 	private class SliderWithMarkersListener extends MouseAdapter
 	{
