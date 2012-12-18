@@ -159,6 +159,16 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 				this.arbre.setCellRenderer(new PanneauArbreRendererNoel());
 				this.event = true;
 			}
+			else if (dateStringMois.equals("10"))
+			{
+				this.arbre.setCellRenderer(new PanneauArbreRendererHallo());
+				this.event = true;
+			}
+			else if (dateStringMois.equals("4"))
+			{
+				this.arbre.setCellRenderer(new PanneauArbreRendererEaster());
+				this.event = true;
+			}
 			else
 			{
 				this.event = false;
