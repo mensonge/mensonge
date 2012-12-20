@@ -25,7 +25,7 @@ import mensonge.core.tools.DataBaseObservable;
  * @author Azazel
  * 
  */
-public class BaseDeDonnees extends DataBaseObservable
+public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 {
 
 	public static final int EXPORTER_ENREGISTREMENT = 2;
@@ -1069,10 +1069,40 @@ public class BaseDeDonnees extends DataBaseObservable
 			}
 			throw new DBException("Enregistrement inexistant.", 3);
 		}
-		catch (Exception e)
+		catch (SQLException e)
 		{
 			notifyFailedAction("Impossible de récupérer l'enregistrement");
 			throw new DBException("Erreur lors de la récuperation de l'enregistrement : " + e.getMessage(), 3);
+		} finally
+		{
+			closeRessource(ps, null, rs);
+		}
+	}
+	
+	public String getNomEnregistrement(final int id) throws DBException
+	{
+		String retour = null;
+		if (connexion == null)
+		{
+			return null;
+		}
+		PreparedStatement ps = null;
+		ResultSet rs = null;
+		try
+		{
+			ps = connexion.prepareStatement("SELECT nom FROM enregistrements WHERE id=?");
+			ps.setInt(1, id);
+			rs = ps.executeQuery();
+			if (rs.next())
+			{
+				retour = rs.getString("nom");
+				return retour;
+			}
+			throw new DBException("Enregistrement inexistant.", 3);
+		}
+		catch (SQLException e)
+		{
+			throw new DBException("Erreur lors de la récupération du nom de l'enregistrement : " + e.getMessage(), 3);
 		} finally
 		{
 			closeRessource(ps, null, rs);

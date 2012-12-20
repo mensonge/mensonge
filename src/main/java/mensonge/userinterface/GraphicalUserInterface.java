@@ -39,6 +39,7 @@ import javax.swing.UnsupportedLookAndFeelException;
 import mensonge.core.Extraction;
 import mensonge.core.BaseDeDonnees.BaseDeDonnees;
 import mensonge.core.BaseDeDonnees.DBException;
+import mensonge.core.BaseDeDonnees.IBaseDeDonnees;
 import mensonge.core.plugins.Plugin;
 import mensonge.core.plugins.PluginManager;
 import mensonge.core.tools.Cache;
@@ -244,7 +245,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				{
 					JMenuItem item = new JMenuItem(entry.getKey());
 					item.addActionListener(new ItemPluginListener(mapPlugins.get(entry.getKey()), this.panneauArbre,
-							this, extraction));
+							this, extraction, this.bdd));
 					menuOutils.add(item);
 				}
 			}
@@ -588,6 +589,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		private PanneauArbre panneauArbre;
 		private GraphicalUserInterface gui;
 		private Extraction extraction;
+		private IBaseDeDonnees bdd;
 
 		/**
 		 * Nouveau listener pour un item de plugin
@@ -600,8 +602,9 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		 *            Instance de la gui pour définir le cursor wait/default pour montrer le chargement du plugin
 		 */
 		public ItemPluginListener(Plugin plugin, PanneauArbre panneauArbre, GraphicalUserInterface gui,
-				Extraction extraction)
+				Extraction extraction, IBaseDeDonnees bdd)
 		{
+			this.bdd = bdd;
 			this.extraction = extraction;
 			this.gui = gui;
 			this.plugin = plugin;
@@ -613,7 +616,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		{
 			// TODO Peut être voir pour aussi donner en plus l'instance de la BDD ça pourrait être utile au final ? :D
 			gui.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-			this.plugin.lancer(extraction, panneauArbre.getListSelectedRecords());
+			this.plugin.lancer(extraction, panneauArbre.getListSelectedRecords(), this.bdd);
 			gui.setCursor(Cursor.getDefaultCursor());
 		}
 	}
