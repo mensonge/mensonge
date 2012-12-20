@@ -50,7 +50,6 @@ public class Extraction extends ExtractionObservable implements IExtraction
 		int nBytesRead = -1;
 		while ((nBytesRead = inputAIS.read(abBuffer)) != -1)
 		{
-
 			byteOutput.write(abBuffer, 0, nBytesRead);
 		}
 
@@ -58,7 +57,11 @@ public class Extraction extends ExtractionObservable implements IExtraction
 		int nbChannels = audioFormat.getChannels();
 		int nbSamples = audioBytes.length / nbChannels;
 		double doubleArray[] = new double[nbSamples];
-
+		if ((nbSamples % nbChannels) != 0)
+		{
+			logger.log(Level.WARNING, "Les données audio ne correspondent pas au nombre de canaux");
+			return null;
+		}
 		for (int i = 0; i < nbSamples; i++)
 		{
 			int lsb = audioBytes[2 * i];
@@ -68,11 +71,6 @@ public class Extraction extends ExtractionObservable implements IExtraction
 			// donc de -1 à +1
 		}
 
-		if ((nbSamples % nbChannels) != 0)
-		{
-			logger.log(Level.WARNING, "Les données audio ne correspondent pas au nombre de canaux");
-			return null;
-		}
 		int nbSamplesChannel = nbSamples / nbChannels;
 		return reshape(doubleArray, nbSamplesChannel, nbChannels);
 	}
@@ -121,7 +119,7 @@ public class Extraction extends ExtractionObservable implements IExtraction
 		target.deleteOnExit();
 		AudioAttributes audio = new AudioAttributes();
 		audio.setCodec("pcm_s16le");
-
+		audio.setChannels(2);
 		EncodingAttributes attrs = new EncodingAttributes();
 		attrs.setFormat("wav");
 		attrs.setAudioAttributes(audio);

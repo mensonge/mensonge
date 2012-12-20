@@ -14,8 +14,10 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.JFileChooser;
 
@@ -190,9 +192,9 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 		this.lecteurAudio.close();
 	}
 
-	public List<File> getListSelectedRecords()
+	public Map<Integer, File> getListSelectedRecords()
 	{
-		List<File> recordsList = new LinkedList<File>();
+		Map<Integer, File> recordsList = new HashMap<Integer,File>();
 		TreePath[] paths = arbre.getSelectionPaths();
 		if (paths != null)
 		{
@@ -203,7 +205,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 					Feuille record = (Feuille) path.getLastPathComponent();
 					try
 					{
-						recordsList.add(getRecordCacheFile(record.getId()));
+						recordsList.put(record.getId(), getRecordCacheFile(record.getId()));
 					}
 					catch (IOException e)
 					{

@@ -14,6 +14,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseWheelEvent;
 
 import javax.swing.plaf.basic.BasicSliderUI;
 import javax.swing.AbstractAction;
@@ -65,8 +67,8 @@ public class LecteurVideo extends JPanel implements ActionListener
 	private JButton boutonMarqueur1;
 	private JButton boutonMarqueur2;
 	private JButton boutonExtract;
-	private long timeMarqueur1 = 0;
-	private long timeMarqueur2 = 1;
+	private long timeMarqueur1 = -1;
+	private long timeMarqueur2 = -1;
 	private BaseDeDonnees bdd;
 	private MediaPlayer mediaPlayer;
 	private String pathVideo = "";
@@ -159,6 +161,10 @@ public class LecteurVideo extends JPanel implements ActionListener
 		this.slider = new SliderWithMarkers(JSlider.HORIZONTAL);
 		SliderPositionEventListener sliderListener = new SliderPositionEventListener(this.slider,
 				this.labelDureeActuelle, this.mediaPlayer);
+		for (MouseListener m : this.slider.getMouseListeners())
+		{
+			this.slider.removeMouseListener(m);
+		}
 		this.slider.addMouseListener(sliderListener);
 		this.slider.addMouseMotionListener(sliderListener);
 		SliderWithMarkersListener sliderWithMarkersSlider = new SliderWithMarkersListener();
@@ -261,39 +267,42 @@ public class LecteurVideo extends JPanel implements ActionListener
 		}
 		else if (event.getSource() == boutonExtract)
 		{
-			final String msgErreur = "Extraction : ";
-			if (this.mediaPlayer.isPlaying())
+			if (timeMarqueur1 != -1 && timeMarqueur2 != -1)
 			{
-				this.mediaPlayer.pause();
-			}
-			try
-			{
-				byte[] tabOfByte = null;
-				if (timeMarqueur1 < timeMarqueur2)
+				final String msgErreur = "Extraction : ";
+				if (this.mediaPlayer.isPlaying())
 				{
-					tabOfByte = extraction.extraireIntervalle(pathVideo, timeMarqueur1, timeMarqueur2);
+					this.mediaPlayer.pause();
 				}
-				else
+				try
 				{
-					tabOfByte = extraction.extraireIntervalle(pathVideo, timeMarqueur2, timeMarqueur1);
+					byte[] tabOfByte = null;
+					if (timeMarqueur1 < timeMarqueur2)
+					{
+						tabOfByte = extraction.extraireIntervalle(pathVideo, timeMarqueur1, timeMarqueur2);
+					}
+					else
+					{
+						tabOfByte = extraction.extraireIntervalle(pathVideo, timeMarqueur2, timeMarqueur1);
+					}
+					new DialogueAjouterEnregistrement(parent, "Ajout d'un enregistrement", true, this.bdd, tabOfByte);
 				}
-				new DialogueAjouterEnregistrement(parent, "Ajout d'un enregistrement", true, this.bdd, tabOfByte);
-			}
-			catch (IllegalArgumentException e)
-			{
-				GraphicalUserInterface.popupErreur(msgErreur + e.getMessage());
-			}
-			catch (InputFormatException e)
-			{
-				GraphicalUserInterface.popupErreur(msgErreur + e.getMessage());
-			}
-			catch (IOException e)
-			{
-				GraphicalUserInterface.popupErreur(msgErreur + e.getMessage());
-			}
-			catch (EncoderException e)
-			{
-				GraphicalUserInterface.popupErreur(msgErreur + e.getMessage());
+				catch (IllegalArgumentException e)
+				{
+					GraphicalUserInterface.popupErreur(msgErreur + e.getMessage());
+				}
+				catch (InputFormatException e)
+				{
+					GraphicalUserInterface.popupErreur(msgErreur + e.getMessage());
+				}
+				catch (IOException e)
+				{
+					GraphicalUserInterface.popupErreur(msgErreur + e.getMessage());
+				}
+				catch (EncoderException e)
+				{
+					GraphicalUserInterface.popupErreur(msgErreur + e.getMessage());
+				}
 			}
 		}
 	}
