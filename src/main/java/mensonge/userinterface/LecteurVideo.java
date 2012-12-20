@@ -67,8 +67,8 @@ public class LecteurVideo extends JPanel implements ActionListener
 	private JButton boutonMarqueur1;
 	private JButton boutonMarqueur2;
 	private JButton boutonExtract;
-	private long timeMarqueur1 = 0;
-	private long timeMarqueur2 = 1;
+	private long timeMarqueur1 = -1;
+	private long timeMarqueur2 = -1;
 	private BaseDeDonnees bdd;
 	private MediaPlayer mediaPlayer;
 	private String pathVideo = "";
@@ -161,7 +161,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 		this.slider = new SliderWithMarkers(JSlider.HORIZONTAL);
 		SliderPositionEventListener sliderListener = new SliderPositionEventListener(this.slider,
 				this.labelDureeActuelle, this.mediaPlayer);
-		for(MouseListener m : this.slider.getMouseListeners())
+		for (MouseListener m : this.slider.getMouseListeners())
 		{
 			this.slider.removeMouseListener(m);
 		}
@@ -267,39 +267,42 @@ public class LecteurVideo extends JPanel implements ActionListener
 		}
 		else if (event.getSource() == boutonExtract)
 		{
-			final String msgErreur = "Extraction : ";
-			if (this.mediaPlayer.isPlaying())
+			if (timeMarqueur1 != -1 && timeMarqueur2 != -1)
 			{
-				this.mediaPlayer.pause();
-			}
-			try
-			{
-				byte[] tabOfByte = null;
-				if (timeMarqueur1 < timeMarqueur2)
+				final String msgErreur = "Extraction : ";
+				if (this.mediaPlayer.isPlaying())
 				{
-					tabOfByte = extraction.extraireIntervalle(pathVideo, timeMarqueur1, timeMarqueur2);
+					this.mediaPlayer.pause();
 				}
-				else
+				try
 				{
-					tabOfByte = extraction.extraireIntervalle(pathVideo, timeMarqueur2, timeMarqueur1);
+					byte[] tabOfByte = null;
+					if (timeMarqueur1 < timeMarqueur2)
+					{
+						tabOfByte = extraction.extraireIntervalle(pathVideo, timeMarqueur1, timeMarqueur2);
+					}
+					else
+					{
+						tabOfByte = extraction.extraireIntervalle(pathVideo, timeMarqueur2, timeMarqueur1);
+					}
+					new DialogueAjouterEnregistrement(parent, "Ajout d'un enregistrement", true, this.bdd, tabOfByte);
 				}
-				new DialogueAjouterEnregistrement(parent, "Ajout d'un enregistrement", true, this.bdd, tabOfByte);
-			}
-			catch (IllegalArgumentException e)
-			{
-				GraphicalUserInterface.popupErreur(msgErreur + e.getMessage());
-			}
-			catch (InputFormatException e)
-			{
-				GraphicalUserInterface.popupErreur(msgErreur + e.getMessage());
-			}
-			catch (IOException e)
-			{
-				GraphicalUserInterface.popupErreur(msgErreur + e.getMessage());
-			}
-			catch (EncoderException e)
-			{
-				GraphicalUserInterface.popupErreur(msgErreur + e.getMessage());
+				catch (IllegalArgumentException e)
+				{
+					GraphicalUserInterface.popupErreur(msgErreur + e.getMessage());
+				}
+				catch (InputFormatException e)
+				{
+					GraphicalUserInterface.popupErreur(msgErreur + e.getMessage());
+				}
+				catch (IOException e)
+				{
+					GraphicalUserInterface.popupErreur(msgErreur + e.getMessage());
+				}
+				catch (EncoderException e)
+				{
+					GraphicalUserInterface.popupErreur(msgErreur + e.getMessage());
+				}
 			}
 		}
 	}
@@ -327,36 +330,6 @@ public class LecteurVideo extends JPanel implements ActionListener
 		public void mouseReleased(MouseEvent e)
 		{
 			setCursor(Cursor.getDefaultCursor());
-		}
-
-		@Override
-		public void mouseClicked(MouseEvent e)
-		{
-
-		}
-
-		@Override
-		public void mouseEntered(MouseEvent e)
-		{
-
-		}
-
-		@Override
-		public void mouseExited(MouseEvent e)
-		{
-
-		}
-
-		@Override
-		public void mouseMoved(MouseEvent e)
-		{
-
-		}
-
-		@Override
-		public void mouseWheelMoved(MouseWheelEvent e)
-		{
-
 		}
 
 		private void setMarkers(MouseEvent e)

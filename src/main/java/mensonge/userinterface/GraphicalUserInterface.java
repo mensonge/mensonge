@@ -202,7 +202,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		if (this.panneauArbre.isEvent())
 		{
 			JMenu menuAffichage = new JMenu("Affichage");
-			JMenuItem affichageDisableEvent = new JMenuItem("Desactiver l'evennement");
+			JMenuItem affichageDisableEvent = new JMenuItem("Désactiver l'évènement");
 			affichageDisableEvent.addActionListener(new DesactiverEvent());
 			menuAffichage.add(affichageDisableEvent);
 			this.menuBar.add(menuAffichage);
