@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -15,6 +16,8 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
 import mensonge.core.IExtraction;
+import mensonge.core.BaseDeDonnees.DBException;
+import mensonge.core.BaseDeDonnees.IBaseDeDonnees;
 import mensonge.core.plugins.Plugin;
 
 import org.jfree.data.xy.XYDataset;
@@ -30,9 +33,9 @@ public class WaveForm implements Plugin
 	private List<DrawXYGraph> graphsList = new ArrayList<DrawXYGraph>();
 	private List<XYSeries> seriesList = new ArrayList<XYSeries>();
 
-	private void drawGraph(final double[][] echantillons, final float sampleRate)
+	private void drawGraph(final double[][] echantillons, final float sampleRate, final String fileName)
 	{
-		final DrawXYGraph graph = new DrawXYGraph("Variation d'amplitudes", "Variation d'amplitudes",
+		final DrawXYGraph graph = new DrawXYGraph("Variation d'amplitudes - "+fileName, "Variation d'amplitudes - "+fileName,
 				"Temps (Seconde)", "Amplitude");
 		graphsList.add(graph);
 		final XYSeries seriesChannelOne = new XYSeries("Canal 0");
@@ -62,22 +65,22 @@ public class WaveForm implements Plugin
 		});
 		graph.display();
 	}
-
 	@Override
-	public void lancer(IExtraction extraction, List<File> listSelectedFiles)
+	public void lancer(IExtraction extraction, Map<Integer, File> listSelectedFiles, IBaseDeDonnees bdd)
 	{
 		this.isActive = true;
 		AudioInputStream inputAIS = null;
 		if (!listSelectedFiles.isEmpty())
 		{
-			for (File file : listSelectedFiles)
+			for (Integer id : listSelectedFiles.keySet())
 			{
 				try
 				{
+					File file = listSelectedFiles.get(id);
 					inputAIS = AudioSystem.getAudioInputStream(file);
 					AudioFormat audioFormat = inputAIS.getFormat();
 					double[][] echantillons = extraction.extraireEchantillons(file.getCanonicalPath());
-					this.drawGraph(echantillons, audioFormat.getSampleRate());
+					this.drawGraph(echantillons, audioFormat.getSampleRate(), bdd.getNomEnregistrement(id));
 					echantillons = null;
 				}
 				catch (IOException e)
@@ -88,10 +91,14 @@ public class WaveForm implements Plugin
 				{
 					logger.log(Level.WARNING, e.getLocalizedMessage());
 				}
+				catch (DBException e)
+				{
+					logger.log(Level.WARNING, e.getLocalizedMessage());
+				}
 			}
 		}
 		this.isActive = false;
-		Runtime.getRuntime().gc();
+		Runtime.getRuntime().gc();		
 	}
 
 	@Override
