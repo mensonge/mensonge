@@ -14,6 +14,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseWheelEvent;
 
 import javax.swing.plaf.basic.BasicSliderUI;
 import javax.swing.AbstractAction;
@@ -159,6 +161,10 @@ public class LecteurVideo extends JPanel implements ActionListener
 		this.slider = new SliderWithMarkers(JSlider.HORIZONTAL);
 		SliderPositionEventListener sliderListener = new SliderPositionEventListener(this.slider,
 				this.labelDureeActuelle, this.mediaPlayer);
+		for(MouseListener m : this.slider.getMouseListeners())
+		{
+			this.slider.removeMouseListener(m);
+		}
 		this.slider.addMouseListener(sliderListener);
 		this.slider.addMouseMotionListener(sliderListener);
 		SliderWithMarkersListener sliderWithMarkersSlider = new SliderWithMarkersListener();
@@ -321,6 +327,36 @@ public class LecteurVideo extends JPanel implements ActionListener
 		public void mouseReleased(MouseEvent e)
 		{
 			setCursor(Cursor.getDefaultCursor());
+		}
+
+		@Override
+		public void mouseClicked(MouseEvent e)
+		{
+
+		}
+
+		@Override
+		public void mouseEntered(MouseEvent e)
+		{
+
+		}
+
+		@Override
+		public void mouseExited(MouseEvent e)
+		{
+
+		}
+
+		@Override
+		public void mouseMoved(MouseEvent e)
+		{
+
+		}
+
+		@Override
+		public void mouseWheelMoved(MouseWheelEvent e)
+		{
+
 		}
 
 		private void setMarkers(MouseEvent e)
