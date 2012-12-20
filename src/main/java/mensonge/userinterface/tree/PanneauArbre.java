@@ -223,7 +223,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 	{
 		if (!lock)
 		{
-			// Enumeration<TreePath> pathExpand = this.arbre.getExpandedDescendants(new TreePath(racine));
+			Enumeration<TreePath> pathExpand = this.arbre.getExpandedDescendants(new TreePath(racine));
 			viderNoeud(this.racine);
 			if (this.typeTrie == PanneauArbre.TYPE_TRIE_CATEGORIE)
 			{
@@ -234,7 +234,9 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 				remplirArbreEnregistrementSujet();
 			}
 			this.arbre.setExpandsSelectedPaths(true);
-			// this.redeployerArbre(pathExpand);
+			
+			this.redeployerArbre(pathExpand);
+			
 			this.arbre.expandPath(new TreePath(this.racine));
 			SwingUtilities.invokeLater(new Runnable()
 			{
@@ -254,22 +256,27 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 		TreePath element;
 		Object path[] = new Object[2];
 		path[0] = racine;
+		
 		while (pathExpand.hasMoreElements())
 		{
 			element = pathExpand.nextElement();
-			userObject = (String) ((DefaultMutableTreeNode) element.getPath()[1]).getUserObject();
-			node = trouverNoeud(racine, userObject);
-			if (node != null)
+			if(element.getLastPathComponent() instanceof Branche)
 			{
-				path[1] = node;
-				this.arbre.expandPath(new TreePath(path));
+				DefaultMutableTreeNode tmp = ((DefaultMutableTreeNode) element.getLastPathComponent());
+				userObject = (String) tmp.getUserObject();
+				node = trouverNoeud(racine, userObject);
+				if (node != null)
+				{
+					path[1] = node;
+					this.arbre.expandPath(new TreePath(path));
+				}
 			}
 		}
 	}
 
 	public static DefaultMutableTreeNode trouverNoeud(DefaultMutableTreeNode noeud, String userObject)
 	{
-		Enumeration<?> children = noeud.children();
+		Enumeration children = noeud.children();
 		DefaultMutableTreeNode tmp;
 		while (children.hasMoreElements())
 		{
