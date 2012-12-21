@@ -4,7 +4,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JSlider;
-import javax.swing.SwingUtilities;
 
 import mensonge.core.tools.Utils;
 
@@ -64,7 +63,7 @@ public class PlayerEventListener extends MediaPlayerEventAdapter
 		boutonLecture.setIcon(IMG_ICON_LECTURE);
 		slider.setValue(0);
 		labelDureeActuelle.setText("00:00:00");
-		SwingUtilities.invokeLater(new Runnable()
+		new Thread(new Runnable()
 		{
 			@Override
 			public void run()
@@ -72,7 +71,7 @@ public class PlayerEventListener extends MediaPlayerEventAdapter
 				mediaPlayer.start();
 				mediaPlayer.pause();				
 			}
-		});
+		}).start();
 	}
 
 	@Override
