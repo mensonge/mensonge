@@ -267,7 +267,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 		}
 		else if (event.getSource() == boutonExtract)
 		{
-			if (timeMarqueur1 != -1 && timeMarqueur2 != -1)
+			if (timeMarqueur1 != -1 && timeMarqueur2 != -1 && (timeMarqueur1 - timeMarqueur2) != 0)
 			{
 				final String msgErreur = "Extraction : ";
 				if (this.mediaPlayer.isPlaying())
