@@ -955,8 +955,9 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 					if (arbre.getLastSelectedPathComponent() != null
 							&& arbre.getLastSelectedPathComponent() instanceof Feuille)
 					{
-						loadAudioFile(((Feuille) arbre.getLastSelectedPathComponent()).getId());
-						infoArbre.setListeInfo(((Feuille) arbre.getLastSelectedPathComponent()).getInfo());
+						Feuille feuille = ((Feuille) arbre.getLastSelectedPathComponent());
+						loadAudioFile( feuille.getId());
+						infoArbre.setListeInfo(feuille.getInfo());
 						lecteurAudio.setVisible(true);
 					}
 					else

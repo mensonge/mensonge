@@ -77,7 +77,7 @@ public class HandlerDragLecteur extends TransferHandler
 		{
 			if (fichier.canRead() && fichier.exists())
 			{
-				this.fenetre.ajouterOnglet(new OngletLecteur(fichier, this.bdd, this.fenetre, this.extraction));
+				this.fenetre.ajouterOnglet(fichier, this.bdd, this.fenetre, this.extraction);
 			}
 		}
 		return false;
@@ -105,7 +105,7 @@ public class HandlerDragLecteur extends TransferHandler
 				File fichier = new File(tab[i]);
 				if (fichier.canRead() && fichier.exists())
 				{
-					this.fenetre.ajouterOnglet(new OngletLecteur(fichier, this.bdd, this.fenetre, this.extraction));
+					this.fenetre.ajouterOnglet(fichier, this.bdd, this.fenetre, this.extraction);
 				}
 			}
 		}

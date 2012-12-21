@@ -21,11 +21,28 @@ public class DBException extends Exception
 		code = errCode;
 	}
 
+	/**
+	 * Constructeur par defaut
+	 * @param msg le message de l'erreur
+	 */
+	public DBException(String msg)
+	{
+		super(msg);
+	}
+	
+	/**
+	 * Le getter du code d'erreur
+	 * @return le code d'erreur
+	 */
 	public int getCode()
 	{
 		return code;
 	}
 
+	/**
+	 * Le setter du code d'erreur
+	 * @param code le nouveau code d'erreur
+	 */
 	public void setCode(int code)
 	{
 		this.code = code;

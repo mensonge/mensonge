@@ -60,7 +60,9 @@ import com.sun.jna.NativeLibrary;
 public class GraphicalUserInterface extends JFrame implements ActionListener
 {
 	private static final long serialVersionUID = 5373991180139317820L;
+	private static final int MAXIMUM_ONGLET = 20;
 	private static Logger logger = Logger.getLogger("gui");
+	
 	private JTabbedPane onglets;
 
 	private JMenuItem aideAPropos;
@@ -112,7 +114,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		this.onglets = new JTabbedPane();
 		PanelWithBackground panel = new PanelWithBackground(new BorderLayout());
 		panel.add(onglets, BorderLayout.CENTER);
-
+		
 		this.add(panel, BorderLayout.CENTER);
 		this.add(panneauArbre, BorderLayout.EAST);
 
@@ -284,24 +286,34 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	 * @param onglet
 	 *            Onglet à ajouter
 	 */
-	protected void ajouterOnglet(OngletLecteur onglet)
+	protected void ajouterOnglet(File file, BaseDeDonnees bdd, GraphicalUserInterface fenetre, Extraction extraction)
 	{
-		JButton boutonFermeture = new JButton(new ImageIcon("images/CloseTab.png"));
-		boutonFermeture.setToolTipText("Fermer cet onglet");
-		boutonFermeture.setContentAreaFilled(false);
-		boutonFermeture.setFocusable(false);
-		boutonFermeture.setBorder(BorderFactory.createEmptyBorder());
-		boutonFermeture.setBorderPainted(false);
-		boutonFermeture.addActionListener(new FermetureOngletListener(this.onglets, onglet));
+		
+		if (this.onglets.getComponentCount() <= MAXIMUM_ONGLET)
+		{
+			OngletLecteur onglet = new OngletLecteur(file, bdd, fenetre, extraction);
+			JButton boutonFermeture = new JButton(new ImageIcon("images/CloseTab.png"));
+			boutonFermeture.setToolTipText("Fermer cet onglet");
+			boutonFermeture.setContentAreaFilled(false);
+			boutonFermeture.setFocusable(false);
+			boutonFermeture.setBorder(BorderFactory.createEmptyBorder());
+			boutonFermeture.setBorderPainted(false);
+			boutonFermeture.addActionListener(new FermetureOngletListener(this.onglets, onglet));
 
-		JPanel panelFermeture = new JPanel();
-		panelFermeture.setBackground(new Color(0, 0, 0, 0));
-		panelFermeture.add(new JLabel(onglet.getNom()));
-		panelFermeture.add(boutonFermeture);
+			JPanel panelFermeture = new JPanel();
+			panelFermeture.setBackground(new Color(0, 0, 0, 0));
+			panelFermeture.add(new JLabel(onglet.getNom()));
+			panelFermeture.add(boutonFermeture);
 
-		this.onglets.add(onglet);
-		this.onglets.setTabComponentAt(this.onglets.getTabCount() - 1, panelFermeture);
-		onglet.requestFocus();
+			this.onglets.add(onglet);
+			this.onglets.setTabComponentAt(this.onglets.getTabCount() - 1, panelFermeture);
+			onglet.requestFocus();
+		}
+		else
+		{
+			GraphicalUserInterface.popupErreur("Trop d'onglet ouvert.");
+			logger.log(Level.WARNING, "Trop d'onglet ouvert.");
+		}
 	}
 
 	/**
@@ -446,7 +458,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 					for (File file : fileChooser.getSelectedFiles())
 					{
 						previousPath = file.getCanonicalPath();
-						this.ajouterOnglet(new OngletLecteur(file, this.bdd, this, extraction));
+						this.ajouterOnglet(file, this.bdd, this, this.extraction);
 					}
 				}
 				catch (IOException e)

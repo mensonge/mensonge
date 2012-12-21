@@ -2,6 +2,11 @@ package mensonge.userinterface.tree;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 
+/**
+ * Classe representant alternativement les sujets ou les categorie dans l'arbre
+ * @author Azazel
+ *
+ */
 public class Branche extends DefaultMutableTreeNode
 {
 	/**

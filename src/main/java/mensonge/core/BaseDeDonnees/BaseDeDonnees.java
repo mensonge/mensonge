@@ -116,7 +116,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		}
 		catch (SQLException e)
 		{
-			throw new DBException("Probleme lors de la deconnexion de la base : " + e.getMessage(), 4);
+			throw new DBException("Probleme lors de la deconnexion de la base : " + e.getMessage());
 		} finally
 		{
 			connexion = null;
@@ -203,7 +203,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return;
+			throw new DBException("La connexion est vide");
 		}
 		if (type == EXPORTER_BASE)// Exporter la base vers un nouveau fichier
 		{
@@ -213,7 +213,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 			if (!src.exists())// Verifie si le fichier existe bien
 			{
 				notifyFailedAction("Impossible d'exporter la base de données");
-				throw new DBException("Le fichier de base de données (" + fileName + ") n'existe pas.", 3);
+				throw new DBException("Le fichier de base de données (" + fileName + ") n'existe pas.");
 			}
 			if (dest.exists())// verifie que la destination n'existe pas, auquel cas, on la supprime
 			{
@@ -226,12 +226,12 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 			catch (IOException e)
 			{
 				notifyFailedAction("Impossible d'exporter la base de données");
-				throw new DBException("Impossible de créer le fichier de sortie: " + e.getMessage(), 3);
+				throw new DBException("Impossible de créer le fichier de sortie: " + e.getMessage());
 			}
 			if (!copyFile(src, dest))
 			{
 				notifyFailedAction("Impossible d'exporter la base de données");
-				throw new DBException("Impossible de copier le fichier de la base", 3);
+				throw new DBException("Impossible de copier le fichier de la base");
 			}
 			notifyCompletedAction("La base de données a été exportée");
 		}
@@ -250,7 +250,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 			catch (IOException e)
 			{
 				notifyFailedAction("Impossible d'exporter l'enregistrement");
-				throw new DBException("Impossible de créer le fichier de sortie : " + e.getMessage(), 3);
+				throw new DBException("Impossible de créer le fichier de sortie : " + e.getMessage());
 			}
 			// récupérer un enregistrement
 			byte[] echantillon = this.recupererEnregistrement(id);
@@ -279,7 +279,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 			catch (IOException e)
 			{
 				notifyFailedAction("Impossible d'exporter l'enregistrement");
-				throw new DBException("Erreur lors de la copie de l'échantillon dans le fichier : " + e.getMessage(), 3);
+				throw new DBException("Erreur lors de la copie de l'échantillon dans le fichier : " + e.getMessage());
 			}
 			notifyCompletedAction("La base de données a été exportée");
 		}
@@ -296,7 +296,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return null;
+			throw new DBException("La connexion est vide");
 		}
 		Statement stat = null;
 		ResultSet rs = null;
@@ -325,7 +325,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		}
 		catch (SQLException e)
 		{
-			throw new DBException("Erreur lors de la recuperation de la liste des enregistrement: " + e.getMessage(), 1);
+			throw new DBException("Erreur lors de la recuperation de la liste des enregistrement: " + e.getMessage());
 		} finally
 		{
 			closeRessource(null, stat, rs);
@@ -344,7 +344,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return null;
+			throw new DBException("La connexion est vide");
 		}
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -368,8 +368,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		}
 		catch (SQLException e)
 		{
-			throw new DBException("Erreur lors de la recuperation de la liste des enregistrements: " + e.getMessage(),
-					1);
+			throw new DBException("Erreur lors de la recuperation de la liste des enregistrements: " + e.getMessage());
 		} finally
 		{
 			closeRessource(ps, null, rs);
@@ -388,7 +387,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return null;
+			throw new DBException("La connexion est vide");
 		}
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -415,7 +414,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		}
 		catch (SQLException e)
 		{
-			throw new DBException("Erreur lors de la recuperation de la liste des enregistrement: " + e.getMessage(), 1);
+			throw new DBException("Erreur lors de la recuperation de la liste des enregistrement: " + e.getMessage());
 		} finally
 		{
 			closeRessource(ps, null, rs);
@@ -433,7 +432,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return -1;
+			throw new DBException("La connexion est vide");
 		}
 		Statement stat = null;
 		ResultSet rs = null;
@@ -448,7 +447,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		}
 		catch (SQLException e)
 		{
-			throw new DBException("Erreur lors de la recuperation du nombre d'enregistrement: " + e.getMessage(), 1);
+			throw new DBException("Erreur lors de la recuperation du nombre d'enregistrement: " + e.getMessage());
 		} finally
 		{
 			closeRessource(null, stat, rs);
@@ -464,7 +463,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return;
+			throw new DBException("La connexion est vide");
 		}
 		notifyInProgressAction("Compactage de la base de données...");
 		// hack foireux pour poouvoir recevoir l'event de l'action qui n'est pas recu sinon la méthode est bloquante...
@@ -511,22 +510,22 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return;
+			throw new DBException("La connexion est vide");
 		}
 		if (!this.categorieExiste(idCat))// On verifie si la categorie existe
 		{
 			notifyFailedAction("Impossible d'ajouter l'enregistrement");
-			throw new DBException("Catégorie inexistante.", 3);
+			throw new DBException("Catégorie inexistante.");
 		}
 		if (!this.sujetExiste(idSuj))// test l'existance de la categorie
 		{
 			notifyFailedAction("Impossible d'ajouter l'enregistrement");
-			throw new DBException("Sujet inexistant.", 3);
+			throw new DBException("Sujet inexistant.");
 		}
 		if (this.enregistrementExist(nom))
 		{
 			notifyFailedAction("Impossible d'ajouter l'enregistrement");
-			throw new DBException("Nom déjà utilisé.", 3);
+			throw new DBException("Nom déjà utilisé.");
 		}
 		notifyInProgressAction("Ajout de l'enregistrement dans la base de données...");
 		PreparedStatement ps = null;
@@ -550,7 +549,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			notifyFailedAction("Impossible d'ajouter l'enregistrement");
-			throw new DBException("Erreur lors de l'ajout de l'enregistrement : " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de l'ajout de l'enregistrement : " + e.getMessage());
 		} finally
 		{
 			closeRessource(ps, null, null);
@@ -568,7 +567,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return;
+			throw new DBException("La connexion est vide");
 		}
 		notifyInProgressAction("Suppresion de l'enregistrement...");
 		PreparedStatement ps = null;
@@ -586,7 +585,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			notifyFailedAction("Impossible de supprimer l'enregistrement");
-			throw new DBException(e.getLocalizedMessage(), 3);
+			throw new DBException(e.getLocalizedMessage());
 		} finally
 		{
 			closeRessource(ps, null, null);
@@ -613,22 +612,22 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return;
+			throw new DBException("La connexion est vide");
 		}
 		if (!this.categorieExiste(idCat))// On test si la categorie est existante
 		{
 			notifyFailedAction("Impossible de mettre à jour l'enregistrement");
-			throw new DBException("Categorie inexistante.", 3);
+			throw new DBException("Categorie inexistante.");
 		}
 		if (!this.sujetExiste(idSuj))// test l'existance de la categorie
 		{
 			notifyFailedAction("Impossible de mettre à jour l'enregistrement");
-			throw new DBException("sujet inexistante.", 3);
+			throw new DBException("sujet inexistante.");
 		}
 		if (this.enregistrementExist(nom))
 		{
 			notifyFailedAction("Impossible de mettre à jour l'enregistrement");
-			throw new DBException("Nom déjà utilisé.", 3);
+			throw new DBException("Nom déjà utilisé.");
 		}
 		notifyInProgressAction("Mise à jour de l'enregistrement...");
 
@@ -655,7 +654,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			notifyFailedAction("Impossible de mettre à jour l'enregistrement");
-			throw new DBException("Erreur lors de la modification de l'enregistrement : " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la modification de l'enregistrement : " + e.getMessage());
 		} finally
 		{
 			closeRessource(ps, null, null);
@@ -682,22 +681,22 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return;
+			throw new DBException("La connexion est vide");
 		}
 		if (!this.categorieExiste(idCat))// On test si la categorie existe
 		{
 			notifyFailedAction("Impossible de mettre à jour l'enregistrement");
-			throw new DBException("Catégorie inexistante.", 3);
+			throw new DBException("Catégorie inexistante.");
 		}
 		if (!this.sujetExiste(idSuj))// test l'existance de la categorie
 		{
 			notifyFailedAction("Impossible de mettre à jour l'enregistrement");
-			throw new DBException("Sujet inexistante.", 3);
+			throw new DBException("Sujet inexistante.");
 		}
 		if (this.enregistrementExist(nom))
 		{
 			notifyFailedAction("Impossible de mettre à jour l'enregistrement");
-			throw new DBException("Nom déjà utilisé.", 3);
+			throw new DBException("Nom déjà utilisé.");
 		}
 		notifyInProgressAction("Mise à jour de l'enregistrement...");
 		PreparedStatement ps = null;
@@ -721,7 +720,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			notifyFailedAction("Impossible de mettre à jour l'enregistrement");
-			throw new DBException("Erreur lors de la modification de l'enregistrement : " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la modification de l'enregistrement : " + e.getMessage());
 		} finally
 		{
 			closeRessource(ps, null, null);
@@ -741,12 +740,12 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return;
+			throw new DBException("La connexion est vide");
 		}
 		if (this.enregistrementExist(nom))
 		{
 			notifyFailedAction("Impossible de renommer l'enregistrement");
-			throw new DBException("Nom déjà utilisé.", 3);
+			throw new DBException("Nom déjà utilisé.");
 		}
 		notifyInProgressAction("Renommage de l'enregistrement...");
 		PreparedStatement ps = null;
@@ -765,7 +764,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			notifyFailedAction("Impossible de renommer l'enregistrement");
-			throw new DBException("Erreur lors de la modification du nom : " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la modification du nom : " + e.getMessage());
 		} finally
 		{
 			closeRessource(ps, null, null);
@@ -785,7 +784,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return;
+			throw new DBException("La connexion est vide");
 		}
 		notifyInProgressAction("Changement de la durée de l'enregistrement...");
 		PreparedStatement ps = null;
@@ -804,7 +803,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			notifyFailedAction("Impossible de changer la durée de l'enregistrement");
-			throw new DBException("Erreur lors de la modification de la durée : " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la modification de la durée : " + e.getMessage());
 		} finally
 		{
 			closeRessource(ps, null, null);
@@ -825,7 +824,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return;
+			throw new DBException("La connexion est vide");
 		}
 		notifyInProgressAction("Changement de la taille de l'enregistrement...");
 		PreparedStatement ps = null;
@@ -845,7 +844,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			notifyFailedAction("Impossible de changer la taille de l'enregistrement");
-			throw new DBException("Erreur lors de la modification de la taille : " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la modification de la taille : " + e.getMessage());
 		} finally
 		{
 			closeRessource(ps, null, null);
@@ -865,12 +864,12 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return;
+			throw new DBException("La connexion est vide");
 		}
 		if (!this.categorieExiste(idCat))// test l'existance de la categorie
 		{
 			notifyFailedAction("Impossible de changer la catégorie de l'enregistrement");
-			throw new DBException("Catégorie inexistante.", 3);
+			throw new DBException("Catégorie inexistante.");
 		}
 		notifyInProgressAction("Changement de la catégorie de l'enregistrement...");
 		PreparedStatement ps = null;
@@ -889,7 +888,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			notifyFailedAction("Impossible de changer la catégorie de l'enregistrement");
-			throw new DBException("Erreur lors de la modification de la catégorie : " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la modification de la catégorie : " + e.getMessage());
 		} finally
 		{
 			closeRessource(ps, null, null);
@@ -909,12 +908,12 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return;
+			throw new DBException("La connexion est vide");
 		}
 		if (!this.categorieExiste(nomCat))// test l'existance de la categorie
 		{
 			notifyFailedAction("Impossible de changer la catégorie de l'enregistrement");
-			throw new DBException("Catégorie inexistante.", 3);
+			throw new DBException("Catégorie inexistante.");
 		}
 		notifyInProgressAction("Changement de la catégorie de l'enregistrement...");
 		PreparedStatement ps = null;
@@ -938,7 +937,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			notifyFailedAction("Impossible de changer la catégorie de l'enregistrement");
-			throw new DBException("Erreur lors de la modification de la catégorie : " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la modification de la catégorie : " + e.getMessage());
 		} finally
 		{
 			closeRessource(ps, null, null);
@@ -958,12 +957,12 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return;
+			throw new DBException("La connexion est vide");
 		}
 		if (!this.sujetExiste(idSuj))// test l'existance de la categorie
 		{
 			notifyFailedAction("Impossible de changer le sujet de l'enregistrement");
-			throw new DBException("Sujet inexistant.", 3);
+			throw new DBException("Sujet inexistant.");
 		}
 		notifyInProgressAction("Changement du sujet de l'enregistrement...");
 		PreparedStatement ps = null;
@@ -982,7 +981,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			notifyFailedAction("Impossible de changer le sujet de l'enregistrement");
-			throw new DBException("Erreur lors de la modification du sujet : " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la modification du sujet : " + e.getMessage());
 		} finally
 		{
 			closeRessource(ps, null, null);
@@ -1002,12 +1001,12 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return;
+			throw new DBException("La connexion est vide");
 		}
 		if (!this.sujetExiste(nomSuj))// test l'existance de la categorie
 		{
 			notifyFailedAction("Impossible de changer le sujet de l'enregistrement");
-			throw new DBException("Sujet inexistant.", 3);
+			throw new DBException("Sujet inexistant.");
 		}
 		notifyInProgressAction("Changement du sujet de l'enregistrement...");
 		PreparedStatement ps = null;
@@ -1031,7 +1030,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			notifyFailedAction("Impossible de changer le sujet de l'enregistrement");
-			throw new DBException("Erreur lors de la modification du sujet : " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la modification du sujet : " + e.getMessage());
 		} finally
 		{
 			closeRessource(ps, null, null);
@@ -1051,7 +1050,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		byte[] retour = null;
 		if (connexion == null)
 		{
-			return null;
+			throw new DBException("La connexion est vide");
 		}
 		notifyInProgressAction("Récupération de l'enregistrement depuis la base de données...");
 		PreparedStatement ps = null;
@@ -1072,7 +1071,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			notifyFailedAction("Impossible de récupérer l'enregistrement");
-			throw new DBException("Erreur lors de la récuperation de l'enregistrement : " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la récuperation de l'enregistrement : " + e.getMessage());
 		} finally
 		{
 			closeRessource(ps, null, rs);
@@ -1084,7 +1083,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		String retour = null;
 		if (connexion == null)
 		{
-			return null;
+			throw new DBException("La connexion est vide");
 		}
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -1098,11 +1097,11 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 				retour = rs.getString("nom");
 				return retour;
 			}
-			throw new DBException("Enregistrement inexistant.", 3);
+			throw new DBException("Enregistrement inexistant.");
 		}
 		catch (SQLException e)
 		{
-			throw new DBException("Erreur lors de la récupération du nom de l'enregistrement : " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la récupération du nom de l'enregistrement : " + e.getMessage());
 		} finally
 		{
 			closeRessource(ps, null, rs);
@@ -1120,12 +1119,12 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return;
+			throw new DBException("La connexion est vide");
 		}
 		if (this.categorieExiste(nom))
 		{
 			notifyFailedAction("Impossible d'ajouter la catégorie");
-			throw new DBException("Nom de catégorie déjà utilisé.", 3);
+			throw new DBException("Nom de catégorie déjà utilisé.");
 		}
 		notifyInProgressAction("Ajout de la catégorie...");
 		PreparedStatement ps = null;
@@ -1144,7 +1143,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			notifyFailedAction("Impossible d'ajouter la catégorie");
-			throw new DBException("Erreur lors de l'ajout de la catégorie : " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de l'ajout de la catégorie : " + e.getMessage());
 		} finally
 		{
 			closeRessource(ps, null, null);
@@ -1161,7 +1160,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return null;
+			throw new DBException("La connexion est vide");
 		}
 		Statement stat = null;
 		ResultSet rs = null;
@@ -1177,7 +1176,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		}
 		catch (SQLException e)
 		{
-			throw new DBException("Erreur lors de la récuperation des catégories : " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la récuperation des catégories : " + e.getMessage());
 		} finally
 		{
 			closeRessource(null, stat, rs);
@@ -1197,7 +1196,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return;
+			throw new DBException("La connexion est vide");
 		}
 		notifyInProgressAction("Suppresion de la catégorie...");
 		PreparedStatement ps = null;
@@ -1215,7 +1214,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			notifyFailedAction("Impossible de supprimer la catégorie");
-			throw new DBException("Erreur lors de la suppression de la catégorie : " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la suppression de la catégorie : " + e.getMessage());
 		} finally
 		{
 			closeRessource(ps, null, null);
@@ -1235,7 +1234,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return;
+			throw new DBException("La connexion est vide");
 		}
 		if (this.categorieExiste(nom))
 		{
@@ -1260,7 +1259,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			notifyFailedAction("Impossible de renommer la catégorie");
-			throw new DBException("Erreur lors de la modification de la categorie: " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la modification de la categorie: " + e.getMessage());
 		} finally
 		{
 			closeRessource(ps, null, null);
@@ -1280,11 +1279,11 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		String retour;
 		if (connexion == null)
 		{
-			return null;
+			throw new DBException("La connexion est vide");
 		}
 		if (!this.categorieExiste(idCat))// test l'existance de la categorie
 		{
-			throw new DBException("Catégorie inexistante.", 3);
+			throw new DBException("Catégorie inexistante.");
 		}
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -1302,7 +1301,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		}
 		catch (SQLException e)
 		{
-			throw new DBException("Erreur lors de la recuperation de la catégorie : " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la recuperation de la catégorie : " + e.getMessage());
 		} finally
 		{
 			closeRessource(ps, null, rs);
@@ -1323,7 +1322,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		int retour;
 		if (connexion == null)
 		{
-			return -1;
+			throw new DBException("La connexion est vide");
 		}
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -1338,7 +1337,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		}
 		catch (SQLException e)
 		{
-			throw new DBException("Erreur lors de la recuperation de la catégorie : " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la recuperation de la catégorie : " + e.getMessage());
 		} finally
 		{
 			closeRessource(ps, null, rs);
@@ -1357,12 +1356,12 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return;
+			throw new DBException("La connexion est vide");
 		}
 		if (this.sujetExiste(nom))
 		{
 			notifyFailedAction("Impossible d'ajouter le sujet");
-			throw new DBException("Nom de sujet déjà utilisé.", 3);
+			throw new DBException("Nom de sujet déjà utilisé.");
 		}
 		notifyInProgressAction("Ajout du sujet...");
 		PreparedStatement ps = null;
@@ -1380,7 +1379,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			notifyFailedAction("Impossible d'ajouter le sujet");
-			throw new DBException("Erreur lors de l'ajout du sujet : " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de l'ajout du sujet : " + e.getMessage());
 		} finally
 		{
 			closeRessource(ps, null, null);
@@ -1399,7 +1398,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return;
+			throw new DBException("La connexion est vide");
 		}
 		notifyInProgressAction("Suppression du sujet...");
 		PreparedStatement ps = null;
@@ -1417,7 +1416,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			notifyFailedAction("Impossible de supprimer le sujet");
-			throw new DBException("Erreur lors de la suppression du sujet : " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la suppression du sujet : " + e.getMessage());
 		} finally
 		{
 			closeRessource(ps, null, null);
@@ -1435,7 +1434,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return null;
+			throw new DBException("La connexion est vide");
 		}
 		Statement stat = null;
 		ResultSet rs = null;
@@ -1451,7 +1450,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		}
 		catch (SQLException e)
 		{
-			throw new DBException("Erreur lors de la récuperation des sujets : " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la récuperation des sujets : " + e.getMessage());
 		} finally
 		{
 			closeRessource(null, stat, rs);
@@ -1472,12 +1471,12 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return;
+			throw new DBException("La connexion est vide");
 		}
 		if (this.sujetExiste(nom))
 		{
 			notifyFailedAction("Impossible de renommer le sujet");
-			throw new DBException("Nom de sujet déjà utilisé.", 3);
+			throw new DBException("Nom de sujet déjà utilisé.");
 		}
 		notifyInProgressAction("Renommage du sujet...");
 		PreparedStatement ps = null;
@@ -1497,7 +1496,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			notifyFailedAction("Impossible de renommer le sujet");
-			throw new DBException("Erreur lors de la modification du sujet : " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la modification du sujet : " + e.getMessage());
 		} finally
 		{
 			closeRessource(ps, null, null);
@@ -1519,11 +1518,11 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		ResultSet rs = null;
 		if (connexion == null)
 		{
-			return null;
+			throw new DBException("La connexion est vide");
 		}
 		if (!this.categorieExiste(idSuj))// test l'existance de la categorie
 		{
-			throw new DBException("Sujet inexistant.", 3);
+			throw new DBException("Sujet inexistant.");
 		}
 		try
 		{
@@ -1560,7 +1559,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		ResultSet rs = null;
 		if (connexion == null)
 		{
-			return -1;
+			throw new DBException("La connexion est vide");
 		}
 		try
 		{
@@ -1573,7 +1572,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		}
 		catch (SQLException e)
 		{
-			throw new DBException("Erreur lors de la récupération du sujet : " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la récupération du sujet : " + e.getMessage());
 		} finally
 		{
 			closeRessource(ps, null, rs);
@@ -1597,26 +1596,22 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 			stat.executeUpdate("DROP TABLE if exists sujet;");
 			// Creation des table et verification de la bonne execution des requetes
 			
-		
-			// FIXME ajouter la reference pour le champ idcat
 			if (stat.executeUpdate("CREATE TABLE sujet (idsuj  INTEGER PRIMARY KEY AUTOINCREMENT, nomsuj VARCHAR2(128) UNIQUE);") != 0)
 			{
-				throw new DBException("Erreur de création de la table enregistrement.", 5);
+				throw new DBException("Erreur de création de la table enregistrement.");
 			}
 			if (stat.executeUpdate("CREATE TABLE categorie (idcat  INTEGER PRIMARY KEY AUTOINCREMENT, nomcat VARCHAR2(128) UNIQUE);") != 0)
 			{
-				throw new DBException("Erreur de création de la table categorie.", 5);
+				throw new DBException("Erreur de création de la table categorie.");
 			}
-			// FIXME ajouter la reference pour le champ idcat
 			if (stat.executeUpdate("CREATE TABLE enregistrements (id  INTEGER PRIMARY KEY AUTOINCREMENT, enregistrement BLOB, duree INTEGER, taille INTEGER, nom VARCHAR2(128) UNIQUE, idcat INTEGER, idsuj INTEGER, FOREIGN KEY (idSuj) REFERENCES sujet(idSuj), FOREIGN KEY (idCat) REFERENCES categorie(idCat));") != 0)
 			{
-				throw new DBException("Erreur de création de la table enregistrement.", 5);
+				throw new DBException("Erreur de création de la table enregistrement.");
 			}
-			
 		}
 		catch (SQLException e)
 		{
-			throw new DBException("Erreur lors de la création de la base : " + e.getMessage(), 3);
+			throw new DBException("Erreur lors de la création de la base : " + e.getMessage());
 		} finally
 		{
 			closeRessource(null, stat, null);
@@ -1635,7 +1630,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return false;
+			throw new DBException("La connexion est vide");
 		}
 		PreparedStatement ps = null;
 		boolean retour = false;
@@ -1654,7 +1649,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			throw new DBException(
-					"Problème lors de la vérification de l'existence de la catégorie : " + e.getMessage(), 1);
+					"Problème lors de la vérification de l'existence de la catégorie : " + e.getMessage());
 		} finally
 		{
 			closeRessource(ps, null, rs);
@@ -1674,7 +1669,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return false;
+			throw new DBException("La connexion est vide");
 		}
 		PreparedStatement ps = null;
 		boolean retour = false;
@@ -1693,7 +1688,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			throw new DBException(
-					"Problème lors de la vérification de l'existance de la catégorie : " + e.getMessage(), 1);
+					"Problème lors de la vérification de l'existance de la catégorie : " + e.getMessage());
 		} finally
 		{
 			closeRessource(ps, null, rs);
@@ -1713,7 +1708,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return false;
+			throw new DBException("La connexion est vide");
 		}
 		PreparedStatement ps = null;
 		boolean retour = false;
@@ -1731,7 +1726,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		}
 		catch (SQLException e)
 		{
-			throw new DBException("Problème lors de la vérification de l'existence du sujet : " + e.getMessage(), 1);
+			throw new DBException("Problème lors de la vérification de l'existence du sujet : " + e.getMessage());
 		} finally
 		{
 			closeRessource(ps, null, rs);
@@ -1751,7 +1746,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return false;
+			throw new DBException("La connexion est vide");
 		}
 		PreparedStatement ps = null;
 		boolean retour = false;
@@ -1769,7 +1764,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		}
 		catch (SQLException e)
 		{
-			throw new DBException("Problème lors de la vérification de l'existence du sujet : " + e.getMessage(), 1);
+			throw new DBException("Problème lors de la vérification de l'existence du sujet : " + e.getMessage());
 		} finally
 		{
 			closeRessource(ps, null, rs);
@@ -1789,7 +1784,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return false;
+			throw new DBException("La connexion est vide");
 		}
 
 		PreparedStatement ps = null;
@@ -1808,7 +1803,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		}
 		catch (SQLException e)
 		{
-			throw new DBException("Problème lors de la vérification de l'existence du sujet : " + e.getMessage(), 1);
+			throw new DBException("Problème lors de la vérification de l'existence du sujet : " + e.getMessage());
 		} finally
 		{
 			closeRessource(ps, null, rs);
