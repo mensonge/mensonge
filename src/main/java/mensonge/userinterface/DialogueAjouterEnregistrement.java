@@ -21,7 +21,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import mensonge.core.BaseDeDonnees.BaseDeDonnees;
+import mensonge.core.BaseDeDonnees.BaseDeDonneesModele;
 import mensonge.core.BaseDeDonnees.DBException;
 import mensonge.core.BaseDeDonnees.LigneEnregistrement;
 
@@ -51,9 +51,9 @@ public final class DialogueAjouterEnregistrement extends JDialog implements Acti
 
 	private byte[] enregistrement;
 
-	private BaseDeDonnees bdd;
+	private BaseDeDonneesModele bdd;
 
-	public DialogueAjouterEnregistrement(JFrame parent, String title, boolean modal, BaseDeDonnees bdd,
+	public DialogueAjouterEnregistrement(JFrame parent, String title, boolean modal, BaseDeDonneesModele bdd,
 			byte[] enregistrement)
 	{
 		super(parent, title, modal);

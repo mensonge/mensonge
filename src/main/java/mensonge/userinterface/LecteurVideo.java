@@ -35,7 +35,7 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 
 import mensonge.core.Extraction;
-import mensonge.core.BaseDeDonnees.BaseDeDonnees;
+import mensonge.core.BaseDeDonnees.BaseDeDonneesModele;
 
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
 import uk.co.caprica.vlcj.player.MediaPlayer;
@@ -69,7 +69,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 	private JButton boutonExtract;
 	private long timeMarqueur1 = -1;
 	private long timeMarqueur2 = -1;
-	private BaseDeDonnees bdd;
+	private BaseDeDonneesModele bdd;
 	private MediaPlayer mediaPlayer;
 	private String pathVideo = "";
 	private JFrame parent;
@@ -84,7 +84,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 	 *            Base de données de l'application
 	 * @param parent
 	 */
-	public LecteurVideo(final File fichierVideo, BaseDeDonnees bdd, JFrame parent, Extraction extraction)
+	public LecteurVideo(final File fichierVideo, BaseDeDonneesModele bdd, JFrame parent, Extraction extraction)
 	{
 		this.extraction = extraction;
 		this.parent = parent;

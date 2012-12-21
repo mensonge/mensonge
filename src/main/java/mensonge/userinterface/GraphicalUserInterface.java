@@ -37,7 +37,7 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import mensonge.core.Extraction;
-import mensonge.core.BaseDeDonnees.BaseDeDonnees;
+import mensonge.core.BaseDeDonnees.BaseDeDonneesModele;
 import mensonge.core.BaseDeDonnees.DBException;
 import mensonge.core.BaseDeDonnees.IBaseDeDonnees;
 import mensonge.core.plugins.Plugin;
@@ -71,7 +71,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	private String previousPath;
 
 	private PanneauArbre panneauArbre;
-	private BaseDeDonnees bdd;
+	private BaseDeDonneesModele bdd;
 
 	private JMenuBar menuBar;
 
@@ -286,7 +286,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	 * @param onglet
 	 *            Onglet à ajouter
 	 */
-	protected void ajouterOnglet(File file, BaseDeDonnees bdd, GraphicalUserInterface fenetre, Extraction extraction)
+	protected void ajouterOnglet(File file, BaseDeDonneesModele bdd, GraphicalUserInterface fenetre, Extraction extraction)
 	{
 		
 		if (this.onglets.getComponentCount() <= MAXIMUM_ONGLET)
@@ -372,7 +372,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	{
 		try
 		{
-			bdd = new BaseDeDonnees(fichier);
+			bdd = new BaseDeDonneesModele(fichier);
 			bdd.connexion();// connexion et verification de la validite de la
 							// table
 		}

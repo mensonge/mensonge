@@ -38,7 +38,7 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
-import mensonge.core.BaseDeDonnees.BaseDeDonnees;
+import mensonge.core.BaseDeDonnees.BaseDeDonneesModele;
 import mensonge.core.BaseDeDonnees.DBException;
 import mensonge.core.BaseDeDonnees.LigneEnregistrement;
 import mensonge.core.tools.Cache;
@@ -66,7 +66,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 	private static final int PANEL_INFO_HEIGHT = 100;
 	private static final Dimension PANEL_INFO_DIMENSION = new Dimension(PANEL_INFO_WIDTH, PANEL_INFO_HEIGHT);
 
-	private BaseDeDonnees bdd = null;
+	private BaseDeDonneesModele bdd = null;
 
 	private LecteurAudio lecteurAudio;
 
@@ -83,7 +83,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 	private boolean event = false;
 	private Cache cache;
 
-	public PanneauArbre(BaseDeDonnees bdd, Cache cache)
+	public PanneauArbre(BaseDeDonneesModele bdd, Cache cache)
 	{
 		this.setLayout(new BorderLayout());
 		this.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.GRAY));

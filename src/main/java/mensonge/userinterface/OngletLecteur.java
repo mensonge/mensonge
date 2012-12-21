@@ -7,7 +7,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import mensonge.core.Extraction;
-import mensonge.core.BaseDeDonnees.BaseDeDonnees;
+import mensonge.core.BaseDeDonnees.BaseDeDonneesModele;
 
 /**
  * Classe gérant un onglet dans l'application possédant un lecteur vidéo
@@ -30,7 +30,7 @@ public class OngletLecteur extends JPanel
 	 *            Base de données de l'application
 	 * @param parent
 	 */
-	public OngletLecteur(File fichierVideo, BaseDeDonnees bdd, JFrame parent, Extraction extraction)
+	public OngletLecteur(File fichierVideo, BaseDeDonneesModele bdd, JFrame parent, Extraction extraction)
 	{
 		this.nom = fichierVideo.getName();
 
