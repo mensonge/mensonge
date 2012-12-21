@@ -426,5 +426,13 @@ public class TestBaseDeDonneesModele
 	{
 		db.deconnexion();
 		db = null;
+		File base = new File("LieLabTest.db");
+		
+		base.delete();
+		base = new File("TestExport1");
+		base.delete();
+		base = new File("TestExport2");
+		base.delete();
+		
 	}
 }
