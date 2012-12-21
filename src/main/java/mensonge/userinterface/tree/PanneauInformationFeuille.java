@@ -11,6 +11,11 @@ import java.util.Set;
 
 import javax.swing.JPanel;
 
+/**
+ * Panneau affichant les informations des enregistrements
+ * @author Azazel
+ *
+ */
 public class PanneauInformationFeuille extends JPanel
 {
 	/**
@@ -47,11 +52,19 @@ public class PanneauInformationFeuille extends JPanel
 		}
 	}
 
+	/**
+	 * Permet de recuperer la liste des information
+	 * @return la liste des infos
+	 */
 	public Map<String, String> getListeInfo()
 	{
 		return listeInfo;
 	}
 
+	/**
+	 * Permet de mettre à jour la liste des information
+	 * @param listeInfo la nouvelle liste
+	 */
 	public void setListeInfo(Map<String, String> listeInfo)
 	{
 		this.listeInfo = listeInfo;
