@@ -40,4 +40,15 @@ public class SliderVolumeListener extends MouseAdapter
 			this.setNewVolume(value);
 		}
 	}
+	
+	@Override
+	public void mouseDragged(MouseEvent event)
+	{
+		// On ne peut changer la pos qu'avec le clic gauche
+		if ((event.getModifiers() & MouseEvent.BUTTON1_MASK) != 0)
+		{
+			int value = this.valueForXPosition(event.getX());
+			this.setNewVolume(value);
+		}
+	}
 }

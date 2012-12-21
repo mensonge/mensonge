@@ -131,7 +131,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 		this.setTransferHandler(new HandlerDragLecteur(this, this.bdd, this.extraction));
 
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		this.setResizable(true);
 		this.setTitle("LieLab");
 		this.setLocationRelativeTo(null);
@@ -344,11 +344,6 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		if (event.getID() == WindowEvent.WINDOW_CLOSING)
 		{
 			this.quitter();
-		}
-		else if (event.getID() == WindowEvent.WINDOW_DEACTIVATED)
-		{
-			this.panneauArbre.getMenuClicDroit().setEnabled(false);
-			this.panneauArbre.getMenuClicDroit().setVisible(false);
 		}
 		else
 		{

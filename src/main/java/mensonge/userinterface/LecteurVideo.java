@@ -155,7 +155,9 @@ public class LecteurVideo extends JPanel implements ActionListener
 		this.sliderVolume.setMinimumSize(SLIDER_VOLUME_DIMENSION);
 		this.sliderVolume.setMaximumSize(SLIDER_VOLUME_DIMENSION);
 		this.sliderVolume.setPreferredSize(SLIDER_VOLUME_DIMENSION);
-		this.sliderVolume.addMouseListener(new SliderVolumeListener(this.sliderVolume, this.mediaPlayer));
+		SliderVolumeListener volumeListener = new SliderVolumeListener(this.sliderVolume, this.mediaPlayer);
+		this.sliderVolume.addMouseListener(volumeListener);
+		this.sliderVolume.addMouseMotionListener(volumeListener);
 
 		this.slider = new SliderWithMarkers(JSlider.HORIZONTAL);
 		SliderPositionEventListener sliderListener = new SliderPositionEventListener(this.slider,
@@ -231,7 +233,6 @@ public class LecteurVideo extends JPanel implements ActionListener
 	 */
 	public void close()
 	{
-		this.mediaPlayer.stop();
 		this.mediaPlayer.release();
 		this.vidComp.release();
 	}
