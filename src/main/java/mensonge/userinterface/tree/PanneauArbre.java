@@ -15,7 +15,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -39,7 +38,6 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
 import mensonge.core.BaseDeDonnees.BaseDeDonneesControlleur;
-import mensonge.core.BaseDeDonnees.BaseDeDonneesModele;
 import mensonge.core.BaseDeDonnees.DBException;
 import mensonge.core.BaseDeDonnees.LigneEnregistrement;
 import mensonge.core.tools.Cache;

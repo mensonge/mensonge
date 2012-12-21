@@ -38,7 +38,6 @@ import javax.swing.UnsupportedLookAndFeelException;
 
 import mensonge.core.Extraction;
 import mensonge.core.BaseDeDonnees.BaseDeDonneesControlleur;
-import mensonge.core.BaseDeDonnees.BaseDeDonneesModele;
 import mensonge.core.BaseDeDonnees.DBException;
 import mensonge.core.BaseDeDonnees.IBaseDeDonnees;
 import mensonge.core.plugins.Plugin;

@@ -63,7 +63,7 @@ public class BaseDeDonneesModele extends DataBaseObservable
 	 * @throws SQLException 
 	 * 
 	*/
-	public void connexion() throws ClassNotFoundException, SQLException
+	protected void connexion() throws ClassNotFoundException, SQLException
 	{
 			// Lance la connection
 			Class.forName("org.sqlite.JDBC");
@@ -72,7 +72,7 @@ public class BaseDeDonneesModele extends DataBaseObservable
 			connexion.setAutoCommit(true);
 	}
 
-	public void verifierBase() throws SQLException
+	protected void verifierBase() throws SQLException
 	{
 		Statement stat = null;
 		try

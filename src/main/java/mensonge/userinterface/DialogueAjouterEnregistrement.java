@@ -1,6 +1,5 @@
 package mensonge.userinterface;
 
-import java.awt.Cursor;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -22,7 +21,6 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import mensonge.core.BaseDeDonnees.BaseDeDonneesControlleur;
-import mensonge.core.BaseDeDonnees.BaseDeDonneesModele;
 import mensonge.core.BaseDeDonnees.DBException;
 import mensonge.core.BaseDeDonnees.LigneEnregistrement;
 

@@ -7,9 +7,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import sun.awt.image.BadDepthException;
-
-import mensonge.core.tools.DataBaseObservable;
 import mensonge.core.tools.IObserver;
 
 public class BaseDeDonneesControlleur implements IBaseDeDonnees

@@ -14,7 +14,6 @@ import javax.swing.TransferHandler;
 
 import mensonge.core.Extraction;
 import mensonge.core.BaseDeDonnees.BaseDeDonneesControlleur;
-import mensonge.core.BaseDeDonnees.BaseDeDonneesModele;
 
 public class HandlerDragLecteur extends TransferHandler
 {

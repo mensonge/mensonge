@@ -7,7 +7,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
 import mensonge.core.BaseDeDonnees.BaseDeDonneesControlleur;
-import mensonge.core.BaseDeDonnees.BaseDeDonneesModele;
 import mensonge.core.BaseDeDonnees.DBException;
 
 public class AjouterCategorieListener extends MouseAdapter
