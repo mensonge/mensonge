@@ -37,7 +37,7 @@ import javax.swing.UIManager.LookAndFeelInfo;
 import javax.swing.UnsupportedLookAndFeelException;
 
 import mensonge.core.Extraction;
-import mensonge.core.BaseDeDonnees.BaseDeDonnees;
+import mensonge.core.BaseDeDonnees.BaseDeDonneesControlleur;
 import mensonge.core.BaseDeDonnees.DBException;
 import mensonge.core.BaseDeDonnees.IBaseDeDonnees;
 import mensonge.core.plugins.Plugin;
@@ -71,7 +71,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	private String previousPath;
 
 	private PanneauArbre panneauArbre;
-	private BaseDeDonnees bdd;
+	private BaseDeDonneesControlleur bdd;
 
 	private JMenuBar menuBar;
 
@@ -94,7 +94,17 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		this.extraction = new Extraction();
 		this.cache = new Cache();
 
-		connexionBase("LieLab.db");
+		try
+		{
+			this.bdd = new BaseDeDonneesControlleur("LieLab.db");
+			this.bdd.connexion();
+		}
+		catch (DBException e)
+		{
+			logger.log(Level.SEVERE, "Erreur lors de la connexion: " + e.getLocalizedMessage());
+			GraphicalUserInterface.popupErreur("Erreur lors de la connexion: " + e.getLocalizedMessage());
+		}
+		
 		this.setLayout(new BorderLayout());
 		this.previousPath = null;
 		this.statusBar = new StatusBar();
@@ -286,7 +296,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	 * @param onglet
 	 *            Onglet à ajouter
 	 */
-	protected void ajouterOnglet(File file, BaseDeDonnees bdd, GraphicalUserInterface fenetre, Extraction extraction)
+	protected void ajouterOnglet(File file, BaseDeDonneesControlleur bdd, GraphicalUserInterface fenetre, Extraction extraction)
 	{
 
 		if (this.onglets.getComponentCount() <= MAXIMUM_ONGLET)
@@ -363,38 +373,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		}
 	}
 
-	private void connexionBase(String fichier)
-	{
-		try
-		{
-			bdd = new BaseDeDonnees(fichier);
-			bdd.connexion();// connexion et verification de la validite de la
-							// table
-		}
-		catch (DBException e)
-		{
-			int a = e.getCode();
-			if (a == 2)
-			{
-				try
-				{
-					bdd.createDatabase();
-				}
-				catch (DBException e1)
-				{
-					logger.log(Level.SEVERE, e1.getLocalizedMessage());
-					popupErreur("Erreur lors de la création de la base de données : " + e1.getMessage());
-				}
-			}
-			else
-			{
-				logger.log(Level.SEVERE, e.getLocalizedMessage());
-				popupErreur("Erreur lors de la connexion de la base de données : " + e.getMessage());
-				return;
-			}
-		}
-	}
-
+	
 	/**
 	 * Affiche une popup qui signale une erreur
 	 * 
@@ -522,7 +501,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 				{
 					statusBar.setMessage("Exportation en cours...");
 					previousPathBase = fileChooser.getSelectedFile().getCanonicalPath();
-					bdd.exporter(previousPathBase, -1, 1);
+					bdd.exporterBase(previousPathBase);
 				}
 				catch (DBException e1)
 				{
@@ -600,7 +579,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	 * plugin au clic
 	 * 
 	 */
-	private static class ItemPluginListener implements ActionListener
+	private static class ItemPluginListener implements ActionListener 
 	{
 		private Plugin plugin;
 		private PanneauArbre panneauArbre;

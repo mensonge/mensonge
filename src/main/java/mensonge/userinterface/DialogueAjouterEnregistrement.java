@@ -1,6 +1,5 @@
 package mensonge.userinterface;
 
-import java.awt.Cursor;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -21,7 +20,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import mensonge.core.BaseDeDonnees.BaseDeDonnees;
+import mensonge.core.BaseDeDonnees.BaseDeDonneesControlleur;
 import mensonge.core.BaseDeDonnees.DBException;
 import mensonge.core.BaseDeDonnees.LigneEnregistrement;
 
@@ -51,9 +50,9 @@ public final class DialogueAjouterEnregistrement extends JDialog implements Acti
 
 	private byte[] enregistrement;
 
-	private BaseDeDonnees bdd;
+	private BaseDeDonneesControlleur bdd;
 
-	public DialogueAjouterEnregistrement(JFrame parent, String title, boolean modal, BaseDeDonnees bdd,
+	public DialogueAjouterEnregistrement(JFrame parent, String title, boolean modal, BaseDeDonneesControlleur bdd,
 			byte[] enregistrement)
 	{
 		super(parent, title, modal);

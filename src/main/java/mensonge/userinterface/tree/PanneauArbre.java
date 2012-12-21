@@ -15,7 +15,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -38,7 +37,7 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
-import mensonge.core.BaseDeDonnees.BaseDeDonnees;
+import mensonge.core.BaseDeDonnees.BaseDeDonneesControlleur;
 import mensonge.core.BaseDeDonnees.DBException;
 import mensonge.core.BaseDeDonnees.LigneEnregistrement;
 import mensonge.core.tools.Cache;
@@ -66,7 +65,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 	private static final int PANEL_INFO_HEIGHT = 100;
 	private static final Dimension PANEL_INFO_DIMENSION = new Dimension(PANEL_INFO_WIDTH, PANEL_INFO_HEIGHT);
 
-	private BaseDeDonnees bdd = null;
+	private BaseDeDonneesControlleur bdd = null;
 
 	private LecteurAudio lecteurAudio;
 
@@ -83,7 +82,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 	private boolean event = false;
 	private Cache cache;
 
-	public PanneauArbre(BaseDeDonnees bdd, Cache cache)
+	public PanneauArbre(BaseDeDonneesControlleur bdd, Cache cache)
 	{
 		this.setLayout(new BorderLayout());
 		this.setBorder(BorderFactory.createMatteBorder(0, 1, 0, 0, Color.GRAY));
@@ -727,7 +726,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 					fichier = fileChooser.getSelectedFile().getCanonicalPath();
 					int id = ((Feuille) arbre.getLastSelectedPathComponent()).getId();
 					// afficher gif
-					bdd.exporter(fichier, id, 2);
+					bdd.exporterEnregistrement(fichier, id);
 				}
 				catch (IOException e1)
 				{

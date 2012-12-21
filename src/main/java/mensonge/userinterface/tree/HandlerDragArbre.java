@@ -11,7 +11,7 @@ import javax.swing.JTree;
 import javax.swing.TransferHandler;
 import javax.swing.tree.TreePath;
 
-import mensonge.core.BaseDeDonnees.BaseDeDonnees;
+import mensonge.core.BaseDeDonnees.BaseDeDonneesControlleur;
 import mensonge.core.BaseDeDonnees.DBException;
 import mensonge.userinterface.Feuille;
 
@@ -25,7 +25,7 @@ public class HandlerDragArbre extends TransferHandler
 {
 	private static final long serialVersionUID = 1L;
 	private static Logger logger = Logger.getLogger("drag Arbre");
-	private BaseDeDonnees bdd;
+	private BaseDeDonneesControlleur bdd;
 	private PanneauArbre panneauArbre;
 
 	/**
@@ -36,7 +36,7 @@ public class HandlerDragArbre extends TransferHandler
 	 * @param bdd
 	 *            la base pour mettre à jour
 	 */
-	public HandlerDragArbre(PanneauArbre panneauArbre, BaseDeDonnees bdd)
+	public HandlerDragArbre(PanneauArbre panneauArbre, BaseDeDonneesControlleur bdd)
 	{
 		this.bdd = bdd;
 		this.panneauArbre = panneauArbre;

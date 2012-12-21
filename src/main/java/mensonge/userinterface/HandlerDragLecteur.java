@@ -13,17 +13,17 @@ import javax.swing.JComponent;
 import javax.swing.TransferHandler;
 
 import mensonge.core.Extraction;
-import mensonge.core.BaseDeDonnees.BaseDeDonnees;
+import mensonge.core.BaseDeDonnees.BaseDeDonneesControlleur;
 
 public class HandlerDragLecteur extends TransferHandler
 {
 	private static final long serialVersionUID = 1L;
 	private static final Logger LOGGER = Logger.getLogger("dragLecteur");
 	private GraphicalUserInterface fenetre;
-	private BaseDeDonnees bdd;
+	private BaseDeDonneesControlleur bdd;
 	private Extraction extraction;
 
-	public HandlerDragLecteur(GraphicalUserInterface fenetre, BaseDeDonnees bdd, Extraction extraction)
+	public HandlerDragLecteur(GraphicalUserInterface fenetre, BaseDeDonneesControlleur bdd, Extraction extraction)
 	{
 		this.extraction = extraction;
 		this.bdd = bdd;
