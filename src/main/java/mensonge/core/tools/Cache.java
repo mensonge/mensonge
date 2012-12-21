@@ -78,9 +78,16 @@ public final class Cache extends CacheObservable
 		try
 		{
 			File newFile = new File(cacheDirectory, fileName);
-			if (!newFile.exists())
+			if (!newFile.createNewFile())
 			{
-				newFile.createNewFile();
+				if(newFile.delete())
+				{
+					newFile.createNewFile();
+				}
+				else
+				{
+					throw new IOException("Impossible de supprimer l'ancien fichier du cache");
+				}
 			}
 			FileOutputStream fos = new FileOutputStream(newFile);
 			fos.write(content);

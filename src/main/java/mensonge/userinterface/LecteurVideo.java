@@ -339,12 +339,12 @@ public class LecteurVideo extends JPanel implements ActionListener
 			if ((e.getModifiers() & MouseEvent.BUTTON2_MASK) != 0)
 			{
 				timeMarqueur1 = valueForXPosition(e.getX());
-				slider.setMarkerOneAt((float) (e.getX() - 5) / (float) w);
+				slider.setMarkerOneAt((float) (e.getX() - SliderWithMarkers.OFFSET_MARKER) / (float) w);
 			}
 			else if ((e.getModifiers() & MouseEvent.BUTTON3_MASK) != 0)
 			{
 				timeMarqueur2 = valueForXPosition(e.getX());
-				slider.setMarkerTwoAt((float) (e.getX() - 5) / (float) w);
+				slider.setMarkerTwoAt((float) (e.getX() - SliderWithMarkers.OFFSET_MARKER) / (float) w);
 			}
 		}
 
