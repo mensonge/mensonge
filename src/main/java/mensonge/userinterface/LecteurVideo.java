@@ -15,7 +15,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.MouseWheelEvent;
 
 import javax.swing.plaf.basic.BasicSliderUI;
 import javax.swing.AbstractAction;
@@ -267,6 +266,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 		}
 		else if (event.getSource() == boutonExtract)
 		{
+			// On test si il a bien set les 2 marquers et qu'ils ne soient pas placés au même endroit
 			if (timeMarqueur1 != -1 && timeMarqueur2 != -1 && (timeMarqueur1 - timeMarqueur2) != 0)
 			{
 				final String msgErreur = "Extraction : ";

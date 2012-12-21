@@ -4,6 +4,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JSlider;
+import javax.swing.SwingUtilities;
 
 import mensonge.core.tools.Utils;
 
@@ -58,11 +59,20 @@ public class PlayerEventListener extends MediaPlayerEventAdapter
 	}
 
 	@Override
-	public void stopped(MediaPlayer arg0)
+	public void stopped(final MediaPlayer mediaPlayer)
 	{
 		boutonLecture.setIcon(IMG_ICON_LECTURE);
 		slider.setValue(0);
 		labelDureeActuelle.setText("00:00:00");
+		SwingUtilities.invokeLater(new Runnable()
+		{
+			@Override
+			public void run()
+			{
+				mediaPlayer.start();
+				mediaPlayer.pause();				
+			}
+		});
 	}
 
 	@Override
