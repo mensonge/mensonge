@@ -1377,15 +1377,15 @@ public class BaseDeDonneesModele extends DataBaseObservable
 			
 			if (stat.executeUpdate("CREATE TABLE sujet (idsuj  INTEGER PRIMARY KEY AUTOINCREMENT, nomsuj VARCHAR2(128) UNIQUE);") != 0)
 			{
-				//throw new DBException("Erreur de création de la table enregistrement.");
+				throw new DBException("Erreur de création de la table enregistrement.");
 			}
 			if (stat.executeUpdate("CREATE TABLE categorie (idcat  INTEGER PRIMARY KEY AUTOINCREMENT, nomcat VARCHAR2(128) UNIQUE);") != 0)
 			{
-				//throw new DBException("Erreur de création de la table categorie.");
+				throw new DBException("Erreur de création de la table categorie.");
 			}
 			if (stat.executeUpdate("CREATE TABLE enregistrements (id  INTEGER PRIMARY KEY AUTOINCREMENT, enregistrement BLOB, duree INTEGER, taille INTEGER, nom VARCHAR2(128) UNIQUE, idcat INTEGER, idsuj INTEGER, FOREIGN KEY (idSuj) REFERENCES sujet(idSuj), FOREIGN KEY (idCat) REFERENCES categorie(idCat));") != 0)
 			{
-				//throw new DBException("Erreur de création de la table enregistrement.");
+				throw new DBException("Erreur de création de la table enregistrement.");
 			}
 		}
 		catch (SQLException e)

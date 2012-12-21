@@ -5,12 +5,14 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.Formatter;
 import java.util.List;
 
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -122,12 +124,13 @@ public class TestBaseDeDonneesModele
 		File fichier = new File("LieLabTest.db");
 		fichier.createNewFile();
 		db = new BaseDeDonneesModele("LieLabTest.db");
-		db.connexion();
+		
 	}
 
 	@Before
-	public void beforeTest() throws SQLException, DBException
+	public void beforeTest() throws SQLException, DBException, IOException, ClassNotFoundException
 	{
+		db.connexion();
 		db.createDatabase();
 		db.ajouterCategorie("Poney");
 		db.ajouterCategorie("Flamment");
@@ -140,6 +143,12 @@ public class TestBaseDeDonneesModele
 		db.ajouterEnregistrement("Esperan", 21, 1, "love".getBytes(), 1);
 		db.ajouterEnregistrement("Gracia", 21, 1, "mort".getBytes(), 1);
 		db.ajouterEnregistrement("Chuck", 21, 1, "naissance".getBytes(), 1);
+	}
+	
+	@After
+	public void afterTest() throws SQLException, DBException, IOException, ClassNotFoundException
+	{
+		db.deconnexion();
 	}
 	@Test
 	public void testAjoutCategorie() throws DBException, SQLException
@@ -424,10 +433,8 @@ public class TestBaseDeDonneesModele
 	@AfterClass
 	public static void fin() throws SQLException
 	{
-		db.deconnexion();
 		db = null;
 		File base = new File("LieLabTest.db");
-		
 		base.delete();
 		base = new File("TestExport1");
 		base.delete();
