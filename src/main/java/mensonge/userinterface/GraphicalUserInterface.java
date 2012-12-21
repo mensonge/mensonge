@@ -479,10 +479,10 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	{
 		private GraphicalUserInterface fenetre;
 		private String previousPathBase;
-		private BaseDeDonnees bdd;
+		private BaseDeDonneesControlleur bdd;
 		private StatusBar statusBar;
 
-		public ExporterBaseListener(GraphicalUserInterface g, StatusBar statusBar, BaseDeDonnees bdd)
+		public ExporterBaseListener(GraphicalUserInterface g, StatusBar statusBar, BaseDeDonneesControlleur bdd)
 		{
 			this.bdd = bdd;
 			this.statusBar = statusBar;
@@ -530,9 +530,9 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		private String previousPathBase;
 		private Locker locker;
 		private StatusBar statusBar;
-		private BaseDeDonnees bdd;
+		private BaseDeDonneesControlleur bdd;
 
-		public ImporterBaseListener(GraphicalUserInterface g, Locker locker, StatusBar statusBar, BaseDeDonnees bdd)
+		public ImporterBaseListener(GraphicalUserInterface g, Locker locker, StatusBar statusBar, BaseDeDonneesControlleur bdd)
 		{
 			this.bdd = bdd;
 			this.locker = locker;
