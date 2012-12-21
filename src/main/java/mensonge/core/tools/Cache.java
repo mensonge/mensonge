@@ -80,7 +80,7 @@ public final class Cache extends CacheObservable
 			File newFile = new File(cacheDirectory, fileName);
 			if (!newFile.createNewFile())
 			{
-				if(newFile.delete())
+				if (newFile.delete())
 				{
 					newFile.createNewFile();
 				}
@@ -149,6 +149,10 @@ public final class Cache extends CacheObservable
 		return length;
 	}
 
+	/**
+	 * Génère la notification de mise à jour du cache. Méthode utile pour le lancement de l'application pour connaître
+	 * la taille initiale du cache dans la barre de status
+	 */
 	public void fireUpdateCache()
 	{
 		notifyUpdateCache(getSize());

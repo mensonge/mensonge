@@ -11,12 +11,27 @@ import mensonge.core.tools.Utils;
 
 import uk.co.caprica.vlcj.player.MediaPlayer;
 
+/**
+ * Listener pour les sliders de position des lecteurs
+ * 
+ */
 public class SliderPositionEventListener extends MouseAdapter
 {
 	private JSlider slider;
 	private MediaPlayer mediaPlayer;
 	private JLabel labelDureeActuelle;
 
+	/**
+	 * Créé un nouveau listener pour le slider permettant de changer le label de la position actuelle et le changement
+	 * de position de la vidéo
+	 * 
+	 * @param slider
+	 *            Slider à écouter
+	 * @param labelDureeActuelle
+	 *            Label de la position actuelle sur la vidéo en durée hh:mm:ss
+	 * @param mediaPlayer
+	 *            MediaPlayer de ma vidéo
+	 */
 	public SliderPositionEventListener(JSlider slider, JLabel labelDureeActuelle, MediaPlayer mediaPlayer)
 	{
 		this.labelDureeActuelle = labelDureeActuelle;
@@ -24,6 +39,13 @@ public class SliderPositionEventListener extends MouseAdapter
 		this.mediaPlayer = mediaPlayer;
 	}
 
+	/**
+	 * Récupère la valeur à l'abscisse donnée
+	 * 
+	 * @param x
+	 *            Abscisse sur le slider
+	 * @return La valeur à l'abscisse donnée
+	 */
 	private int valueForXPosition(int x)
 	{
 		return ((BasicSliderUI) slider.getUI()).valueForXPosition(x);
@@ -38,7 +60,7 @@ public class SliderPositionEventListener extends MouseAdapter
 			this.setNewTime(event.getX());
 		}
 	}
-	
+
 	@Override
 	public void mouseDragged(MouseEvent event)
 	{
@@ -48,7 +70,13 @@ public class SliderPositionEventListener extends MouseAdapter
 			this.setNewTime(event.getX());
 		}
 	}
-	
+
+	/**
+	 * Défini le nouveau temps où l'on se trouve dans la vidéo en fonction de l'endroit cliqué
+	 * 
+	 * @param x
+	 *            Abscisse sur le slider où l'utilisateur à cliqué
+	 */
 	private void setNewTime(int x)
 	{
 		int value = this.valueForXPosition(x);

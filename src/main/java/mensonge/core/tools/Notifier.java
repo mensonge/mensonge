@@ -8,14 +8,19 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+/**
+ * Classe gérant la notification des observeurs d'un observable
+ */
 public final class Notifier
 {
 
 	private static final Map<String, Method> METHODS = new HashMap<String, Method>();
 
+	/**
+	 * Permet d'empêcher l'instanciation de cette classe Utilitaire
+	 */
 	private Notifier()
 	{
-		// Permet d'empêcher l'instanciation de cette classe Utilitaire
 	}
 
 	static
@@ -34,6 +39,18 @@ public final class Notifier
 		}
 	}
 
+	/**
+	 * Notifie les observers en invoquant la méthode
+	 * 
+	 * @param observers
+	 *            Liste d'observeurs
+	 * @param name
+	 *            Nom de la méthode à invoquer
+	 * @param args
+	 *            Arguments à donner à la méthode invoquée
+	 * @throws IllegalAccessException
+	 * @throws InvocationTargetException
+	 */
 	public static void call(Set<IObserver> observers, String name, Object... args) throws IllegalAccessException,
 			InvocationTargetException
 	{

@@ -62,7 +62,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	private static final long serialVersionUID = 5373991180139317820L;
 	private static final int MAXIMUM_ONGLET = 20;
 	private static Logger logger = Logger.getLogger("gui");
-	
+
 	private JTabbedPane onglets;
 
 	private JMenuItem aideAPropos;
@@ -112,9 +112,9 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		 * Conteneur
 		 */
 		this.onglets = new JTabbedPane();
-		PanelWithBackground panel = new PanelWithBackground(new BorderLayout());
+		PanelWithBackground panel = new PanelWithBackground(new BorderLayout(), "images/LieLabLogo.png");
 		panel.add(onglets, BorderLayout.CENTER);
-		
+
 		this.add(panel, BorderLayout.CENTER);
 		this.add(panneauArbre, BorderLayout.EAST);
 
@@ -288,7 +288,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	 */
 	protected void ajouterOnglet(File file, BaseDeDonnees bdd, GraphicalUserInterface fenetre, Extraction extraction)
 	{
-		
+
 		if (this.onglets.getComponentCount() <= MAXIMUM_ONGLET)
 		{
 			OngletLecteur onglet = new OngletLecteur(file, bdd, fenetre, extraction);

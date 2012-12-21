@@ -30,14 +30,14 @@ public class SliderWithMarkers extends JSlider
 
 	public void setMarkerOneAt(float position)
 	{
-		position1 = Math.max(position,0);
+		position1 = Math.max(position, 0);
 		this.repaint();
 
 	}
 
 	public void setMarkerTwoAt(float position)
 	{
-		position2 = Math.max(position,0);
+		position2 = Math.max(position, 0);
 		this.repaint();
 	}
 
@@ -51,14 +51,14 @@ public class SliderWithMarkers extends JSlider
 			int[] polygoneX1 = new int[NB_SIDES_POLYGON];
 			int[] polygoneY1 = new int[NB_SIDES_POLYGON];
 			int pos = Math.round(position1 * sliderWidth);
-			if (pos + OFFSET_MARKER*2 > sliderWidth)
+			if (pos + OFFSET_MARKER * 2 > sliderWidth)
 			{
-				pos = sliderWidth  - OFFSET_MARKER*2;
+				pos = sliderWidth - OFFSET_MARKER * 2;
 			}
 
 			polygoneX1[0] = pos;
 			polygoneX1[1] = pos + OFFSET_MARKER;
-			polygoneX1[2] = pos + OFFSET_MARKER*2;
+			polygoneX1[2] = pos + OFFSET_MARKER * 2;
 			polygoneY1[0] = sliderHeight;
 			polygoneY1[1] = sliderHeight - 7;
 			polygoneY1[2] = sliderHeight;
@@ -72,14 +72,14 @@ public class SliderWithMarkers extends JSlider
 			int[] polygoneX2 = new int[NB_SIDES_POLYGON];
 			int[] polygoneY2 = new int[NB_SIDES_POLYGON];
 			int pos = Math.round(position2 * sliderWidth);
-			if (pos + OFFSET_MARKER*2 > sliderWidth)
+			if (pos + OFFSET_MARKER * 2 > sliderWidth)
 			{
-				pos = sliderWidth  - OFFSET_MARKER*2;
+				pos = sliderWidth - OFFSET_MARKER * 2;
 			}
 
 			polygoneX2[0] = pos;
 			polygoneX2[1] = pos + OFFSET_MARKER;
-			polygoneX2[2] = pos + OFFSET_MARKER*2;
+			polygoneX2[2] = pos + OFFSET_MARKER * 2;
 			polygoneY2[0] = 0;
 			polygoneY2[1] = 7;
 			polygoneY2[2] = 0;

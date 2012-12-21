@@ -26,7 +26,7 @@ import uk.co.caprica.vlcj.player.MediaPlayerFactory;
 
 /**
  * Classe gérant un lecteur audio
- *
+ * 
  */
 public class LecteurAudio extends JPanel implements ActionListener
 {
@@ -37,7 +37,7 @@ public class LecteurAudio extends JPanel implements ActionListener
 	private static final int SLIDER_VOLUME_HEIGHT = 30;
 	private static final Dimension SLIDER_VOLUME_DIMENSION = new Dimension(SLIDER_VOLUME_WIDTH, SLIDER_VOLUME_HEIGHT);
 	private static final int PANEL_MARGIN = 5;
-	
+
 	private JButton boutonStop;
 
 	private JButton boutonLecture;
@@ -108,9 +108,8 @@ public class LecteurAudio extends JPanel implements ActionListener
 		sliderVolume.setMaximumSize(SLIDER_VOLUME_DIMENSION);
 		sliderVolume.setPreferredSize(SLIDER_VOLUME_DIMENSION);
 		SliderVolumeListener volumeListener = new SliderVolumeListener(sliderVolume, this.mediaPlayer);
-		sliderVolume.addMouseListener(volumeListener);	
+		sliderVolume.addMouseListener(volumeListener);
 		sliderVolume.addMouseMotionListener(volumeListener);
-
 
 		SliderPositionEventListener sliderListener = new SliderPositionEventListener(this.slider,
 				this.labelDureeActuelle, this.mediaPlayer);
@@ -175,7 +174,9 @@ public class LecteurAudio extends JPanel implements ActionListener
 
 	/**
 	 * Lance la lecture d'un fichier audio
-	 * @param filePath Chemin du fichier à lire
+	 * 
+	 * @param filePath
+	 *            Chemin du fichier à lire
 	 */
 	public void play(final String filePath)
 	{
@@ -190,7 +191,9 @@ public class LecteurAudio extends JPanel implements ActionListener
 
 	/**
 	 * Charge un fichier audio
-	 * @param filePath Chemin du fichier audio
+	 * 
+	 * @param filePath
+	 *            Chemin du fichier audio
 	 */
 	public void load(final String filePath)
 	{

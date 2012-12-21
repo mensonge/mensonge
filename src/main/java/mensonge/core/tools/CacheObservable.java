@@ -1,5 +1,9 @@
 package mensonge.core.tools;
 
+/**
+ * Permet à un cache d'être observable quand il est mis à jour
+ * 
+ */
 public class CacheObservable extends BetterObservable implements ActionMessageObservable
 {
 	protected void notifyUpdateCache(long newCacheSize)

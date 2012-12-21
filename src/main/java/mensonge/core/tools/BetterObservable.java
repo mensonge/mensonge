@@ -7,12 +7,14 @@ import java.util.WeakHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Permet à une classe d'être observable et donc de notifier ses différents observeurs
+ */
 public class BetterObservable implements Observable
 {
 	private static Logger logger = Logger.getLogger("Notifier");
 	private Set<IObserver> observers = Collections.newSetFromMap(new WeakHashMap<IObserver, Boolean>());
 
-	
 	@Override
 	public void addObserver(IObserver o)
 	{

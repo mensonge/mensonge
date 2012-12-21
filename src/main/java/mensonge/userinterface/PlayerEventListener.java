@@ -11,6 +11,10 @@ import uk.co.caprica.vlcj.binding.internal.libvlc_media_t;
 import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter;
 
+/**
+ * Listener pour les évènnements du lecteur
+ * 
+ */
 public class PlayerEventListener extends MediaPlayerEventAdapter
 {
 	public static final ImageIcon IMG_ICON_PAUSE = new ImageIcon("images/Pause.png");
@@ -22,6 +26,18 @@ public class PlayerEventListener extends MediaPlayerEventAdapter
 	private JLabel labelDureeActuelle;
 	private JLabel labelDureeMax;
 
+	/**
+	 * Défini un nouveau listener pour le lecteur
+	 * 
+	 * @param slider
+	 *            Slider de position du lecteur
+	 * @param boutonLecture
+	 *            Bouton de lecture du lecteur
+	 * @param labelDureeMax
+	 *            Label de durée max du lecteur
+	 * @param labelDureeActuelle
+	 *            Label de la position actuelle du lecteur
+	 */
 	public PlayerEventListener(JSlider slider, JButton boutonLecture, JLabel labelDureeMax, JLabel labelDureeActuelle)
 	{
 		this.slider = slider;
@@ -69,7 +85,7 @@ public class PlayerEventListener extends MediaPlayerEventAdapter
 			public void run()
 			{
 				mediaPlayer.start();
-				mediaPlayer.pause();				
+				mediaPlayer.pause();
 			}
 		}).start();
 	}
