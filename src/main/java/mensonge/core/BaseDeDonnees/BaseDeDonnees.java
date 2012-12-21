@@ -203,7 +203,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return;
+			throw new DBException("La connexion est vide");
 		}
 		if (type == EXPORTER_BASE)// Exporter la base vers un nouveau fichier
 		{
@@ -296,7 +296,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return null;
+			throw new DBException("La connexion est vide");
 		}
 		Statement stat = null;
 		ResultSet rs = null;
@@ -344,7 +344,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return null;
+			throw new DBException("La connexion est vide");
 		}
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -387,7 +387,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return null;
+			throw new DBException("La connexion est vide");
 		}
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -432,7 +432,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return -1;
+			throw new DBException("La connexion est vide");
 		}
 		Statement stat = null;
 		ResultSet rs = null;
@@ -463,7 +463,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return;
+			throw new DBException("La connexion est vide");
 		}
 		notifyInProgressAction("Compactage de la base de données...");
 		// hack foireux pour poouvoir recevoir l'event de l'action qui n'est pas recu sinon la méthode est bloquante...
@@ -510,7 +510,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return;
+			throw new DBException("La connexion est vide");
 		}
 		if (!this.categorieExiste(idCat))// On verifie si la categorie existe
 		{
@@ -567,7 +567,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return;
+			throw new DBException("La connexion est vide");
 		}
 		notifyInProgressAction("Suppresion de l'enregistrement...");
 		PreparedStatement ps = null;
@@ -612,7 +612,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return;
+			throw new DBException("La connexion est vide");
 		}
 		if (!this.categorieExiste(idCat))// On test si la categorie est existante
 		{
@@ -681,7 +681,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return;
+			throw new DBException("La connexion est vide");
 		}
 		if (!this.categorieExiste(idCat))// On test si la categorie existe
 		{
@@ -740,7 +740,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return;
+			throw new DBException("La connexion est vide");
 		}
 		if (this.enregistrementExist(nom))
 		{
@@ -784,7 +784,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return;
+			throw new DBException("La connexion est vide");
 		}
 		notifyInProgressAction("Changement de la durée de l'enregistrement...");
 		PreparedStatement ps = null;
@@ -824,7 +824,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return;
+			throw new DBException("La connexion est vide");
 		}
 		notifyInProgressAction("Changement de la taille de l'enregistrement...");
 		PreparedStatement ps = null;
@@ -864,7 +864,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return;
+			throw new DBException("La connexion est vide");
 		}
 		if (!this.categorieExiste(idCat))// test l'existance de la categorie
 		{
@@ -908,7 +908,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return;
+			throw new DBException("La connexion est vide");
 		}
 		if (!this.categorieExiste(nomCat))// test l'existance de la categorie
 		{
@@ -957,7 +957,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return;
+			throw new DBException("La connexion est vide");
 		}
 		if (!this.sujetExiste(idSuj))// test l'existance de la categorie
 		{
@@ -1001,7 +1001,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return;
+			throw new DBException("La connexion est vide");
 		}
 		if (!this.sujetExiste(nomSuj))// test l'existance de la categorie
 		{
@@ -1050,7 +1050,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		byte[] retour = null;
 		if (connexion == null)
 		{
-			return null;
+			throw new DBException("La connexion est vide");
 		}
 		notifyInProgressAction("Récupération de l'enregistrement depuis la base de données...");
 		PreparedStatement ps = null;
@@ -1083,7 +1083,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		String retour = null;
 		if (connexion == null)
 		{
-			return null;
+			throw new DBException("La connexion est vide");
 		}
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -1119,7 +1119,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return;
+			throw new DBException("La connexion est vide");
 		}
 		if (this.categorieExiste(nom))
 		{
@@ -1160,7 +1160,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return null;
+			throw new DBException("La connexion est vide");
 		}
 		Statement stat = null;
 		ResultSet rs = null;
@@ -1196,7 +1196,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return;
+			throw new DBException("La connexion est vide");
 		}
 		notifyInProgressAction("Suppresion de la catégorie...");
 		PreparedStatement ps = null;
@@ -1234,7 +1234,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return;
+			throw new DBException("La connexion est vide");
 		}
 		if (this.categorieExiste(nom))
 		{
@@ -1279,7 +1279,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		String retour;
 		if (connexion == null)
 		{
-			return null;
+			throw new DBException("La connexion est vide");
 		}
 		if (!this.categorieExiste(idCat))// test l'existance de la categorie
 		{
@@ -1322,7 +1322,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		int retour;
 		if (connexion == null)
 		{
-			return -1;
+			throw new DBException("La connexion est vide");
 		}
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -1356,7 +1356,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return;
+			throw new DBException("La connexion est vide");
 		}
 		if (this.sujetExiste(nom))
 		{
@@ -1398,7 +1398,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return;
+			throw new DBException("La connexion est vide");
 		}
 		notifyInProgressAction("Suppression du sujet...");
 		PreparedStatement ps = null;
@@ -1434,7 +1434,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return null;
+			throw new DBException("La connexion est vide");
 		}
 		Statement stat = null;
 		ResultSet rs = null;
@@ -1471,7 +1471,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return;
+			throw new DBException("La connexion est vide");
 		}
 		if (this.sujetExiste(nom))
 		{
@@ -1518,7 +1518,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		ResultSet rs = null;
 		if (connexion == null)
 		{
-			return null;
+			throw new DBException("La connexion est vide");
 		}
 		if (!this.categorieExiste(idSuj))// test l'existance de la categorie
 		{
@@ -1559,7 +1559,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 		ResultSet rs = null;
 		if (connexion == null)
 		{
-			return -1;
+			throw new DBException("La connexion est vide");
 		}
 		try
 		{
@@ -1630,7 +1630,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return false;
+			throw new DBException("La connexion est vide");
 		}
 		PreparedStatement ps = null;
 		boolean retour = false;
@@ -1669,7 +1669,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return false;
+			throw new DBException("La connexion est vide");
 		}
 		PreparedStatement ps = null;
 		boolean retour = false;
@@ -1708,7 +1708,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return false;
+			throw new DBException("La connexion est vide");
 		}
 		PreparedStatement ps = null;
 		boolean retour = false;
@@ -1746,7 +1746,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return false;
+			throw new DBException("La connexion est vide");
 		}
 		PreparedStatement ps = null;
 		boolean retour = false;
@@ -1784,7 +1784,7 @@ public class BaseDeDonnees extends DataBaseObservable implements IBaseDeDonnees
 	{
 		if (connexion == null)
 		{
-			return false;
+			throw new DBException("La connexion est vide");
 		}
 
 		PreparedStatement ps = null;
