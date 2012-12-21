@@ -25,7 +25,7 @@ import mensonge.core.tools.DataBaseObservable;
  * @author Azazel
  * 
  */
-public class BaseDeDonneesModele extends DataBaseObservable implements IBaseDeDonnees
+public class BaseDeDonneesModele extends DataBaseObservable
 {
 
 	public static final int EXPORTER_ENREGISTREMENT = 2;
@@ -1542,13 +1542,8 @@ public class BaseDeDonneesModele extends DataBaseObservable implements IBaseDeDo
 	 * @return true si le nom existe
 	 * @throws DBException
 	 */
-	protected boolean enregistrementExist(final String nom) throws DBException
+	protected boolean enregistrementExist(final String nom) throws SQLException
 	{
-		if (connexion == null)
-		{
-			throw new DBException("La connexion est vide");
-		}
-
 		PreparedStatement ps = null;
 		boolean retour = false;
 		ResultSet rs = null;
@@ -1565,7 +1560,7 @@ public class BaseDeDonneesModele extends DataBaseObservable implements IBaseDeDo
 		}
 		catch (SQLException e)
 		{
-			throw new DBException("Problème lors de la vérification de l'existence du sujet : " + e.getMessage());
+			throw e;
 		} finally
 		{
 			closeRessource(ps, null, rs);

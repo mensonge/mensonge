@@ -4,6 +4,6 @@ import java.sql.SQLException;
 
 public interface IBaseDeDonnees
 {
-	void modifierEnregistrement(int id, String nom, int duree, byte[] enregistrement, int idCat, int idSuj) throws SQLException;
-	String getNomEnregistrement(int id) throws SQLException;
+	void modifierEnregistrement(int id, String nom, int duree, byte[] enregistrement, int idCat, int idSuj) throws DBException;
+	String getNomEnregistrement(int id) throws DBException;
 }

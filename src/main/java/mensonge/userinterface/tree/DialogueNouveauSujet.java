@@ -13,6 +13,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import mensonge.core.BaseDeDonnees.BaseDeDonneesControlleur;
 import mensonge.core.BaseDeDonnees.BaseDeDonneesModele;
 import mensonge.core.BaseDeDonnees.DBException;
 import mensonge.core.BaseDeDonnees.LigneEnregistrement;
@@ -29,7 +30,7 @@ public final class DialogueNouveauSujet extends JDialog
 
 	private Object[] retour = new Object[1];
 
-	public DialogueNouveauSujet(JFrame parent, String title, boolean modal, BaseDeDonneesModele bdd)
+	public DialogueNouveauSujet(JFrame parent, String title, boolean modal, BaseDeDonneesControlleur bdd)
 	{
 		super(parent, title, modal);
 		JPanel pan = new JPanel(), j1 = new JPanel(), bouton = new JPanel();

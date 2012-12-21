@@ -6,21 +6,22 @@ import java.awt.event.MouseEvent;
 import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
+import mensonge.core.BaseDeDonnees.BaseDeDonneesControlleur;
 import mensonge.core.BaseDeDonnees.BaseDeDonneesModele;
 import mensonge.core.BaseDeDonnees.DBException;
 
 public class AjouterSujetListener extends MouseAdapter
 {
 	private JPopupMenu menuClicDroit;
-	private BaseDeDonneesModele bdd;
+	private BaseDeDonneesControlleur bdd;
 
-	public AjouterSujetListener(JPopupMenu menuClicDroit, BaseDeDonneesModele bdd)
+	public AjouterSujetListener(JPopupMenu menuClicDroit, BaseDeDonneesControlleur bdd)
 	{
 		this.bdd = bdd;
 		this.menuClicDroit = menuClicDroit;
 	}
 
-	public AjouterSujetListener(BaseDeDonneesModele bdd)
+	public AjouterSujetListener(BaseDeDonneesControlleur bdd)
 	{
 		this.bdd = bdd;
 	}

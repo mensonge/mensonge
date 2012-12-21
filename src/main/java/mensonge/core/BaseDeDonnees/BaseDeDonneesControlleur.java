@@ -10,8 +10,9 @@ import java.util.logging.Logger;
 import sun.awt.image.BadDepthException;
 
 import mensonge.core.tools.DataBaseObservable;
+import mensonge.core.tools.IObserver;
 
-public class BaseDeDonneesControlleur
+public class BaseDeDonneesControlleur implements IBaseDeDonnees
 {
 	/**
 	 * Le logger
@@ -23,11 +24,19 @@ public class BaseDeDonneesControlleur
 	public BaseDeDonneesControlleur(String cheminFichier) throws DBException
 	{
 		File fichier = new File(cheminFichier);
+		
+		this.bdd = new BaseDeDonneesModele(cheminFichier);
 		if( ! fichier.exists())
 		{
-			throw new DBException("Le fichier " + cheminFichier + " n'existe pas");
+			try
+			{
+				this.bdd.createDatabase();
+			}
+			catch (SQLException e)
+			{
+				throw new DBException("Erreur lors de la creation de la base", e);
+			}
 		}
-		this.bdd = new BaseDeDonneesModele(cheminFichier);
 	}
 	
 	private void baseDisponible() throws DBException
@@ -50,11 +59,11 @@ public class BaseDeDonneesControlleur
 		}
 		catch (SQLException e)
 		{
-			throw new DBException("Erreur lors de l'initialisation de la connexion : " + e.getMessage(), 1);
+			throw new DBException("Erreur lors de l'initialisation de la connexion : " + e.getMessage());
 		}
 		catch (ClassNotFoundException e)
 		{
-			throw new DBException("Impossible de trouver le pilote pour la base de données : " + e.getMessage(), 1);
+			throw new DBException("Impossible de trouver le pilote pour la base de données : " + e.getMessage());
 		}
 		try
 		{
@@ -265,6 +274,7 @@ public class BaseDeDonneesControlleur
 			throw new DBException("Erreur lors de la modification d'un enregistrements: " + e.getMessage());
 		}
 	}
+	
 	
 	public void modifierEnregistrement(final int id, final String nom, final int duree, final int taille,
 			final int idCat, final int idSuj) throws DBException
@@ -599,7 +609,7 @@ public class BaseDeDonneesControlleur
 		}
 	}
 	
-	protected String getCategorie(final int idCat) throws DBException
+	public String getCategorie(final int idCat) throws DBException
 	{
 		this.baseDisponible();
 		String retour = null;
@@ -625,7 +635,7 @@ public class BaseDeDonneesControlleur
 		return retour;
 	}
 	
-	protected int getCategorie(final String nomCat) throws DBException
+	public int getCategorie(final String nomCat) throws DBException
 	{
 		this.baseDisponible();
 		int retour = -1;
@@ -944,4 +954,33 @@ public class BaseDeDonneesControlleur
 			throw new DBException("Erreur lors de l'exportation de l'enregistrement: " + e.getLocalizedMessage());
 		}
 	}
+	
+	public void addObserver(IObserver o)
+	{
+		this.bdd.addObserver(o);
+	}
+	
+	 public void removeObserver(IObserver o)
+	 {
+		 this.bdd.removeObserver(o);
+	 }
+	 
+	 public boolean enregistrementExist(final String nom) throws DBException
+	 {
+		 this.baseDisponible();
+		 boolean retour = false;
+		 
+		 try
+		{
+			retour = this.bdd.enregistrementExist(nom);
+		}
+		catch (SQLException e)
+		{
+			BaseDeDonneesControlleur.logger.log(Level.WARNING, "Erreur lors du test d'existance: " + e.getLocalizedMessage());
+			throw new DBException("Erreur lors du test d'existance", e);
+		}
+		 
+		 return retour;
+	 }
+	 
 }
