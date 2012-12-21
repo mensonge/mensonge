@@ -305,9 +305,11 @@ public class TestBaseDeDonneesModele
 		db.modifierEnregistrementTaille(2, 250);
 		db.modifierEnregistrementDuree(2, 77);
 		db.modifierEnregistrementNom(2, "Chuck1");
+		db.modifierEnregistrementSujet(3, 3);
+		db.modifierEnregistrementCategorie(3, 2);
 		
 		String nom = null;
-		LigneEnregistrement tmp = null;
+		LigneEnregistrement tmp = null, tmp2 = null;
 		List<LigneEnregistrement> liste = db.getListeEnregistrement();
 		for (LigneEnregistrement ligne : liste)
 		{
@@ -319,6 +321,9 @@ public class TestBaseDeDonneesModele
 				case 2:
 					tmp = ligne;
 					break;
+				case 3:
+					tmp2 = ligne;
+				break;
 			}
 		}
 		
@@ -329,6 +334,8 @@ public class TestBaseDeDonneesModele
 		assertEquals("Poney", tmp.getNomCat());
 		assertEquals("Gwen", tmp.getNomSuj());
 		assertEquals("Chuck1", tmp.getNom());
+		assertEquals(2, tmp2.getIdCat());
+		assertEquals(3, tmp2.getIdSuj());
 	}
 
 	@Test
