@@ -59,11 +59,11 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		}
 		catch (SQLException e)
 		{
-			throw new DBException("Erreur lors de l'initialisation de la connexion : " + e.getMessage());
+			throw new DBException("Erreur lors de l'initialisation de la connexion", e);
 		}
 		catch (ClassNotFoundException e)
 		{
-			throw new DBException("Impossible de trouver le pilote pour la base de données : " + e.getMessage());
+			throw new DBException("Impossible de trouver le pilote pour la base de données ", e);
 		}
 		try
 		{
@@ -71,7 +71,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		}
 		catch (SQLException e)
 		{
-			throw new DBException("Problème dans la structure de la base : " + e.getMessage(), 2);
+			throw new DBException("Problème dans la structure de la base", e);
 		}
 		return true;
 	}
@@ -101,7 +101,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la recuperation des enregistrements");
+			throw new DBException("Erreur lors de la recuperation des enregistrements", e);
 		}
 		if(retour == null)
 		{
@@ -128,7 +128,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la recuperation de la liste des enregistrements: " + e.getMessage());
+			throw new DBException("Erreur lors de la recuperation de la liste des enregistrements", e);
 		}
 		if(retour == null)
 		{
@@ -155,7 +155,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la recuperation de la liste des enregistrements: " + e.getMessage());
+			throw new DBException("Erreur lors de la recuperation de la liste des enregistrements", e);
 		}
 		if(retour == null)
 		{
@@ -176,7 +176,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la recuperation du nombre enregistrements: " + e.getMessage());
+			throw new DBException("Erreur lors de la recuperation du nombre enregistrements", e);
 		}
 		return retour;
 	}
@@ -214,7 +214,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la modification d'un enregistrements: " + e.getMessage());
+			throw new DBException("Erreur lors de la modification d'un enregistrements", e);
 		}
 	}
 	
@@ -235,7 +235,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la suppression d'un enregistrements: " + e.getMessage());
+			throw new DBException("Erreur lors de la suppression d'un enregistrements", e);
 		}
 	}
 	
@@ -271,7 +271,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la modification d'un enregistrements: " + e.getMessage());
+			throw new DBException("Erreur lors de la modification d'un enregistrements", e);
 		}
 	}
 	
@@ -308,7 +308,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la modification d'un enregistrements: " + e.getMessage());
+			throw new DBException("Erreur lors de la modification d'un enregistrements", e);
 		}
 	}
 	
@@ -333,7 +333,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la modification d'un enregistrements: " + e.getMessage());
+			throw new DBException("Erreur lors de la modification d'un enregistrements", e);
 		}
 	}
 	
@@ -357,7 +357,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la modification d'un enregistrements: " + e.getMessage());
+			throw new DBException("Erreur lors de la modification d'un enregistrements", e);
 		}
 	}
 	
@@ -381,7 +381,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la modification d'un enregistrements: " + e.getMessage());
+			throw new DBException("Erreur lors de la modification d'un enregistrements", e);
 		}
 	}
 	
@@ -406,7 +406,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la modification d'un enregistrements: " + e.getMessage());
+			throw new DBException("Erreur lors de la modification d'un enregistrements", e);
 		}
 	}
 	
@@ -431,7 +431,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la modification d'un enregistrements: " + e.getMessage());
+			throw new DBException("Erreur lors de la modification d'un enregistrements", e);
 		}
 	}
 	
@@ -456,7 +456,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la modification d'un enregistrements: " + e.getMessage());
+			throw new DBException("Erreur lors de la modification d'un enregistrements", e);
 		}
 	}
 	
@@ -481,7 +481,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la modification d'un enregistrements: " + e.getMessage());
+			throw new DBException("Erreur lors de la modification d'un enregistrementse", e);
 		}
 	}
 	
@@ -501,7 +501,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la recuperation du contenu");
+			throw new DBException("Erreur lors de la recuperation du contenu", e);
 		}
 		if(retour == null)
 		{
@@ -523,7 +523,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, "Erreur lors de la recuperation du nom");
-			throw new DBException("Erreur lors de la recuperation du nom");
+			throw new DBException("Erreur lors de la recuperation du nom", e);
 		}
 		if(retour == null)
 		{
@@ -549,7 +549,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, e.getLocalizedMessage());
-			throw new DBException("Erreur lors de l'ajout de categorie: " + e.getMessage());
+			throw new DBException("Erreur lors de l'ajout de categorie", e);
 		}
 	}
 	
@@ -565,7 +565,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la recuperation des categories: " + e.getMessage());
+			throw new DBException("Erreur lors de la recuperation des categories", e);
 		}
 		if(retour == null)
 		{
@@ -585,7 +585,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, "Erreur lors de la suppression de la categories: " + e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la suppression de la categories: " + e.getLocalizedMessage());
+			throw new DBException("Erreur lors de la suppression de la categories", e);
 		}
 	}
 	
@@ -605,7 +605,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, "Erreur lors de la modification de la categories: " + e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la modification de la categories: " + e.getLocalizedMessage());
+			throw new DBException("Erreur lors de la modification de la categories", e);
 		}
 	}
 	
@@ -625,7 +625,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, "Erreur lors de la recuperation de la categories: " + e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la recuperation de la categories: " + e.getLocalizedMessage());
+			throw new DBException("Erreur lors de la recuperation de la categories", e);
 		}
 		if(retour == null)
 		{
@@ -651,7 +651,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, "Erreur lors de la recuperation de la categories: " + e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la recuperation de la categories: " + e.getLocalizedMessage());
+			throw new DBException("Erreur lors de la recuperation de la categories", e);
 		}
 		if(retour == -1)
 		{
@@ -677,7 +677,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, e.getLocalizedMessage());
-			throw new DBException("Erreur lors de l'ajout de sujet: " + e.getMessage());
+			throw new DBException("Erreur lors de l'ajout de sujet", e);
 		}
 	}
 	
@@ -697,7 +697,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la suppression du sujet: " + e.getMessage());
+			throw new DBException("Erreur lors de la suppression du sujet", e);
 		}
 	}
 	
@@ -713,7 +713,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la recuperation des sujet: " + e.getMessage());
+			throw new DBException("Erreur lors de la recuperation des sujet", e);
 		}
 		if(retour == null)
 		{
@@ -739,7 +739,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, "Erreur lors de la modification du sujet: " + e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la modification du sujet: " + e.getLocalizedMessage());
+			throw new DBException("Erreur lors de la modification du sujet", e);
 		}
 	}
 	
@@ -759,7 +759,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, "Erreur lors de la recuperation du sujet: " + e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la recuperation du sujet: " + e.getLocalizedMessage());
+			throw new DBException("Erreur lors de la recuperation du sujet", e);
 		}
 		if(retour == null)
 		{
@@ -785,7 +785,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, "Erreur lors de la recuperation du sujet: " + e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la recuperation du sujet: " + e.getLocalizedMessage());
+			throw new DBException("Erreur lors de la recuperation du sujet", e);
 		}
 		if(retour == -1)
 		{
@@ -806,7 +806,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, "Erreur lors de la creation de la base");
-			throw new DBException("Erreur lors de la creation de la base");
+			throw new DBException("Erreur lors de la creation de la base", e);
 		}
 	}
 	
@@ -825,12 +825,12 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		catch (ClassNotFoundException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, "Erreur lors de la connexion: " + e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la creation de la connexion: " + e.getLocalizedMessage());
+			throw new DBException("Erreur lors de la creation de la connexion", e);
 		}
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, "Erreur lors de la creation de la connexion: " + e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la creation de la connexion: " + e.getLocalizedMessage());
+			throw new DBException("Erreur lors de la creation de la connexion", e);
 		}
 		
 		//On calcule les categories
@@ -848,7 +848,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, "Erreur lors de l'importation sujet: " + e.getLocalizedMessage());
-			throw new DBException("Erreur lors de l'importation sujet: " + e.getLocalizedMessage());
+			throw new DBException("Erreur lors de l'importation sujet", e);
 		}
 		
 		//On calcule les sujets
@@ -866,7 +866,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, "Erreur lors de l'importation categorie: " + e.getLocalizedMessage());
-			throw new DBException("Erreur lors de l'importation categorie: " + e.getLocalizedMessage());
+			throw new DBException("Erreur lors de l'importation categorie", e);
 		}
 		
 		//On calcule les enregistrements
@@ -884,7 +884,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, "Erreur lors de l'importation categorie: " + e.getLocalizedMessage());
-			throw new DBException("Erreur lors de l'importation categorie: " + e.getLocalizedMessage());
+			throw new DBException("Erreur lors de l'importation categorie", e);
 		}
 		
 		if(listeCategorie != null && listeEnregistrement != null && listeSujet != null)
@@ -896,7 +896,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 			catch (SQLException e)
 			{
 				BaseDeDonneesControlleur.logger.log(Level.WARNING, "Erreur lors de l'importation des données: " + e.getLocalizedMessage());
-				throw new DBException("Erreur lors de l'importation des données: " + e.getLocalizedMessage());
+				throw new DBException("Erreur lors de l'importation des données", e);
 			}
 		}
 	}
@@ -922,7 +922,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		}
 		catch (IOException e)
 		{
-			throw new DBException("Impossible de créer le fichier de sortie: " + e.getMessage());
+			throw new DBException("Impossible de créer le fichier de sortie", e);
 		}
 		this.bdd.exporterBase(cheminFichier);
 	}
@@ -941,7 +941,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		}
 		catch (IOException e)
 		{
-			throw new DBException("Impossible de créer le fichier de sortie : " + e.getMessage());
+			throw new DBException("Impossible de créer le fichier de sortie ", e);
 		}
 		
 		try
@@ -951,7 +951,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, "Erreur lors de l'exportation de l'enregistrement: " + e.getLocalizedMessage());
-			throw new DBException("Erreur lors de l'exportation de l'enregistrement: " + e.getLocalizedMessage());
+			throw new DBException("Erreur lors de l'exportation de l'enregistrement", e);
 		}
 	}
 	
