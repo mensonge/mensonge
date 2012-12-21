@@ -60,7 +60,6 @@ public class LecteurAudio extends JPanel implements ActionListener
 		this.addControls();
 		this.mediaPlayer.addMediaPlayerEventListener(new PlayerEventListener(slider, boutonLecture, labelDureeMax,
 				labelDureeActuelle));
-
 	}
 
 	/**
@@ -234,5 +233,4 @@ public class LecteurAudio extends JPanel implements ActionListener
 			this.mediaPlayer.stop();
 		}
 	}
-
 }

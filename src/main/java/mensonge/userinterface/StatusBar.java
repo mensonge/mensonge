@@ -20,6 +20,10 @@ import mensonge.core.tools.CacheObserver;
 import mensonge.core.tools.DataBaseObserver;
 import mensonge.core.tools.Utils;
 
+/**
+ * Barre de status de l'application. Elle écoute les différents observable : extraction, cache, bdd et affiche leurs messages
+ *
+ */
 public class StatusBar extends JPanel implements ActionListener, ActionMessageObserver, DataBaseObserver, CacheObserver
 {
 	private static final long serialVersionUID = 8573623540967463794L;
@@ -31,7 +35,7 @@ public class StatusBar extends JPanel implements ActionListener, ActionMessageOb
 	{
 	};
 	/**
-	 * En millisecondes
+	 * Temps après lequel le message disparaitra, en millisecondes
 	 */
 	private static final int TIMER_DELAY = 10000;
 	private Timer timer;
@@ -39,6 +43,9 @@ public class StatusBar extends JPanel implements ActionListener, ActionMessageOb
 	private JLabel dbSize;
 	private JLabel cacheSize;
 
+	/**
+	 * Créé une nouvelle barre de status
+	 */
 	public StatusBar()
 	{
 		super();
@@ -59,6 +66,10 @@ public class StatusBar extends JPanel implements ActionListener, ActionMessageOb
 		timer = new Timer(TIMER_DELAY, this);
 	}
 
+	/**
+	 * Défini le nouveau message à afficher dans la barre de status et stop le timer de disparition du message
+	 * @param message Message à afficher
+	 */
 	public void setMessage(String message)
 	{
 		this.status.setText(" " + message);
@@ -66,6 +77,9 @@ public class StatusBar extends JPanel implements ActionListener, ActionMessageOb
 		this.timer.stop();
 	}
 
+	/**
+	 * Relance le timer de disparition du message
+	 */
 	public void done()
 	{
 		this.timer.restart();

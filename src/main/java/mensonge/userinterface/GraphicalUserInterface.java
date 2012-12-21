@@ -155,10 +155,10 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		this.fichierOuvrir.addActionListener(this);
 
 		JMenuItem baseExporter = new JMenuItem("Exporter", 'E');
-		baseExporter.addActionListener(new ExporterBaseListener(this));
+		baseExporter.addActionListener(new ExporterBaseListener(this, statusBar, bdd));
 
 		JMenuItem baseImporter = new JMenuItem("Importer", 'I');
-		baseImporter.addActionListener(new ImporterBaseListener(this));
+		baseImporter.addActionListener(new ImporterBaseListener(this, locker, statusBar, bdd));
 
 		JMenuItem baseAjouterCategorie = new JMenuItem("Ajouter catégorie");
 		JMenuItem baseAjouterSujet = new JMenuItem("Ajouter sujet");
@@ -496,13 +496,17 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	 * Listener pour le bouton d'exportation dans le menu
 	 * 
 	 */
-	private class ExporterBaseListener implements ActionListener
+	private static class ExporterBaseListener implements ActionListener
 	{
 		private GraphicalUserInterface fenetre;
 		private String previousPathBase;
+		private BaseDeDonnees bdd;
+		private StatusBar statusBar;
 
-		public ExporterBaseListener(GraphicalUserInterface g)
+		public ExporterBaseListener(GraphicalUserInterface g, StatusBar statusBar, BaseDeDonnees bdd)
 		{
+			this.bdd = bdd;
+			this.statusBar = statusBar;
 			previousPathBase = null;
 			fenetre = g;
 		}
@@ -541,13 +545,19 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	 * Listener pour le bouton d'importation dans le menu
 	 * 
 	 */
-	private class ImporterBaseListener implements ActionListener
+	private static class ImporterBaseListener implements ActionListener
 	{
 		private GraphicalUserInterface fenetre;
 		private String previousPathBase;
+		private Locker locker;
+		private StatusBar statusBar;
+		private BaseDeDonnees bdd;
 
-		public ImporterBaseListener(GraphicalUserInterface g)
+		public ImporterBaseListener(GraphicalUserInterface g, Locker locker, StatusBar statusBar, BaseDeDonnees bdd)
 		{
+			this.bdd = bdd;
+			this.locker = locker;
+			this.statusBar = statusBar;
 			previousPathBase = null;
 			fenetre = g;
 		}
@@ -621,7 +631,6 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
-			// TODO Peut être voir pour aussi donner en plus l'instance de la BDD ça pourrait être utile au final ? :D
 			gui.setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
 			this.plugin.lancer(extraction, panneauArbre.getListSelectedRecords(), this.bdd);
 			gui.setCursor(Cursor.getDefaultCursor());
@@ -694,7 +703,6 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 	private class DesactiverEvent implements ActionListener
 	{
-
 		@Override
 		public void actionPerformed(ActionEvent e)
 		{
