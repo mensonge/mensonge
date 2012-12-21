@@ -31,6 +31,14 @@ public class DBException extends Exception
 	}
 	
 	/**
+	 * Constructeur permettant de recuperer un throwable
+	 * @param msg le message de l'erreur
+	 */
+	public DBException(String msg, Throwable thr)
+	{
+		super(msg, thr);
+	}
+	/**
 	 * Le getter du code d'erreur
 	 * @return le code d'erreur
 	 */
