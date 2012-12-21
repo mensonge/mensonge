@@ -763,6 +763,7 @@ public class BaseDeDonneesModele extends DataBaseObservable
 		PreparedStatement ps = null;
 		try
 		{
+			
 			ps = connexion
 					.prepareStatement("UPDATE enregistrements SET idCat=(SELECT idcat FROM categorie WHERE nomCat=?) WHERE id=?;");// preparation
 																																	// de
@@ -770,9 +771,10 @@ public class BaseDeDonneesModele extends DataBaseObservable
 																																	// requete
 			ps.setString(1, nomCat);// Remplissage de la requete
 			ps.setInt(2, id);
-
+			
 			if (ps.executeUpdate() > 0)// execution et test de la reussite de la requete
 			{
+				
 				notifyCompletedAction("La catégorie de l'enregistrement a été mise à jour");
 				notifyUpdateDataBase();
 			}
@@ -1375,15 +1377,15 @@ public class BaseDeDonneesModele extends DataBaseObservable
 			
 			if (stat.executeUpdate("CREATE TABLE sujet (idsuj  INTEGER PRIMARY KEY AUTOINCREMENT, nomsuj VARCHAR2(128) UNIQUE);") != 0)
 			{
-				throw new DBException("Erreur de création de la table enregistrement.");
+				//throw new DBException("Erreur de création de la table enregistrement.");
 			}
 			if (stat.executeUpdate("CREATE TABLE categorie (idcat  INTEGER PRIMARY KEY AUTOINCREMENT, nomcat VARCHAR2(128) UNIQUE);") != 0)
 			{
-				throw new DBException("Erreur de création de la table categorie.");
+				//throw new DBException("Erreur de création de la table categorie.");
 			}
 			if (stat.executeUpdate("CREATE TABLE enregistrements (id  INTEGER PRIMARY KEY AUTOINCREMENT, enregistrement BLOB, duree INTEGER, taille INTEGER, nom VARCHAR2(128) UNIQUE, idcat INTEGER, idsuj INTEGER, FOREIGN KEY (idSuj) REFERENCES sujet(idSuj), FOREIGN KEY (idCat) REFERENCES categorie(idCat));") != 0)
 			{
-				throw new DBException("Erreur de création de la table enregistrement.");
+				//throw new DBException("Erreur de création de la table enregistrement.");
 			}
 		}
 		catch (SQLException e)
