@@ -75,17 +75,27 @@ public final class Cache extends CacheObservable
 	public void createFile(String fileName, byte[] content) throws IOException
 	{
 		notifyInProgressAction("Mise en cache de l'enregistrement...");
-		File newFile = new File(cacheDirectory, fileName);
-		if (!newFile.exists())
+		try
 		{
-			newFile.createNewFile();
+			File newFile = new File(cacheDirectory, fileName);
+			if (!newFile.exists())
+			{
+				newFile.createNewFile();
+			}
+			FileOutputStream fos = new FileOutputStream(newFile);
+			fos.write(content);
+			fos.flush();
+			fos.close();
+			notifyCompletedAction("L'enregistrement a été mis en cache");
 		}
-		FileOutputStream fos = new FileOutputStream(newFile);
-		fos.write(content);
-		fos.flush();
-		fos.close();
-		notifyCompletedAction("L'enregistrement a été mis en cache");
-		notifyUpdateCache(getSize());
+		catch (IOException e)
+		{
+			notifyFailedAction("Impossible de mettre l'enregistrement en cache");
+			throw e;
+		} finally
+		{
+			notifyUpdateCache(getSize());
+		}
 	}
 
 	/**

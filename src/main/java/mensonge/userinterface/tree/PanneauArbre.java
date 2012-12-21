@@ -278,7 +278,7 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 
 	public static DefaultMutableTreeNode trouverNoeud(DefaultMutableTreeNode noeud, String userObject)
 	{
-		Enumeration children = noeud.children();
+		Enumeration<?> children = noeud.children();
 		DefaultMutableTreeNode tmp;
 		while (children.hasMoreElements())
 		{
@@ -1071,11 +1071,11 @@ public final class PanneauArbre extends JPanel implements DataBaseObserver, Lock
 		}
 		catch (IOException e)
 		{
-			GraphicalUserInterface.popupErreur("Création du fichier audio temporaire : " + e.getMessage());
+			GraphicalUserInterface.popupErreur("Création du fichier audio temporaire : " + e.getLocalizedMessage());
 		}
 		catch (DBException e)
 		{
-			GraphicalUserInterface.popupErreur("Création du fichier audio temporaire : " + e.getMessage());
+			GraphicalUserInterface.popupErreur("Création du fichier audio temporaire : " + e.getLocalizedMessage());
 		}
 
 	}
