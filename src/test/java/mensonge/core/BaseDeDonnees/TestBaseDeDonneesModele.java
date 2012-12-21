@@ -332,6 +332,22 @@ public class TestBaseDeDonneesModele
 	}
 
 	@Test
+	public void testGetNomEnregistrement() throws SQLException
+	{
+		String nom = db.getNomEnregistrement(1);
+		assertEquals(nom, "Esperan");
+		nom = db.getNomEnregistrement(55);
+		assertTrue(nom == null);
+	}
+	
+	@Test
+	public void testGetNombreEnregistrement() throws SQLException
+	{
+		int nb = db.getNombreEnregistrement();
+		assertEquals(nb, 3);
+	}
+	
+	@Test
 	public void testSuprimmerEnregistrement() throws DBException, SQLException
 	{
 		db.supprimerEnregistrement(1);
@@ -374,6 +390,30 @@ public class TestBaseDeDonneesModele
 		assertTrue(i == 3 && nb == 3);
 	}
 
+	@Test
+	public void testExporterEnregistrement() throws DBException, SQLException
+	{
+		db.exporterEnregistrement("TestExport1", 1);
+		byte[] contenu_fichier = readFile("TestExport1");
+		byte[] contenu_enregistrement = db.recupererEnregistrement(1);
+		for(int i = 0; i < contenu_enregistrement.length; i++)
+		{
+			assertEquals(contenu_enregistrement[i], contenu_fichier[i]);
+		}
+		assertEquals(2, contenu_fichier.length - contenu_enregistrement.length);
+	}
+	
+	@Test
+	public void testExporterBase() throws DBException, NoSuchAlgorithmException
+	{
+		db.exporterBase("TestExport2");
+		byte[] contenu_fichier = readFile("TestExport2");
+		byte[] contenu_base = readFile(db.getFileName());
+		assertEquals(contenu_fichier.length, contenu_base.length);
+		String sortie = sha1(contenu_fichier), entree = sha1(contenu_base);
+		assertEquals(sortie, entree);
+	}
+	
 	@AfterClass
 	public static void fin() throws SQLException
 	{
