@@ -118,7 +118,8 @@ public class TestBaseDeDonneesModele
 				nom = ligne.getNomCat();
 			}
 		}
-		assertTrue(i == 3 && nom.equals("Licorne"));
+		assertTrue(i == 3);
+		assertTrue(nom.equals("Licorne"));
 	}
 
 	@Test
@@ -182,7 +183,8 @@ public class TestBaseDeDonneesModele
 			}
 		}
 		i = liste.size();
-		assertTrue(i == 3 && nom.equals("Toshiro"));
+		assertTrue(i == 3);
+		assertTrue(nom.equals("Toshiro"));
 	}
 
 	@Test

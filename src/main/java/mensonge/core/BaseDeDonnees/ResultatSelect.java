@@ -68,35 +68,35 @@ public class ResultatSelect
 	{
 		try
 		{
-			if (colonne.equals("id"))
+			if (colonne.equals(BaseDeDonneesModele.COLONNE_ID))
 			{
 				ligne.setId(rs.getInt(colonne));
 			}
-			else if (colonne.equals("nom"))
+			else if (colonne.equals(BaseDeDonneesModele.COLONNE_NOM))
 			{
 				ligne.setNom(rs.getString(colonne));
 			}
-			else if (colonne.equals("duree"))
+			else if (colonne.equals(BaseDeDonneesModele.COLONNE_DUREE))
 			{
 				ligne.setDuree(rs.getInt(colonne));
 			}
-			else if (colonne.equals("idcat"))
+			else if (colonne.equals(BaseDeDonneesModele.COLONNE_IDCAT))
 			{
 				ligne.setIdCat(rs.getInt(colonne));
 			}
-			else if (colonne.equals("nomcat"))
+			else if (colonne.equals(BaseDeDonneesModele.COLONNE_NOMCAT))
 			{
 				ligne.setNomCat(rs.getString(colonne));
 			}
-			else if (colonne.equals("idsuj"))
+			else if (colonne.equals(BaseDeDonneesModele.COLONNE_IDSUJ))
 			{
 				ligne.setIdSuj(rs.getInt(colonne));
 			}
-			else if (colonne.equals("nomsuj"))
+			else if (colonne.equals(BaseDeDonneesModele.COLONNE_NOMSUJ))
 			{
 				ligne.setNomSuj(rs.getString(colonne));
 			}
-			else if (colonne.equals("taille"))
+			else if (colonne.equals(BaseDeDonneesModele.COLONNE_TAILLE))
 			{
 				ligne.setTaille(rs.getInt(colonne));
 			}

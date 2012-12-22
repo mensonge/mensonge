@@ -31,6 +31,14 @@ public class BaseDeDonneesModele extends DataBaseObservable
 	public static final int EXPORTER_ENREGISTREMENT = 2;
 	public static final int EXPORTER_BASE = 1;
 
+	public static final String COLONNE_NOM = "nom";
+	public static final String COLONNE_ID = "id";
+	public static final String COLONNE_NOMSUJ = "nomSuj";
+	public static final String COLONNE_NOMCAT = "nomCat";
+	public static final String COLONNE_IDSUJ = "idSuj";
+	public static final String COLONNE_IDCAT = "idCat";
+	public static final String COLONNE_TAILLE = "taille";
+	public static final String COLONNE_DUREE = "duree";
 	/**
 	 * Le logger
 	 */
@@ -239,14 +247,14 @@ public class BaseDeDonneesModele extends DataBaseObservable
 		ResultSet rs = null;
 		List<LigneEnregistrement> retour = null;
 		List<String> colonne = new LinkedList<String>();
-		colonne.add("duree");
-		colonne.add("taille");
-		colonne.add("nom");
-		colonne.add("nomcat");
-		colonne.add("id");
-		colonne.add("nomsuj");
-		colonne.add("idcat");
-		colonne.add("idsuj");
+		colonne.add(COLONNE_DUREE);
+		colonne.add(COLONNE_TAILLE);
+		colonne.add(COLONNE_NOM);
+		colonne.add(COLONNE_NOMCAT);
+		colonne.add(COLONNE_ID);
+		colonne.add(COLONNE_NOMSUJ);
+		colonne.add(COLONNE_IDCAT);
+		colonne.add(COLONNE_IDSUJ);
 		try
 		{
 			stat = connexion.createStatement(); // Creation du Statement
@@ -281,14 +289,14 @@ public class BaseDeDonneesModele extends DataBaseObservable
 		ResultSet rs = null;
 		List<LigneEnregistrement> retour = null;
 		List<String> colonne = new LinkedList<String>();
-		colonne.add("duree");
-		colonne.add("taille");
-		colonne.add("nom");
-		colonne.add("nomcat");
-		colonne.add("id");
-		colonne.add("nomsuj");
-		colonne.add("idsuj");
-		colonne.add("idcat");
+		colonne.add(COLONNE_DUREE);
+		colonne.add(COLONNE_TAILLE);
+		colonne.add(COLONNE_NOM);
+		colonne.add(COLONNE_NOMCAT);
+		colonne.add(COLONNE_ID);
+		colonne.add(COLONNE_NOMSUJ);
+		colonne.add(COLONNE_IDSUJ);
+		colonne.add(COLONNE_IDCAT);
 		try
 		{
 			ps = connexion
@@ -317,14 +325,14 @@ public class BaseDeDonneesModele extends DataBaseObservable
 		ResultSet rs = null;
 		List<LigneEnregistrement> retour = null;
 		List<String> colonne = new LinkedList<String>();
-		colonne.add("duree");
-		colonne.add("taille");
-		colonne.add("nom");
-		colonne.add("nomcat");
-		colonne.add("id");
-		colonne.add("nomsuj");
-		colonne.add("idsuj");
-		colonne.add("idcat");
+		colonne.add(COLONNE_DUREE);
+		colonne.add(COLONNE_TAILLE);
+		colonne.add(COLONNE_NOM);
+		colonne.add(COLONNE_NOMCAT);
+		colonne.add(COLONNE_ID);
+		colonne.add(COLONNE_NOMSUJ);
+		colonne.add(COLONNE_IDSUJ);
+		colonne.add(COLONNE_IDCAT);
 		try
 		{
 			ps = connexion
@@ -918,7 +926,7 @@ public class BaseDeDonneesModele extends DataBaseObservable
 			rs = ps.executeQuery();
 			if (rs.next())
 			{
-				retour = rs.getString("nom");
+				retour = rs.getString(COLONNE_NOM);
 			}
 		}
 		finally
@@ -977,12 +985,12 @@ public class BaseDeDonneesModele extends DataBaseObservable
 		ResultSet rs = null;
 		List<LigneEnregistrement> retour = null;
 		List<String> colonne = new LinkedList<String>();
-		colonne.add("nomcat");
-		colonne.add("idcat");
+		colonne.add(COLONNE_NOMCAT);
+		colonne.add(COLONNE_IDCAT);
 		try
 		{
 			stat = connexion.createStatement();// creation du Statement
-			rs = stat.executeQuery("SELECT nomcat, idcat FROM categorie;");// execution de la requete
+			rs = stat.executeQuery("SELECT nomCat, idCat FROM categorie;");// execution de la requete
 			retour = ResultatSelect.convertirResultatSet(rs, colonne);
 		}
 		finally
@@ -1216,12 +1224,12 @@ public class BaseDeDonneesModele extends DataBaseObservable
 		ResultSet rs = null;
 		List<LigneEnregistrement> retour = null;
 		List<String> colonne = new LinkedList<String>();
-		colonne.add("nomsuj");
-		colonne.add("idsuj");
+		colonne.add(COLONNE_NOMSUJ);
+		colonne.add(COLONNE_IDSUJ);
 		try
 		{
 			stat = connexion.createStatement();// creation du Statement
-			rs = stat.executeQuery("SELECT nomsuj, idsuj FROM sujet;");// execution de la requete
+			rs = stat.executeQuery("SELECT nomSuj, idSuj FROM sujet;");// execution de la requete
 			retour = ResultatSelect.convertirResultatSet(rs, colonne);
 		}
 		finally
