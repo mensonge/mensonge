@@ -228,20 +228,16 @@ public class TestBaseDeDonneesControlleur
 		assertEquals(4, i);
 	}
 
-	@Test
+	@Test (expected=DBException.class)
 	public void testAjoutHorsCatEnregistrement() throws DBException
 	{
 		db.ajouterEnregistrement("Exception", 24, 25, "abcdefg".getBytes(), 1);
-		List<LigneEnregistrement> liste = db.getListeEnregistrement();
-		assertEquals(3, liste.size());
 	}
 
-	@Test
+	@Test (expected=DBException.class)
 	public void testAjoutHorsSujEnregistrement() throws DBException
 	{
 		db.ajouterEnregistrement("Exception", 24, 1, "abcdefg".getBytes(), 33);
-		List<LigneEnregistrement> liste = db.getListeEnregistrement();
-		assertEquals(3, liste.size());
 	}
 
 	@Test
@@ -288,13 +284,17 @@ public class TestBaseDeDonneesControlleur
 		assertEquals(3, tmp2.getIdSuj());
 	}
 
-	@Test
+	@Test 
 	public void testGetNomEnregistrement() throws DBException
 	{
 		String nom = db.getNomEnregistrement(1);
 		assertEquals(nom, "Esperan");
-		nom = db.getNomEnregistrement(55);
-		assertTrue(nom == null);
+	}
+	
+	@Test (expected=DBException.class)
+	public void testGetNomEnregistrementErreur() throws DBException
+	{
+		db.getNomEnregistrement(55);
 	}
 	
 	@Test
@@ -330,10 +330,10 @@ public class TestBaseDeDonneesControlleur
 		assertEquals("mort", enr2);
 	}
 
-	@Test
+	@Test (expected=DBException.class)
 	public void testRecupererEnregistrementInexistant() throws DBException, SQLException
 	{
-		assertTrue(db.recupererEnregistrement(25) == null);
+		db.recupererEnregistrement(25);
 	}
 
 	@Test

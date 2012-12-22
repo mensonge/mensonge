@@ -65,7 +65,6 @@ public class TestBaseDeDonneesModele
 		File fichier = new File("LieLabTest.db");
 		fichier.createNewFile();
 		db = new BaseDeDonneesModele("LieLabTest.db");
-		
 	}
 
 	@Before
