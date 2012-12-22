@@ -1000,12 +1000,13 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		{
 			throw new DBException("Le fichier de base de données (" + fileName + ") n'existe pas.");
 		}
-		if (dest.exists())// verifie que la destination n'existe pas, auquel cas, on la supprime
-		{
-			dest.delete();
-		}
+		
 		try
 		{
+			if (dest.exists())// verifie que la destination n'existe pas, auquel cas, on la supprime
+			{
+				dest.delete();
+			}
 			dest.createNewFile();// Création du nouveau fichier
 		}
 		catch (IOException e)
@@ -1019,12 +1020,13 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 	{
 		this.baseDisponible();
 		File dest = new File(cheminFichier);
-		if (dest.exists())// verifie que la destination n'existe pas, auquel cas, on la supprime
-		{
-			dest.delete();
-		}
+		
 		try
 		{
+			if (dest.exists())// verifie que la destination n'existe pas, auquel cas, on la supprime
+			{
+				dest.delete();
+			}
 			dest.createNewFile();// Création du nouveau fichier
 		}
 		catch (IOException e)
