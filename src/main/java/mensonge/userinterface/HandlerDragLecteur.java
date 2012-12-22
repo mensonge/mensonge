@@ -72,7 +72,10 @@ public class HandlerDragLecteur extends TransferHandler
 		{
 			LOGGER.log(Level.WARNING, e.getLocalizedMessage());
 		}
-
+		if(liste == null)
+		{
+			return false;
+		}
 		for (File fichier : liste)
 		{
 			if (fichier.canRead() && fichier.exists())
@@ -80,7 +83,7 @@ public class HandlerDragLecteur extends TransferHandler
 				this.fenetre.ajouterOnglet(fichier, this.bdd, this.fenetre, this.extraction);
 			}
 		}
-		return false;
+		return true;
 	}
 
 	public boolean importDataString(TransferHandler.TransferSupport support)

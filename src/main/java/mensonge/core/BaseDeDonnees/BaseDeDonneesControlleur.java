@@ -648,11 +648,6 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, e.getLocalizedMessage());
 			throw new DBException(ERREUR_RECUPERATION_CATEGORIE, e);
 		}
-		if(retour == null)
-		{
-			BaseDeDonneesControlleur.logger.log(Level.WARNING, ERREUR_RECUPERATION_CATEGORIE);
-			throw new DBException(ERREUR_RECUPERATION_CATEGORIE);
-		}
 		return retour;
 	}
 	
@@ -808,11 +803,6 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, e.getLocalizedMessage());
 			throw new DBException("Erreur lors de la recuperation des sujet", e);
-		}
-		if(retour == null)
-		{
-			BaseDeDonneesControlleur.logger.log(Level.WARNING, ERREUR_RECUPERATION_CATEGORIE);
-			throw new DBException("Erreur lors de la recuperation des sujet");
 		}
 		return retour;
 	}

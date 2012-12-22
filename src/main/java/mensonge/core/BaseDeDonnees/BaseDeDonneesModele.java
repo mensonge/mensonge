@@ -198,13 +198,25 @@ public class BaseDeDonneesModele extends DataBaseObservable
 			}
 			catch (IOException e)
 			{
+				if(destinationFile != null)
+				{
+					try
+					{
+						destinationFile.close();
+					}
+					catch (IOException e1)
+					{
+						notifyFailedAction("Impossible d'exporter l'enregistrement");
+						throw new DBException("Erreur lors de la copie de l'échantillon dans le fichier", e1);
+					}
+				}
 				notifyFailedAction("Impossible d'exporter l'enregistrement");
-				throw new DBException("Erreur lors de la copie de l'échantillon dans le fichier : " + e.getMessage());
+				throw new DBException("Erreur lors de la copie de l'échantillon dans le fichier", e);
 			}
 			notifyCompletedAction("La base de données a été exportée");
 	}
 
-	public void exporterBase(final String cheminFichier) throws DBException// TODO a tester
+	public void exporterBase(final String cheminFichier) throws DBException
 	{
 		notifyInProgressAction("Exportation de la base de données...");
 		File src = new File(fileName);
