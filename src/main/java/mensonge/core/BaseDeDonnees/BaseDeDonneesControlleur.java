@@ -25,8 +25,10 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 	private static String ENREGISTREMENT_ID_INEXISTANT = "Enregistrement id inexistant";
 	private static String BASE_INDISPONIBLE = "La base de données est indisponible";
 	private static String ERREUR_MODIFICATION_ENREGISTREMENT = "Erreur lors de la modification de l'enregistrement";
-	private static String ERREUR_RECUPERATION_CATEGORIE = "Erreur lors de la modification de l'enregistrement";
-	private static String ERREUR_RECUPERATION_SUJET = "Erreur lors de la modification de l'enregistrement";
+	private static String ERREUR_RECUPERATION_CATEGORIE = "Erreur lors de la recuperation de categorie";
+	private static String ERREUR_RECUPERATION_SUJET = "Erreur lors de la recuperation de sujet";
+	private static String DUREE_INVALIDE = "Durée invalide, elle doit être superieur à 0"; 
+	private static String TAILLE_INVALIDE = "Taille invalide, elle doit être superieur à 0";
 	
 	private BaseDeDonneesModele bdd;
 	
@@ -201,6 +203,11 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 			final int idSuj) throws DBException
 	{
 		this.baseDisponible();
+		if(duree < 0)
+		{
+			BaseDeDonneesControlleur.logger.log(Level.WARNING, DUREE_INVALIDE);
+			throw new DBException(DUREE_INVALIDE);
+		}
 		
 		try
 		{
@@ -255,6 +262,12 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 	{
 		this.baseDisponible();
 		
+		if(duree < 0)
+		{
+			BaseDeDonneesControlleur.logger.log(Level.WARNING, DUREE_INVALIDE);
+			throw new DBException(DUREE_INVALIDE);
+		}
+		
 		try
 		{
 			if( ! this.bdd.categorieExiste(idCat))
@@ -291,6 +304,18 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 			final int idCat, final int idSuj) throws DBException
 	{
 		this.baseDisponible();
+		
+		if(duree < 0)
+		{
+			BaseDeDonneesControlleur.logger.log(Level.WARNING, DUREE_INVALIDE);
+			throw new DBException(DUREE_INVALIDE);
+		}
+		
+		if(taille < 0)
+		{
+			BaseDeDonneesControlleur.logger.log(Level.WARNING, TAILLE_INVALIDE);
+			throw new DBException(TAILLE_INVALIDE);
+		}
 		
 		try
 		{
@@ -353,8 +378,8 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		this.baseDisponible();
 		if(duree < 0)
 		{
-			BaseDeDonneesControlleur.logger.log(Level.WARNING, "Durée invalide, elle doit être superieur à 0");
-			throw new DBException("Durée invalide, elle doit être superieur à 0");
+			BaseDeDonneesControlleur.logger.log(Level.WARNING, DUREE_INVALIDE);
+			throw new DBException(DUREE_INVALIDE);
 		}
 		try
 		{
@@ -377,8 +402,8 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		this.baseDisponible();
 		if(taille < 0)
 		{
-			BaseDeDonneesControlleur.logger.log(Level.WARNING, "Taille invalide, elle doit être superieur à 0");
-			throw new DBException("Taille invalide, elle doit être superieur à 0");
+			BaseDeDonneesControlleur.logger.log(Level.WARNING, TAILLE_INVALIDE);
+			throw new DBException(TAILLE_INVALIDE);
 		}
 		try
 		{
