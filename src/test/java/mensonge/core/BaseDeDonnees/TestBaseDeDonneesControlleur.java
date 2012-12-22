@@ -717,9 +717,9 @@ public class TestBaseDeDonneesControlleur
 		bdd.ajouterCategorie("Licorne");
 		bdd.ajouterSujet("Gwen");
 		bdd.ajouterEnregistrement("import", 1, 1, "toto".getBytes(), 1);
-		
-		db.importer("LieLabTest3.db");
 		bdd.deconnexion();
+		db.importer("LieLabTest3.db");
+		
 		List<LigneEnregistrement> listeCat = db.getListeCategorie();
 		List<LigneEnregistrement> listeSuj = db.getListeSujet();
 		List<LigneEnregistrement> listeEnr = db.getListeEnregistrement();
@@ -739,9 +739,9 @@ public class TestBaseDeDonneesControlleur
 		bdd.ajouterCategorie("Poney");
 		bdd.ajouterSujet("Jurah");
 		bdd.ajouterEnregistrement("import", 1, 1, "toto".getBytes(), 1);
-		
-		db.importer("LieLabTest4.db");
 		bdd.deconnexion();
+		db.importer("LieLabTest4.db");
+		
 		List<LigneEnregistrement> listeCat = db.getListeCategorie();
 		List<LigneEnregistrement> listeSuj = db.getListeSujet();
 		List<LigneEnregistrement> listeEnr = db.getListeEnregistrement();
@@ -761,9 +761,9 @@ public class TestBaseDeDonneesControlleur
 		bdd.ajouterCategorie("Poney");
 		bdd.ajouterSujet("Jurah");
 		bdd.ajouterEnregistrement("Gracia", 1, 1, "toto".getBytes(), 1);
-		
-		db.importer("LieLabTest5.db");
 		bdd.deconnexion();
+		db.importer("LieLabTest5.db");
+		
 		List<LigneEnregistrement> listeCat = db.getListeCategorie();
 		List<LigneEnregistrement> listeSuj = db.getListeSujet();
 		List<LigneEnregistrement> listeEnr = db.getListeEnregistrement();
@@ -785,19 +785,23 @@ public class TestBaseDeDonneesControlleur
 	{
 		db = null;
 		File base = new File("LieLabTest.db");
-		base.delete();
+		base.deleteOnExit();
 		base = new File("TestExport1");
-		base.delete();
+		base.deleteOnExit();
 		base = new File("TestExport2");
-		base.delete();
+		base.deleteOnExit();
+		base = new File("TestExport3");
+		base.deleteOnExit();
+		base = new File("TestExport4");
+		base.deleteOnExit();
 		base = new File("LieLabTest2.db");
-		base.delete();
+		base.deleteOnExit();
 		base = new File("LieLabTest3.db");
-		base.delete();
+		base.deleteOnExit();
 		base = new File("LieLabTest4.db");
-		base.delete();
+		base.deleteOnExit();
 		base = new File("LieLabTest5.db");
-		base.delete();
+		base.deleteOnExit();
 		
 	}
 }

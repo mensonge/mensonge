@@ -85,10 +85,6 @@ public class BaseDeDonneesModele extends DataBaseObservable
 			// fermeture du Statement
 			stat.close();
 		}
-		catch (SQLException e)
-		{
-			throw e;
-		}
 		finally
 		{
 			closeRessource(null, stat, null);
@@ -264,10 +260,7 @@ public class BaseDeDonneesModele extends DataBaseObservable
 			retour = ResultatSelect.convertirResultatSet(rs, colonne);
 
 		}
-		catch (SQLException e)
-		{
-			throw e;
-		} finally
+		finally
 		{
 			closeRessource(null, stat, rs);
 		}
@@ -304,10 +297,7 @@ public class BaseDeDonneesModele extends DataBaseObservable
 			rs = ps.executeQuery();// On execute
 			retour = ResultatSelect.convertirResultatSet(rs, colonne);
 		}
-		catch (SQLException e)
-		{
-			throw e;
-		} finally
+		finally
 		{
 			closeRessource(ps, null, rs);
 		}
@@ -346,10 +336,7 @@ public class BaseDeDonneesModele extends DataBaseObservable
 			rs = ps.executeQuery();// On execute
 			retour = ResultatSelect.convertirResultatSet(rs, colonne);
 		}
-		catch (SQLException e)
-		{
-			throw e;
-		} finally
+		finally
 		{
 			closeRessource(ps, null, rs);
 		}
@@ -375,10 +362,7 @@ public class BaseDeDonneesModele extends DataBaseObservable
 			stat.close();
 			return retour;
 		}
-		catch (SQLException e)
-		{
-			throw e;
-		} finally
+		finally
 		{
 			closeRessource(null, stat, rs);
 		}
@@ -937,10 +921,7 @@ public class BaseDeDonneesModele extends DataBaseObservable
 				retour = rs.getString("nom");
 			}
 		}
-		catch (SQLException e)
-		{
-			throw e;
-		} finally
+		finally
 		{
 			closeRessource(ps, null, rs);
 		}
@@ -1004,10 +985,7 @@ public class BaseDeDonneesModele extends DataBaseObservable
 			rs = stat.executeQuery("SELECT nomcat, idcat FROM categorie;");// execution de la requete
 			retour = ResultatSelect.convertirResultatSet(rs, colonne);
 		}
-		catch (SQLException e)
-		{
-			throw e;
-		} finally
+		finally
 		{
 			closeRessource(null, stat, rs);
 		}
@@ -1116,10 +1094,7 @@ public class BaseDeDonneesModele extends DataBaseObservable
 			rs.close();
 			ps.close();
 		}
-		catch (SQLException e)
-		{
-			throw e;
-		} finally
+		finally
 		{
 			closeRessource(ps, null, rs);
 		}
@@ -1148,10 +1123,7 @@ public class BaseDeDonneesModele extends DataBaseObservable
 			rs = ps.executeQuery();
 			retour = rs.getInt(1);
 		}
-		catch (SQLException e)
-		{
-			throw e;
-		} finally
+		finally
 		{
 			closeRessource(ps, null, rs);
 		}
@@ -1252,10 +1224,7 @@ public class BaseDeDonneesModele extends DataBaseObservable
 			rs = stat.executeQuery("SELECT nomsuj, idsuj FROM sujet;");// execution de la requete
 			retour = ResultatSelect.convertirResultatSet(rs, colonne);
 		}
-		catch (SQLException e)
-		{
-			throw e;
-		} finally
+		finally
 		{
 			closeRessource(null, stat, rs);
 		}
@@ -1325,10 +1294,7 @@ public class BaseDeDonneesModele extends DataBaseObservable
 			rs = ps.executeQuery();// execution de la requete
 			retour = rs.getString(1);
 		}
-		catch (SQLException e)
-		{
-			throw e;
-		} finally
+		finally
 		{
 			closeRessource(ps, null, rs);
 		}
@@ -1357,10 +1323,7 @@ public class BaseDeDonneesModele extends DataBaseObservable
 			rs = ps.executeQuery();
 			retour = rs.getInt(1);
 		}
-		catch (SQLException e)
-		{
-			throw e;
-		} finally
+		finally
 		{
 			closeRessource(ps, null, rs);
 		}
@@ -1396,10 +1359,6 @@ public class BaseDeDonneesModele extends DataBaseObservable
 				throw new DBException("Erreur de création de la table enregistrement.");
 			}
 		}
-		catch (SQLException e)
-		{
-			throw e;
-		}
 		finally
 		{
 			closeRessource(null, stat, null);
@@ -1431,10 +1390,7 @@ public class BaseDeDonneesModele extends DataBaseObservable
 				retour = true;
 			}
 		}
-		catch (SQLException e)
-		{
-			throw e;
-		} finally
+		finally
 		{
 			closeRessource(ps, null, rs);
 		}
@@ -1464,10 +1420,6 @@ public class BaseDeDonneesModele extends DataBaseObservable
 			{
 				retour = true;
 			}
-		}
-		catch (SQLException e)
-		{
-			throw e;
 		}
 		finally
 		{
@@ -1500,10 +1452,7 @@ public class BaseDeDonneesModele extends DataBaseObservable
 				retour = true;
 			}
 		}
-		catch (SQLException e)
-		{
-			throw e;
-		} finally
+		finally
 		{
 			closeRessource(ps, null, rs);
 		}
@@ -1534,10 +1483,7 @@ public class BaseDeDonneesModele extends DataBaseObservable
 				retour = true;
 			}
 		}
-		catch (SQLException e)
-		{
-			throw e;
-		} finally
+		finally
 		{
 			closeRessource(ps, null, rs);
 		}
@@ -1568,10 +1514,7 @@ public class BaseDeDonneesModele extends DataBaseObservable
 				retour = true;
 			}
 		}
-		catch (SQLException e)
-		{
-			throw e;
-		} finally
+		finally
 		{
 			closeRessource(ps, null, rs);
 		}
@@ -1594,10 +1537,7 @@ public class BaseDeDonneesModele extends DataBaseObservable
 				retour = true;
 			}
 		}
-		catch (SQLException e)
-		{
-			throw e;
-		} finally
+		finally
 		{
 			closeRessource(ps, null, rs);
 		}
