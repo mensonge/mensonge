@@ -166,6 +166,17 @@ public class TestBaseDeDonneesControlleur
 		assertEquals(4, i);
 	}
 
+	@Test(expected=DBException.class)
+	public void testAjoutSujetErreur() throws DBException, SQLException
+	{
+		db.ajouterSujet(null);
+	}
+	@Test(expected=DBException.class)
+	public void testAjoutSujetExistant() throws DBException, SQLException
+	{
+		db.ajouterSujet(null);
+	}
+	
 	@Test
 	public void testRenommerSujet() throws DBException, SQLException
 	{
@@ -184,7 +195,20 @@ public class TestBaseDeDonneesControlleur
 		i = liste.size();
 		assertTrue(i == 3 && nom.equals("Toshiro"));
 	}
+	
+	@Test(expected=DBException.class)
+	public void testModifierSujetErreur() throws DBException, SQLException
+	{
+		db.modifierSujet(1, null);
+	}
+	
+	@Test(expected=DBException.class)
+	public void testModifierSujetExistant() throws DBException, SQLException
+	{
+		db.modifierSujet(1, "Gwen");
+	}
 
+	
 	@Test
 	public void testAfficherSujet() throws DBException, SQLException, NoSuchAlgorithmException
 	{
@@ -218,6 +242,12 @@ public class TestBaseDeDonneesControlleur
 		assertEquals(2, i);
 	}
 
+	@Test(expected=DBException.class)
+	public void testSupprimerSujetErreur() throws DBException, SQLException
+	{
+		db.supprimerSujet(25);
+	}
+	
 	@Test
 	public void testAjoutEnregistrement() throws DBException, SQLException
 	{
@@ -284,6 +314,145 @@ public class TestBaseDeDonneesControlleur
 		assertEquals(3, tmp2.getIdSuj());
 	}
 
+	@Test(expected=DBException.class)
+	public void testAjoutErreurDuree() throws DBException, SQLException
+	{		
+		db.ajouterEnregistrement("Exception", -1, 1, "toto".getBytes(), 1);
+	}
+	
+	@Test(expected=DBException.class)
+	public void testAjoutErreurNom() throws DBException, SQLException
+	{		
+		db.ajouterEnregistrement(null, 1, 1, "toto".getBytes(), 1);
+	}
+	
+	@Test(expected=DBException.class)
+	public void testAjoutErreurContenu() throws DBException, SQLException
+	{		
+		db.ajouterEnregistrement("Exception", 1, 1, null, 1);
+	}
+	
+	@Test(expected=DBException.class)
+	public void testModificationErreurContenu() throws DBException, SQLException
+	{		
+		db.modifierEnregistrement(1, "Exception", 1, null, 1, 1);
+	}
+	@Test(expected=DBException.class)
+	public void testModificationErreurNom1() throws DBException, SQLException
+	{		
+		db.modifierEnregistrement(1, null, 1, "toto".getBytes(), 1, 1);
+	}
+	
+	@Test(expected=DBException.class)
+	public void testModificationErreurNom2() throws DBException, SQLException
+	{		
+		db.modifierEnregistrement(1, null, 1, 1, 1, 1);
+	}
+	
+	
+	@Test(expected=DBException.class)
+	public void testModificationErreurNom3() throws DBException, SQLException
+	{		
+		db.modifierEnregistrementNom(1, null);
+	}
+	
+	@Test(expected=DBException.class)
+	public void testModificationErreurNomExistant1() throws DBException, SQLException
+	{		
+		db.modifierEnregistrement(1, "Gracia", 1, "toto".getBytes(), 1, 1);
+	}
+	
+	@Test(expected=DBException.class)
+	public void testModificationErreurNomExistant2() throws DBException, SQLException
+	{		
+		db.modifierEnregistrement(1, "Gracia", 1, 1, 1, 1);
+	}
+	
+	
+	@Test(expected=DBException.class)
+	public void testModificationErreurNomExistant3() throws DBException, SQLException
+	{		
+		db.modifierEnregistrementNom(1, "Gracia");
+	}
+	
+	@Test(expected=DBException.class)
+	public void testModificationErreurTaille1() throws DBException, SQLException
+	{		
+		db.modifierEnregistrement(1, "Exception", 1, -1, 1, 1);
+	}
+	
+	@Test(expected=DBException.class)
+	public void testModificationErreurTaille2() throws DBException, SQLException
+	{		
+		db.modifierEnregistrementTaille(1, -1);
+	}
+	
+	@Test(expected=DBException.class)
+	public void testModificationErreurDuree1() throws DBException, SQLException
+	{		
+		db.modifierEnregistrement(1, "Exception", -1, 1, 1, 1);
+	}
+	
+	@Test(expected=DBException.class)
+	public void testModificationErreurDuree2() throws DBException, SQLException
+	{		
+		db.modifierEnregistrement(1, "Exception", -1, "toto".getBytes() , 1, 1);
+	}
+	
+	@Test(expected=DBException.class)
+	public void testModificationErreurDuree3() throws DBException, SQLException
+	{		
+		db.modifierEnregistrementDuree(1, -1);
+	}
+	
+	@Test(expected=DBException.class)
+	public void testModificationErreurCategorie1() throws DBException, SQLException
+	{		
+		db.modifierEnregistrement(1, "Exception", 1, "toto".getBytes() , 25, 1);
+	}
+	
+	@Test(expected=DBException.class)
+	public void testModificationErreurCategorie2() throws DBException, SQLException
+	{		
+		db.modifierEnregistrement(1, "Exception", 1, 1 , 25, 1);
+	}
+	
+	@Test(expected=DBException.class)
+	public void testModificationErreurCategorie3() throws DBException, SQLException
+	{		
+		db.modifierEnregistrementCategorie(1, 25);
+	}
+	
+	@Test(expected=DBException.class)
+	public void testModificationErreurCategorie4() throws DBException, SQLException
+	{		
+		db.modifierEnregistrementCategorie(1, "CatInexistante");
+	}
+	
+	@Test(expected=DBException.class)
+	public void testModificationErreurSujet1() throws DBException, SQLException
+	{		
+		db.modifierEnregistrement(1, "Exception", 1, "toto".getBytes() , 1, 25);
+	}
+	
+	@Test(expected=DBException.class)
+	public void testModificationErreurSujet2() throws DBException, SQLException
+	{		
+		db.modifierEnregistrement(1, "Exception", 1, 1 , 1, 25);
+	}
+	
+	@Test(expected=DBException.class)
+	public void testModificationErreurSujet3() throws DBException, SQLException
+	{		
+		db.modifierEnregistrementSujet(1, 25);
+	}
+	
+	@Test(expected=DBException.class)
+	public void testModificationErreurSujet4() throws DBException, SQLException
+	{		
+		db.modifierEnregistrementSujet(1, "SujInexistante");
+	}
+	
 	@Test 
 	public void testGetNomEnregistrement() throws DBException
 	{
@@ -317,6 +486,12 @@ public class TestBaseDeDonneesControlleur
 		assertTrue(liste.size() == 2);
 	}
 
+	@Test(expected=DBException.class)
+	public void testSuprimmerEnregistrementErreur() throws DBException, DBException
+	{
+		db.supprimerEnregistrement(77);
+	}
+	
 	@Test
 	public void testRecupererEnregistrement() throws DBException, SQLException
 	{
