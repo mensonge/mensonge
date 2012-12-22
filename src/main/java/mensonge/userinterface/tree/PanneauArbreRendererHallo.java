@@ -65,17 +65,17 @@ public class PanneauArbreRendererHallo extends DefaultTreeCellRenderer
 
 		this.openRacine = new ImageIcon("images/pumpkin.png");
 
-		this.openBranche = new ImageIcon("images/star_pink.png");
+		this.openBranche = new ImageIcon("images/hallo1.png");
 
-		this.closeBranche = new ImageIcon("images/star_blue.png");
+		this.closeBranche = new ImageIcon("images/hallo2.png");
 
-		this.openFeuille2 = new ImageIcon("images/dec1.png");
+		this.openFeuille2 = new ImageIcon("images/hallo3.png");
 
-		this.openFeuille1 = new ImageIcon("images/dec2.png");
+		this.openFeuille1 = new ImageIcon("images/hallo4.png");
 
-		this.openFeuille3 = new ImageIcon("images/dec3.png");
+		this.openFeuille3 = new ImageIcon("images/hallo5.png");
 
-		this.openFeuille4 = new ImageIcon("images/dec4.png");
+		this.openFeuille4 = new ImageIcon("images/hallo6.png");
 
 	}
 
