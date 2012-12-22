@@ -16,6 +16,18 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 	 */
 	private static Logger logger = Logger.getLogger("BDD");
 	
+	private static String SUJET_EXISTANT = "Sujet existant";
+	private static String SUJET_INEXISTANT = "Sujet inexistant";
+	private static String CATEGORIE_EXISTANTE = "Categorie existante";
+	private static String CATEGORIE_INEXISTANTE = "Categorie inexistante";
+	private static String ENREGISTREMENT_INEXISTANT = "Enregistrement inexistant";
+	private static String ENREGISTREMENT_EXISTANT = "Enregistrement existant";
+	private static String ENREGISTREMENT_ID_INEXISTANT = "Enregistrement id inexistant";
+	private static String BASE_INDISPONIBLE = "La base de données est indisponible";
+	private static String ERREUR_MODIFICATION_ENREGISTREMENT = "Erreur lors de la modification de l'enregistrement";
+	private static String ERREUR_RECUPERATION_CATEGORIE = "Erreur lors de la modification de l'enregistrement";
+	private static String ERREUR_RECUPERATION_SUJET = "Erreur lors de la modification de l'enregistrement";
+	
 	private BaseDeDonneesModele bdd;
 	
 	public BaseDeDonneesControlleur(String cheminFichier) throws DBException
@@ -40,11 +52,11 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 	{
 		if(this.bdd == null)
 		{
-			throw new DBException("La base de données est indisponible");
+			throw new DBException(BASE_INDISPONIBLE);
 		}
 		else if(this.bdd.getConnexion() == null)
 		{
-			throw new DBException("La base de données est indisponible");
+			throw new DBException(BASE_INDISPONIBLE);
 		}
 	}
 	
@@ -119,7 +131,8 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 			}
 			else
 			{
-				throw new DBException("Categorie inexistante");
+				BaseDeDonneesControlleur.logger.log(Level.WARNING, CATEGORIE_INEXISTANTE);
+				throw new DBException(CATEGORIE_INEXISTANTE);
 			}
 		}
 		catch (SQLException e)
@@ -146,7 +159,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 			}
 			else
 			{
-				throw new DBException("Sujet inexistante");
+				throw new DBException(SUJET_INEXISTANT);
 			}
 		}
 		catch (SQLException e)
@@ -193,25 +206,25 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		{
 			if( ! this.bdd.categorieExiste(idCat))
 			{
-				BaseDeDonneesControlleur.logger.log(Level.WARNING, "Categorie inexistante");
-				throw new DBException("Categorie inexistante");
+				BaseDeDonneesControlleur.logger.log(Level.WARNING, CATEGORIE_INEXISTANTE);
+				throw new DBException(CATEGORIE_INEXISTANTE);
 			}
 			if( ! this.bdd.sujetExiste(idSuj))
 			{
-				BaseDeDonneesControlleur.logger.log(Level.WARNING, "Sujet inexistant");
-				throw new DBException("Sujet inexistant");
+				BaseDeDonneesControlleur.logger.log(Level.WARNING, SUJET_INEXISTANT);
+				throw new DBException(SUJET_INEXISTANT);
 			}
 			if (this.bdd.enregistrementExist(nom))
 			{
-				BaseDeDonneesControlleur.logger.log(Level.WARNING, "Nom enregistrement existant");
-				throw new DBException("Nom enregistrement existant");
+				BaseDeDonneesControlleur.logger.log(Level.WARNING, ENREGISTREMENT_EXISTANT);
+				throw new DBException(ENREGISTREMENT_EXISTANT);
 			}
 			this.bdd.ajouterEnregistrement(nom, duree, idCat, enregistrement, idSuj);
 		}
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la modification d'un enregistrements", e);
+			throw new DBException(ERREUR_MODIFICATION_ENREGISTREMENT, e);
 		}
 	}
 	
@@ -226,7 +239,8 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 			}
 			else
 			{
-				throw new DBException("Enregistrement inexistant");
+				BaseDeDonneesControlleur.logger.log(Level.WARNING, ENREGISTREMENT_INEXISTANT);
+				throw new DBException(ENREGISTREMENT_INEXISTANT);
 			}
 		}
 		catch (SQLException e)
@@ -245,30 +259,30 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		{
 			if( ! this.bdd.categorieExiste(idCat))
 			{
-				BaseDeDonneesControlleur.logger.log(Level.WARNING, "Categorie inexistante");
-				throw new DBException("Categorie inexistante");
+				BaseDeDonneesControlleur.logger.log(Level.WARNING, CATEGORIE_INEXISTANTE);
+				throw new DBException(CATEGORIE_INEXISTANTE);
 			}
 			if( ! this.bdd.sujetExiste(idSuj))
 			{
-				BaseDeDonneesControlleur.logger.log(Level.WARNING, "Sujet inexistant");
-				throw new DBException("Sujet inexistant");
+				BaseDeDonneesControlleur.logger.log(Level.WARNING, SUJET_INEXISTANT);
+				throw new DBException(SUJET_INEXISTANT);
 			}
 			if (this.bdd.enregistrementExist(nom))
 			{
-				BaseDeDonneesControlleur.logger.log(Level.WARNING, "Nom enregistrement existant");
-				throw new DBException("Nom enregistrement existant");
+				BaseDeDonneesControlleur.logger.log(Level.WARNING, ENREGISTREMENT_EXISTANT);
+				throw new DBException(ENREGISTREMENT_EXISTANT);
 			}
 			if( ! this.bdd.enregistrementExist(id))
 			{
-				BaseDeDonneesControlleur.logger.log(Level.WARNING, "Enregistrement id inexistant");
-				throw new DBException("Enregistrement id inexistant");
+				BaseDeDonneesControlleur.logger.log(Level.WARNING, ENREGISTREMENT_ID_INEXISTANT);
+				throw new DBException(ENREGISTREMENT_ID_INEXISTANT);
 			}
 			this.bdd.modifierEnregistrement(id, nom, duree, enregistrement, idCat, idSuj);
 		}
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la modification d'un enregistrements", e);
+			throw new DBException(ERREUR_MODIFICATION_ENREGISTREMENT, e);
 		}
 	}
 	
@@ -282,30 +296,30 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		{
 			if( ! this.bdd.categorieExiste(idCat))
 			{
-				BaseDeDonneesControlleur.logger.log(Level.WARNING, "Categorie inexistante");
-				throw new DBException("Categorie inexistante");
+				BaseDeDonneesControlleur.logger.log(Level.WARNING, CATEGORIE_INEXISTANTE);
+				throw new DBException(CATEGORIE_INEXISTANTE);
 			}
 			if( ! this.bdd.sujetExiste(idSuj))
 			{
-				BaseDeDonneesControlleur.logger.log(Level.WARNING, "Sujet inexistant");
-				throw new DBException("Sujet inexistant");
+				BaseDeDonneesControlleur.logger.log(Level.WARNING, SUJET_INEXISTANT);
+				throw new DBException(SUJET_INEXISTANT);
 			}
 			if (this.bdd.enregistrementExist(nom))
 			{
-				BaseDeDonneesControlleur.logger.log(Level.WARNING, "Nom enregistrement existant");
-				throw new DBException("Nom enregistrement existant");
+				BaseDeDonneesControlleur.logger.log(Level.WARNING, ENREGISTREMENT_EXISTANT);
+				throw new DBException(ENREGISTREMENT_EXISTANT);
 			}
 			if( ! this.bdd.enregistrementExist(id))
 			{
-				BaseDeDonneesControlleur.logger.log(Level.WARNING, "Enregistrement id inexistant");
-				throw new DBException("Enregistrement id inexistant");
+				BaseDeDonneesControlleur.logger.log(Level.WARNING, ENREGISTREMENT_ID_INEXISTANT);
+				throw new DBException(ENREGISTREMENT_ID_INEXISTANT);
 			}
 			this.bdd.modifierEnregistrement(id, nom, duree, taille, idCat, idSuj);
 		}
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la modification d'un enregistrements", e);
+			throw new DBException(ERREUR_MODIFICATION_ENREGISTREMENT, e);
 		}
 	}
 	
@@ -317,20 +331,20 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		{
 			if (this.bdd.enregistrementExist(nom))
 			{
-				BaseDeDonneesControlleur.logger.log(Level.WARNING, "Nom enregistrement existant");
-				throw new DBException("Nom enregistrement existant");
+				BaseDeDonneesControlleur.logger.log(Level.WARNING, ENREGISTREMENT_EXISTANT);
+				throw new DBException(ENREGISTREMENT_EXISTANT);
 			}
 			if( ! this.bdd.enregistrementExist(id))
 			{
-				BaseDeDonneesControlleur.logger.log(Level.WARNING, "Enregistrement id inexistant");
-				throw new DBException("Enregistrement id inexistant");
+				BaseDeDonneesControlleur.logger.log(Level.WARNING, ENREGISTREMENT_ID_INEXISTANT);
+				throw new DBException(ENREGISTREMENT_ID_INEXISTANT);
 			}
 			this.bdd.modifierEnregistrementNom(id, nom);
 		}
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la modification d'un enregistrements", e);
+			throw new DBException(ERREUR_MODIFICATION_ENREGISTREMENT, e);
 		}
 	}
 	
@@ -346,15 +360,15 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		{
 			if( ! this.bdd.enregistrementExist(id))
 			{
-				BaseDeDonneesControlleur.logger.log(Level.WARNING, "Enregistrement id inexistant");
-				throw new DBException("Enregistrement id inexistant");
+				BaseDeDonneesControlleur.logger.log(Level.WARNING, ENREGISTREMENT_ID_INEXISTANT);
+				throw new DBException(ENREGISTREMENT_ID_INEXISTANT);
 			}
 			this.bdd.modifierEnregistrementDuree(id, duree);
 		}
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la modification d'un enregistrements", e);
+			throw new DBException(ERREUR_MODIFICATION_ENREGISTREMENT, e);
 		}
 	}
 	
@@ -370,15 +384,15 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		{
 			if( ! this.bdd.enregistrementExist(id))
 			{
-				BaseDeDonneesControlleur.logger.log(Level.WARNING, "Enregistrement id inexistant");
-				throw new DBException("Enregistrement id inexistant");
+				BaseDeDonneesControlleur.logger.log(Level.WARNING, ENREGISTREMENT_ID_INEXISTANT);
+				throw new DBException(ENREGISTREMENT_ID_INEXISTANT);
 			}
 			this.bdd.modifierEnregistrementTaille(id, taille);
 		}
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la modification d'un enregistrements", e);
+			throw new DBException(ERREUR_MODIFICATION_ENREGISTREMENT, e);
 		}
 	}
 	
@@ -390,20 +404,20 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		{
 			if( ! this.bdd.categorieExiste(idCat))
 			{
-				BaseDeDonneesControlleur.logger.log(Level.WARNING, "Categorie inexistante");
-				throw new DBException("Categorie inexistante");
+				BaseDeDonneesControlleur.logger.log(Level.WARNING, CATEGORIE_INEXISTANTE);
+				throw new DBException(CATEGORIE_INEXISTANTE);
 			}
 			if( ! this.bdd.enregistrementExist(id))
 			{
-				BaseDeDonneesControlleur.logger.log(Level.WARNING, "Enregistrement id inexistant");
-				throw new DBException("Enregistrement id inexistant");
+				BaseDeDonneesControlleur.logger.log(Level.WARNING, ENREGISTREMENT_ID_INEXISTANT);
+				throw new DBException(ENREGISTREMENT_ID_INEXISTANT);
 			}
 			this.bdd.modifierEnregistrementCategorie(id, idCat);
 		}
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la modification d'un enregistrements", e);
+			throw new DBException(ERREUR_MODIFICATION_ENREGISTREMENT, e);
 		}
 	}
 	
@@ -415,20 +429,20 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		{
 			if( ! this.bdd.categorieExiste(nomCat))
 			{
-				BaseDeDonneesControlleur.logger.log(Level.WARNING, "Categorie inexistante");
-				throw new DBException("Categorie inexistante");
+				BaseDeDonneesControlleur.logger.log(Level.WARNING, CATEGORIE_INEXISTANTE);
+				throw new DBException(CATEGORIE_INEXISTANTE);
 			}
 			if( ! this.bdd.enregistrementExist(id))
 			{
-				BaseDeDonneesControlleur.logger.log(Level.WARNING, "Enregistrement id inexistant");
-				throw new DBException("Enregistrement id inexistant");
+				BaseDeDonneesControlleur.logger.log(Level.WARNING, ENREGISTREMENT_ID_INEXISTANT);
+				throw new DBException(ENREGISTREMENT_ID_INEXISTANT);
 			}
 			this.bdd.modifierEnregistrementCategorie(id, nomCat);
 		}
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la modification d'un enregistrements", e);
+			throw new DBException(ERREUR_MODIFICATION_ENREGISTREMENT, e);
 		}
 	}
 	
@@ -440,20 +454,20 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		{
 			if( ! this.bdd.sujetExiste(idSuj))
 			{
-				BaseDeDonneesControlleur.logger.log(Level.WARNING, "Sujet inexistante");
-				throw new DBException("Sujet inexistante");
+				BaseDeDonneesControlleur.logger.log(Level.WARNING, SUJET_INEXISTANT);
+				throw new DBException(SUJET_INEXISTANT);
 			}
 			if( ! this.bdd.enregistrementExist(id))
 			{
-				BaseDeDonneesControlleur.logger.log(Level.WARNING, "Enregistrement id inexistant");
-				throw new DBException("Enregistrement id inexistant");
+				BaseDeDonneesControlleur.logger.log(Level.WARNING, ENREGISTREMENT_ID_INEXISTANT);
+				throw new DBException(ENREGISTREMENT_ID_INEXISTANT);
 			}
 			this.bdd.modifierEnregistrementSujet(id, idSuj);
 		}
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la modification d'un enregistrements", e);
+			throw new DBException(ERREUR_MODIFICATION_ENREGISTREMENT, e);
 		}
 	}
 	
@@ -470,8 +484,8 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 			}
 			if( ! this.bdd.enregistrementExist(id))
 			{
-				BaseDeDonneesControlleur.logger.log(Level.WARNING, "Enregistrement id inexistant");
-				throw new DBException("Enregistrement id inexistant");
+				BaseDeDonneesControlleur.logger.log(Level.WARNING, ENREGISTREMENT_ID_INEXISTANT);
+				throw new DBException(ENREGISTREMENT_ID_INEXISTANT);
 			}
 			this.bdd.modifierEnregistrementSujet(id, nomSuj);
 		}
@@ -490,8 +504,8 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		{
 			if( ! this.bdd.enregistrementExist(id))
 			{
-				BaseDeDonneesControlleur.logger.log(Level.WARNING, "Enregistrement id inexistant");
-				throw new DBException("Enregistrement id inexistant");
+				BaseDeDonneesControlleur.logger.log(Level.WARNING, ENREGISTREMENT_ID_INEXISTANT);
+				throw new DBException(ENREGISTREMENT_ID_INEXISTANT);
 			}
 			retour = this.bdd.recupererEnregistrement(id);
 		}
@@ -524,8 +538,8 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		}
 		if(retour == null)
 		{
-			BaseDeDonneesControlleur.logger.log(Level.WARNING, "Enregistrement id inexistant");
-			throw new DBException("Enregistrement id inexistant");
+			BaseDeDonneesControlleur.logger.log(Level.WARNING, ENREGISTREMENT_ID_INEXISTANT);
+			throw new DBException(ENREGISTREMENT_ID_INEXISTANT);
 		}
 		return retour;
 	}
@@ -538,8 +552,8 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		{
 			if(this.bdd.categorieExiste(nom))
 			{
-				BaseDeDonneesControlleur.logger.log(Level.WARNING, "Categorie existante");
-				throw new DBException("Categorie existante");
+				BaseDeDonneesControlleur.logger.log(Level.WARNING, CATEGORIE_EXISTANTE);
+				throw new DBException(CATEGORIE_EXISTANTE);
 			}
 			this.bdd.ajouterCategorie(nom);
 		}
@@ -562,12 +576,12 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la recuperation des categories", e);
+			throw new DBException(ERREUR_RECUPERATION_CATEGORIE, e);
 		}
 		if(retour == null)
 		{
-			BaseDeDonneesControlleur.logger.log(Level.WARNING, "Erreur lors de la recuperation des categories");
-			throw new DBException("Erreur lors de la recuperation des categories");
+			BaseDeDonneesControlleur.logger.log(Level.WARNING, ERREUR_RECUPERATION_CATEGORIE);
+			throw new DBException(ERREUR_RECUPERATION_CATEGORIE);
 		}
 		return retour;
 	}
@@ -594,8 +608,8 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		{
 			if(this.bdd.categorieExiste(nom))
 			{
-				BaseDeDonneesControlleur.logger.log(Level.WARNING, "Categorie existante");
-				throw new DBException("Categorie existante");
+				BaseDeDonneesControlleur.logger.log(Level.WARNING, CATEGORIE_EXISTANTE);
+				throw new DBException(CATEGORIE_EXISTANTE);
 			}
 			this.bdd.modifierCategorie(id, nom);
 		}
@@ -614,20 +628,20 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		{
 			if( ! this.bdd.categorieExiste(idCat))
 			{
-				BaseDeDonneesControlleur.logger.log(Level.WARNING, "Categorie inexistante");
-				throw new DBException("Categorie inexistante");
+				BaseDeDonneesControlleur.logger.log(Level.WARNING, CATEGORIE_INEXISTANTE);
+				throw new DBException(CATEGORIE_INEXISTANTE);
 			}
 			retour = this.bdd.getCategorie(idCat);
 		}
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, "Erreur lors de la recuperation de la categories: " + e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la recuperation de la categories", e);
+			throw new DBException(ERREUR_RECUPERATION_CATEGORIE, e);
 		}
 		if(retour == null)
 		{
-			BaseDeDonneesControlleur.logger.log(Level.WARNING, "Erreur lors de la recuperation de la categories");
-			throw new DBException("Erreur lors de la recuperation de la categories");
+			BaseDeDonneesControlleur.logger.log(Level.WARNING, ERREUR_RECUPERATION_CATEGORIE);
+			throw new DBException(ERREUR_RECUPERATION_CATEGORIE);
 		}
 		return retour;
 	}
@@ -640,20 +654,20 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		{
 			if( ! this.bdd.categorieExiste(nomCat))
 			{
-				BaseDeDonneesControlleur.logger.log(Level.WARNING, "Categorie inexistante");
-				throw new DBException("Categorie inexistante");
+				BaseDeDonneesControlleur.logger.log(Level.WARNING, CATEGORIE_INEXISTANTE);
+				throw new DBException(CATEGORIE_INEXISTANTE);
 			}
 			retour = this.bdd.getCategorie(nomCat);
 		}
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, "Erreur lors de la recuperation de la categories: " + e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la recuperation de la categories", e);
+			throw new DBException(ERREUR_RECUPERATION_CATEGORIE, e);
 		}
 		if(retour == -1)
 		{
-			BaseDeDonneesControlleur.logger.log(Level.WARNING, "Erreur lors de la recuperation de la categories");
-			throw new DBException("Erreur lors de la recuperation de la categories");
+			BaseDeDonneesControlleur.logger.log(Level.WARNING, ERREUR_RECUPERATION_CATEGORIE);
+			throw new DBException(ERREUR_RECUPERATION_CATEGORIE);
 		}
 		return retour;
 	}
@@ -666,7 +680,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		{
 			if(this.bdd.sujetExiste(nom))
 			{
-				BaseDeDonneesControlleur.logger.log(Level.WARNING, "Sujet existant");
+				BaseDeDonneesControlleur.logger.log(Level.WARNING, SUJET_EXISTANT);
 				throw new DBException("Sujete existant");
 			}
 			this.bdd.ajouterSujet(nom);
@@ -686,7 +700,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		{
 			if( ! this.bdd.sujetExiste(id))
 			{
-				BaseDeDonneesControlleur.logger.log(Level.WARNING, "Sujet inexistant");
+				BaseDeDonneesControlleur.logger.log(Level.WARNING, SUJET_INEXISTANT);
 				throw new DBException("Sujete inexistant");
 			}
 			this.bdd.supprimerSujet(id);
@@ -714,7 +728,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		}
 		if(retour == null)
 		{
-			BaseDeDonneesControlleur.logger.log(Level.WARNING, "Erreur lors de la recuperation des categories");
+			BaseDeDonneesControlleur.logger.log(Level.WARNING, ERREUR_RECUPERATION_CATEGORIE);
 			throw new DBException("Erreur lors de la recuperation des sujet");
 		}
 		return retour;
@@ -728,8 +742,8 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		{
 			if(this.bdd.sujetExiste(nom))
 			{
-				BaseDeDonneesControlleur.logger.log(Level.WARNING, "Sujet existant");
-				throw new DBException("Sujet existant");
+				BaseDeDonneesControlleur.logger.log(Level.WARNING, SUJET_EXISTANT);
+				throw new DBException(SUJET_EXISTANT);
 			}
 			this.bdd.modifierSujet(id, nom);
 		}
@@ -748,20 +762,20 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		{
 			if( ! this.bdd.sujetExiste(idSuj))
 			{
-				BaseDeDonneesControlleur.logger.log(Level.WARNING, "Sujet inexistant");
-				throw new DBException("Sujet inexistant");
+				BaseDeDonneesControlleur.logger.log(Level.WARNING, SUJET_INEXISTANT);
+				throw new DBException(SUJET_INEXISTANT);
 			}
 			retour = this.bdd.getSujet(idSuj);
 		}
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, "Erreur lors de la recuperation du sujet: " + e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la recuperation du sujet", e);
+			throw new DBException(ERREUR_RECUPERATION_SUJET, e);
 		}
 		if(retour == null)
 		{
-			BaseDeDonneesControlleur.logger.log(Level.WARNING, "Erreur lors de la recuperation du sujet");
-			throw new DBException("Erreur lors de la recuperation du sujet");
+			BaseDeDonneesControlleur.logger.log(Level.WARNING, ERREUR_RECUPERATION_SUJET);
+			throw new DBException(ERREUR_RECUPERATION_SUJET);
 		}
 		return retour;
 	}
@@ -774,20 +788,20 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		{
 			if( ! this.bdd.sujetExiste(nomSuj))
 			{
-				BaseDeDonneesControlleur.logger.log(Level.WARNING, "Sujet inexistant");
-				throw new DBException("Sujet inexistant");
+				BaseDeDonneesControlleur.logger.log(Level.WARNING, SUJET_INEXISTANT);
+				throw new DBException(SUJET_INEXISTANT);
 			}
 			retour = this.bdd.getSujet(nomSuj);
 		}
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, "Erreur lors de la recuperation du sujet: " + e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la recuperation du sujet", e);
+			throw new DBException(ERREUR_RECUPERATION_SUJET, e);
 		}
 		if(retour == -1)
 		{
-			BaseDeDonneesControlleur.logger.log(Level.WARNING, "Erreur lors de la recuperation du sujet");
-			throw new DBException("Erreur lors de la recuperation du sujet");
+			BaseDeDonneesControlleur.logger.log(Level.WARNING, ERREUR_RECUPERATION_SUJET);
+			throw new DBException(ERREUR_RECUPERATION_SUJET);
 		}
 		return retour;
 	}
