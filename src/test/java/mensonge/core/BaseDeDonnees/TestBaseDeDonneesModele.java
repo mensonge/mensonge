@@ -1,6 +1,7 @@
 package mensonge.core.BaseDeDonnees;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -436,6 +437,38 @@ public class TestBaseDeDonneesModele
 		assertEquals(db.getCategorie("Licorne"), 4);
 	}
 	
+	@Test
+	public void testCategorieExiste() throws SQLException
+	{
+		assertTrue(db.categorieExiste(1));
+		assertFalse(db.categorieExiste(77));
+		assertTrue(db.categorieExiste("Pegase"));
+		assertFalse(db.categorieExiste("Inexiste"));
+	}
+	
+	@Test
+	public void testSujetExiste() throws SQLException
+	{
+		assertTrue(db.sujetExiste(1));
+		assertFalse(db.sujetExiste(77));
+		assertTrue(db.sujetExiste("Gwen"));
+		assertFalse(db.sujetExiste("Inexiste"));
+	}
+	
+	@Test
+	public void testEnregistrementExiste() throws SQLException
+	{
+		assertTrue(db.enregistrementExist(1));
+		assertFalse(db.enregistrementExist(77));
+		assertTrue(db.enregistrementExist("Gracia"));
+		assertFalse(db.enregistrementExist("Inexiste"));
+	}
+	
+	@Test
+	public void testGetFileName()
+	{
+		assertEquals(db.getFileName(), "LieLabTest.db");
+	}
 	
 	@AfterClass
 	public static void fin() throws SQLException
