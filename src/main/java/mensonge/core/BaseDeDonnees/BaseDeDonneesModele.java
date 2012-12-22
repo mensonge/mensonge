@@ -309,12 +309,8 @@ public class BaseDeDonneesModele extends DataBaseObservable
 	 * @return Le resultat sous forme d'objet ResultSet qui n'est parcourable qu'une fois.
 	 * @throws DBException
 	 */
-	public List<LigneEnregistrement> getListeEnregistrementSujet(final int idSuj) throws DBException
+	public List<LigneEnregistrement> getListeEnregistrementSujet(final int idSuj) throws SQLException
 	{
-		if (connexion == null)
-		{
-			throw new DBException("La connexion est vide");
-		}
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		List<LigneEnregistrement> retour = null;
@@ -340,7 +336,7 @@ public class BaseDeDonneesModele extends DataBaseObservable
 		}
 		catch (SQLException e)
 		{
-			throw new DBException("Erreur lors de la recuperation de la liste des enregistrement: " + e.getMessage());
+			throw e;
 		} finally
 		{
 			closeRessource(ps, null, rs);

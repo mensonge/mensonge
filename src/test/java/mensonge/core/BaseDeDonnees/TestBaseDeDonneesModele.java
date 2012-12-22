@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Formatter;
 import java.util.List;
 
@@ -16,6 +17,7 @@ import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class TestBaseDeDonneesModele
@@ -26,58 +28,14 @@ public class TestBaseDeDonneesModele
 	 * Licorne et Dieux avec un enregistrement dans chacune.
 	 * 
 	 * @return true si la base s'est bien creer.
+	 * @throws SQLException 
+	 * @throws ClassNotFoundException 
+	 * @throws DBException 
 	 * @see checkRunning
 	 */
-	public static boolean createFictiveDataBase()
+	public static void createFictiveDataBase() throws ClassNotFoundException, SQLException, DBException
 	{
-		/*
-		BaseDeDonnees db = null;
-		try
-		{
-			db = new BaseDeDonnees("LieLabTest2.db");
-			db.connexion();// connexion
-			db.createDatabase();
-		}
-		catch (DBException e)
-		{
-			int a = e.getCode();
-			if (a == 2)
-			{
-				System.out.println("[i]Base en cour de creation ...");
-				try
-				{
-					db.createDatabase();
-				}
-				catch (DBException e1)
-				{
-					System.out.println("[-] Erreur lors de la creation: " + e1.getMessage());
-				}
-				// creation de la base
-				System.out.println("[i]Base cree.");
-			}
-			else
-			{
-				System.out.println("[-]Erreur lors de la connexion. " + e.getMessage());
-				return false;
-			}
-		}
-		try
-		{
-			db.ajouterCategorie("Dieux*");
-			db.ajouterCategorie("Licorne");
-
-			// db.ajouterEnregistrement("Hades* ", 7, 1, "azerty".getBytes());
-			// db.ajouterEnregistrement("Bella*", 7, 2, "qsdfgh".getBytes());
-
-			db.deconnexion();
-		}
-		catch (Exception e)
-		{
-			return false;
-		}
-		return true;
-		*/
-		return true;
+		
 	}
 
 	public static byte[] readFile(String nom)
@@ -407,6 +365,34 @@ public class TestBaseDeDonneesModele
 	}
 
 	@Test
+	public void testListeEnregistrementCategorie() throws SQLException
+	{
+		List<LigneEnregistrement> listeCat1 = db.getListeEnregistrementCategorie(1);
+		List<LigneEnregistrement> listeCat2 = db.getListeEnregistrementCategorie(2);
+		assertEquals(listeCat1.size(), 3);
+		assertEquals(listeCat2.size(), 0);
+		db.modifierEnregistrementCategorie(1, 2);
+		listeCat1 = db.getListeEnregistrementCategorie(1);
+		listeCat2 = db.getListeEnregistrementCategorie(2);
+		assertEquals(listeCat1.size(), 2);
+		assertEquals(listeCat2.size(), 1);
+	}
+	
+	@Test
+	public void testListeEnregistrementSujet() throws SQLException
+	{
+		List<LigneEnregistrement> listeSuj1 = db.getListeEnregistrementSujet(1);
+		List<LigneEnregistrement> listeSuj2 = db.getListeEnregistrementSujet(2);
+		assertEquals(listeSuj1.size(), 3);
+		assertEquals(listeSuj2.size(), 0);
+		db.modifierEnregistrementSujet(1, 2);
+		listeSuj1 = db.getListeEnregistrementSujet(1);
+		listeSuj2 = db.getListeEnregistrementSujet(2);
+		assertEquals(listeSuj1.size(), 2);
+		assertEquals(listeSuj2.size(), 1);
+	}
+	
+	@Test
 	public void testExporterEnregistrement() throws DBException, SQLException
 	{
 		db.exporterEnregistrement("TestExport1", 1);
@@ -429,6 +415,45 @@ public class TestBaseDeDonneesModele
 		String sortie = sha1(contenu_fichier), entree = sha1(contenu_base);
 		assertEquals(sortie, entree);
 	}
+	
+	@Ignore
+	@Test
+	public void testCompacter() throws SQLException
+	{
+		int tailleAvant = -1, tailleApres = -1;
+		byte[] newContenu = new byte[10000000];
+		File base = new File("LieLabTest.db");
+		db.ajouterEnregistrement("Gros", 1, 1, newContenu, 1);
+		tailleAvant = (int) base.length();
+		db.compacter();
+		tailleApres = (int) base.length();
+		System.out.println(tailleAvant + " " + tailleApres + " "+ db.getNomEnregistrement(4));
+		assertTrue(tailleAvant < tailleApres);
+		
+	}
+	
+	@Test
+	public void testImporter() throws ClassNotFoundException, SQLException, DBException
+	{
+		BaseDeDonneesModele bdd = new BaseDeDonneesModele("LieLabTest2.db");
+		bdd.connexion();
+		bdd.createDatabase();
+		bdd.ajouterCategorie("Licorne");
+		bdd.ajouterSujet("Jurah");
+		db.ajouterEnregistrement("import", 1, 1, "toto".getBytes(), 1);
+		
+		db.importer(bdd.getListeCategorie(), bdd.getListeSujet(), bdd.getListeEnregistrement(), bdd);
+		bdd.deconnexion();
+		List<LigneEnregistrement> listeCat = db.getListeCategorie();
+		List<LigneEnregistrement> listeSuj = db.getListeSujet();
+		List<LigneEnregistrement> listeEnr = db.getListeEnregistrement();
+		assertEquals(listeCat.size(), 4);
+		assertEquals(listeSuj.size(), 4);
+		assertEquals(listeEnr.size(), 4);
+		assertEquals(db.getSujet("Jurah"), 4);
+		assertEquals(db.getCategorie("Licorne"), 4);
+	}
+	
 	
 	@AfterClass
 	public static void fin() throws SQLException
