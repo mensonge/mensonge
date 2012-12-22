@@ -19,7 +19,7 @@ import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 
-public class TestBaseDeDonneesModele
+public class TestBaseDeDonneesControlleur
 {
 	public static byte[] readFile(String nom)
 	{
@@ -57,14 +57,14 @@ public class TestBaseDeDonneesModele
 		return ret;
 	}
 
-	private static BaseDeDonneesModele db = null;
+	private static BaseDeDonneesControlleur db = null;
 
 	@BeforeClass
 	public static void init() throws Exception
 	{
 		File fichier = new File("LieLabTest.db");
 		fichier.createNewFile();
-		db = new BaseDeDonneesModele("LieLabTest.db");
+		db = new BaseDeDonneesControlleur("LieLabTest.db");
 		
 	}
 
@@ -229,7 +229,7 @@ public class TestBaseDeDonneesModele
 	}
 
 	@Test
-	public void testAjoutHorsCatEnregistrement() throws SQLException
+	public void testAjoutHorsCatEnregistrement() throws DBException
 	{
 		db.ajouterEnregistrement("Exception", 24, 25, "abcdefg".getBytes(), 1);
 		List<LigneEnregistrement> liste = db.getListeEnregistrement();
@@ -237,7 +237,7 @@ public class TestBaseDeDonneesModele
 	}
 
 	@Test
-	public void testAjoutHorsSujEnregistrement() throws SQLException
+	public void testAjoutHorsSujEnregistrement() throws DBException
 	{
 		db.ajouterEnregistrement("Exception", 24, 1, "abcdefg".getBytes(), 33);
 		List<LigneEnregistrement> liste = db.getListeEnregistrement();
@@ -289,7 +289,7 @@ public class TestBaseDeDonneesModele
 	}
 
 	@Test
-	public void testGetNomEnregistrement() throws SQLException
+	public void testGetNomEnregistrement() throws DBException
 	{
 		String nom = db.getNomEnregistrement(1);
 		assertEquals(nom, "Esperan");
@@ -298,14 +298,14 @@ public class TestBaseDeDonneesModele
 	}
 	
 	@Test
-	public void testGetNombreEnregistrement() throws SQLException
+	public void testGetNombreEnregistrement() throws DBException
 	{
 		int nb = db.getNombreEnregistrement();
 		assertEquals(nb, 3);
 	}
 	
 	@Test
-	public void testSuprimmerEnregistrement() throws DBException, SQLException
+	public void testSuprimmerEnregistrement() throws DBException, DBException
 	{
 		db.supprimerEnregistrement(1);
 		List<LigneEnregistrement> liste = db.getListeEnregistrement();
@@ -348,7 +348,7 @@ public class TestBaseDeDonneesModele
 	}
 
 	@Test
-	public void testListeEnregistrementCategorie() throws SQLException
+	public void testListeEnregistrementCategorie() throws DBException
 	{
 		List<LigneEnregistrement> listeCat1 = db.getListeEnregistrementCategorie(1);
 		List<LigneEnregistrement> listeCat2 = db.getListeEnregistrementCategorie(2);
@@ -362,7 +362,7 @@ public class TestBaseDeDonneesModele
 	}
 	
 	@Test
-	public void testListeEnregistrementSujet() throws SQLException
+	public void testListeEnregistrementSujet() throws DBException
 	{
 		List<LigneEnregistrement> listeSuj1 = db.getListeEnregistrementSujet(1);
 		List<LigneEnregistrement> listeSuj2 = db.getListeEnregistrementSujet(2);
@@ -393,27 +393,12 @@ public class TestBaseDeDonneesModele
 	{
 		db.exporterBase("TestExport2");
 		byte[] contenu_fichier = readFile("TestExport2");
-		byte[] contenu_base = readFile(db.getFileName());
+		byte[] contenu_base = readFile("LieLabTest.db");
 		assertEquals(contenu_fichier.length, contenu_base.length);
 		String sortie = sha1(contenu_fichier), entree = sha1(contenu_base);
 		assertEquals(sortie, entree);
 	}
 	
-	@Ignore
-	@Test
-	public void testCompacter() throws SQLException
-	{
-		int tailleAvant = -1, tailleApres = -1;
-		byte[] newContenu = new byte[10000000];
-		File base = new File("LieLabTest.db");
-		db.ajouterEnregistrement("Gros", 1, 1, newContenu, 1);
-		tailleAvant = (int) base.length();
-		db.compacter();
-		tailleApres = (int) base.length();
-		System.out.println(tailleAvant + " " + tailleApres + " "+ db.getNomEnregistrement(4));
-		assertTrue(tailleAvant < tailleApres);
-		
-	}
 	
 	@Test
 	public void testImporter() throws ClassNotFoundException, SQLException, DBException
@@ -425,7 +410,7 @@ public class TestBaseDeDonneesModele
 		bdd.ajouterSujet("Jurah");
 		db.ajouterEnregistrement("import", 1, 1, "toto".getBytes(), 1);
 		
-		db.importer(bdd.getListeCategorie(), bdd.getListeSujet(), bdd.getListeEnregistrement(), bdd);
+		db.importer("LieLabTest2.db");
 		bdd.deconnexion();
 		List<LigneEnregistrement> listeCat = db.getListeCategorie();
 		List<LigneEnregistrement> listeSuj = db.getListeSujet();
@@ -447,6 +432,8 @@ public class TestBaseDeDonneesModele
 		base = new File("TestExport1");
 		base.delete();
 		base = new File("TestExport2");
+		base.delete();
+		base = new File("LieLabTest2.db");
 		base.delete();
 		
 	}

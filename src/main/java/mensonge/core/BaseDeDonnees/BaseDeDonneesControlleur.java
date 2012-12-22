@@ -61,9 +61,10 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 			throw new DBException(BASE_INDISPONIBLE);
 		}
 	}
-	
+
 	public boolean connexion() throws DBException
 	{
+		boolean retour = true;;
 		try
 		{
 			this.bdd.connexion();
@@ -82,9 +83,21 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		}
 		catch (SQLException e)
 		{
-			throw new DBException("Problème dans la structure de la base", e);
+			retour = false;
 		}
-		return true;
+		if( ! retour)
+		{
+			try
+			{
+				this.bdd.createDatabase();
+				retour = true;
+			}
+			catch (SQLException e)
+			{
+				throw new DBException("Erreur lors de la creation de la base", e);
+			}
+		}
+		return retour;
 	}
 	
 	public boolean deconnexion()
