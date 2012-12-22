@@ -29,6 +29,8 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 	private static String ERREUR_RECUPERATION_SUJET = "Erreur lors de la recuperation de sujet";
 	private static String DUREE_INVALIDE = "Durée invalide, elle doit être superieur à 0"; 
 	private static String TAILLE_INVALIDE = "Taille invalide, elle doit être superieur à 0";
+	private static String NOM_VIDE = "Le nom est vide";
+	private static String CONTENU_VIDE = "Le contenu est vide";
 	
 	private BaseDeDonneesModele bdd;
 	
@@ -221,7 +223,16 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, DUREE_INVALIDE);
 			throw new DBException(DUREE_INVALIDE);
 		}
-		
+		if(nom == null)
+		{
+			BaseDeDonneesControlleur.logger.log(Level.WARNING, NOM_VIDE);
+			throw new DBException(NOM_VIDE);
+		}
+		if(enregistrement == null)
+		{
+			BaseDeDonneesControlleur.logger.log(Level.WARNING, CONTENU_VIDE);
+			throw new DBException(CONTENU_VIDE);
+		}
 		try
 		{
 			if( ! this.bdd.categorieExiste(idCat))
@@ -280,7 +291,16 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, DUREE_INVALIDE);
 			throw new DBException(DUREE_INVALIDE);
 		}
-		
+		if(nom == null)
+		{
+			BaseDeDonneesControlleur.logger.log(Level.WARNING, NOM_VIDE);
+			throw new DBException(NOM_VIDE);
+		}
+		if(enregistrement == null)
+		{
+			BaseDeDonneesControlleur.logger.log(Level.WARNING, CONTENU_VIDE);
+			throw new DBException(CONTENU_VIDE);
+		}
 		try
 		{
 			if( ! this.bdd.categorieExiste(idCat))
@@ -317,7 +337,11 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 			final int idCat, final int idSuj) throws DBException
 	{
 		this.baseDisponible();
-		
+		if(nom == null)
+		{
+			BaseDeDonneesControlleur.logger.log(Level.WARNING, NOM_VIDE);
+			throw new DBException(NOM_VIDE);
+		}
 		if(duree < 0)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, DUREE_INVALIDE);
@@ -364,7 +388,11 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 	public void modifierEnregistrementNom(final int id, final String nom) throws DBException
 	{
 		this.baseDisponible();
-		
+		if(nom == null)
+		{
+			BaseDeDonneesControlleur.logger.log(Level.WARNING, NOM_VIDE);
+			throw new DBException(NOM_VIDE);
+		}
 		try
 		{
 			if (this.bdd.enregistrementExist(nom))
@@ -641,7 +669,11 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 	public void modifierCategorie(final int id, final String nom) throws DBException
 	{
 		this.baseDisponible();
-		
+		if(nom == null)
+		{
+			BaseDeDonneesControlleur.logger.log(Level.WARNING, NOM_VIDE);
+			throw new DBException(NOM_VIDE);
+		}
 		try
 		{
 			if(this.bdd.categorieExiste(nom))
@@ -713,7 +745,11 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 	public void ajouterSujet(final String nom) throws DBException
 	{
 		this.baseDisponible();
-		
+		if(nom == null)
+		{
+			BaseDeDonneesControlleur.logger.log(Level.WARNING, NOM_VIDE);
+			throw new DBException(NOM_VIDE);
+		}
 		try
 		{
 			if(this.bdd.sujetExiste(nom))
@@ -775,7 +811,11 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 	public void modifierSujet(final int id, final String nom) throws DBException
 	{
 		this.baseDisponible();
-		
+		if(nom == null)
+		{
+			BaseDeDonneesControlleur.logger.log(Level.WARNING, NOM_VIDE);
+			throw new DBException(NOM_VIDE);
+		}
 		try
 		{
 			if(this.bdd.sujetExiste(nom))
