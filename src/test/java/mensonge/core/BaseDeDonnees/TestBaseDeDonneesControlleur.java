@@ -327,8 +327,6 @@ public class TestBaseDeDonneesControlleur
 	@Test
 	public void testModifEnregistrement() throws DBException, SQLException
 	{		
-		
-		
 		db.modifierEnregistrement(1, "Zeus", 15, 55, 3, 2);
 		db.modifierEnregistrementCategorie(2, "Poney");
 		db.modifierEnregistrementSujet(2, "Gwen");
@@ -368,6 +366,12 @@ public class TestBaseDeDonneesControlleur
 		assertEquals(3, tmp2.getIdSuj());
 	}
 	
+	@Test
+	public void testModificationContenu() throws DBException
+	{
+		db.modifierEnregistrement(1, "Zeus", 15, "etoile".getBytes(), 3, 2);
+		assertEquals(new String(db.recupererEnregistrement(1)), "etoile");
+	}
 	@Test
 	public void testEnregistrementExiste() throws DBException
 	{
@@ -611,6 +615,18 @@ public class TestBaseDeDonneesControlleur
 		assertEquals(listeSuj2.size(), 1);
 	}
 	
+	@Test(expected=DBException.class)
+	public void testListeEnregistrementCategorieErreur() throws DBException
+	{
+		db.getListeEnregistrementCategorie(77);
+	}
+	
+	@Test(expected=DBException.class)
+	public void testListeEnregistrementSujetErreur() throws DBException
+	{
+		db.getListeEnregistrementSujet(77);
+	}
+	
 	@Test
 	public void testExporterEnregistrement() throws DBException, SQLException
 	{
@@ -678,9 +694,10 @@ public class TestBaseDeDonneesControlleur
 		bdd.ajouterCategorie("Licorne");
 		bdd.ajouterSujet("Jurah");
 		bdd.ajouterEnregistrement("import", 1, 1, "toto".getBytes(), 1);
+		bdd.deconnexion();
 		
 		db.importer("LieLabTest2.db");
-		bdd.deconnexion();
+		
 		List<LigneEnregistrement> listeCat = db.getListeCategorie();
 		List<LigneEnregistrement> listeSuj = db.getListeSujet();
 		List<LigneEnregistrement> listeEnr = db.getListeEnregistrement();
