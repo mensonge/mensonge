@@ -102,6 +102,17 @@ public class TestBaseDeDonneesControlleur
 		assertEquals(4, i);
 	}
 
+	@Test(expected=DBException.class)
+	public void testAjoutCategorieErreur() throws DBException, SQLException
+	{
+		db.ajouterCategorie(null);
+	}
+	@Test(expected=DBException.class)
+	public void testAjoutCategorieExistant() throws DBException, SQLException
+	{
+		db.ajouterCategorie("Poney");
+	}
+	
 	@Test
 	public void testRenommerCategorie() throws DBException, SQLException
 	{
@@ -119,6 +130,18 @@ public class TestBaseDeDonneesControlleur
 			}
 		}
 		assertTrue(i == 3 && nom.equals("Licorne"));
+	}
+	
+	@Test(expected=DBException.class)
+	public void testModifierCategorieErreur() throws DBException, SQLException
+	{
+		db.modifierCategorie(1, null);
+	}
+	
+	@Test(expected=DBException.class)
+	public void testModifierCategorieExistant() throws DBException, SQLException
+	{
+		db.modifierCategorie(1, "Poney");
 	}
 
 	@Test
@@ -153,6 +176,12 @@ public class TestBaseDeDonneesControlleur
 		i = liste.size();
 		assertEquals(2, i);
 	}
+	
+	@Test(expected=DBException.class)
+	public void testSupprimerCategorieErreur() throws DBException, SQLException
+	{
+		db.supprimerCategorie(25);
+	}
 
 	@Test
 	public void testAjoutSujet() throws DBException, SQLException
@@ -174,7 +203,7 @@ public class TestBaseDeDonneesControlleur
 	@Test(expected=DBException.class)
 	public void testAjoutSujetExistant() throws DBException, SQLException
 	{
-		db.ajouterSujet(null);
+		db.ajouterSujet("Gwen");
 	}
 	
 	@Test
