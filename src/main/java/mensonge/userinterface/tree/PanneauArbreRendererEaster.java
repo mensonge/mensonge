@@ -65,17 +65,17 @@ public class PanneauArbreRendererEaster extends DefaultTreeCellRenderer
 
 		this.openRacine = new ImageIcon("images/bell.png");
 
-		this.openBranche = new ImageIcon("images/star_pink.png");
+		this.openBranche = new ImageIcon("images/easter3.png");
 
-		this.closeBranche = new ImageIcon("images/star_blue.png");
+		this.closeBranche = new ImageIcon("images/easter2.png");
 
-		this.openFeuille2 = new ImageIcon("images/dec1.png");
+		this.openFeuille2 = new ImageIcon("images/easter6.png");
 
-		this.openFeuille1 = new ImageIcon("images/dec2.png");
+		this.openFeuille1 = new ImageIcon("images/easter5.png");
 
-		this.openFeuille3 = new ImageIcon("images/dec3.png");
+		this.openFeuille3 = new ImageIcon("images/easter4.png");
 
-		this.openFeuille4 = new ImageIcon("images/dec4.png");
+		this.openFeuille4 = new ImageIcon("images/easter1.png");
 
 	}
 
