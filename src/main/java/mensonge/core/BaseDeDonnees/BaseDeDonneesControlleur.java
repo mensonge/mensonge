@@ -613,7 +613,11 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 	public void ajouterCategorie(final String nom) throws DBException
 	{
 		this.baseDisponible();
-		
+		if(nom == null)
+		{
+			BaseDeDonneesControlleur.logger.log(Level.WARNING, NOM_VIDE);
+			throw new DBException(NOM_VIDE);
+		}
 		try
 		{
 			if(this.bdd.categorieExiste(nom))
@@ -657,6 +661,11 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		this.baseDisponible();
 		try
 		{
+			if( ! this.bdd.categorieExiste(id))
+			{
+				BaseDeDonneesControlleur.logger.log(Level.WARNING, SUJET_INEXISTANT);
+				throw new DBException(SUJET_INEXISTANT);
+			}
 			this.bdd.supprimerCategorie(id);
 		}
 		catch (SQLException e)
