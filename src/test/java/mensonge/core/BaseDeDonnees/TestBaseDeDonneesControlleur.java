@@ -1,6 +1,7 @@
 package mensonge.core.BaseDeDonnees;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -162,6 +163,18 @@ public class TestBaseDeDonneesControlleur
 		assertTrue(db.getCategorie(2).equals("Flamment") && db.getCategorie("Pegase") == 3);
 	}
 
+	@Test(expected=DBException.class)
+	public void testGetCategorieErreur1() throws DBException, SQLException, NoSuchAlgorithmException
+	{
+		db.getCategorie(42);
+	}
+	
+	@Test(expected=DBException.class)
+	public void testGetCategorieErreur2() throws DBException, SQLException, NoSuchAlgorithmException
+	{
+		db.getCategorie("Cake");
+	}
+	
 	@Test
 	public void testSupprimerCategorie() throws DBException, SQLException
 	{
@@ -251,11 +264,23 @@ public class TestBaseDeDonneesControlleur
 	}
 
 	@Test
-	public void testConvertionSUjet() throws DBException, SQLException, NoSuchAlgorithmException
+	public void testGetSujet() throws DBException, SQLException, NoSuchAlgorithmException
 	{
 		assertTrue(db.getSujet(2).equals("Ronald") && db.getSujet("Gwen") == 3);
 	}
 
+	@Test(expected=DBException.class)
+	public void testGetSujetErreur1() throws DBException, SQLException, NoSuchAlgorithmException
+	{
+		db.getSujet(42);
+	}
+	
+	@Test(expected=DBException.class)
+	public void testGetSujetErreur2() throws DBException, SQLException, NoSuchAlgorithmException
+	{
+		db.getSujet("Cake");
+	}
+	
 	@Test
 	public void testSupprimerSujet() throws DBException, SQLException
 	{
@@ -341,6 +366,13 @@ public class TestBaseDeDonneesControlleur
 		assertEquals("Chuck1", tmp.getNom());
 		assertEquals(2, tmp2.getIdCat());
 		assertEquals(3, tmp2.getIdSuj());
+	}
+	
+	@Test
+	public void testEnregistrementExiste() throws DBException
+	{
+		assertTrue(db.enregistrementExist("Esperan"));
+		assertFalse(db.enregistrementExist("InexistantEnregistrement"));
 	}
 
 	@Test(expected=DBException.class)
@@ -593,6 +625,27 @@ public class TestBaseDeDonneesControlleur
 	}
 	
 	@Test
+	public void testExporterEnregistrementFichierExiste() throws DBException, SQLException, IOException
+	{
+		File fichier = new File("TestExport4");
+		fichier.createNewFile();
+		db.exporterEnregistrement("TestExport4", 1);
+		byte[] contenu_fichier = readFile("TestExport4");
+		byte[] contenu_enregistrement = db.recupererEnregistrement(1);
+		for(int i = 0; i < contenu_enregistrement.length; i++)
+		{
+			assertEquals(contenu_enregistrement[i], contenu_fichier[i]);
+		}
+		assertEquals(2, contenu_fichier.length - contenu_enregistrement.length);
+	}
+	
+	@Test(expected=DBException.class)
+	public void testExporterEnregistrementErreur() throws DBException, SQLException, IOException
+	{
+		db.exporterEnregistrement("TestExport1", 666);
+	}
+	
+	@Test
 	public void testExporterBase() throws DBException, NoSuchAlgorithmException
 	{
 		db.exporterBase("TestExport2");
@@ -603,6 +656,18 @@ public class TestBaseDeDonneesControlleur
 		assertEquals(sortie, entree);
 	}
 	
+	@Test
+	public void testExporterBaseFichierExiste() throws DBException, NoSuchAlgorithmException, IOException
+	{
+		File fichier = new File("TestExport3");
+		fichier.createNewFile();
+		db.exporterBase("TestExport3");
+		byte[] contenu_fichier = readFile("TestExport3");
+		byte[] contenu_base = readFile("LieLabTest.db");
+		assertEquals(contenu_fichier.length, contenu_base.length);
+		String sortie = sha1(contenu_fichier), entree = sha1(contenu_base);
+		assertEquals(sortie, entree);
+	}
 	
 	@Test
 	public void testImporter() throws ClassNotFoundException, SQLException, DBException
@@ -612,7 +677,7 @@ public class TestBaseDeDonneesControlleur
 		bdd.createDatabase();
 		bdd.ajouterCategorie("Licorne");
 		bdd.ajouterSujet("Jurah");
-		db.ajouterEnregistrement("import", 1, 1, "toto".getBytes(), 1);
+		bdd.ajouterEnregistrement("import", 1, 1, "toto".getBytes(), 1);
 		
 		db.importer("LieLabTest2.db");
 		bdd.deconnexion();
@@ -626,6 +691,77 @@ public class TestBaseDeDonneesControlleur
 		assertEquals(db.getCategorie("Licorne"), 4);
 	}
 	
+	@Test
+	public void testImporterSujetExistant() throws ClassNotFoundException, SQLException, DBException
+	{
+		BaseDeDonneesModele bdd = new BaseDeDonneesModele("LieLabTest3.db");
+		bdd.connexion();
+		bdd.createDatabase();
+		bdd.ajouterCategorie("Licorne");
+		bdd.ajouterSujet("Gwen");
+		bdd.ajouterEnregistrement("import", 1, 1, "toto".getBytes(), 1);
+		
+		db.importer("LieLabTest3.db");
+		bdd.deconnexion();
+		List<LigneEnregistrement> listeCat = db.getListeCategorie();
+		List<LigneEnregistrement> listeSuj = db.getListeSujet();
+		List<LigneEnregistrement> listeEnr = db.getListeEnregistrement();
+		assertEquals(listeCat.size(), 4);
+		assertEquals(listeSuj.size(), 4);
+		assertEquals(listeEnr.size(), 4);
+		assertEquals(db.getSujet("Gwen.new"), 4);
+		assertEquals(db.getSujet("Gwen"), 3);
+	}
+	
+	@Test
+	public void testImporterCategorieExistante() throws ClassNotFoundException, SQLException, DBException
+	{
+		BaseDeDonneesModele bdd = new BaseDeDonneesModele("LieLabTest4.db");
+		bdd.connexion();
+		bdd.createDatabase();
+		bdd.ajouterCategorie("Poney");
+		bdd.ajouterSujet("Jurah");
+		bdd.ajouterEnregistrement("import", 1, 1, "toto".getBytes(), 1);
+		
+		db.importer("LieLabTest4.db");
+		bdd.deconnexion();
+		List<LigneEnregistrement> listeCat = db.getListeCategorie();
+		List<LigneEnregistrement> listeSuj = db.getListeSujet();
+		List<LigneEnregistrement> listeEnr = db.getListeEnregistrement();
+		assertEquals(listeCat.size(), 4);
+		assertEquals(listeSuj.size(), 4);
+		assertEquals(listeEnr.size(), 4);
+		assertEquals(db.getCategorie("Poney.new"), 4);
+		assertEquals(db.getCategorie("Poney"), 1);
+	}
+	
+	@Test
+	public void testImporterEnregistrementExistant() throws ClassNotFoundException, SQLException, DBException
+	{
+		BaseDeDonneesModele bdd = new BaseDeDonneesModele("LieLabTest5.db");
+		bdd.connexion();
+		bdd.createDatabase();
+		bdd.ajouterCategorie("Poney");
+		bdd.ajouterSujet("Jurah");
+		bdd.ajouterEnregistrement("Gracia", 1, 1, "toto".getBytes(), 1);
+		
+		db.importer("LieLabTest5.db");
+		bdd.deconnexion();
+		List<LigneEnregistrement> listeCat = db.getListeCategorie();
+		List<LigneEnregistrement> listeSuj = db.getListeSujet();
+		List<LigneEnregistrement> listeEnr = db.getListeEnregistrement();
+		assertEquals(listeCat.size(), 4);
+		assertEquals(listeSuj.size(), 4);
+		assertEquals(listeEnr.size(), 4);
+		assertEquals(db.getNomEnregistrement(4), "Gracia.new");
+		assertEquals(db.getNomEnregistrement(2), "Gracia");
+	}
+	
+	@Test(expected=DBException.class)
+	public void testImporterFichierInexistant() throws ClassNotFoundException, SQLException, DBException
+	{
+		db.importer("FichierInexistant");
+	}
 	
 	@AfterClass
 	public static void fin() throws SQLException
@@ -638,6 +774,12 @@ public class TestBaseDeDonneesControlleur
 		base = new File("TestExport2");
 		base.delete();
 		base = new File("LieLabTest2.db");
+		base.delete();
+		base = new File("LieLabTest3.db");
+		base.delete();
+		base = new File("LieLabTest4.db");
+		base.delete();
+		base = new File("LieLabTest5.db");
 		base.delete();
 		
 	}

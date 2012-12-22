@@ -1044,6 +1044,11 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		
 		try
 		{
+			if( ! this.bdd.enregistrementExist(id))
+			{
+				BaseDeDonneesControlleur.logger.log(Level.WARNING, ENREGISTREMENT_ID_INEXISTANT);
+				throw new DBException(ENREGISTREMENT_ID_INEXISTANT);
+			}
 			this.bdd.exporterEnregistrement(cheminFichier, id);
 		}
 		catch (SQLException e)
