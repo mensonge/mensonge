@@ -16,21 +16,21 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 	 */
 	private static Logger logger = Logger.getLogger("BDD");
 	
-	private static String SUJET_EXISTANT = "Sujet existant";
-	private static String SUJET_INEXISTANT = "Sujet inexistant";
-	private static String CATEGORIE_EXISTANTE = "Categorie existante";
-	private static String CATEGORIE_INEXISTANTE = "Categorie inexistante";
-	private static String ENREGISTREMENT_INEXISTANT = "Enregistrement inexistant";
-	private static String ENREGISTREMENT_EXISTANT = "Enregistrement existant";
-	private static String ENREGISTREMENT_ID_INEXISTANT = "Enregistrement id inexistant";
-	private static String BASE_INDISPONIBLE = "La base de données est indisponible";
-	private static String ERREUR_MODIFICATION_ENREGISTREMENT = "Erreur lors de la modification de l'enregistrement";
-	private static String ERREUR_RECUPERATION_CATEGORIE = "Erreur lors de la recuperation de categorie";
-	private static String ERREUR_RECUPERATION_SUJET = "Erreur lors de la recuperation de sujet";
-	private static String DUREE_INVALIDE = "Durée invalide, elle doit être superieur à 0"; 
-	private static String TAILLE_INVALIDE = "Taille invalide, elle doit être superieur à 0";
-	private static String NOM_VIDE = "Le nom est vide";
-	private static String CONTENU_VIDE = "Le contenu est vide";
+	private static final String SUJET_EXISTANT = "Sujet existant";
+	private static final String SUJET_INEXISTANT = "Sujet inexistant";
+	private static final String CATEGORIE_EXISTANTE = "Categorie existante";
+	private static final String CATEGORIE_INEXISTANTE = "Categorie inexistante";
+	private static final String ENREGISTREMENT_INEXISTANT = "Enregistrement inexistant";
+	private static final String ENREGISTREMENT_EXISTANT = "Enregistrement existant";
+	private static final String ENREGISTREMENT_ID_INEXISTANT = "Enregistrement id inexistant";
+	private static final String BASE_INDISPONIBLE = "La base de données est indisponible";
+	private static final String ERREUR_MODIFICATION_ENREGISTREMENT = "Erreur lors de la modification de l'enregistrement";
+	private static final String ERREUR_RECUPERATION_CATEGORIE = "Erreur lors de la recuperation de categorie";
+	private static final String ERREUR_RECUPERATION_SUJET = "Erreur lors de la recuperation de sujet";
+	private static final String DUREE_INVALIDE = "Durée invalide, elle doit être superieur à 0"; 
+	private static final String TAILLE_INVALIDE = "Taille invalide, elle doit être superieur à 0";
+	private static final String NOM_VIDE = "Le nom est vide";
+	private static final String CONTENU_VIDE = "Le contenu est vide";
 	
 	private BaseDeDonneesModele bdd;
 	
