@@ -2,6 +2,7 @@ package mensonge.core.BaseDeDonnees;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
@@ -296,7 +297,7 @@ public class TestBaseDeDonneesModele
 		String nom = db.getNomEnregistrement(1);
 		assertEquals(nom, "Esperan");
 		nom = db.getNomEnregistrement(55);
-		assertTrue(nom == null);
+		assertNull(nom);
 	}
 	
 	@Test
@@ -335,7 +336,7 @@ public class TestBaseDeDonneesModele
 	@Test
 	public void testRecupererEnregistrementInexistant() throws DBException, SQLException
 	{
-		assertTrue(db.recupererEnregistrement(25) == null);
+		assertNull(db.recupererEnregistrement(25));
 	}
 
 	@Test

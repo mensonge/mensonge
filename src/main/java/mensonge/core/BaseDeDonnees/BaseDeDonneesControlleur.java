@@ -27,6 +27,8 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 	private static final String ERREUR_MODIFICATION_ENREGISTREMENT = "Erreur lors de la modification de l'enregistrement";
 	private static final String ERREUR_RECUPERATION_CATEGORIE = "Erreur lors de la recuperation de categorie";
 	private static final String ERREUR_RECUPERATION_SUJET = "Erreur lors de la recuperation de sujet";
+	private static final String ERREUR_RECUPERATION_ENREGISTREMENT = "Erreur lors de la recuperation des enregistrements";
+	private static final String ERREUR_CREATION_BASE = "Erreur lors de la creation de la base";
 	private static final String DUREE_INVALIDE = "Durée invalide, elle doit être superieur à 0"; 
 	private static final String TAILLE_INVALIDE = "Taille invalide, elle doit être superieur à 0";
 	private static final String NOM_VIDE = "Le nom est vide";
@@ -47,7 +49,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 			}
 			catch (SQLException e)
 			{
-				throw new DBException("Erreur lors de la creation de la base", e);
+				throw new DBException(ERREUR_CREATION_BASE, e);
 			}
 		}
 	}
@@ -96,7 +98,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 			}
 			catch (SQLException e)
 			{
-				throw new DBException("Erreur lors de la creation de la base", e);
+				throw new DBException(ERREUR_CREATION_BASE, e);
 			}
 		}
 		return retour;
@@ -127,11 +129,11 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		catch (SQLException e)
 		{
 			BaseDeDonneesControlleur.logger.log(Level.WARNING, e.getLocalizedMessage());
-			throw new DBException("Erreur lors de la recuperation des enregistrements", e);
+			throw new DBException(ERREUR_RECUPERATION_ENREGISTREMENT, e);
 		}
 		if(retour == null)
 		{
-			throw new DBException("Erreur lors de la recuperation des enregistrements");
+			throw new DBException(ERREUR_RECUPERATION_ENREGISTREMENT);
 		}
 		return retour;
 	}
@@ -159,7 +161,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		}
 		if(retour == null)
 		{
-			throw new DBException("Erreur lors de la recuperation des enregistrements");
+			throw new DBException(ERREUR_RECUPERATION_ENREGISTREMENT);
 		}
 		return retour;
 	}
@@ -186,7 +188,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		}
 		if(retour == null)
 		{
-			throw new DBException("Erreur lors de la recuperation des enregistrements");
+			throw new DBException(ERREUR_RECUPERATION_ENREGISTREMENT);
 		}
 		return retour;
 	}
@@ -893,8 +895,8 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		}
 		catch (SQLException e)
 		{
-			BaseDeDonneesControlleur.logger.log(Level.WARNING, "Erreur lors de la creation de la base");
-			throw new DBException("Erreur lors de la creation de la base", e);
+			BaseDeDonneesControlleur.logger.log(Level.WARNING, ERREUR_CREATION_BASE);
+			throw new DBException(ERREUR_CREATION_BASE, e);
 		}
 	}
 	

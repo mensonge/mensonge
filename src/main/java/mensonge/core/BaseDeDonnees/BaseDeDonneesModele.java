@@ -39,6 +39,8 @@ public class BaseDeDonneesModele extends DataBaseObservable
 	public static final String COLONNE_IDCAT = "idCat";
 	public static final String COLONNE_TAILLE = "taille";
 	public static final String COLONNE_DUREE = "duree";
+	public static final String ERREUR_MISE_A_JOUR = "Impossible de mettre à jour l'enregistrement";
+	
 	/**
 	 * Le logger
 	 */
@@ -527,12 +529,12 @@ public class BaseDeDonneesModele extends DataBaseObservable
 			}
 			else
 			{
-				notifyFailedAction("Impossible de mettre à jour l'enregistrement");
+				notifyFailedAction(ERREUR_MISE_A_JOUR);
 			}
 		}
 		catch (SQLException e)
 		{
-			notifyFailedAction("Impossible de mettre à jour l'enregistrement");
+			notifyFailedAction(ERREUR_MISE_A_JOUR);
 			throw e;
 		} finally
 		{
@@ -578,12 +580,12 @@ public class BaseDeDonneesModele extends DataBaseObservable
 			}
 			else
 			{
-				notifyFailedAction("Impossible de mettre à jour l'enregistrement");
+				notifyFailedAction(ERREUR_MISE_A_JOUR);
 			}
 		}
 		catch (SQLException e)
 		{
-			notifyFailedAction("Impossible de mettre à jour l'enregistrement");
+			notifyFailedAction(ERREUR_MISE_A_JOUR);
 			throw e;
 		} finally
 		{
@@ -617,7 +619,7 @@ public class BaseDeDonneesModele extends DataBaseObservable
 			}
 			else
 			{
-				notifyFailedAction("Impossible de mettre à jour l'enregistrement");
+				notifyFailedAction(ERREUR_MISE_A_JOUR);
 			}
 		}
 		catch (SQLException e)
@@ -656,7 +658,7 @@ public class BaseDeDonneesModele extends DataBaseObservable
 			}
 			else
 			{
-				notifyFailedAction("Impossible de mettre à jour l'enregistrement");
+				notifyFailedAction(ERREUR_MISE_A_JOUR);
 			}
 		}
 		catch (SQLException e)
@@ -696,7 +698,7 @@ public class BaseDeDonneesModele extends DataBaseObservable
 			}
 			else
 			{
-				notifyFailedAction("Impossible de mettre à jour l'enregistrement");
+				notifyFailedAction(ERREUR_MISE_A_JOUR);
 			}
 		}
 		catch (SQLException e)
@@ -735,7 +737,7 @@ public class BaseDeDonneesModele extends DataBaseObservable
 			}
 			else
 			{
-				notifyFailedAction("Impossible de mettre à jour l'enregistrement");
+				notifyFailedAction(ERREUR_MISE_A_JOUR);
 			}
 		}
 		catch (SQLException e)
@@ -780,7 +782,7 @@ public class BaseDeDonneesModele extends DataBaseObservable
 			}
 			else
 			{
-				notifyFailedAction("Impossible de mettre à jour l'enregistrement");
+				notifyFailedAction(ERREUR_MISE_A_JOUR);
 			}
 		}
 		catch (SQLException e)
@@ -819,7 +821,7 @@ public class BaseDeDonneesModele extends DataBaseObservable
 			}
 			else
 			{
-				notifyFailedAction("Impossible de mettre à jour l'enregistrement");
+				notifyFailedAction(ERREUR_MISE_A_JOUR);
 			}
 		}
 		catch (SQLException e)
@@ -862,7 +864,7 @@ public class BaseDeDonneesModele extends DataBaseObservable
 			}
 			else
 			{
-				notifyFailedAction("Impossible de mettre à jour l'enregistrement");
+				notifyFailedAction(ERREUR_MISE_A_JOUR);
 			}
 
 		}
