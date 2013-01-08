@@ -38,19 +38,18 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 	
 	public BaseDeDonneesControlleur(String cheminFichier) throws DBException
 	{
-		File fichier = new File(cheminFichier);
-		
 		this.bdd = new BaseDeDonneesModele(cheminFichier);
+		File fichier = new File(cheminFichier);
 		if( ! fichier.exists())
 		{
-			try
-			{
-				this.bdd.createDatabase();
-			}
-			catch (SQLException e)
-			{
-				throw new DBException(ERREUR_CREATION_BASE, e);
-			}
+				try
+				{
+					fichier.createNewFile();
+				}
+				catch (IOException e)
+				{
+					throw new DBException(ERREUR_CREATION_BASE, e);
+				}
 		}
 	}
 	

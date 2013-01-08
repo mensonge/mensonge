@@ -1,9 +1,14 @@
 package mensonge.core.BaseDeDonnees;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -164,7 +169,7 @@ public class BaseDeDonneesModele extends DataBaseObservable
 
 	/**
 	 * exporte les enregistrement selon deux methodes. soit au format sqlite soit en wav. (ajoute à la fin du fichier
-	 * wav le sujet et la categorie
+	 * wav le sujet et la categorie sur 4 octets chacun)
 	 * 
 	 * @param cheminFichier
 	 *            fichier dans lequel sera exporte la base.
@@ -180,27 +185,33 @@ public class BaseDeDonneesModele extends DataBaseObservable
 			File dest = new File(cheminFichier);
 			// récupérer un enregistrement
 			byte[] echantillon = this.recupererEnregistrement(id);
-			byte sujet = 0, categorie = 0;
+			int sujet = 0;
+			byte categorie = 0;
 			// coller l'enregistrement dans un fichier
 			FileOutputStream destinationFile = null;
 			List<LigneEnregistrement> liste = this.getListeEnregistrement();
-
+			
 			for (LigneEnregistrement ligne : liste)
 			{
 				if (ligne.getId() == id)
 				{
-					sujet = (byte) ligne.getIdCat();
+					sujet = ligne.getIdCat();
 					categorie = (byte) ligne.getIdSuj();
 				}
 			}
 
 			try
 			{
+				ByteBuffer bb;
 				destinationFile = new FileOutputStream(dest);
 				destinationFile.write(echantillon);
-				destinationFile.write(sujet);
-				destinationFile.write(categorie);
+				bb = ByteBuffer.allocate(Integer.SIZE/8*2);
+				bb.putInt(categorie);
+				bb.putInt(sujet);
+				destinationFile.write(bb.array());
+				destinationFile.flush();
 				destinationFile.close();
+				
 			}
 			catch (IOException e)
 			{
@@ -222,6 +233,12 @@ public class BaseDeDonneesModele extends DataBaseObservable
 			notifyCompletedAction("La base de données a été exportée");
 	}
 
+	public byte[] convertInt(int n)
+	{
+		byte[] retour = new byte[4];
+		
+		return retour;
+	}
 	public void exporterBase(final String cheminFichier) throws DBException
 	{
 		notifyInProgressAction("Exportation de la base de données...");
