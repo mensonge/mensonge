@@ -1,4 +1,4 @@
-package coeffCepstraux.userinterface;
+package fondamentale.userinterface;
 
 import java.awt.Dimension;
 
