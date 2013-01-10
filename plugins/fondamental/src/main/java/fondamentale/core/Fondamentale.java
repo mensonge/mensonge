@@ -3,8 +3,12 @@ package fondamentale.core;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Array;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -16,6 +20,8 @@ import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 
 import mensonge.core.IExtraction;
+import mensonge.core.BaseDeDonnees.DBException;
+import mensonge.core.BaseDeDonnees.IBaseDeDonnees;
 import mensonge.core.plugins.Plugin;
 
 import org.jfree.data.xy.XYDataset;
@@ -49,7 +55,6 @@ public class Fondamentale implements Plugin
 			{
 				samplesFFT[i] = echantillons[i][j];
 			}
-
 			final DoubleFFT_1D fft = new DoubleFFT_1D(samplesFFT.length);
 			fft.realForward(samplesFFT);
 
@@ -64,15 +69,28 @@ public class Fondamentale implements Plugin
 	}
 
 	@Override
-	public void lancer(IExtraction extraction, List<File> listSelectedFiles)
+	public void lancer(IExtraction extraction, Map<Integer, File> listeFichiersSelectionnes, IBaseDeDonnees bdd)
 	{
 		this.isActive = true;
 		List<double[]> resultat = new LinkedList<double[]>();
 		int nbColonne = 0;
-		if (!listSelectedFiles.isEmpty())
+		List<String> listeFile = new LinkedList<String>();
+		if (!listeFichiersSelectionnes.isEmpty())
 		{
-			for (File file : listSelectedFiles)
+			Set<Integer> keys = listeFichiersSelectionnes.keySet();
+			
+			for (Integer key : keys)
 			{
+				File file = listeFichiersSelectionnes.get(key);
+				try
+				{
+					listeFile.add(bdd.getNomEnregistrement(key.intValue()));
+				}
+				catch (DBException e1)
+				{
+					e1.printStackTrace();
+				}
+				
 				try
 				{
 					AudioInputStream inputAIS = AudioSystem.getAudioInputStream(file);
@@ -95,7 +113,7 @@ public class Fondamentale implements Plugin
 					logger.log(Level.WARNING, e.getLocalizedMessage());
 				}
 			}
-			JTable tableau = Fondamentale.creerTableau(resultat, listSelectedFiles, nbColonne);
+			JTable tableau = Fondamentale.creerTableau(resultat, listeFile, nbColonne);
 			new Fenetre(tableau);
 		}
 		this.isActive = false;
@@ -164,7 +182,7 @@ public class Fondamentale implements Plugin
 		return retour;
 	}
 	
-	public static JTable creerTableau(List<double[]> liste, List<File> fichier, int nbColonne)
+	public static JTable creerTableau(List<double[]> liste, List<String> fichier, int nbColonne)
 	{
 		String[] titre = Fondamentale.creerTitre(nbColonne);
 		Object[][] data = new Object[fichier.size()][nbColonne + 1];
