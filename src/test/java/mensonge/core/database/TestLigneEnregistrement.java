@@ -1,6 +1,8 @@
-package mensonge.core.BaseDeDonnees;
+package mensonge.core.database;
 
 import static org.junit.Assert.assertEquals;
+
+import mensonge.core.database.LigneEnregistrement;
 
 import org.junit.Test;
 

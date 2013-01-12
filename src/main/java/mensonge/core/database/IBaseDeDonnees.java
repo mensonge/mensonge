@@ -1,4 +1,4 @@
-package mensonge.core.BaseDeDonnees;
+package mensonge.core.database;
 
 /**
  * Interface nécessaire pour les plugins notamment pour qu'ils connaissent les méthodes qu'ils auront accès pour traiter

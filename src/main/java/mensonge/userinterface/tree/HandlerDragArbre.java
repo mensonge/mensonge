@@ -11,8 +11,8 @@ import javax.swing.JTree;
 import javax.swing.TransferHandler;
 import javax.swing.tree.TreePath;
 
-import mensonge.core.BaseDeDonnees.BaseDeDonneesControlleur;
-import mensonge.core.BaseDeDonnees.DBException;
+import mensonge.core.database.BaseDeDonneesControlleur;
+import mensonge.core.database.DBException;
 import mensonge.userinterface.Feuille;
 
 /**

@@ -1,4 +1,4 @@
-package mensonge.core.BaseDeDonnees;
+package mensonge.core.database;
 
 /**
  * Classe represantant une ligne de la table

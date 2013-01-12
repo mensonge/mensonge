@@ -1,4 +1,4 @@
-package mensonge.core.BaseDeDonnees;
+package mensonge.core.database;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -13,6 +13,10 @@ import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.util.Formatter;
 import java.util.List;
+
+import mensonge.core.database.BaseDeDonneesModele;
+import mensonge.core.database.DBException;
+import mensonge.core.database.LigneEnregistrement;
 
 import org.junit.After;
 import org.junit.AfterClass;

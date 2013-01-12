@@ -13,7 +13,7 @@ import javax.swing.JComponent;
 import javax.swing.TransferHandler;
 
 import mensonge.core.Extraction;
-import mensonge.core.BaseDeDonnees.BaseDeDonneesControlleur;
+import mensonge.core.database.BaseDeDonneesControlleur;
 
 public class HandlerDragLecteur extends TransferHandler
 {

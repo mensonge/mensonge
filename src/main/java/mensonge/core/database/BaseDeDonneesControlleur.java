@@ -1,4 +1,4 @@
-package mensonge.core.BaseDeDonnees;
+package mensonge.core.database;
 
 import java.io.File;
 import java.io.IOException;

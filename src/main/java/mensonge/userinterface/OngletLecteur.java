@@ -7,7 +7,7 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import mensonge.core.Extraction;
-import mensonge.core.BaseDeDonnees.BaseDeDonneesControlleur;
+import mensonge.core.database.BaseDeDonneesControlleur;
 
 /**
  * Classe gérant un onglet dans l'application possédant un lecteur vidéo

@@ -21,9 +21,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
-import mensonge.core.BaseDeDonnees.BaseDeDonneesControlleur;
-import mensonge.core.BaseDeDonnees.DBException;
-import mensonge.core.BaseDeDonnees.LigneEnregistrement;
+import mensonge.core.database.BaseDeDonneesControlleur;
+import mensonge.core.database.DBException;
+import mensonge.core.database.LigneEnregistrement;
 
 public final class DialogueAjouterEnregistrement extends JDialog implements ActionListener, KeyListener
 {

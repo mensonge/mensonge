@@ -37,9 +37,9 @@ import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
 
-import mensonge.core.BaseDeDonnees.BaseDeDonneesControlleur;
-import mensonge.core.BaseDeDonnees.DBException;
-import mensonge.core.BaseDeDonnees.LigneEnregistrement;
+import mensonge.core.database.BaseDeDonneesControlleur;
+import mensonge.core.database.DBException;
+import mensonge.core.database.LigneEnregistrement;
 import mensonge.core.tools.Cache;
 import mensonge.core.tools.DataBaseObserver;
 import mensonge.core.tools.Lockable;

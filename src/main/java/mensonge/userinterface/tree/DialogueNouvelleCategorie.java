@@ -13,9 +13,9 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import mensonge.core.BaseDeDonnees.BaseDeDonneesControlleur;
-import mensonge.core.BaseDeDonnees.DBException;
-import mensonge.core.BaseDeDonnees.LigneEnregistrement;
+import mensonge.core.database.BaseDeDonneesControlleur;
+import mensonge.core.database.DBException;
+import mensonge.core.database.LigneEnregistrement;
 import mensonge.userinterface.GraphicalUserInterface;
 
 public final class DialogueNouvelleCategorie extends JDialog

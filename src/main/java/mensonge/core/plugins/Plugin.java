@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.Map;
 
 import mensonge.core.IExtraction;
-import mensonge.core.BaseDeDonnees.IBaseDeDonnees;
+import mensonge.core.database.IBaseDeDonnees;
 
 /**
  * Interface représentant un plugin
