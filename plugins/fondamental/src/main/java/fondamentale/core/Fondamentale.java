@@ -20,8 +20,8 @@ import javax.swing.JTable;
 import javax.swing.SwingUtilities;
 
 import mensonge.core.IExtraction;
-import mensonge.core.BaseDeDonnees.DBException;
-import mensonge.core.BaseDeDonnees.IBaseDeDonnees;
+import mensonge.core.database.DBException;
+import mensonge.core.database.IBaseDeDonnees;
 import mensonge.core.plugins.Plugin;
 
 import org.jfree.data.xy.XYDataset;

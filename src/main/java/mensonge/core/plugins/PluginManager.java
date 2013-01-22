@@ -86,7 +86,6 @@ public class PluginManager
 						 * Exemple :core/plugins/PluginManager.class deviendra core.plugins.PluginManager Comme le
 						 * spécifie la convention de Java
 						 */
-
 						tmpClass = Class.forName(tmp, true, loader);
 
 						for (Class<?> inter : tmpClass.getInterfaces())
