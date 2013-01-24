@@ -1,0 +1,51 @@
+clc
+clear all;
+close all;
+
+
+signal = wavread('2.wav');
+%signal = resample(signal, 5000, 32000);
+
+% On travaille en mono
+signal = signal(:,1);
+
+figure
+
+% Affichage du signal
+subplot(311)
+plot(signal, 'b')
+title('Signal');
+
+
+% Calcul de l'énergie (approximation)
+S = abs(signal);
+m = min(S(:));
+S = S - m;
+M = max(S(:));
+S = S/M;
+
+e = S.^2;
+
+% Affichage de e
+subplot(312)
+plot(e, 'r')
+title('~Energie~');
+
+% Seuillage de e
+seuil = .05;
+e = e>seuil;
+
+% Affichage su seuil
+hold on
+plot([0 numel(e)],[seuil seuil],'m-')
+% Détection des "silences"
+
+idx(1) = find(e>seuil,1,'first');
+idx(2) = find(e>seuil,1,'last')
+
+signal(1:idx(1)) = 0;
+signal(idx(2):end) = 0;
+% Affichage des silences détectés
+subplot(313)
+plot(signal, 'b')
+title('Signal + filtrage');
