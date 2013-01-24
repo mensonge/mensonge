@@ -33,19 +33,19 @@ public class SpectralAnalysis implements Plugin
 	private boolean isActive = false;
 	private List<DrawXYGraph> graphsList = new ArrayList<DrawXYGraph>();
 	private List<XYSeries> seriesList = new ArrayList<XYSeries>();
-	
+
 	private void drawGraph(final double[][] echantillons, final float sampleRate, final String fileName)
 	{
-
+		double[] hamming = hamming(echantillons.length);
 		double[] samplesFFT = new double[echantillons.length];
 		DoubleFFT_1D fft = new DoubleFFT_1D(samplesFFT.length);
 		for (int i = 0; i < echantillons.length; i++)
 		{
-			samplesFFT[i] = echantillons[i][0];
+			samplesFFT[i] = echantillons[i][0] * hamming[i];
 		}
 		fft.realForward(samplesFFT);
-		final DrawXYGraph graphFFT = new DrawXYGraph("Analyse du spectre - "+fileName, "Analyse du spectre - "+fileName, "Fréquence (Hz)",
-				"Amplitude");
+		final DrawXYGraph graphFFT = new DrawXYGraph("Analyse du spectre - " + fileName, "Analyse du spectre - "
+				+ fileName, "Fréquence (Hz)", "Amplitude");
 		graphsList.add(graphFFT);
 		final XYSeries series = new XYSeries("Spectre");
 		seriesList.add(series);
@@ -70,6 +70,18 @@ public class SpectralAnalysis implements Plugin
 		graphFFT.display();
 		samplesFFT = null;
 		fft = null;
+	}
+
+	private static double[] hamming(int length)
+	{
+		double[] window = new double[length];
+		int m = length / 2;
+		double r = Math.PI * 2 / length;
+		for (int n = -m; n < m; n++)
+		{
+			window[m + n] = 0.54 + 0.46 * Math.cos(n * r);
+		}
+		return window;
 	}
 
 	@Override
@@ -105,7 +117,7 @@ public class SpectralAnalysis implements Plugin
 			}
 		}
 		this.isActive = false;
-		Runtime.getRuntime().gc();		
+		Runtime.getRuntime().gc();
 	}
 
 	@Override

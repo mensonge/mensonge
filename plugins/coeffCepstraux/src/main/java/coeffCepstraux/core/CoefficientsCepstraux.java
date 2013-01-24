@@ -41,10 +41,10 @@ public class CoefficientsCepstraux implements Plugin
 		double[] samples = new double[echantillons.length];
 		double[] samplesFFT = new double[echantillons.length];
 		double[] samplesCepstre = new double[echantillons.length];
-
+		double[] hamming = hamming(echantillons.length);
 		for (int i = 0; i < echantillons.length; i++)
 		{
-			samples[i] = echantillons[i][0];
+			samples[i] = echantillons[i][0] * hamming[i];
 		}
 		System.arraycopy(samples, 0, samplesFFT, 0, samples.length);
 
@@ -57,7 +57,8 @@ public class CoefficientsCepstraux implements Plugin
 		samples = null;
 		samplesFFT = null;
 		fft.realInverse(samplesCepstre, true);
-		final DrawXYGraph graphCepstre = new DrawXYGraph("Cepstre - "+fileName, "Cepstre - "+fileName, "Quéfrence (Hz)", "Amplitude");
+		final DrawXYGraph graphCepstre = new DrawXYGraph("Cepstre - " + fileName, "Cepstre - " + fileName,
+				"Quéfrence (Hz)", "Amplitude");
 
 		graphsList.add(graphCepstre);
 		final XYSeries series = new XYSeries("Cepstre");
@@ -85,7 +86,19 @@ public class CoefficientsCepstraux implements Plugin
 		samplesCepstre = null;
 		xyDataset2 = null;
 	}
-	
+
+	private static double[] hamming(int length)
+	{
+		double[] window = new double[length];
+		int m = length / 2;
+		double r = Math.PI * 2 / length;
+		for (int n = -m; n < m; n++)
+		{
+			window[m + n] = 0.54 + 0.46 * Math.cos(n * r);
+		}
+		return window;
+	}
+
 	@Override
 	public void lancer(IExtraction extraction, Map<Integer, File> listSelectedFiles, IBaseDeDonnees bdd)
 	{
@@ -119,20 +132,19 @@ public class CoefficientsCepstraux implements Plugin
 			}
 		}
 		this.isActive = false;
-		Runtime.getRuntime().gc();		
+		Runtime.getRuntime().gc();
 	}
-	
 
 	@Override
 	public void stopper()
 	{
-		for(DrawXYGraph graph : graphsList)
+		for (DrawXYGraph graph : graphsList)
 		{
 			graph.removeAll();
 			graph.dispose();
 		}
 		graphsList.clear();
-		for(XYSeries series : seriesList)
+		for (XYSeries series : seriesList)
 		{
 			series.clear();
 		}
