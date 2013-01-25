@@ -1,8 +1,10 @@
-package spectralAnalysis.core;
+package silences.core;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,64 +26,88 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
-import spectralAnalysis.userinterface.DrawXYGraph;
-import edu.emory.mathcs.jtransforms.fft.DoubleFFT_1D;
+import silences.userinterface.DrawXYGraph;
 
-public class SpectralAnalysis implements Plugin
+public class SuppressionSilences implements Plugin
 {
 	private static Logger logger = Logger.getLogger("spectralAnalysis");
 	private boolean isActive = false;
+	private static final double SEUIL = 0.04;
 	private List<DrawXYGraph> graphsList = new ArrayList<DrawXYGraph>();
 	private List<XYSeries> seriesList = new ArrayList<XYSeries>();
 
 	private void drawGraph(final double[][] echantillons, final float sampleRate, final String fileName)
 	{
-		double[] hamming = hamming(echantillons.length);
-		double[] samplesFFT = new double[echantillons.length];
-		DoubleFFT_1D fft = new DoubleFFT_1D(samplesFFT.length);
-		for (int i = 0; i < echantillons.length; i++)
+		final DrawXYGraph graph = new DrawXYGraph("Variation d'amplitudes - " + fileName, "Variation d'amplitudes - "
+				+ fileName, "Temps (Seconde)", "Amplitude");
+		graphsList.add(graph);
+		final XYSeries seriesChannelOne = new XYSeries("Canal 0");
+		seriesList.add(seriesChannelOne);
+		final XYSeries seriesChannelTwo = new XYSeries("Canal 1");
+		seriesList.add(seriesChannelTwo);
+		for (int j = 0; j < echantillons.length; j++)
 		{
-			samplesFFT[i] = echantillons[i][0] * hamming[i];
+			seriesChannelOne.add(j / sampleRate, echantillons[j][0]);
+			seriesChannelTwo.add(j / sampleRate, echantillons[j][1]);
 		}
-		fft.realForward(samplesFFT);
-		final DrawXYGraph graphFFT = new DrawXYGraph("Analyse du spectre - " + fileName, "Analyse du spectre - "
-				+ fileName, "Fréquence (Hz)", "Amplitude");
-		graphsList.add(graphFFT);
-		final XYSeries series = new XYSeries("Spectre");
-		seriesList.add(series);
-		for (int j = 0; j < samplesFFT.length; j++)
-		{
-			series.add(sampleRate * (j / 2 - 1) / samplesFFT.length, Math.abs(samplesFFT[j]));
-
-		}
-		XYDataset xyDataset2 = new XYSeriesCollection(series);
-		graphFFT.addWindowListener(new WindowAdapter()
+		XYDataset xyDatasetChannelOne = new XYSeriesCollection(seriesChannelOne);
+		XYDataset xyDatasetChannelTwo = new XYSeriesCollection(seriesChannelTwo);
+		graph.addDataset(xyDatasetChannelOne);
+		graph.addDataset(xyDatasetChannelTwo);
+		graph.addWindowListener(new WindowAdapter()
 		{
 			@Override
 			public void windowClosing(WindowEvent e)
 			{
-				graphFFT.removeAll();
-				graphFFT.dispose();
-				series.clear();
+				graph.removeAll();
+				graph.dispose();
+				seriesChannelOne.clear();
+				seriesChannelTwo.clear();
 				Runtime.getRuntime().gc();
 			}
 		});
-		graphFFT.addDataset(xyDataset2);
-		graphFFT.display();
-		samplesFFT = null;
-		fft = null;
+		graph.display();
 	}
 
-	private static double[] hamming(int length)
+	private double[][] filterAndDelete(double[][] samples)
 	{
-		double[] window = new double[length];
-		int m = length / 2;
-		double r = Math.PI * 2 / length;
-		for (int n = -m; n < m; n++)
+		double energy;
+		List<double[]> rowsToKeep = new ArrayList<double[]>(samples.length);
+		for (double[] row : samples)
 		{
-			window[m + n] = 0.54 + 0.46 * Math.cos(n * r);
+			for (double value : row)
+			{
+				energy = Math.pow(Math.abs(value), 2);
+				if (energy > SEUIL)
+				{
+					rowsToKeep.add(row);
+				}
+			}
 		}
-		return window;
+		int i = 0;
+		double[][] filteredSamples = new double[rowsToKeep.size()][];
+		for (double[] row : rowsToKeep)
+		{
+			filteredSamples[i++] = row;
+		}
+		return filteredSamples;
+	}
+
+	private double[][] filter(double[][] samples)
+	{
+		double energy;
+		for (int i = 0; i < samples.length; i++)
+		{
+			for (int j = 0; j < samples[i].length; j++)
+			{
+				energy = Math.pow(Math.abs(samples[i][j]), 2);
+				if (energy <= SEUIL)
+				{
+					samples[i][j] = 0;
+				}
+			}
+		}
+		return samples;
 	}
 
 	@Override
@@ -100,6 +126,8 @@ public class SpectralAnalysis implements Plugin
 					AudioFormat audioFormat = inputAIS.getFormat();
 					double[][] echantillons = extraction.extraireEchantillons(file.getCanonicalPath());
 					this.drawGraph(echantillons, audioFormat.getSampleRate(), bdd.getNomEnregistrement(id));
+					this.drawGraph(filter(echantillons), audioFormat.getSampleRate(), bdd.getNomEnregistrement(id)
+							+ "_filtré");
 					echantillons = null;
 				}
 				catch (IOException e)
@@ -141,7 +169,7 @@ public class SpectralAnalysis implements Plugin
 	@Override
 	public String getNom()
 	{
-		return "Analyse du spectre";
+		return "Suppression des silences";
 	}
 
 	@Override

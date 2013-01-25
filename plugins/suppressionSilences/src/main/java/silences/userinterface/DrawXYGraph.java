@@ -1,4 +1,4 @@
-package spectralAnalysis.userinterface;
+package silences.userinterface;
 
 import java.awt.Dimension;
 
