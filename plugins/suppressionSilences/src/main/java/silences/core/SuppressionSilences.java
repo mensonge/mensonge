@@ -2,9 +2,7 @@ package silences.core;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -128,6 +126,8 @@ public class SuppressionSilences implements Plugin
 					this.drawGraph(echantillons, audioFormat.getSampleRate(), bdd.getNomEnregistrement(id));
 					this.drawGraph(filter(echantillons), audioFormat.getSampleRate(), bdd.getNomEnregistrement(id)
 							+ "_filtré");
+					this.drawGraph(filterAndDelete(echantillons), audioFormat.getSampleRate(), bdd.getNomEnregistrement(id)
+							+ "_filtré_et_découpé");
 					echantillons = null;
 				}
 				catch (IOException e)
