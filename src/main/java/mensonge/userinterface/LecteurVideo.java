@@ -201,8 +201,6 @@ public class LecteurVideo extends JPanel implements ActionListener
 		toolBar.add(boutonMarqueur1);
 		toolBar.add(boutonMarqueur2);
 		toolBar.add(boutonExtract);
-		toolBar.add(boutonAnnotation1);
-		toolBar.add(boutonAnnotation2);
 		toolBar.add(boutonAnnotation);
 		toolBar.add(Box.createHorizontalGlue());
 		toolBar.add(new JLabel(new ImageIcon("images/Volume.png")));
