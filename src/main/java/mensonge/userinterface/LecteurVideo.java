@@ -68,8 +68,6 @@ public class LecteurVideo extends JPanel implements ActionListener
 	private JButton boutonMarqueur2;
 	private JButton boutonExtract;
 	private JButton boutonAnnotation;
-	private JButton boutonAnnotation1;
-	private JButton boutonAnnotation2;
 	private long timeMarqueur1 = -1;
 	private long timeMarqueur2 = -1;
 	private BaseDeDonneesControlleur bdd;
@@ -147,16 +145,6 @@ public class LecteurVideo extends JPanel implements ActionListener
 		this.boutonExtract.setText("Extraire");
 		this.boutonExtract.addActionListener(this);
 		this.boutonExtract.setEnabled(true);
-
-		this.boutonAnnotation1 = new JButton();
-		this.boutonAnnotation1.setText("1");
-		this.boutonAnnotation1.addActionListener(this);
-		this.boutonAnnotation1.setEnabled(true);;
-
-		this.boutonAnnotation2 = new JButton();
-		this.boutonAnnotation2.setText("2");
-		this.boutonAnnotation2.addActionListener(this);
-		this.boutonAnnotation2.setEnabled(true);;
 
 		this.boutonAnnotation = new JButton();
 		this.boutonAnnotation.setText("Annoter");
@@ -289,20 +277,14 @@ public class LecteurVideo extends JPanel implements ActionListener
 		else if (event.getSource() == boutonMarqueur1)
 		{
 			timeMarqueur1 = mediaPlayer.getTime();
+			listDannotation.getLast().setDebut(mediaPlayer.getTime());
 			slider.setMarkerOneAt(((float) timeMarqueur1 / (float) mediaPlayer.getLength()));
 		}
 		else if (event.getSource() == boutonMarqueur2)
 		{
 			timeMarqueur2 = mediaPlayer.getTime();
-			slider.setMarkerTwoAt(((float) timeMarqueur2 / (float) mediaPlayer.getLength()));
-		}
-		else if (event.getSource() == boutonAnnotation1)
-		{
-			listDannotation.getLast().setDebut(mediaPlayer.getTime());
-		}
-		else if (event.getSource() == boutonAnnotation2)
-		{
 			listDannotation.getLast().setFin(mediaPlayer.getTime());
+			slider.setMarkerTwoAt(((float) timeMarqueur2 / (float) mediaPlayer.getLength()));
 		}
 		else if (event.getSource() == boutonAnnotation)
 		{
@@ -351,40 +333,6 @@ public class LecteurVideo extends JPanel implements ActionListener
 		}
 	}
 
-	private class Annot
-	{
-		private long debut=1;
-		private long fin=1;
-		private String annotation;
-		public Annot()
-		{
-
-		}
-		public long getDebut()
-		{
-			return debut;
-		}
-		public long getFin()
-		{
-			return fin;
-		}
-		public String getAnnotation()
-		{
-			return annotation;
-		}
-		public void setDebut(long _debut)
-		{
-			debut=_debut;
-		}
-		public void setFin(long _fin)
-		{
-			fin=_fin;
-		}
-		public void setAnnotation(String _annotation)
-		{
-			annotation=_annotation;
-		}
-	}
 
 
 	/**
