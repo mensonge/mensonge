@@ -33,6 +33,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.JOptionPane;
 
 import mensonge.core.Extraction;
 import mensonge.core.database.BaseDeDonneesControlleur;
@@ -286,6 +287,8 @@ public class LecteurVideo extends JPanel implements ActionListener
 		}
 		else if (event.getSource() == boutonAnnotation)
 		{
+			String nom = JOptionPane.showInputDialog(null, "Saisissez le libellé de l'annotation", "Annoter",JOptionPane.QUESTION_MESSAGE);
+			listDannotation.getLast().setAnnotation(nom);
 			listDannotation.add(new Annot());
 		}
 		else if (event.getSource() == boutonExtract)

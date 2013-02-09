@@ -32,4 +32,8 @@ public class Annot
 	{
 		annotation=_annotation;
 	}
+	public String toString()
+	{
+		return "";
+	}
 }
