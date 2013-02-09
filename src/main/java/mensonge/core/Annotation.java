@@ -22,21 +22,18 @@ public class Annotation
 	}
 	public void setDebut(long _debut)
 	{
-		debut=_debut;
+		debut = _debut;
 	}
 	public void setFin(long _fin)
 	{
-		fin=_fin;
+		fin = _fin;
 	}
 	public void setAnnotation(String _annotation)
 	{
-		annotation=_annotation;
+		annotation = _annotation;
 	}
 	public String toString()
 	{
-		if(fin > debut)
-			return "image "+debut+" à "+fin+" -> " + annotation;
-		else
-			return "image "+fin+" à "+debut+" -> " + annotation;
+		return "image "+debut+" à "+fin+" -> " + annotation;
 	}
 }

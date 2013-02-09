@@ -304,24 +304,35 @@ public class LecteurVideo extends JPanel implements ActionListener
 			if(annotTemp.getDebut()>0 && annotTemp.getFin()>0)
 			{
 				String nom = JOptionPane.showInputDialog(null, "Saisissez le libellé de l'annotation", "Annoter",JOptionPane.QUESTION_MESSAGE);
-				long tmp;
-				annotTemp.setAnnotation(nom);
-				if(annotTemp.getDebut()>annotTemp.getFin())
+				if(nom != "")
 				{
-					tmp=annotTemp.getFin();
-					annotTemp.setFin(annotTemp.getDebut());
-					annotTemp.setDebut(tmp);
+					long tmp;
+					annotTemp.setAnnotation(nom);
+					if(annotTemp.getDebut()>annotTemp.getFin())
+					{
+						tmp=annotTemp.getFin();
+						annotTemp.setFin(annotTemp.getDebut());
+						annotTemp.setDebut(tmp);
+					}
+					listDannotation.add(annotTemp);
+					annotTemp = new Annotation();
 				}
-				listDannotation.add(annotTemp);
-				annotTemp=new Annotation();
+				else
+				{
+				GraphicalUserInterface.popupErreur("Veuillez placer les deux marqueurs avant tout");
+				}
 			}
 			else
-					GraphicalUserInterface.popupErreur("Veuillez placer les deux marqueurs avant tout");
+			{
+				GraphicalUserInterface.popupErreur("Veuillez saisir un nom de libellé !");
+			}
 		}
 		else if (event.getSource() == boutonExportAnnotation)
 		{
 			if(!listDannotation.isEmpty())
+			{
 				exportAnnotations();
+			}
 		}
 		else if (event.getSource() == boutonExtract)
 		{
@@ -380,7 +391,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 				{
 					dataOut.write(annotation.toString()+"\n");
 				}
-			dataOut.close();
+				dataOut.close();
 			}
 			catch (IOException e)
 			{
