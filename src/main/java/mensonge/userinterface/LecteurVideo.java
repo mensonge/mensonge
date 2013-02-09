@@ -301,7 +301,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 		}
 		else if (event.getSource() == boutonAnnotation)
 		{
-			if(annotTemp.getDebut()>0 && annotTemp.getFin()>0)
+			if(annotTemp.getDebut()>=0 && annotTemp.getFin()>=0)
 			{
 				String nom = JOptionPane.showInputDialog(null, "Saisissez le libellé de l'annotation", "Annoter",JOptionPane.QUESTION_MESSAGE);
 				if(nom != "")
@@ -380,7 +380,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 	private void exportAnnotations()
 	{
 		JFileChooser fileChooser = new JFileChooser();
-		int option = fileChooser.showOpenDialog(this);
+		int option = fileChooser.showSaveDialog(this);
 		if (option == JFileChooser.APPROVE_OPTION && fileChooser.getSelectedFiles() != null)
 		{
 			try
@@ -392,6 +392,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 					dataOut.write(annotation.toString()+"\n");
 				}
 				dataOut.close();
+				GraphicalUserInterface.popupInfo("Exportation réussie","Succès de l'exportation");
 			}
 			catch (IOException e)
 			{
