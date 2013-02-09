@@ -1,8 +1,8 @@
 package mensonge.userinterface;
 public class Annot
 {
-	private long debut=1;
-	private long fin=1;
+	private long debut=-1;
+	private long fin=-1;
 	private String annotation;
 	public Annot()
 	{

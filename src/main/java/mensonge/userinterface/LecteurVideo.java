@@ -287,9 +287,14 @@ public class LecteurVideo extends JPanel implements ActionListener
 		}
 		else if (event.getSource() == boutonAnnotation)
 		{
-			String nom = JOptionPane.showInputDialog(null, "Saisissez le libellé de l'annotation", "Annoter",JOptionPane.QUESTION_MESSAGE);
-			listDannotation.getLast().setAnnotation(nom);
-			listDannotation.add(new Annot());
+			if(listDannotation.getLast().getDebut()>0 && listDannotation.getLast().getFin()>0)
+			{
+				String nom = JOptionPane.showInputDialog(null, "Saisissez le libellé de l'annotation", "Annoter",JOptionPane.QUESTION_MESSAGE);
+				listDannotation.getLast().setAnnotation(nom);
+				listDannotation.add(new Annot());
+			}
+			else
+					GraphicalUserInterface.popupErreur("Veuillez placer les deux marqueurs avant tout");
 		}
 		else if (event.getSource() == boutonExtract)
 		{
@@ -333,7 +338,6 @@ public class LecteurVideo extends JPanel implements ActionListener
 			}
 		}
 	}
-
 
 
 	/**
