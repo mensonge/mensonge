@@ -34,6 +34,9 @@ public class Annotation
 	}
 	public String toString()
 	{
-		return "";
+		if(fin > debut)
+			return "image "+debut+" à "+fin+" -> " + annotation;
+		else
+			return "image "+fin+" à "+debut+" -> " + annotation;
 	}
 }

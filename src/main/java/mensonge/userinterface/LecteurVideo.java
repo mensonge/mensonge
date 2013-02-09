@@ -304,7 +304,14 @@ public class LecteurVideo extends JPanel implements ActionListener
 			if(annotTemp.getDebut()>0 && annotTemp.getFin()>0)
 			{
 				String nom = JOptionPane.showInputDialog(null, "Saisissez le libellé de l'annotation", "Annoter",JOptionPane.QUESTION_MESSAGE);
+				long tmp;
 				annotTemp.setAnnotation(nom);
+				if(annotTemp.getDebut()>annotTemp.getFin())
+				{
+					tmp=annotTemp.getFin();
+					annotTemp.setFin(annotTemp.getDebut());
+					annotTemp.setDebut(tmp);
+				}
 				listDannotation.add(annotTemp);
 				annotTemp=new Annotation();
 			}
@@ -314,7 +321,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 		else if (event.getSource() == boutonExportAnnotation)
 		{
 			if(!listDannotation.isEmpty())
-				saveAs();
+				exportAnnotations();
 		}
 		else if (event.getSource() == boutonExtract)
 		{
@@ -359,7 +366,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 		}
 	}
 
-	private void saveAs()
+	private void exportAnnotations()
 	{
 		JFileChooser fileChooser = new JFileChooser();
 		int option = fileChooser.showOpenDialog(this);
@@ -368,6 +375,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 			try
 			{
 				final BufferedWriter dataOut = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileChooser.getSelectedFile().getCanonicalPath()),"UTF8"));
+				dataOut.write(this.pathVideo+": \n");
 				for(Annotation annotation : listDannotation)
 				{
 					dataOut.write(annotation.toString()+"\n");
@@ -409,15 +417,16 @@ public class LecteurVideo extends JPanel implements ActionListener
 		private void setMarkers(MouseEvent e)
 		{
 			int w = slider.getWidth();
-			System.out.println(mediaPlayer.getFps());
 			if ((e.getModifiers() & MouseEvent.BUTTON2_MASK) != 0)
 			{
 				timeMarqueur1 = valueForXPosition(e.getX());
+				annotTemp.setDebut(valueForXPosition(e.getX()));
 				slider.setMarkerOneAt((float) (e.getX() - SliderWithMarkers.OFFSET_MARKER) / (float) w);
 			}
 			else if ((e.getModifiers() & MouseEvent.BUTTON3_MASK) != 0)
 			{
 				timeMarqueur2 = valueForXPosition(e.getX());
+				annotTemp.setFin(valueForXPosition(e.getX()));
 				slider.setMarkerTwoAt((float) (e.getX() - SliderWithMarkers.OFFSET_MARKER) / (float) w);
 			}
 		}
