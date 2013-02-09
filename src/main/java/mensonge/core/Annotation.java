@@ -1,10 +1,10 @@
-package mensonge.userinterface;
-public class Annot
+package mensonge.core;
+public class Annotation
 {
 	private long debut=-1;
 	private long fin=-1;
 	private String annotation;
-	public Annot()
+	public Annotation()
 	{
 
 	}

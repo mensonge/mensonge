@@ -4,6 +4,9 @@ import it.sauronsoftware.jave.EncoderException;
 import it.sauronsoftware.jave.InputFormatException;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.BufferedWriter;
+import java.io.OutputStreamWriter;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.awt.BorderLayout;
@@ -32,10 +35,13 @@ import javax.swing.JSlider;
 import javax.swing.ImageIcon;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
+
 import javax.swing.SwingUtilities;
 import javax.swing.JOptionPane;
+import javax.swing.JFileChooser;
 
 import mensonge.core.Extraction;
+import mensonge.core.Annotation;
 import mensonge.core.database.BaseDeDonneesControlleur;
 
 import uk.co.caprica.vlcj.component.EmbeddedMediaPlayerComponent;
@@ -69,6 +75,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 	private JButton boutonMarqueur2;
 	private JButton boutonExtract;
 	private JButton boutonAnnotation;
+	private JButton boutonExportAnnotation;
 	private long timeMarqueur1 = -1;
 	private long timeMarqueur2 = -1;
 	private BaseDeDonneesControlleur bdd;
@@ -77,7 +84,8 @@ public class LecteurVideo extends JPanel implements ActionListener
 	private JFrame parent;
 	private Extraction extraction;
 
-	private LinkedList<Annot> listDannotation;
+	private LinkedList<Annotation> listDannotation;
+	private Annotation annotTemp;
 	/**
 	 * Créé un lecteur vidéo avec une barre de controle
 	 *
@@ -90,7 +98,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 	public LecteurVideo(final File fichierVideo, BaseDeDonneesControlleur bdd, JFrame parent, Extraction extraction)
 	{
 		this.listDannotation=new LinkedList();
-		this.listDannotation.add(new Annot());
+		this.annotTemp=new Annotation();
 		this.extraction = extraction;
 		this.parent = parent;
 		this.bdd = bdd;
@@ -152,6 +160,11 @@ public class LecteurVideo extends JPanel implements ActionListener
 		this.boutonAnnotation.addActionListener(this);
 		this.boutonAnnotation.setEnabled(true);;
 
+		this.boutonExportAnnotation = new JButton();
+		this.boutonExportAnnotation.setText("Exporter les annotations");
+		this.boutonExportAnnotation.addActionListener(this);
+		this.boutonExportAnnotation.setEnabled(true);;
+
 		this.boutonStop = new JButton();
 		this.boutonStop.setIcon(PlayerEventListener.IMG_ICON_STOP);
 		this.boutonStop.addActionListener(this);
@@ -203,6 +216,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 		toolBar.add(boutonMarqueur2);
 		toolBar.add(boutonExtract);
 		toolBar.add(boutonAnnotation);
+		toolBar.add(boutonExportAnnotation);
 		toolBar.add(Box.createHorizontalGlue());
 		toolBar.add(new JLabel(new ImageIcon("images/Volume.png")));
 		toolBar.add(Box.createHorizontalStrut(PANEL_MARGIN));
@@ -276,25 +290,31 @@ public class LecteurVideo extends JPanel implements ActionListener
 		else if (event.getSource() == boutonMarqueur1)
 		{
 			timeMarqueur1 = mediaPlayer.getTime();
-			listDannotation.getLast().setDebut(mediaPlayer.getTime());
+			annotTemp.setDebut(mediaPlayer.getTime());
 			slider.setMarkerOneAt(((float) timeMarqueur1 / (float) mediaPlayer.getLength()));
 		}
 		else if (event.getSource() == boutonMarqueur2)
 		{
 			timeMarqueur2 = mediaPlayer.getTime();
-			listDannotation.getLast().setFin(mediaPlayer.getTime());
+			annotTemp.setFin(mediaPlayer.getTime());
 			slider.setMarkerTwoAt(((float) timeMarqueur2 / (float) mediaPlayer.getLength()));
 		}
 		else if (event.getSource() == boutonAnnotation)
 		{
-			if(listDannotation.getLast().getDebut()>0 && listDannotation.getLast().getFin()>0)
+			if(annotTemp.getDebut()>0 && annotTemp.getFin()>0)
 			{
 				String nom = JOptionPane.showInputDialog(null, "Saisissez le libellé de l'annotation", "Annoter",JOptionPane.QUESTION_MESSAGE);
-				listDannotation.getLast().setAnnotation(nom);
-				listDannotation.add(new Annot());
+				annotTemp.setAnnotation(nom);
+				listDannotation.add(annotTemp);
+				annotTemp=new Annotation();
 			}
 			else
 					GraphicalUserInterface.popupErreur("Veuillez placer les deux marqueurs avant tout");
+		}
+		else if (event.getSource() == boutonExportAnnotation)
+		{
+			if(!listDannotation.isEmpty())
+				saveAs();
 		}
 		else if (event.getSource() == boutonExtract)
 		{
@@ -339,6 +359,27 @@ public class LecteurVideo extends JPanel implements ActionListener
 		}
 	}
 
+	private void saveAs()
+	{
+		JFileChooser fileChooser = new JFileChooser();
+		int option = fileChooser.showOpenDialog(this);
+		if (option == JFileChooser.APPROVE_OPTION && fileChooser.getSelectedFiles() != null)
+		{
+			try
+			{
+				final BufferedWriter dataOut = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileChooser.getSelectedFile().getCanonicalPath()),"UTF8"));
+				for(Annotation annotation : listDannotation)
+				{
+					dataOut.write(annotation.toString()+"\n");
+				}
+			dataOut.close();
+			}
+			catch (IOException e)
+			{
+				GraphicalUserInterface.popupErreur(e.getMessage());
+			}
+		}
+	}
 
 	/**
 	 * Listener du slider avec les marqueurs
