@@ -17,6 +17,7 @@ import mensonge.core.database.BaseDeDonneesControlleur;
 import mensonge.core.database.BaseDeDonneesModele;
 import mensonge.core.database.DBException;
 import mensonge.core.database.LigneEnregistrement;
+import mensonge.core.tools.Cache;
 
 import org.junit.After;
 import org.junit.AfterClass;
@@ -68,9 +69,11 @@ public class TestBaseDeDonneesControlleur
 	@BeforeClass
 	public static void init() throws Exception
 	{
+		Cache cache = new Cache();
 		File fichier = new File("LieLabTest.db");
 		fichier.createNewFile();
-		db = new BaseDeDonneesControlleur("LieLabTest.db");
+		db = new BaseDeDonneesControlleur("LieLabTest.db", cache);
+		
 		
 	}
 
@@ -642,7 +645,7 @@ public class TestBaseDeDonneesControlleur
 		{
 			assertEquals(contenu_enregistrement[i], contenu_fichier[i]);
 		}
-		assertEquals(2, contenu_fichier.length - contenu_enregistrement.length);
+		assertEquals(8, contenu_fichier.length - contenu_enregistrement.length);
 	}
 	
 	@Test
@@ -657,7 +660,7 @@ public class TestBaseDeDonneesControlleur
 		{
 			assertEquals(contenu_enregistrement[i], contenu_fichier[i]);
 		}
-		assertEquals(2, contenu_fichier.length - contenu_enregistrement.length);
+		assertEquals(8, contenu_fichier.length - contenu_enregistrement.length);
 	}
 	
 	@Test(expected=DBException.class)

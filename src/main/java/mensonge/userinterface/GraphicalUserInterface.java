@@ -96,13 +96,15 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 		try
 		{
-			this.bdd = new BaseDeDonneesControlleur("LieLab.db");
+			this.bdd = new BaseDeDonneesControlleur("LieLab.db", this.cache);
 			this.bdd.connexion();
 		}
 		catch (DBException e)
 		{
 			logger.log(Level.SEVERE, "Erreur lors de la connexion: " + e.getLocalizedMessage());
 			GraphicalUserInterface.popupErreur("Erreur lors de la connexion: " + e.getLocalizedMessage());
+			//S'il y a une exception, alors le fichier de BDD n'existait pas, on purge le cache
+			this.cache.purge();
 		}
 		
 		this.setLayout(new BorderLayout());
