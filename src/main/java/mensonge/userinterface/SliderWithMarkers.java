@@ -7,6 +7,8 @@ import java.util.LinkedList;
 
 import javax.swing.JSlider;
 
+import mensonge.core.Annotation;
+
 public class SliderWithMarkers extends JSlider
 {
 	public static final int OFFSET_MARKER = 5;
