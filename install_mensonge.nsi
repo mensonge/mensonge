@@ -77,12 +77,38 @@ MessageBox MB_OKCANCEL|MB_ICONINFORMATION "Vous allez installer LieLab ,$\n$\t s
 			
 			; Put file there
 			File LieLab.jar
-			File /r lib
-			File /r plugins
+			SetOutPath $INSTDIR\lib\it\sauronsoftware\jave\jave\1.0.2
+			File lib\it\sauronsoftware\jave\jave\1.0.2\jave-1.0.2.jar
+			SetOutPath $INSTDIR\lib
+			File lib\jna-3.4.0.jar
+			File lib\platform-3.4.0.jar
+			File lib\sqlite-jdbc-3.7.2.jar
+			File lib\vlcj-2.1.0.jar
+			File /r lib\libvlc32
+			File /r lib\libvlc64
+			SetOutPath $INSTDIR
 			File /r images
+			SetOutPath $INSTDIR\plugins 
+			File plugins\CoefficientsCepstraux.jar
+			File plugins\Fondamentale.jar
+			File plugins\SuppressionSilences.jar
+			File plugins\SpectralAnalysis.jar
+			File plugins\WaveForm.jar
+			SetOutPath $INSTDIR\plugins\lib
+			File plugins\lib\jcommon-1.0.17.jar
+			File plugins\lib\jfreechart-1.0.14.jar
+			File plugins\lib\jtransforms-2.4.jar
+			File plugins\lib\PluginInterfaces.jar
+			SetOutPath $INSTDIR\plugins\lib\it\sauronsoftware\jave\jave\1.0.2
+			File lib\it\sauronsoftware\jave\jave\1.0.2\jave-1.0.2.jar
+
+			
+			
+			SetOutPath $INSTDIR 
 			WriteUninstaller $INSTDIR\Uninstall.exe
 			CreateShortCut "$INSTDIR\LieLab.lnk" "$JavaInstallationPath\bin\javaw.exe" '-jar "$INSTDIR\LieLab.jar"' "$INSTDIR\\icon.ico" 
 			CreateShortCut "$DESKTOP\LieLab.lnk" "$JavaInstallationPath\bin\javaw.exe" '-jar "$INSTDIR\LieLab.jar"' "$INSTDIR\\icon.ico" 
+
 SectionEnd ; end the section 
 
 

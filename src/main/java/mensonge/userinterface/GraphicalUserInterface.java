@@ -53,9 +53,9 @@ import com.sun.jna.Native;
 import com.sun.jna.NativeLibrary;
 
 /**
- * 
+ *
  * Classe Interface graphique contenant tous les composants graphiques
- * 
+ *
  */
 public class GraphicalUserInterface extends JFrame implements ActionListener
 {
@@ -106,7 +106,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 			//S'il y a une exception, alors le fichier de BDD n'existait pas, on purge le cache
 			this.cache.purge();
 		}
-		
+
 		this.setLayout(new BorderLayout());
 		this.previousPath = null;
 		this.statusBar = new StatusBar();
@@ -294,7 +294,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 	/**
 	 * Ajoute un nouvel onglet à l'interface graphique
-	 * 
+	 *
 	 * @param onglet
 	 *            Onglet à ajouter
 	 */
@@ -375,10 +375,10 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 		}
 	}
 
-	
+
 	/**
 	 * Affiche une popup qui signale une erreur
-	 * 
+	 *
 	 * @param message
 	 *            Le message d'erreur à afficher
 	 * @param title
@@ -391,7 +391,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 	/**
 	 * Affiche une popup qui signale une erreur avec en titre Erreur
-	 * 
+	 *
 	 * @param message
 	 *            Le message d'erreur à afficher
 	 */
@@ -402,7 +402,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 	/**
 	 * Affiche une popup d'information
-	 * 
+	 *
 	 * @param message
 	 *            L'information à afficher
 	 * @param title
@@ -475,7 +475,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 	/**
 	 * Listener pour le bouton d'exportation dans le menu
-	 * 
+	 *
 	 */
 	private static class ExporterBaseListener implements ActionListener
 	{
@@ -524,7 +524,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 	/**
 	 * Listener pour le bouton d'importation dans le menu
-	 * 
+	 *
 	 */
 	private static class ImporterBaseListener implements ActionListener
 	{
@@ -579,9 +579,9 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	/**
 	 * Listener pour les items des différents plugins dans le menu. Un item = un listener spécifique pour lancer le bon
 	 * plugin au clic
-	 * 
+	 *
 	 */
-	private static class ItemPluginListener implements ActionListener 
+	private static class ItemPluginListener implements ActionListener
 	{
 		private Plugin plugin;
 		private PanneauArbre panneauArbre;
@@ -591,7 +591,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 		/**
 		 * Nouveau listener pour un item de plugin
-		 * 
+		 *
 		 * @param plugin
 		 *            Plugin associé à l'item dans le menu
 		 * @param panneauArbre
@@ -620,7 +620,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 	/**
 	 * Listener pour le bouton de rechargement de la liste des plugins dans le menu
-	 * 
+	 *
 	 */
 	private class ReloadPluginsListener implements ActionListener
 	{
@@ -633,7 +633,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 	/**
 	 * Listener pour le bouton de purge du cache dans le menu
-	 * 
+	 *
 	 */
 	private class PurgerCacheListener implements ActionListener
 	{
@@ -655,7 +655,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 
 	/**
 	 * Listener pour le bouton de compactage de la bdd dans le menu
-	 * 
+	 *
 	 */
 	private class CompacterBaseListener implements ActionListener
 	{
@@ -704,7 +704,7 @@ public class GraphicalUserInterface extends JFrame implements ActionListener
 	/**
 	 * Main de l'application défini les constantes pour l'anti-aliasing, tente de charger le thème nimbus, charge les
 	 * libs de VLC et lance la fenêtre de l'application
-	 * 
+	 *
 	 * @param args
 	 *            Arguments du main, ne sont pas pris en compte
 	 */

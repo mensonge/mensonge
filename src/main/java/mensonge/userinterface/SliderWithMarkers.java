@@ -2,6 +2,8 @@ package mensonge.userinterface;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.util.List;
+import java.util.LinkedList;
 
 import javax.swing.JSlider;
 
@@ -13,6 +15,7 @@ public class SliderWithMarkers extends JSlider
 	private static final int NB_SIDES_POLYGON = 3;
 	private float position1 = -1.0f;
 	private float position2 = -1.0f;
+	private List<Annotation> listOfAnnots;
 
 	public SliderWithMarkers(int orientation)
 	{
@@ -26,6 +29,7 @@ public class SliderWithMarkers extends JSlider
 		this.setMinimum(0);
 		this.setValue(0);
 		this.setMaximum(1);
+		this.listOfAnnots = new LinkedList<Annotation>();
 	}
 
 	public void setMarkerOneAt(float position)
