@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import mensonge.core.tools.Cache;
 import mensonge.core.tools.IObserver;
 
 public class BaseDeDonneesControlleur implements IBaseDeDonnees
@@ -36,8 +37,9 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 	
 	private BaseDeDonneesModele bdd;
 	
-	public BaseDeDonneesControlleur(String cheminFichier) throws DBException
+	public BaseDeDonneesControlleur(String cheminFichier, Cache cache) throws DBException
 	{
+		cache.purge();
 		this.bdd = new BaseDeDonneesModele(cheminFichier);
 		File fichier = new File(cheminFichier);
 		if( ! fichier.exists())
