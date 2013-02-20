@@ -7,6 +7,10 @@ import java.util.LinkedList;
 
 import javax.swing.JSlider;
 
+import uk.co.caprica.vlcj.player.MediaPlayer;
+
+import mensonge.core.Annotation;
+
 public class SliderWithMarkers extends JSlider
 {
 	public static final int OFFSET_MARKER = 5;
@@ -15,9 +19,10 @@ public class SliderWithMarkers extends JSlider
 	private static final int NB_SIDES_POLYGON = 3;
 	private float position1 = -1.0f;
 	private float position2 = -1.0f;
-	private List<Annotation> listOfAnnots;
+	private MediaPlayer mediaPlayer;
+	private LinkedList<Annotation> listOfAnnots;
 
-	public SliderWithMarkers(int orientation)
+	public SliderWithMarkers(int orientation,MediaPlayer mediaPlayer)
 	{
 		super(orientation);
 		this.setOpaque(false);
@@ -30,11 +35,13 @@ public class SliderWithMarkers extends JSlider
 		this.setValue(0);
 		this.setMaximum(1);
 		this.listOfAnnots = new LinkedList<Annotation>();
+		this.mediaPlayer = mediaPlayer;
 	}
 
 	public void setMarkerOneAt(float position)
 	{
 		position1 = Math.max(position, 0);
+			System.out.println(getTimeFrame(250768));
 		this.repaint();
 
 	}
@@ -43,6 +50,17 @@ public class SliderWithMarkers extends JSlider
 	{
 		position2 = Math.max(position, 0);
 		this.repaint();
+	}
+
+	public void addAnnots(Annotation annot)
+	{
+		this.listOfAnnots.add(annot);
+	}
+
+	public	long getTimeFrame(long frame)
+	{
+		return 1000*frame/mediaPlayer.getLength();
+		//		return Math.round(Math.floor(time*mediaPlayer.getFps()/1000));
 	}
 
 	protected void paintComponent(Graphics g)
@@ -89,6 +107,11 @@ public class SliderWithMarkers extends JSlider
 			polygoneY2[2] = 0;
 			g.fillPolygon(polygoneX2, polygoneY2, polygoneY2.length);
 			g.fillRect(pos + OFFSET_MARKER, 0, 1, sliderHeight);
+		}
+		for(Annotation annot : this.listOfAnnots)
+		{
+			//			int pos = Math.round(annot.getDebut() * sliderWidth);
+
 		}
 		super.paintComponent(g);
 	}

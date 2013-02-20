@@ -13,7 +13,7 @@ import uk.co.caprica.vlcj.player.MediaPlayerEventAdapter;
 
 /**
  * Listener pour les évènnements du lecteur
- * 
+ *
  */
 public class PlayerEventListener extends MediaPlayerEventAdapter
 {
@@ -28,7 +28,7 @@ public class PlayerEventListener extends MediaPlayerEventAdapter
 
 	/**
 	 * Défini un nouveau listener pour le lecteur
-	 * 
+	 *
 	 * @param slider
 	 *            Slider de position du lecteur
 	 * @param boutonLecture
@@ -69,6 +69,7 @@ public class PlayerEventListener extends MediaPlayerEventAdapter
 	@Override
 	public void timeChanged(MediaPlayer mediaPlayer, long newTime)
 	{
+		System.out.println(Math.round(Math.floor(newTime*mediaPlayer.getFps()/1000)));
 		labelDureeActuelle.setText(Utils.getFormattedTimeS(newTime / 1000));
 		slider.setValue((int) newTime);
 	}

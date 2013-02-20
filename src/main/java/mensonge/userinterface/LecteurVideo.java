@@ -9,6 +9,7 @@ import java.io.BufferedWriter;
 import java.io.OutputStreamWriter;
 import java.io.IOException;
 import java.util.LinkedList;
+import java.util.List;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -84,7 +85,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 	private JFrame parent;
 	private Extraction extraction;
 
-	private LinkedList<Annotation> listDannotation;
+	private List<Annotation> listDannotation;
 	private Annotation annotTemp;
 	/**
 	 * Créé un lecteur vidéo avec une barre de controle
@@ -183,7 +184,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 		this.sliderVolume.addMouseListener(volumeListener);
 		this.sliderVolume.addMouseMotionListener(volumeListener);
 
-		this.slider = new SliderWithMarkers(JSlider.HORIZONTAL);
+		this.slider = new SliderWithMarkers(JSlider.HORIZONTAL,this.mediaPlayer);
 		SliderPositionEventListener sliderListener = new SliderPositionEventListener(this.slider,
 				this.labelDureeActuelle, this.mediaPlayer);
 		for (MouseListener m : this.slider.getMouseListeners())
@@ -291,6 +292,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 		{
 			timeMarqueur1 = mediaPlayer.getTime();
 			annotTemp.setDebut(mediaPlayer.getTime());
+			System.out.println("time : "+mediaPlayer.getTime());
 			slider.setMarkerOneAt(((float) timeMarqueur1 / (float) mediaPlayer.getLength()));
 		}
 		else if (event.getSource() == boutonMarqueur2)
