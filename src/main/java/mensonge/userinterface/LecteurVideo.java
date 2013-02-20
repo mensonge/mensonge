@@ -269,6 +269,11 @@ public class LecteurVideo extends JPanel implements ActionListener
 	{
 		return Math.round(Math.floor(time*mediaPlayer.getFps()/1000));
 	}
+	private	long getTimeFrame(long frame)
+	{
+		return Math.round(Math.floor(1000*((float)frame/(float)mediaPlayer.getLength())));
+	}
+
 
 	@Override
 	public void actionPerformed(ActionEvent event)
@@ -291,14 +296,13 @@ public class LecteurVideo extends JPanel implements ActionListener
 		else if (event.getSource() == boutonMarqueur1)
 		{
 			timeMarqueur1 = mediaPlayer.getTime();
-			annotTemp.setDebut(mediaPlayer.getTime());
-			System.out.println("time : "+mediaPlayer.getTime());
+			annotTemp.setDebut(getFrameNum(mediaPlayer.getTime()));
 			slider.setMarkerOneAt(((float) timeMarqueur1 / (float) mediaPlayer.getLength()));
 		}
 		else if (event.getSource() == boutonMarqueur2)
 		{
 			timeMarqueur2 = mediaPlayer.getTime();
-			annotTemp.setFin(mediaPlayer.getTime());
+			annotTemp.setFin(getFrameNum(mediaPlayer.getTime()));
 			slider.setMarkerTwoAt(((float) timeMarqueur2 / (float) mediaPlayer.getLength()));
 		}
 		else if (event.getSource() == boutonAnnotation)
@@ -434,13 +438,17 @@ public class LecteurVideo extends JPanel implements ActionListener
 			if ((e.getModifiers() & MouseEvent.BUTTON2_MASK) != 0)
 			{
 				timeMarqueur1 = valueForXPosition(e.getX());
-				annotTemp.setDebut(valueForXPosition(e.getX()));
+				annotTemp.setDebut(getFrameNum(valueForXPosition(e.getX())));
+				System.out.println("time 1"+timeMarqueur1);
+				System.out.println("test1  " +getTimeFrame(getFrameNum(100000)));
 				slider.setMarkerOneAt((float) (e.getX() - SliderWithMarkers.OFFSET_MARKER) / (float) w);
 			}
 			else if ((e.getModifiers() & MouseEvent.BUTTON3_MASK) != 0)
 			{
 				timeMarqueur2 = valueForXPosition(e.getX());
-				annotTemp.setFin(valueForXPosition(e.getX()));
+				annotTemp.setFin(getFrameNum(valueForXPosition(e.getX())));
+				System.out.println("time 2"+timeMarqueur2);
+				System.out.println("test2 " +getTimeFrame(getFrameNum(100000)));
 				slider.setMarkerTwoAt((float) (e.getX() - SliderWithMarkers.OFFSET_MARKER) / (float) w);
 			}
 		}
