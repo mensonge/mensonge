@@ -271,7 +271,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 	}
 	private	long getTimeFrame(long frame)
 	{
-		return Math.round(Math.floor(1000*((float)frame/(float)mediaPlayer.getLength())));
+		return Math.round(Math.floor(1000*((float)frame/(float)mediaPlayer.getFps())));
 	}
 
 
@@ -439,16 +439,14 @@ public class LecteurVideo extends JPanel implements ActionListener
 			{
 				timeMarqueur1 = valueForXPosition(e.getX());
 				annotTemp.setDebut(getFrameNum(valueForXPosition(e.getX())));
-				System.out.println("time 1"+timeMarqueur1);
-				System.out.println("test1  " +getTimeFrame(getFrameNum(100000)));
+				System.out.println("test1  " +getTimeFrame(getFrameNum(mediaPlayer.getLength())));
 				slider.setMarkerOneAt((float) (e.getX() - SliderWithMarkers.OFFSET_MARKER) / (float) w);
 			}
 			else if ((e.getModifiers() & MouseEvent.BUTTON3_MASK) != 0)
 			{
 				timeMarqueur2 = valueForXPosition(e.getX());
 				annotTemp.setFin(getFrameNum(valueForXPosition(e.getX())));
-				System.out.println("time 2"+timeMarqueur2);
-				System.out.println("test2 " +getTimeFrame(getFrameNum(100000)));
+				System.out.println("test2  " +getTimeFrame(getFrameNum(mediaPlayer.getLength())));
 				slider.setMarkerTwoAt((float) (e.getX() - SliderWithMarkers.OFFSET_MARKER) / (float) w);
 			}
 		}

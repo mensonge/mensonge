@@ -41,8 +41,6 @@ public class SliderWithMarkers extends JSlider
 	public void setMarkerOneAt(float position)
 	{
 		position1 = Math.max(position, 0);
-		//	System.out.println(getTimeFrame(mediaPlayer.getTime()));
-		System.out.println("1 :: "+getTimeFrame(Math.round(Math.floor(mediaPlayer.getTime()*mediaPlayer.getFps()))));
 		this.repaint();
 
 	}
@@ -50,7 +48,6 @@ public class SliderWithMarkers extends JSlider
 	public void setMarkerTwoAt(float position)
 	{
 		position2 = Math.max(position, 0);
-		System.out.println("2 :: "+getTimeFrame(Math.round(Math.floor(mediaPlayer.getTime()*mediaPlayer.getFps()))));
 		this.repaint();
 	}
 
@@ -61,7 +58,6 @@ public class SliderWithMarkers extends JSlider
 
 	public	long getTimeFrame(long frame)
 	{
-			System.out.println("Dans getTimeFrame : "+ Math.round(Math.floor(1000*((float)frame/(float)mediaPlayer.getLength()))));
 		return Math.round(Math.floor(1000*((float)frame/(float)mediaPlayer.getLength())));
 		//		return Math.round(Math.floor(time*mediaPlayer.getFps()/1000));
 	}
