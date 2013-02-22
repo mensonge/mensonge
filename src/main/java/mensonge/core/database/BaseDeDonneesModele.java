@@ -362,26 +362,8 @@ abstract public class BaseDeDonneesModele extends DataBaseObservable
 	 * @return l'id de la categorie
 	 * @throws DBException
 	 */
-	protected int getCategorie(final String nomCat) throws SQLException
-	{
-		int retour;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		try
-		{
-			ps = connexion.prepareStatement("SELECT idcat FROM categorie WHERE nomcat=?;");// preparation
-																							// de la
-																							// requete
-			ps.setString(1, nomCat);// Remplissage de la requete
-			rs = ps.executeQuery();
-			retour = rs.getInt(1);
-		}
-		finally
-		{
-			closeRessource(ps, null, rs);
-		}
-		return retour;
-	}
+	abstract protected int getCategorie(final String nomCat) throws SQLException;
+	
 
 	/**
 	 * Permet d'ajouter une categorie
@@ -390,35 +372,8 @@ abstract public class BaseDeDonneesModele extends DataBaseObservable
 	 *            le nom de la nouvelle categorie
 	 * @throws DBException
 	 */
-	public void ajouterSujet(final String nom) throws SQLException
-	{
-		notifyInProgressAction("Ajout du sujet...");
-		PreparedStatement ps = null;
-		try
-		{
-			ps = connexion.prepareStatement("INSERT INTO sujet (nomsuj) VALUES (?)");// preparation de
-																						// la requete
-			ps.setString(1, nom);// Remplissage de la requete
-			if (ps.executeUpdate() > 0)// execution et test de la reussite de la requete
-			{
-				notifyCompletedAction("Le sujet a été ajouté");
-				notifyUpdateDataBase();
-			}
-			else
-			{
-				notifyFailedAction("Impossible d'ajouter un sujet");
-			}
-		}
-		catch (SQLException e)
-		{
-			notifyFailedAction("Impossible d'ajouter le sujet");
-			throw e;
-		} finally
-		{
-			closeRessource(ps, null, null);
-		}
-	}
-
+	abstract public void ajouterSujet(final String nom) throws SQLException;
+	
 	/**
 	 * Supprime une categorie existante (ou non)
 	 * 
@@ -426,64 +381,17 @@ abstract public class BaseDeDonneesModele extends DataBaseObservable
 	 *            l'id de la categorie a supprimer
 	 * @throws DBException
 	 */
-	public void supprimerSujet(final int id) throws SQLException// comment on fait pour les enregistrements de cette cate
+	abstract public void supprimerSujet(final int id) throws SQLException;// comment on fait pour les enregistrements de cette cate
 																// ?
-	{
-		notifyInProgressAction("Suppression du sujet...");
-		PreparedStatement ps = null;
-		try
-		{
-			ps = connexion.prepareStatement("DELETE FROM sujet WHERE idSuj=?");// preparation de la
-																				// requete
-			ps.setInt(1, id);// Remplissage de la requete
-			if (ps.executeUpdate() > 0)// execution et test de la reussite de la requete
-			{
-				notifyCompletedAction("Le sujet a été supprimé");
-				notifyUpdateDataBase();
-			}
-			else
-			{
-				notifyFailedAction("Impossible de supprimer le sujet");
-			}
-		}
-		catch (SQLException e)
-		{
-			notifyFailedAction("Impossible de supprimer le sujet");
-			throw e;
-		} finally
-		{
-			closeRessource(ps, null, null);
-		}
-
-	}
-
+	
 	/**
 	 * Permet de recuperer la liste des categories avec les colonnes dans cette ordre: nomCat, idCat
 	 * 
 	 * @return Le resultat sous la forme d'un tableau parcourable dans un sens
 	 * @throws DBException
 	 */
-	public List<LigneEnregistrement> getListeSujet() throws SQLException
-	{
-		Statement stat = null;
-		ResultSet rs = null;
-		List<LigneEnregistrement> retour = null;
-		List<String> colonne = new LinkedList<String>();
-		colonne.add(COLONNE_NOMSUJ);
-		colonne.add(COLONNE_IDSUJ);
-		try
-		{
-			stat = connexion.createStatement();// creation du Statement
-			rs = stat.executeQuery("SELECT nomSuj, idSuj FROM sujet;");// execution de la requete
-			retour = ResultatSelect.convertirResultatSet(rs, colonne);
-		}
-		finally
-		{
-			closeRessource(null, stat, rs);
-		}
-		return retour;
-	}
-
+	abstract public List<LigneEnregistrement> getListeSujet() throws SQLException;
+	
 	/**
 	 * Permet de changer le nom d'une categorie
 	 * 
@@ -493,37 +401,8 @@ abstract public class BaseDeDonneesModele extends DataBaseObservable
 	 *            le nouveau nom
 	 * @throws DBException
 	 */
-	public void modifierSujet(final int id, final String nom) throws SQLException
-	{
-		notifyInProgressAction("Renommage du sujet...");
-		PreparedStatement ps = null;
-		try
-		{
-			ps = connexion.prepareStatement("UPDATE sujet SET nomSuj=? WHERE idSuj=?");// preparation
-																						// de la
-																						// requete
-			ps.setString(1, nom);// Remplissage de la requete
-			ps.setInt(2, id);
-			if (ps.executeUpdate() > 0)// execution et test de la reussite de la requete
-			{
-				notifyCompletedAction("Le sujet a été renommé");
-				notifyUpdateDataBase();
-			}
-			else
-			{
-				notifyFailedAction("Impossible de modifier le sujet");
-			}
-		}
-		catch (SQLException e)
-		{
-			notifyFailedAction("Impossible de renommer le sujet");
-			throw e;
-		} finally
-		{
-			closeRessource(ps, null, null);
-		}
-	}
-
+	abstract public void modifierSujet(final int id, final String nom) throws SQLException;
+	
 	/**
 	 * Recupere le nom de la categorie correspondant a cette id
 	 * 
@@ -532,28 +411,8 @@ abstract public class BaseDeDonneesModele extends DataBaseObservable
 	 * @return le nom de la categorie
 	 * @throws DBException
 	 */
-	public String getSujet(final int idSuj) throws SQLException
-	{
-		String retour;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		try
-		{
-
-			ps = connexion.prepareStatement("SELECT nomSuj FROM sujet WHERE idSuj=?;");// preparation
-																						// de la
-																						// requete
-			ps.setInt(1, idSuj);// Remplissage de la requete
-			rs = ps.executeQuery();// execution de la requete
-			retour = rs.getString(1);
-		}
-		finally
-		{
-			closeRessource(ps, null, rs);
-		}
-		return retour;
-	}
-
+	abstract public String getSujet(final int idSuj) throws SQLException;
+	
 	/**
 	 * Recupere l'id d'une categorie a partir du nom. S'il y a plusieur categorie du meme nom, il renvera le premier id
 	 * 
@@ -562,62 +421,16 @@ abstract public class BaseDeDonneesModele extends DataBaseObservable
 	 * @return l'id de la categorie
 	 * @throws DBException
 	 */
-	public int getSujet(final String nomSuj) throws SQLException
-	{
-		int retour;
-		PreparedStatement ps = null;
-		ResultSet rs = null;
-		try
-		{
-			ps = connexion.prepareStatement("SELECT idSuj FROM sujet WHERE nomSuj=?;");// preparation
-																						// de la
-																						// requete
-			ps.setString(1, nomSuj);// Remplissage de la requete
-			rs = ps.executeQuery();
-			retour = rs.getInt(1);
-		}
-		finally
-		{
-			closeRessource(ps, null, rs);
-		}
-		return retour;
-	}
+	abstract public int getSujet(final String nomSuj) throws SQLException;
+	
 
 	/**
 	 * Cette fonction creer la structure de la base de donne.
 	 * 
 	 * @throws DBException
 	 */
-	public void createDatabase() throws SQLException, DBException
-	{
-		Statement stat = null;
-		try
-		{
-			stat = connexion.createStatement();// creation du Statement
-			stat.executeUpdate("DROP TABLE if exists enregistrements;");// suppression des table si elle existe
-			stat.executeUpdate("DROP TABLE if exists categorie;");
-			stat.executeUpdate("DROP TABLE if exists sujet;");
-			// Creation des table et verification de la bonne execution des requetes
-			
-			if (stat.executeUpdate("CREATE TABLE sujet (idsuj  INTEGER PRIMARY KEY AUTOINCREMENT, nomsuj VARCHAR2(128) UNIQUE);") != 0)
-			{
-				throw new DBException("Erreur de création de la table enregistrement.");
-			}
-			if (stat.executeUpdate("CREATE TABLE categorie (idcat  INTEGER PRIMARY KEY AUTOINCREMENT, nomcat VARCHAR2(128) UNIQUE);") != 0)
-			{
-				throw new DBException("Erreur de création de la table categorie.");
-			}
-			if (stat.executeUpdate("CREATE TABLE enregistrements (id  INTEGER PRIMARY KEY AUTOINCREMENT, enregistrement BLOB, duree INTEGER, taille INTEGER, nom VARCHAR2(128) UNIQUE, idcat INTEGER, idsuj INTEGER, FOREIGN KEY (idSuj) REFERENCES sujet(idSuj), FOREIGN KEY (idCat) REFERENCES categorie(idCat));") != 0)
-			{
-				throw new DBException("Erreur de création de la table enregistrement.");
-			}
-		}
-		finally
-		{
-			closeRessource(null, stat, null);
-		}
-	}
-
+	abstract public void createDatabase() throws SQLException, DBException;
+	
 	/**
 	 * Verifie si une categorie existe
 	 * 
@@ -627,29 +440,8 @@ abstract public class BaseDeDonneesModele extends DataBaseObservable
 	 * @throws SQLException 
 	 * @throws DBException
 	 */
-	protected boolean categorieExiste(final int idCat) throws SQLException
-	{
-		PreparedStatement ps = null;
-		boolean retour = false;
-		ResultSet rs = null;
-		try
-		{
-			ps = connexion.prepareStatement("SELECT 1 FROM categorie WHERE idcat=?");
-			ps.setInt(1, idCat);
-			rs = ps.executeQuery();
-
-			if (rs.next())
-			{
-				retour = true;
-			}
-		}
-		finally
-		{
-			closeRessource(ps, null, rs);
-		}
-		return retour;
-	}
-
+	abstract protected boolean categorieExiste(final int idCat) throws SQLException;
+	
 	/**
 	 * Verifie si une categorie existe
 	 * 
@@ -658,29 +450,8 @@ abstract public class BaseDeDonneesModele extends DataBaseObservable
 	 * @return true si la categorie existe et false sinon
 	 * @throws DBException
 	 */
-	protected boolean categorieExiste(final String nomCat) throws SQLException
-	{
-		PreparedStatement ps = null;
-		boolean retour = false;
-		ResultSet rs = null;
-		try
-		{
-			ps = connexion.prepareStatement("SELECT 1 FROM categorie WHERE nomcat=?");
-			ps.setString(1, nomCat);
-			rs = ps.executeQuery();
-
-			if (rs.next())
-			{
-				retour = true;
-			}
-		}
-		finally
-		{
-			closeRessource(ps, null, rs);
-		}
-		return retour;
-	}
-
+	abstract protected boolean categorieExiste(final String nomCat) throws SQLException;
+	
 	/**
 	 * Verifie si une categorie existe
 	 * 
@@ -689,29 +460,8 @@ abstract public class BaseDeDonneesModele extends DataBaseObservable
 	 * @return true si la categorie existe et false sinon
 	 * @throws SQLException 
 	 */
-	protected boolean sujetExiste(final int idSuj) throws SQLException
-	{
-		PreparedStatement ps = null;
-		boolean retour = false;
-		ResultSet rs = null;
-		try
-		{
-			ps = connexion.prepareStatement("SELECT 1 FROM sujet WHERE idSuj=?");
-			ps.setInt(1, idSuj);
-			rs = ps.executeQuery();
-
-			if (rs.next())
-			{
-				retour = true;
-			}
-		}
-		finally
-		{
-			closeRessource(ps, null, rs);
-		}
-		return retour;
-	}
-
+	abstract protected boolean sujetExiste(final int idSuj) throws SQLException;
+	
 	/**
 	 * Verifie si une categorie existe
 	 * 
@@ -720,29 +470,8 @@ abstract public class BaseDeDonneesModele extends DataBaseObservable
 	 * @return true si la categorie existe et false sinon
 	 * @throws DBException
 	 */
-	protected boolean sujetExiste(final String nomSuj) throws SQLException
-	{
-		PreparedStatement ps = null;
-		boolean retour = false;
-		ResultSet rs = null;
-		try
-		{
-			ps = connexion.prepareStatement("SELECT 1 FROM sujet WHERE nomSuj=?");
-			ps.setString(1, nomSuj);
-			rs = ps.executeQuery();
-
-			if (rs.next())
-			{
-				retour = true;
-			}
-		}
-		finally
-		{
-			closeRessource(ps, null, rs);
-		}
-		return retour;
-	}
-
+	abstract protected boolean sujetExiste(final String nomSuj) throws SQLException;
+	
 	/**
 	 * Verifie l'existance d'un sujet par son nom
 	 * 
@@ -751,56 +480,15 @@ abstract public class BaseDeDonneesModele extends DataBaseObservable
 	 * @return true si le nom existe
 	 * @throws DBException
 	 */
-	protected boolean enregistrementExist(final String nom) throws SQLException
-	{
-		PreparedStatement ps = null;
-		boolean retour = false;
-		ResultSet rs = null;
-		try
-		{
-			ps = connexion.prepareStatement("SELECT 1 FROM enregistrements WHERE nom=?");
-			ps.setString(1, nom);
-			rs = ps.executeQuery();
+	abstract protected boolean enregistrementExist(final String nom) throws SQLException;
+	
 
-			if (rs.next())
-			{
-				retour = true;
-			}
-		}
-		finally
-		{
-			closeRessource(ps, null, rs);
-		}
-		return retour;
-	}
-
-	protected boolean enregistrementExist(final int id) throws SQLException
-	{
-		PreparedStatement ps = null;
-		boolean retour = false;
-		ResultSet rs = null;
-		try
-		{
-			ps = connexion.prepareStatement("SELECT 1 FROM enregistrements WHERE id=?");
-			ps.setInt(1, id);
-			rs = ps.executeQuery();
-
-			if (rs.next())
-			{
-				retour = true;
-			}
-		}
-		finally
-		{
-			closeRessource(ps, null, rs);
-		}
-		return retour;
-	}
+	abstract protected boolean enregistrementExist(final int id) throws SQLException;
 	
 	/**
 	 * copie le fichier source dans le fichier resultat retourne vrai si cela réussit
 	 */
-	private static boolean copyFile(File source, File dest)
+	protected static boolean copyFile(File source, File dest)
 	{
 
 		// Declaration et ouverture des flux
@@ -854,7 +542,7 @@ abstract public class BaseDeDonneesModele extends DataBaseObservable
 	 * @param st
 	 * @param rs
 	 */
-	private static void closeRessource(PreparedStatement ps, Statement st, ResultSet rs)
+	protected static void closeRessource(PreparedStatement ps, Statement st, ResultSet rs)
 	{
 		if (ps != null)
 		{
