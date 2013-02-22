@@ -696,7 +696,7 @@ public class TestBaseDeDonneesControlleur
 	@Test
 	public void testImporter() throws ClassNotFoundException, SQLException, DBException
 	{
-		BaseDeDonneesModele bdd = new BaseDeDonneesModele("LieLabTest2.db");
+		BaseDeDonneesModele bdd = new BaseDeDonneesModeleSQLite("LieLabTest2.db");
 		bdd.connexion();
 		bdd.createDatabase();
 		bdd.ajouterCategorie("Licorne");
@@ -719,7 +719,7 @@ public class TestBaseDeDonneesControlleur
 	@Test
 	public void testImporterSujetExistant() throws ClassNotFoundException, SQLException, DBException
 	{
-		BaseDeDonneesModele bdd = new BaseDeDonneesModele("LieLabTest3.db");
+		BaseDeDonneesModele bdd = new BaseDeDonneesModeleSQLite("LieLabTest3.db");
 		bdd.connexion();
 		bdd.createDatabase();
 		bdd.ajouterCategorie("Licorne");
@@ -741,7 +741,7 @@ public class TestBaseDeDonneesControlleur
 	@Test
 	public void testImporterCategorieExistante() throws ClassNotFoundException, SQLException, DBException
 	{
-		BaseDeDonneesModele bdd = new BaseDeDonneesModele("LieLabTest4.db");
+		BaseDeDonneesModele bdd = new BaseDeDonneesModeleSQLite("LieLabTest4.db");
 		bdd.connexion();
 		bdd.createDatabase();
 		bdd.ajouterCategorie("Poney");
@@ -763,7 +763,7 @@ public class TestBaseDeDonneesControlleur
 	@Test
 	public void testImporterEnregistrementExistant() throws ClassNotFoundException, SQLException, DBException
 	{
-		BaseDeDonneesModele bdd = new BaseDeDonneesModele("LieLabTest5.db");
+		BaseDeDonneesModele bdd = new BaseDeDonneesModeleSQLite("LieLabTest5.db");
 		bdd.connexion();
 		bdd.createDatabase();
 		bdd.ajouterCategorie("Poney");

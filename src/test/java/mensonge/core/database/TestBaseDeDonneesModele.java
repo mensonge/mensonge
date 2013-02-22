@@ -70,7 +70,7 @@ public class TestBaseDeDonneesModele
 	{
 		File fichier = new File("LieLabTest.db");
 		fichier.createNewFile();
-		db = new BaseDeDonneesModele("LieLabTest.db");
+		db = new BaseDeDonneesModeleSQLite("LieLabTest.db");
 	}
 
 	@Before
@@ -392,7 +392,7 @@ public class TestBaseDeDonneesModele
 		{
 			assertEquals(contenu_enregistrement[i], contenu_fichier[i]);
 		}
-		assertEquals(2, contenu_fichier.length - contenu_enregistrement.length);
+		assertEquals(8, contenu_fichier.length - contenu_enregistrement.length);
 	}
 	
 	@Test
@@ -425,7 +425,7 @@ public class TestBaseDeDonneesModele
 	@Test
 	public void testImporter() throws ClassNotFoundException, SQLException, DBException
 	{
-		BaseDeDonneesModele bdd = new BaseDeDonneesModele("LieLabTest2.db");
+		BaseDeDonneesModele bdd = new BaseDeDonneesModeleSQLite("LieLabTest2.db");
 		bdd.connexion();
 		bdd.createDatabase();
 		bdd.ajouterCategorie("Licorne");

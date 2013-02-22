@@ -40,7 +40,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 	public BaseDeDonneesControlleur(String cheminFichier, Cache cache) throws DBException
 	{
 		cache.purge();
-		this.bdd = new BaseDeDonneesModele(cheminFichier);
+		this.bdd = new BaseDeDonneesModeleSQLite(cheminFichier);
 		File fichier = new File(cheminFichier);
 		if( ! fichier.exists())
 		{
@@ -907,7 +907,7 @@ public class BaseDeDonneesControlleur implements IBaseDeDonnees
 		List<LigneEnregistrement> listeCategorie = null;
 		List<LigneEnregistrement> listeEnregistrement = null;
 		
-		BaseDeDonneesModele baseImporte = new BaseDeDonneesModele(cheminFichier);
+		BaseDeDonneesModele baseImporte = new BaseDeDonneesModeleSQLite(cheminFichier);
 
 		try
 		{
