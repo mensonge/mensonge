@@ -50,7 +50,7 @@ import uk.co.caprica.vlcj.player.MediaPlayer;
 
 /**
  * Classe gérant le lecteur vidéo
- *
+ * 
  */
 public class LecteurVideo extends JPanel implements ActionListener
 {
@@ -85,11 +85,13 @@ public class LecteurVideo extends JPanel implements ActionListener
 	private JFrame parent;
 	private Extraction extraction;
 
-	private List<Annotation> listDannotation;
+	private List<Annotation> listeAnnotations;
 	private Annotation annotTemp;
+	private JLabel labelAnnotation;
+
 	/**
 	 * Créé un lecteur vidéo avec une barre de controle
-	 *
+	 * 
 	 * @param fichierVideo
 	 *            Fichier vidéo à lire
 	 * @param bdd
@@ -98,8 +100,8 @@ public class LecteurVideo extends JPanel implements ActionListener
 	 */
 	public LecteurVideo(final File fichierVideo, BaseDeDonneesControlleur bdd, JFrame parent, Extraction extraction)
 	{
-		this.listDannotation=new LinkedList();
-		this.annotTemp=new Annotation();
+		this.listeAnnotations = new LinkedList<Annotation>();
+		this.annotTemp = new Annotation();
 		this.extraction = extraction;
 		this.parent = parent;
 		this.bdd = bdd;
@@ -159,12 +161,15 @@ public class LecteurVideo extends JPanel implements ActionListener
 		this.boutonAnnotation = new JButton();
 		this.boutonAnnotation.setText("Annoter");
 		this.boutonAnnotation.addActionListener(this);
-		this.boutonAnnotation.setEnabled(true);;
+		this.boutonAnnotation.setEnabled(true);
+		
 
 		this.boutonExportAnnotation = new JButton();
 		this.boutonExportAnnotation.setText("Exporter les annotations");
 		this.boutonExportAnnotation.addActionListener(this);
-		this.boutonExportAnnotation.setEnabled(true);;
+		this.boutonExportAnnotation.setEnabled(true);
+		
+		this.labelAnnotation = new JLabel();
 
 		this.boutonStop = new JButton();
 		this.boutonStop.setIcon(PlayerEventListener.IMG_ICON_STOP);
@@ -184,7 +189,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 		this.sliderVolume.addMouseListener(volumeListener);
 		this.sliderVolume.addMouseMotionListener(volumeListener);
 
-		this.slider = new SliderWithMarkers(JSlider.HORIZONTAL,this.mediaPlayer);
+		this.slider = new SliderWithMarkers(JSlider.HORIZONTAL, this.mediaPlayer, this.labelAnnotation);
 		SliderPositionEventListener sliderListener = new SliderPositionEventListener(this.slider,
 				this.labelDureeActuelle, this.mediaPlayer);
 		for (MouseListener m : this.slider.getMouseListeners())
@@ -218,6 +223,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 		toolBar.add(boutonExtract);
 		toolBar.add(boutonAnnotation);
 		toolBar.add(boutonExportAnnotation);
+		toolBar.add(labelAnnotation);
 		toolBar.add(Box.createHorizontalGlue());
 		toolBar.add(new JLabel(new ImageIcon("images/Volume.png")));
 		toolBar.add(Box.createHorizontalStrut(PANEL_MARGIN));
@@ -264,16 +270,15 @@ public class LecteurVideo extends JPanel implements ActionListener
 		this.vidComp.release();
 	}
 
-
-	public	long getFrameNum(long time)
+	public long getFrameNum(long time)
 	{
-		return Math.round(Math.floor(time*mediaPlayer.getFps()/1000));
-	}
-	private	long getTimeFrame(long frame)
-	{
-		return Math.round(Math.floor(1000*((float)frame/(float)mediaPlayer.getFps())));
+		return Math.round(Math.floor(time * mediaPlayer.getFps() / 1000));
 	}
 
+	private long getTimeFrame(long frame)
+	{
+		return Math.round(Math.floor(1000 * ((float) frame / (float) mediaPlayer.getFps())));
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent event)
@@ -307,35 +312,36 @@ public class LecteurVideo extends JPanel implements ActionListener
 		}
 		else if (event.getSource() == boutonAnnotation)
 		{
-			if(annotTemp.getDebut()>=0 && annotTemp.getFin()>=0)
+			if (annotTemp.getDebut() >= 0 && annotTemp.getFin() >= 0)
 			{
-				String nom = JOptionPane.showInputDialog(null, "Saisissez le libellé de l'annotation", "Annoter",JOptionPane.QUESTION_MESSAGE);
-				if(nom != "")
+				String nom = JOptionPane.showInputDialog(null, "Saisissez le libellé de l'annotation", "Annoter",
+						JOptionPane.QUESTION_MESSAGE);
+				if (nom != null && !nom.isEmpty())
 				{
 					long tmp;
 					annotTemp.setAnnotation(nom);
-					if(annotTemp.getDebut()>annotTemp.getFin())
+					if (annotTemp.getDebut() > annotTemp.getFin())
 					{
-						tmp=annotTemp.getFin();
+						tmp = annotTemp.getFin();
 						annotTemp.setFin(annotTemp.getDebut());
 						annotTemp.setDebut(tmp);
 					}
-					listDannotation.add(annotTemp);
-					annotTemp = new Annotation();
+					listeAnnotations.add(annotTemp.clone());
+					slider.addAnnotation(annotTemp.clone());
 				}
 				else
 				{
-				GraphicalUserInterface.popupErreur("Veuillez placer les deux marqueurs avant tout");
+					GraphicalUserInterface.popupErreur("Veuillez saisir un nom de libellé !");
 				}
 			}
 			else
 			{
-				GraphicalUserInterface.popupErreur("Veuillez saisir un nom de libellé !");
+				GraphicalUserInterface.popupErreur("Veuillez placer les deux marqueurs avant tout");
 			}
 		}
 		else if (event.getSource() == boutonExportAnnotation)
 		{
-			if(!listDannotation.isEmpty())
+			if (!listeAnnotations.isEmpty())
 			{
 				exportAnnotations();
 			}
@@ -391,14 +397,15 @@ public class LecteurVideo extends JPanel implements ActionListener
 		{
 			try
 			{
-				final BufferedWriter dataOut = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(fileChooser.getSelectedFile().getCanonicalPath()),"UTF8"));
-				dataOut.write(this.pathVideo+": \n");
-				for(Annotation annotation : listDannotation)
+				final BufferedWriter dataOut = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(
+						fileChooser.getSelectedFile().getCanonicalPath()), "UTF8"));
+				dataOut.write(this.pathVideo + ": \n");
+				for (Annotation annotation : listeAnnotations)
 				{
-					dataOut.write(annotation.toString()+"\n");
+					dataOut.write(annotation.toString() + "\n");
 				}
 				dataOut.close();
-				GraphicalUserInterface.popupInfo("Exportation réussie","Succès de l'exportation");
+				GraphicalUserInterface.popupInfo("Exportation réussie", "Succès de l'exportation");
 			}
 			catch (IOException e)
 			{
@@ -409,7 +416,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 
 	/**
 	 * Listener du slider avec les marqueurs
-	 *
+	 * 
 	 */
 	private class SliderWithMarkersListener extends MouseAdapter
 	{
@@ -439,14 +446,12 @@ public class LecteurVideo extends JPanel implements ActionListener
 			{
 				timeMarqueur1 = valueForXPosition(e.getX());
 				annotTemp.setDebut(getFrameNum(valueForXPosition(e.getX())));
-				System.out.println("test1  " +getTimeFrame(getFrameNum(mediaPlayer.getLength())));
 				slider.setMarkerOneAt((float) (e.getX() - SliderWithMarkers.OFFSET_MARKER) / (float) w);
 			}
 			else if ((e.getModifiers() & MouseEvent.BUTTON3_MASK) != 0)
 			{
 				timeMarqueur2 = valueForXPosition(e.getX());
 				annotTemp.setFin(getFrameNum(valueForXPosition(e.getX())));
-				System.out.println("test2  " +getTimeFrame(getFrameNum(mediaPlayer.getLength())));
 				slider.setMarkerTwoAt((float) (e.getX() - SliderWithMarkers.OFFSET_MARKER) / (float) w);
 			}
 		}

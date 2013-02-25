@@ -2,14 +2,16 @@ package mensonge.userinterface;
 
 import java.awt.Color;
 import java.awt.Graphics;
-import java.util.List;
-import java.util.LinkedList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Random;
 
+import javax.swing.JLabel;
 import javax.swing.JSlider;
 
-import uk.co.caprica.vlcj.player.MediaPlayer;
-
 import mensonge.core.Annotation;
+import uk.co.caprica.vlcj.player.MediaPlayer;
 
 public class SliderWithMarkers extends JSlider
 {
@@ -20,9 +22,11 @@ public class SliderWithMarkers extends JSlider
 	private float position1 = -1.0f;
 	private float position2 = -1.0f;
 	private MediaPlayer mediaPlayer;
-	private LinkedList<Annotation> listOfAnnots;
+	private Map<Annotation, Color> annotations;
 
-	public SliderWithMarkers(int orientation,MediaPlayer mediaPlayer)
+	private JLabel labelAnnotation;
+
+	public SliderWithMarkers(int orientation, MediaPlayer mediaPlayer, JLabel labelAnnotation)
 	{
 		super(orientation);
 		this.setOpaque(false);
@@ -34,8 +38,9 @@ public class SliderWithMarkers extends JSlider
 		this.setMinimum(0);
 		this.setValue(0);
 		this.setMaximum(1);
-		this.listOfAnnots = new LinkedList<Annotation>();
+		this.annotations = new HashMap<Annotation, Color>();
 		this.mediaPlayer = mediaPlayer;
+		this.labelAnnotation = labelAnnotation;
 	}
 
 	public void setMarkerOneAt(float position)
@@ -51,21 +56,64 @@ public class SliderWithMarkers extends JSlider
 		this.repaint();
 	}
 
-	public void addAnnots(Annotation annot)
+	public void addAnnotation(Annotation annot)
 	{
-		this.listOfAnnots.add(annot);
+		Color randomColor = generateRandomColor(new Color(255, 0, 10));
+		while (annotations.containsValue(randomColor))
+		{
+			randomColor = generateRandomColor(new Color(255, 0, 10));
+		}
+		this.annotations.put(annot, randomColor);
+		this.repaint();
 	}
 
-	public	long getTimeFrame(long frame)
+	public long getFrameNum(long time)
 	{
-		return Math.round(Math.floor(1000*((float)frame/(float)mediaPlayer.getLength())));
-		//		return Math.round(Math.floor(time*mediaPlayer.getFps()/1000));
+		return Math.round(Math.floor(time * mediaPlayer.getFps() / 1000));
+	}
+
+	public Color generateRandomColor(Color mix)
+	{
+		Random random = new Random();
+		int red = random.nextInt(256);
+		int green = random.nextInt(256);
+		int blue = random.nextInt(256);
+
+		if (mix != null)
+		{
+			red = (red + mix.getRed()) / 2;
+			green = (green + mix.getGreen()) / 2;
+			blue = (blue + mix.getBlue()) / 2;
+		}
+
+		Color color = new Color(red, green, blue);
+		return color;
 	}
 
 	protected void paintComponent(Graphics g)
 	{
 		int sliderHeight = getHeight();
 		int sliderWidth = getWidth();
+		long lastFrame = getFrameNum(mediaPlayer.getLength());
+		for (Entry<Annotation, Color> entry : this.annotations.entrySet())
+		{
+			Annotation annotation = entry.getKey();
+			Color color = entry.getValue();
+			g.setColor(color);
+			int x1 = Math.round(((float) annotation.getDebut() / (float) lastFrame) * sliderWidth);
+			int x2 = Math.round(((float) annotation.getFin() / (float) lastFrame) * sliderWidth);
+			g.fillRect(x1 + OFFSET_MARKER, 0, x2 - x1, sliderHeight);
+			long actualFrame = getFrameNum(this.getValue());
+			if(actualFrame >= annotation.getDebut() && actualFrame <= annotation.getFin())
+			{
+				labelAnnotation.setText("<html><b>"+annotation.getAnnotation()+"</b></html>");
+				labelAnnotation.setForeground(color);
+			}
+			else
+			{
+				labelAnnotation.setText("");
+			}
+		}
 		if (position1 >= 0)
 		{
 			g.setColor(Color.RED);
@@ -106,11 +154,6 @@ public class SliderWithMarkers extends JSlider
 			polygoneY2[2] = 0;
 			g.fillPolygon(polygoneX2, polygoneY2, polygoneY2.length);
 			g.fillRect(pos + OFFSET_MARKER, 0, 1, sliderHeight);
-		}
-		for(Annotation annot : this.listOfAnnots)
-		{
-			//			int pos = Math.round(annot.getDebut() * sliderWidth);
-
 		}
 		super.paintComponent(g);
 	}
