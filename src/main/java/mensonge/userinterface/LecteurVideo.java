@@ -168,18 +168,17 @@ public class LecteurVideo extends JPanel implements ActionListener
 		this.boutonAnnotation.setText("Annoter");
 		this.boutonAnnotation.addActionListener(this);
 		this.boutonAnnotation.setEnabled(true);
-		
 
 		this.boutonExportAnnotation = new JButton();
 		this.boutonExportAnnotation.setText("Exporter annotations");
 		this.boutonExportAnnotation.addActionListener(this);
 		this.boutonExportAnnotation.setEnabled(true);
-		
+
 		this.boutonImportAnnotation = new JButton();
 		this.boutonImportAnnotation.setText("Importer annotations");
 		this.boutonImportAnnotation.addActionListener(this);
 		this.boutonImportAnnotation.setEnabled(true);
-		
+
 		this.labelAnnotation = new JLabel();
 
 		this.boutonStop = new JButton();
@@ -360,7 +359,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 		}
 		else if (event.getSource() == boutonImportAnnotation)
 		{
-				importAnnotations();
+			importAnnotations();
 		}
 		else if (event.getSource() == boutonExtract)
 		{
@@ -429,7 +428,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 			}
 		}
 	}
-	
+
 	private void importAnnotations()
 	{
 		JFileChooser fileChooser = new JFileChooser();
@@ -442,16 +441,15 @@ public class LecteurVideo extends JPanel implements ActionListener
 				Matcher matcher = null;
 
 				Pattern patternAnnotation = Pattern.compile("^image (.*?) à (.*?) -> (.*?)$", Pattern.CASE_INSENSITIVE);
-				BufferedReader dataIn = new BufferedReader(new InputStreamReader(new FileInputStream(fileChooser.getSelectedFile().getCanonicalPath()), "UTF8"));
-				while((ligne = dataIn.readLine()) != null)
+				BufferedReader dataIn = new BufferedReader(new InputStreamReader(new FileInputStream(fileChooser
+						.getSelectedFile().getCanonicalPath()), "UTF8"));
+				while ((ligne = dataIn.readLine()) != null)
 				{
 					matcher = patternAnnotation.matcher(ligne);
-					if(matcher != null && matcher.find())
+					if (matcher != null && matcher.find())
 					{
-						System.out.println(matcher.group(1));
-						System.out.println(matcher.group(2));
-						System.out.println(matcher.group(3));
-						Annotation annotation = new Annotation(Long.parseLong(matcher.group(1)), Long.parseLong(matcher.group(2)), matcher.group(3));
+						Annotation annotation = new Annotation(Long.parseLong(matcher.group(1)), Long.parseLong(matcher
+								.group(2)), matcher.group(3));
 						listeAnnotations.add(annotation);
 						slider.addAnnotation(annotation);
 					}
@@ -463,7 +461,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 			{
 				GraphicalUserInterface.popupErreur(e.getMessage());
 			}
-		}		
+		}
 	}
 
 	/**
