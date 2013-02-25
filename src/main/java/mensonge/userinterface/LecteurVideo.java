@@ -3,13 +3,18 @@ package mensonge.userinterface;
 import it.sauronsoftware.jave.EncoderException;
 import it.sauronsoftware.jave.InputFormatException;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.BufferedWriter;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.awt.BorderLayout;
 import java.awt.Cursor;
 import java.awt.Dimension;
@@ -88,6 +93,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 	private List<Annotation> listeAnnotations;
 	private Annotation annotTemp;
 	private JLabel labelAnnotation;
+	private JButton boutonImportAnnotation;
 
 	/**
 	 * Créé un lecteur vidéo avec une barre de controle
@@ -165,9 +171,14 @@ public class LecteurVideo extends JPanel implements ActionListener
 		
 
 		this.boutonExportAnnotation = new JButton();
-		this.boutonExportAnnotation.setText("Exporter les annotations");
+		this.boutonExportAnnotation.setText("Exporter annotations");
 		this.boutonExportAnnotation.addActionListener(this);
 		this.boutonExportAnnotation.setEnabled(true);
+		
+		this.boutonImportAnnotation = new JButton();
+		this.boutonImportAnnotation.setText("Importer annotations");
+		this.boutonImportAnnotation.addActionListener(this);
+		this.boutonImportAnnotation.setEnabled(true);
 		
 		this.labelAnnotation = new JLabel();
 
@@ -223,6 +234,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 		toolBar.add(boutonExtract);
 		toolBar.add(boutonAnnotation);
 		toolBar.add(boutonExportAnnotation);
+		toolBar.add(boutonImportAnnotation);
 		toolBar.add(labelAnnotation);
 		toolBar.add(Box.createHorizontalGlue());
 		toolBar.add(new JLabel(new ImageIcon("images/Volume.png")));
@@ -346,6 +358,10 @@ public class LecteurVideo extends JPanel implements ActionListener
 				exportAnnotations();
 			}
 		}
+		else if (event.getSource() == boutonImportAnnotation)
+		{
+				importAnnotations();
+		}
 		else if (event.getSource() == boutonExtract)
 		{
 			// On test si il a bien set les 2 marquers et qu'ils ne soient pas placés au même endroit
@@ -393,7 +409,7 @@ public class LecteurVideo extends JPanel implements ActionListener
 	{
 		JFileChooser fileChooser = new JFileChooser();
 		int option = fileChooser.showSaveDialog(this);
-		if (option == JFileChooser.APPROVE_OPTION && fileChooser.getSelectedFiles() != null)
+		if (option == JFileChooser.APPROVE_OPTION && fileChooser.getSelectedFile() != null)
 		{
 			try
 			{
@@ -412,6 +428,42 @@ public class LecteurVideo extends JPanel implements ActionListener
 				GraphicalUserInterface.popupErreur(e.getMessage());
 			}
 		}
+	}
+	
+	private void importAnnotations()
+	{
+		JFileChooser fileChooser = new JFileChooser();
+		int option = fileChooser.showSaveDialog(this);
+		if (option == JFileChooser.APPROVE_OPTION && fileChooser.getSelectedFile() != null)
+		{
+			try
+			{
+				String ligne;
+				Matcher matcher = null;
+
+				Pattern patternAnnotation = Pattern.compile("^image (.*?) à (.*?) -> (.*?)$", Pattern.CASE_INSENSITIVE);
+				BufferedReader dataIn = new BufferedReader(new InputStreamReader(new FileInputStream(fileChooser.getSelectedFile().getCanonicalPath()), "UTF8"));
+				while((ligne = dataIn.readLine()) != null)
+				{
+					matcher = patternAnnotation.matcher(ligne);
+					if(matcher != null && matcher.find())
+					{
+						System.out.println(matcher.group(1));
+						System.out.println(matcher.group(2));
+						System.out.println(matcher.group(3));
+						Annotation annotation = new Annotation(Long.parseLong(matcher.group(1)), Long.parseLong(matcher.group(2)), matcher.group(3));
+						listeAnnotations.add(annotation);
+						slider.addAnnotation(annotation);
+					}
+				}
+				dataIn.close();
+				GraphicalUserInterface.popupInfo("Importation réussie", "Succès de l'importation");
+			}
+			catch (IOException e)
+			{
+				GraphicalUserInterface.popupErreur(e.getMessage());
+			}
+		}		
 	}
 
 	/**
