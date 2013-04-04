@@ -96,9 +96,11 @@ public class SliderWithMarkers extends JSlider
 		int sliderWidth = getWidth();
 		long lastFrame = getFrameNum(mediaPlayer.getLength());
 		long actualFrame = getFrameNum(this.getValue());
+        labelAnnotation.setText("");
 		for (Entry<Annotation, Color> entry : this.annotations.entrySet())
 		{
 			Annotation annotation = entry.getKey();
+			//System.out.println(annotation);
 			Color color = entry.getValue();
 			g.setColor(color);
 			int x1 = Math.round(((float) annotation.getDebut() / (float) lastFrame) * sliderWidth);
@@ -109,11 +111,7 @@ public class SliderWithMarkers extends JSlider
 				labelAnnotation.setText("<html><b>"+annotation.getAnnotation()+"</b></html>");
 				labelAnnotation.setForeground(color);
 			}
-			else
-			{
-				labelAnnotation.setText("");
-			}
-		}
+        }
 		if (position1 >= 0)
 		{
 			g.setColor(Color.RED);
